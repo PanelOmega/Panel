@@ -1,4 +1,5 @@
 <?php
+use App\OmegaConfig;
 
 return [
 
@@ -15,23 +16,23 @@ return [
     */
 
     'postmark' => [
-        'token' => env('POSTMARK_TOKEN'),
+        'token' => OmegaConfig::get('POSTMARK_TOKEN'),
     ],
 
     'ses' => [
-        'key' => env('AWS_ACCESS_KEY_ID'),
-        'secret' => env('AWS_SECRET_ACCESS_KEY'),
-        'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
+        'key' => OmegaConfig::get('AWS_ACCESS_KEY_ID'),
+        'secret' => OmegaConfig::get('AWS_SECRET_ACCESS_KEY'),
+        'region' => OmegaConfig::get('AWS_DEFAULT_REGION', 'us-east-1'),
     ],
 
     'resend' => [
-        'key' => env('RESEND_KEY'),
+        'key' => OmegaConfig::get('RESEND_KEY'),
     ],
 
     'slack' => [
         'notifications' => [
-            'bot_user_oauth_token' => env('SLACK_BOT_USER_OAUTH_TOKEN'),
-            'channel' => env('SLACK_BOT_USER_DEFAULT_CHANNEL'),
+            'bot_user_oauth_token' => OmegaConfig::get('SLACK_BOT_USER_OAUTH_TOKEN'),
+            'channel' => OmegaConfig::get('SLACK_BOT_USER_DEFAULT_CHANNEL'),
         ],
     ],
 

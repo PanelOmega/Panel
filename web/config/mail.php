@@ -1,4 +1,5 @@
 <?php
+use App\OmegaConfig;
 
 return [
 
@@ -14,7 +15,7 @@ return [
     |
     */
 
-    'default' => env('MAIL_MAILER', 'log'),
+    'default' => OmegaConfig::get('MAIL_MAILER', 'log'),
 
     /*
     |--------------------------------------------------------------------------
@@ -39,14 +40,14 @@ return [
 
         'smtp' => [
             'transport' => 'smtp',
-            'url' => env('MAIL_URL'),
-            'host' => env('MAIL_HOST', '127.0.0.1'),
-            'port' => env('MAIL_PORT', 2525),
-            'encryption' => env('MAIL_ENCRYPTION', 'tls'),
-            'username' => env('MAIL_USERNAME'),
-            'password' => env('MAIL_PASSWORD'),
+            'url' => OmegaConfig::get('MAIL_URL'),
+            'host' => OmegaConfig::get('MAIL_HOST', '127.0.0.1'),
+            'port' => OmegaConfig::get('MAIL_PORT', 2525),
+            'encryption' => OmegaConfig::get('MAIL_ENCRYPTION', 'tls'),
+            'username' => OmegaConfig::get('MAIL_USERNAME'),
+            'password' => OmegaConfig::get('MAIL_PASSWORD'),
             'timeout' => null,
-            'local_domain' => env('MAIL_EHLO_DOMAIN'),
+            'local_domain' => OmegaConfig::get('MAIL_EHLO_DOMAIN'),
         ],
 
         'ses' => [
@@ -55,7 +56,7 @@ return [
 
         'postmark' => [
             'transport' => 'postmark',
-            // 'message_stream_id' => env('POSTMARK_MESSAGE_STREAM_ID'),
+            // 'message_stream_id' => OmegaConfig::get('POSTMARK_MESSAGE_STREAM_ID'),
             // 'client' => [
             //     'timeout' => 5,
             // ],
@@ -67,12 +68,12 @@ return [
 
         'sendmail' => [
             'transport' => 'sendmail',
-            'path' => env('MAIL_SENDMAIL_PATH', '/usr/sbin/sendmail -bs -i'),
+            'path' => OmegaConfig::get('MAIL_SENDMAIL_PATH', '/usr/sbin/sendmail -bs -i'),
         ],
 
         'log' => [
             'transport' => 'log',
-            'channel' => env('MAIL_LOG_CHANNEL'),
+            'channel' => OmegaConfig::get('MAIL_LOG_CHANNEL'),
         ],
 
         'array' => [
@@ -109,8 +110,8 @@ return [
     */
 
     'from' => [
-        'address' => env('MAIL_FROM_ADDRESS', 'hello@example.com'),
-        'name' => env('MAIL_FROM_NAME', 'Example'),
+        'address' => OmegaConfig::get('MAIL_FROM_ADDRESS', 'hello@example.com'),
+        'name' => OmegaConfig::get('MAIL_FROM_NAME', 'Example'),
     ],
 
 ];

@@ -1,5 +1,6 @@
 <?php
 
+use App\OmegaConfig;
 use Illuminate\Support\Str;
 
 return [
@@ -15,7 +16,7 @@ return [
     |
     */
 
-    'default' => env('CACHE_STORE', 'database'),
+    'default' => OmegaConfig::get('CACHE_STORE', 'database'),
 
     /*
     |--------------------------------------------------------------------------
@@ -40,9 +41,9 @@ return [
 
         'database' => [
             'driver' => 'database',
-            'table' => env('DB_CACHE_TABLE', 'cache'),
-            'connection' => env('DB_CACHE_CONNECTION'),
-            'lock_connection' => env('DB_CACHE_LOCK_CONNECTION'),
+            'table' => OmegaConfig::get('DB_CACHE_TABLE', 'cache'),
+            'connection' => OmegaConfig::get('DB_CACHE_CONNECTION'),
+            'lock_connection' => OmegaConfig::get('DB_CACHE_LOCK_CONNECTION'),
         ],
 
         'file' => [
@@ -53,18 +54,18 @@ return [
 
         'memcached' => [
             'driver' => 'memcached',
-            'persistent_id' => env('MEMCACHED_PERSISTENT_ID'),
+            'persistent_id' => OmegaConfig::get('MEMCACHED_PERSISTENT_ID'),
             'sasl' => [
-                env('MEMCACHED_USERNAME'),
-                env('MEMCACHED_PASSWORD'),
+                OmegaConfig::get('MEMCACHED_USERNAME'),
+                OmegaConfig::get('MEMCACHED_PASSWORD'),
             ],
             'options' => [
                 // Memcached::OPT_CONNECT_TIMEOUT => 2000,
             ],
             'servers' => [
                 [
-                    'host' => env('MEMCACHED_HOST', '127.0.0.1'),
-                    'port' => env('MEMCACHED_PORT', 11211),
+                    'host' => OmegaConfig::get('MEMCACHED_HOST', '127.0.0.1'),
+                    'port' => OmegaConfig::get('MEMCACHED_PORT', 11211),
                     'weight' => 100,
                 ],
             ],
@@ -72,17 +73,17 @@ return [
 
         'redis' => [
             'driver' => 'redis',
-            'connection' => env('REDIS_CACHE_CONNECTION', 'cache'),
-            'lock_connection' => env('REDIS_CACHE_LOCK_CONNECTION', 'default'),
+            'connection' => OmegaConfig::get('REDIS_CACHE_CONNECTION', 'cache'),
+            'lock_connection' => OmegaConfig::get('REDIS_CACHE_LOCK_CONNECTION', 'default'),
         ],
 
         'dynamodb' => [
             'driver' => 'dynamodb',
-            'key' => env('AWS_ACCESS_KEY_ID'),
-            'secret' => env('AWS_SECRET_ACCESS_KEY'),
-            'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
-            'table' => env('DYNAMODB_CACHE_TABLE', 'cache'),
-            'endpoint' => env('DYNAMODB_ENDPOINT'),
+            'key' => OmegaConfig::get('AWS_ACCESS_KEY_ID'),
+            'secret' => OmegaConfig::get('AWS_SECRET_ACCESS_KEY'),
+            'region' => OmegaConfig::get('AWS_DEFAULT_REGION', 'us-east-1'),
+            'table' => OmegaConfig::get('DYNAMODB_CACHE_TABLE', 'cache'),
+            'endpoint' => OmegaConfig::get('DYNAMODB_ENDPOINT'),
         ],
 
         'octane' => [
@@ -102,6 +103,6 @@ return [
     |
     */
 
-    'prefix' => env('CACHE_PREFIX', Str::slug(env('APP_NAME', 'laravel'), '_').'_cache_'),
+    'prefix' => OmegaConfig::get('CACHE_PREFIX', Str::slug(OmegaConfig::get('APP_NAME', 'laravel'), '_').'_cache_'),
 
 ];

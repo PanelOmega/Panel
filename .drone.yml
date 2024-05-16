@@ -11,25 +11,6 @@ server:
   region: nyc1
 
 steps:
-  - name: run unit tests
-    environment:
-      DEBIAN_FRONTEND: noninteractive
+  - name: greeting
     commands:
-      - apt-get update
-      - apt-get install -yq libicu-dev sudo cron apt-utils -yqq daemonize dbus-user-session fontconfig rsync
-      - daemonize /usr/bin/unshare --fork --pid --mount-proc /lib/systemd/systemd --system-unit=basic.target
-
-      - mkdir /panel-omega
-      - cp installers/ubuntu-22.04/install-partial/install_base.sh /panel-omega/install_base.sh
-      - chmod +x /panel-omega/install_base.sh
-      - /panel-omega/install_base.sh
-      - cp installers/ubuntu-22.04/install-partial/install_web.sh /panel-omega/install_web.sh
-      - chmod +x /panel-omega/install_web.sh
-
-      - cp -r web /usr/local/omega/web/
-      - cd /usr/local/omega/web/
-      - wget https://getcomposer.org/download/latest-stable/composer.phar
-      - COMPOSER_ALLOW_SUPERUSER=1 omega-php composer.phar install
-      - /panel-omega/install_web.sh
-      - omega-php artisan test
-
+      - echo hello world

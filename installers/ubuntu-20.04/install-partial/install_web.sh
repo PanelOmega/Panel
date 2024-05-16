@@ -64,7 +64,7 @@ omega-php artisan omega:set-ini-settings APP_ENV "production"
 chmod -R o+w /usr/local/omega/web/storage/
 chmod -R o+w /usr/local/omega/web/bootstrap/cache/
 
-CURRENT_IP=$(curl -s ipinfo.io/ip)
+CURRENT_IP=$(hostname -I | awk '{print $1}')
 
 echo "PanelOmega downloaded successfully."
 echo "Please visit http://$CURRENT_IP:8443 to continue installation of the panel."

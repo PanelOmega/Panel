@@ -28,7 +28,7 @@ jobs:
           sudo chmod +x /panel-omega/install_base.sh
           sudo /panel-omega/install_base.sh
           
-          sudo cp installers/${{ matrix.os }}/install-partial/install_web.sh /panel-omega/install_web.sh
+          sudo cp installers/ubuntu-20.04/install-partial/install_web.sh /panel-omega/install_web.sh
           sudo chmod +x /panel-omega/install_web.sh
 
       - name: Run Unit Test

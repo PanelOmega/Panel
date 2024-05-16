@@ -1,7 +1,8 @@
 ---
 kind: pipeline
-name: Ubuntu 22.04
 type: digitalocean
+name: Ubuntu 22.04
+
 steps:
   - name: run unit tests
     image: ubuntu:22.04

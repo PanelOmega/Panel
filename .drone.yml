@@ -10,6 +10,10 @@ server:
   size: s-2vcpu-4gb
   region: nyc1
 
+
+clone:
+  disable: true
+
 steps:
   - name: greeting
     commands:

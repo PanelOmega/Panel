@@ -5,6 +5,11 @@ name: Ubuntu 22.04
 token:
   from_secret: token
 
+server:
+  image: ubuntu-22-04-x64
+  size: s-1vcpu-1gb
+  region: nyc1
+
 steps:
   - name: run unit tests
     image: ubuntu:22.04

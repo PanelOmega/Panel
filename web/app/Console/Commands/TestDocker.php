@@ -28,16 +28,18 @@ class TestDocker extends Command
     public function handle()
     {
         $domainName = 'omega-'.time().'.test';
+        $domainName = 'omega.test';
 
         $availablePortScript = base_path('app/Docker/Shell/GetAvailablePort.sh');
         shell_exec('chmod +x ' . $availablePortScript);
         $getAvailablePort = shell_exec($availablePortScript);
         $getAvailablePort = (int) $getAvailablePort;
 
-        $containerNameLower = Str::slug($domainName, '_');
+        $getAvailablePort = 80;
+
+        $containerNameLower = Str::slug($domainName, '-');
         $containerNameLower = trim($containerNameLower);
         $containerNameLower = strtolower($containerNameLower);
-
 
         $dockerTemplate = view('docker.templates.web.base-nginx-php-yaml', [
             'externalPort' => $getAvailablePort,

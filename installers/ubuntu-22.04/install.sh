@@ -103,8 +103,8 @@ MYSQL_SCRIPT
 
 # Create database
 PANEL_OMEGA_DB_PASSWORD="$(openssl rand -hex 16)"
-PANEL_OMEGA_DB_NAME="omega$(tr -dc a-za-z0-9 </dev/urandom | head -c 13; echo)"
-PANEL_OMEGA_DB_USER="omega$(tr -dc a-za-z0-9 </dev/urandom | head -c 13; echo)"
+PANEL_OMEGA_DB_NAME="omega_$(tr -dc a-za-z0-9 </dev/urandom | head -c 13; echo)"
+PANEL_OMEGA_DB_USER="omega_$(tr -dc a-za-z0-9 </dev/urandom | head -c 13; echo)"
 
 mysql -uroot -proot <<MYSQL_SCRIPT
   CREATE DATABASE $PANEL_OMEGA_DB_NAME;

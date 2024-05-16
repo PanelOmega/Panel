@@ -7,6 +7,8 @@ token:
 
 server:
   image: ubuntu-22-04-x64
+  size: s-2vcpu-2gb-sfo3-01
+  region: nyc1
 
 steps:
   - name: run unit tests

@@ -38,7 +38,7 @@ mysql_secure_installation --use-default
 echo "Changing mysql root password"
 MYSQL_ROOT_PASSWORD="$(openssl rand -hex 16)"
 mysql -uroot -proot <<MYSQL_SCRIPT
-  ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password by '$MYSQL_ROOT_PASSWORD';
+  ALTER USER 'root'@'localhost' IDENTIFIED BY '$MYSQL_ROOT_PASSWORD';
   FLUSH PRIVILEGES;
 MYSQL_SCRIPT
 

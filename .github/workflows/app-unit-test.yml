@@ -46,7 +46,7 @@ jobs:
 
   compile-panel-omega-web:
     runs-on: ubuntu-22.04
-    needs: panel-mega-unit-test
+    needs: panel-omega-unit-test
     steps:
       - uses: actions/checkout@v2
         with:

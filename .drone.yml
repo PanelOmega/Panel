@@ -8,8 +8,6 @@ token:
 server:
   image: ubuntu-22-04-x64
   size: s-2vcpu-4gb
-  region: nyc1
-
 
 clone:
   disable: true

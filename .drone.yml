@@ -12,7 +12,6 @@ server:
 
 steps:
   - name: run unit tests
-    image: ubuntu:22.04
     environment:
       DEBIAN_FRONTEND: noninteractive
     commands:

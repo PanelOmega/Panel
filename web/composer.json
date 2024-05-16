@@ -2,10 +2,15 @@
     "name": "panelomega/panel",
     "type": "project",
     "description": "The web application for the panel omega.",
-    "keywords": ["panel", "panel omega", "web application"],
+    "keywords": [
+        "panel",
+        "panel omega",
+        "web application"
+    ],
     "license": "MIT",
     "require": {
         "php": "^8.2",
+        "filament/filament": "^3.2",
         "jelix/inifile": "^3.4",
         "laravel/framework": "^11.0",
         "laravel/tinker": "^2.9"
@@ -34,7 +39,8 @@
     "scripts": {
         "post-autoload-dump": [
             "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",
-            "@php artisan package:discover --ansi"
+            "@php artisan package:discover --ansi",
+            "@php artisan filament:upgrade"
         ],
         "post-update-cmd": [
             "@php artisan vendor:publish --tag=laravel-assets --ansi --force"

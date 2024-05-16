@@ -14,3 +14,22 @@ services:
     image: php:5.6-fpm
     volumes:
       - ./src:/var/www/html
+
+  ftpd-server:
+    container_name: ftpd-server
+    image: stilliard/pure-ftpd:hardened
+    ports:
+      - "21:21"
+      - "20:20"
+      - "30000-30009:30000-30009"
+    environment:
+      PUBLICHOST: "localhost"
+      FTP_USER_NAME: "test"
+      FTP_USER_PASS: "test"
+      FTP_USER_HOME: "/var/www/html"
+    restart: on-failure
+    networks:
+      omega_default:
+
+networks:
+  omega_default:

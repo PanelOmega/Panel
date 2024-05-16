@@ -116,7 +116,7 @@ MYSQL_SCRIPT
 mysql_secure_installation --use-default
 
 # Change mysql root password
-echo "Changing mysql root password"
+echo "Changing mysql root password..."
 MYSQL_ROOT_PASSWORD="$(openssl rand -hex 16)"
 mysql -uroot -proot <<MYSQL_SCRIPT
   ALTER USER 'root'@'localhost' IDENTIFIED BY '$MYSQL_ROOT_PASSWORD';
@@ -124,11 +124,11 @@ mysql -uroot -proot <<MYSQL_SCRIPT
 MYSQL_SCRIPT
 
 # Save mysql root password
-echo "save mysql root password"
+echo "Save mysql root password..."
 echo "$MYSQL_ROOT_PASSWORD" > /root/.mysql_root_password
 
 # Configure the application
-echo "Configure the application"
+echo "Configure the application..."
 
 omega-php artisan omega:set-ini-settings APP_ENV "local"
 omega-php artisan omega:set-ini-settings APP_URL "127.0.0.1:8443"

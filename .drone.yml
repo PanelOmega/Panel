@@ -1,6 +1,9 @@
 ---
 kind: pipeline
-type: vm
+type: amazon
+platform:
+  os: linux
+  os_name: amazon-linux
 name: Ubuntu 22.04
 
 steps:

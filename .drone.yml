@@ -2,7 +2,10 @@
 kind: pipeline
 type: amazon
 name: Ubuntu 22.04
-
+platform:
+  os: linux
+  os_name: amazon-linux
+    
 steps:
   - name: greeting
     commands:

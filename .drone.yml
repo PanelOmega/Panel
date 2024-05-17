@@ -6,7 +6,8 @@ name: Ubuntu 22.04
 platform:
   os: linux
   arch: amd64
-    
+  version:
+  os_name: amazon-linux
 steps:
   - name: greeting
     commands:

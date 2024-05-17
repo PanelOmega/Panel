@@ -1,7 +1,10 @@
 ---
 kind: pipeline
-
+type: vm
 name: Ubuntu 22.04
+
+pool:
+  test_pool
 
 steps:
   - name: greeting

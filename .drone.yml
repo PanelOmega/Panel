@@ -3,10 +3,8 @@ kind: pipeline
 type: vm
 name: Ubuntu 22.04
 
-
-
 pool:
-  use: ubuntu-20.04
+  use: ubuntu-22.04
 
 steps:
   - name: greeting

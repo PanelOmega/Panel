@@ -1,6 +1,6 @@
 ---
 kind: pipeline
-type: amazon
+type: aws
 name: Ubuntu 22.04
 
 platform:

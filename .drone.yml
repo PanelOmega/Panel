@@ -7,7 +7,7 @@ platform:
   arch: amd64
   version: 22.04
 spec:
-  ami: ami-051197ce9cbb023ea
+  ami: ami-0a50f993202fe4f22
   size: t2.nano
 
 steps:

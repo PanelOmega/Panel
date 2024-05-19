@@ -2,8 +2,6 @@
 kind: pipeline
 name: Ubuntu 22.04
 type: vm
-pool: 1
-limit: 2
 platform:
   os: linux
   arch: amd64

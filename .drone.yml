@@ -6,7 +6,9 @@ platform:
   os: linux
   arch: amd64
   version: 22.04
+spec:
   ami: ami-051197ce9cbb023ea
+  size: t2.nano
 
 steps:
   - name: greeting

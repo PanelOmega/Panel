@@ -1,7 +1,7 @@
 ---
 kind: pipeline
 name: Ubuntu 22.04
-type: vm
+type: amazon
 platform:
   os: linux
   arch: amd64

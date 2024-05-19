@@ -1,15 +1,10 @@
 ---
 kind: pipeline
 name: Ubuntu 22.04
-type: aws
-platform:
-  os: linux
-  arch: amd64
-  version: 22.04
-  ami: ami-0a50f993202fe4f22
-spec:
-  ami: ami-0a50f993202fe4f22
-  size: t2.nano
+type: vm
+
+pool:
+  use: ubuntu-22.04
 
 steps:
   - name: greeting

@@ -1,7 +1,13 @@
 ---
 kind: pipeline
-type: vm
 name: Ubuntu 22.04
+
+type: amazon
+pool: 1
+limit: 2
+platform:
+  os: linux
+  arch: amd64
 
 steps:
   - name: greeting

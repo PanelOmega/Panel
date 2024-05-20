@@ -4,7 +4,7 @@ name: Ubuntu 22.04
 type: vm
 
 pool:
-  use: testpool
+  use: ubuntu-22.04
 
 steps:
   - name: Install Panel

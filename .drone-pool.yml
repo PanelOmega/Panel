@@ -1,0 +1,14 @@
+version: "1"
+instances:
+  - name: ubuntu-22.04
+    default: true
+    type: digitalocean
+    pool: 1
+    limit: 1
+    platform:
+      os: linux
+      arch: amd64
+    spec:
+      account:
+        pat: 
+      root_directory: ""

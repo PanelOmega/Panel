@@ -2,9 +2,9 @@
 kind: pipeline
 name: Ubuntu 22.04
 type: vm
-
 pool:
   use: ubuntu-22.04
+clone: false
 
 steps:
   - name: Install Panel

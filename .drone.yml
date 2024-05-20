@@ -7,6 +7,6 @@ pool:
   use: testpool
 
 steps:
-  - name: greeting
+  - name: Install Panel
     commands:
-      - echo hello world
+      - wget https://raw.githubusercontent.com/PanelOmega/Panel/main/installers/install.sh && chmod +x install.sh && ./install.sh

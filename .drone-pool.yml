@@ -1,6 +1,6 @@
 version: "1"
 instances:
-  - name: ubuntu-22.04
+  - name: "ubuntu-22.04"
     default: true
     type: digitalocean
     pool: 1
@@ -12,3 +12,5 @@ instances:
       account:
         pat: 
       root_directory: ""
+      image: ubuntu-22-04-x64
+      size: s-1vcpu-2gb

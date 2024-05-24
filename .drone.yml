@@ -12,8 +12,10 @@ steps:
       CODECOV_TOKEN:
         from_secret: CODECOV_TOKEN
     commands:
+       - sudo apt-get update
+       - sudo apt-get -f install
        - sudo apt-get install -y mysql-common mysql-server mysql-client
-       - sleep 15 
+       - sleep 15
        - sudo service mysql start
        - sudo service mysql status
 #      - apt-get update

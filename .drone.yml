@@ -20,15 +20,15 @@ steps:
 
       - mkdir /omega-panel
 
-      - cp installers/ubuntu-22.04/install-partial/install_base.sh /omega-panel/install_base.sh
+      - cp $MAIN_REPO_DIR/installers/ubuntu-22.04/install-partial/install_base.sh /omega-panel/install_base.sh
       - chmod +x /omega-panel/install_base.sh
-      - cp installers/ubuntu-20.04/install-partial/install_web.sh /omega-panel/install_web.sh
+      - cp $MAIN_REPO_DIR/installers/ubuntu-20.04/install-partial/install_web.sh /omega-panel/install_web.sh
       - chmod +x /omega-panel/install_web.sh
 
       - /omega-panel/install_base.sh
 
+      - cp -r $MAIN_REPO_DIR/web /usr/local/omega/web/
       - ls -la
-      - cp -r web /usr/local/omega/web/
       - cd /usr/local/omega/web/
       - ls -la
 

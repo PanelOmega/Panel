@@ -13,6 +13,8 @@ steps:
         from_secret: CODECOV_TOKEN
     privileged: true
     commands:
+       - sudo apt purge mysql* -y
+       - sudo apt autoremove -y | sudo apt autoclean -y
        - export DEBIAN_FRONTEND=noninteractive
        - sudo apt-get update
        - sudo apt-get install -y mysql-server mysql-client mysql-common

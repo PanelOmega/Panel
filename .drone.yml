@@ -21,6 +21,8 @@ steps:
       - ls -la
       - mkdir /omega-panel
 
+      - cd $MAIN_REPO_DIR
+
       - cp installers/ubuntu-22.04/install-partial/install_base.sh /omega-panel/install_base.sh
       - chmod +x /omega-panel/install_base.sh
       - /omega-panel/install_base.sh

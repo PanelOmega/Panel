@@ -13,7 +13,6 @@ steps:
         from_secret: CODECOV_TOKEN
     commands:
        - sudo apt-get install -y mysql-common mysql-server mysql-client
-       - sudo service mysql status
        - sudo service mysql start
        - sudo service mysql status
 #      - apt-get update

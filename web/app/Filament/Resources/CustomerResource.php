@@ -28,37 +28,7 @@ class CustomerResource extends Resource
 
     public static function form(Form $form): Form
     {
-        $phyreServers = [];
-        $phyreServers[0] = 'Main Server';
-        $getPhyreServers = PhyreServer::all();
-        foreach ($getPhyreServers as $phyreServer) {
-            $phyreServers[$phyreServer->id] = $phyreServer->name;
-        }
-
-        $schema = [];
-        if ($getPhyreServers->count() > 0) {
-            $schema[] = Forms\Components\Select::make('phyre_server_id')
-                ->label('Server')
-                ->options($phyreServers)
-                ->default(0)
-                ->hidden(function($record) {
-                    if ($record) {
-                        return $record->phyre_server_id == 0;
-                    } else {
-                        return false;
-                    }
-                })
-                ->disabled(function($record) {
-                    if ($record) {
-                        return $record->id > 0;
-                    } else {
-                        return false;
-                    }
-                })
-                ->columnSpanFull();
-        }
-
-        $schemaAppend = [
+        $schema = [
 
             Forms\Components\TextInput::make('name')
                 ->prefixIcon('heroicon-s-user')
@@ -89,10 +59,7 @@ class CustomerResource extends Resource
 
         ];
 
-        $schema = array_merge($schema, $schemaAppend);
-
-        return $form
-            ->schema($schema);
+        return $form->schema($schema);
     }
 
     public static function table(Table $table): Table

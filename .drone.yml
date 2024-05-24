@@ -1,20 +1,5 @@
 ---
 kind: pipeline
-name: Ubuntu 22.04
-type: vm
-pool:
-  use: ubuntu-22.04
-
-clone:
-  disable: true
-
-steps:
-  - name: Install Panel
-    commands:
-      - wget https://raw.githubusercontent.com/PanelOmega/Panel/main/installers/install.sh && chmod +x install.sh && ./install.sh
-
----
-kind: pipeline
 name: Ubuntu 22.04 - Unit Test & Code Coverage
 steps:
   - name: run
@@ -81,3 +66,18 @@ steps:
       - apt install -yq pip
       - pip install codecov-cli
       - codecovcli --verbose upload-process -t $CODECOV_TOKEN
+
+---
+kind: pipeline
+name: e2e Test - Ubuntu 22.04
+type: vm
+pool:
+  use: ubuntu-22.04
+
+clone:
+  disable: true
+
+steps:
+  - name: Install Panel
+    commands:
+      - wget https://raw.githubusercontent.com/PanelOmega/Panel/main/installers/install.sh && chmod +x install.sh && ./install.sh

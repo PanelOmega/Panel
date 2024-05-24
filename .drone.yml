@@ -7,11 +7,11 @@ pool:
 
 steps:
   - name: run
-    privileged: true
     environment:
       DEBIAN_FRONTEND: noninteractive
       CODECOV_TOKEN:
         from_secret: CODECOV_TOKEN
+    privileged: true
     commands:
        - sudo apt-get update
        - sudo apt-get install -y mysql-server mysql-client mysql-common mysql-server-core-* mysql-client-core-*

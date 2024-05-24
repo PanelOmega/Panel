@@ -12,7 +12,7 @@ steps:
       CODECOV_TOKEN:
         from_secret: CODECOV_TOKEN
     commands:
-       - du -sh 
+       - df -a
        - sudo apt-get update
        - sudo apt-get install -f
        - sudo apt-get install -y mysql-server mysql-client mysql-common mysql-server-core-* mysql-client-core-*

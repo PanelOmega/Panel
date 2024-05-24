@@ -27,6 +27,7 @@ steps:
 
       - /omega-panel/install_base.sh
 
+      - ls -la
       - cp -r web /usr/local/omega/web/
       - cd /usr/local/omega/web/
       - ls -la

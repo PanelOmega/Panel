@@ -24,7 +24,7 @@ steps:
       - cp $MAIN_REPO_DIR/installers/ubuntu-20.04/install-partial/install_web.sh /omega-panel/install_web.sh
       - chmod +x /omega-panel/install_web.sh
 
-      - sh /omega-panel/install_base.sh
+      - /omega-panel/install_base.sh
 
 #      - cp -r $MAIN_REPO_DIR/web /usr/local/omega/web/
 #      - ls -la

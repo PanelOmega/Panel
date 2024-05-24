@@ -37,8 +37,8 @@ steps:
 
 #      - wget https://getcomposer.org/download/latest-stable/composer.phar
 #      - COMPOSER_ALLOW_SUPERUSER=1 omega-php composer.phar install
-      - service mysql status
-      - service mysql start
+#      - service mysql status
+#      - service mysql start
 
 
 #      - /omega-panel/install_web.sh

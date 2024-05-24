@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Unit\Virtualization;
+namespace Tests\Unit\Virtualization\Docker;
 
 use App\Virtualization\Docker\DockerClient;
 use Tests\TestCase;
@@ -30,8 +30,12 @@ class DockerClientTest extends TestCase
 
         $listContainers = $dockerClient->listContainers();
         $this->assertIsArray($listContainers['response']);
-        
+
         foreach ($listContainers['response'] as $container) {
+
+            $restartContainer = $dockerClient->restartContainer($container['Id']);
+            $this->assertEquals(204, $restartContainer['code']);
+            $this->assertEquals('success', $restartContainer['status']);
 
             $stopContainer = $dockerClient->stopContainer($container['Id']);
             $this->assertEquals(204, $stopContainer['code']);

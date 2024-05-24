@@ -12,7 +12,7 @@ class DockerClient
         $this->socket = curl_init();
     }
 
-    private function request($method, $endpoint, $data = null)
+    private function request($method, $endpoint, $data = null): array
     {
         $url = "http://localhost$endpoint";
 
@@ -47,27 +47,32 @@ class DockerClient
         ];
     }
 
-    public function listContainers()
+    public function listContainers(): array
     {
         return $this->request('GET', '/containers/json');
     }
 
-    public function createContainer($containerConfig)
+    public function createContainer($containerConfig): array
     {
         return $this->request('POST', '/containers/create', $containerConfig);
     }
 
-    public function startContainer($containerId, $containerConfig = null)
+    public function startContainer($containerId, $containerConfig = null): array
     {
        return $this->request('POST', "/containers/$containerId/start", $containerConfig);
     }
 
-    public function stopContainer($containerId)
+    public function stopContainer($containerId): array
     {
         return $this->request('POST', "/containers/$containerId/stop");
     }
 
-    public function deleteContainer($containerId)
+    public function restartContainer($containerId): array
+    {
+        return $this->request('POST', "/containers/$containerId/restart");
+    }
+
+    public function deleteContainer($containerId): array
     {
         return $this->request('DELETE', "/containers/$containerId");
     }

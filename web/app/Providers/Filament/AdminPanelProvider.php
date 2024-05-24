@@ -2,6 +2,7 @@
 
 namespace App\Providers\Filament;
 
+use App\Filament\OmegaTheme;
 use App\Filament\Widgets\CustomersCount;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\DisableBladeIconComponents;
@@ -29,19 +30,17 @@ class AdminPanelProvider extends PanelProvider
             ->id('admin')
             ->path('admin')
             ->login()
-            ->colors([
-                'primary' => Color::Amber,
-            ])
+            ->plugin(new OmegaTheme())
+            ->viteTheme('resources/css/filament/admin/theme.css')
+            ->colors(OmegaTheme::getColors())
+            ->icons(OmegaTheme::getIcons())
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\\Filament\\Resources')
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\\Filament\\Pages')
             ->pages([
                 Pages\Dashboard::class,
             ])
             ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\\Filament\\Widgets')
-//            ->widgets([
-//                CustomersCount::class
-//            ])
-              ->plugins([
+            ->plugins([
                 FilamentApexChartsPlugin::make(),
             ])
             ->middleware([

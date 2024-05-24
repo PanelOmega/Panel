@@ -4,7 +4,7 @@ namespace App\Server\Installers\Virtualization;
 
 class DockerInstaller
 {
-    public $logFilepath = '/var/log/omega/docker-installer.log';
+    public string $logPath = '/var/log/omega/docker-installer.log';
     public function run()
     {
 
@@ -33,16 +33,16 @@ class DockerInstaller
 
         file_put_contents('/tmp/docker-installer.sh', $shellFileContent);
 
-        if (!is_dir(dirname($this->logFilepath))) {
-            shell_exec('mkdir -p ' . dirname($this->logFilepath));
+        if (!is_dir(dirname($this->logPath))) {
+            shell_exec('mkdir -p ' . dirname($this->logPath));
         }
 
-        shell_exec('bash /tmp/docker-installer.sh >> ' . $this->logFilepath . ' &');
+        shell_exec('bash /tmp/docker-installer.sh >> ' . $this->logPath . ' &');
 
         return [
             'status' => 'Install job is running in the background.',
             'message' => 'Docker is being installed in the background. Please check the log file for more details.',
-            'logFilepath' => $this->logFilepath
+            'logFilepath' => $this->logPath
         ];
     }
 }

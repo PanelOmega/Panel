@@ -1,10 +1,12 @@
 ---
 kind: pipeline
 name: Ubuntu 22.04 - Unit Test & Code Coverage
+type: vm
+pool:
+  use: ubuntu-22.04
+
 steps:
   - name: run
-    image: ubuntu:22.04
-    platform: linux/amd64
     environment:
       DEBIAN_FRONTEND: noninteractive
       CODECOV_TOKEN:

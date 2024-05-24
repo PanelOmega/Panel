@@ -16,7 +16,7 @@ class ServerMemoryStatistic extends ApexChartWidget
      */
     protected static ?string $heading = 'RAM Usage';
 
-    protected static ?int $sort = 2;
+    protected static ?int $sort = 3;
 
     /**
      * Widget content height

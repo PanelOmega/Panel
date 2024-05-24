@@ -4,6 +4,8 @@ namespace App\Providers\Filament;
 
 use App\Filament\OmegaTheme;
 use App\Filament\Widgets\CustomersCount;
+use App\Filament\Widgets\ServerDiskUsageStatistic;
+use App\Filament\Widgets\ServerMemoryStatistic;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
@@ -30,10 +32,10 @@ class AdminPanelProvider extends PanelProvider
             ->id('admin')
             ->path('admin')
             ->login()
-            ->plugin(new OmegaTheme())
+          //  ->plugin(new OmegaTheme())
             ->viteTheme('resources/css/filament/admin/theme.css')
-            ->colors(OmegaTheme::getColors())
-            ->icons(OmegaTheme::getIcons())
+            //->colors(OmegaTheme::getColors())
+          //  ->icons(OmegaTheme::getIcons())
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\\Filament\\Resources')
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\\Filament\\Pages')
             ->pages([

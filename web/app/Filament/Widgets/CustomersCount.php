@@ -11,7 +11,7 @@ class CustomersCount extends BaseWidget
 {
     protected static bool $isLazy = false;
 
-    protected static ?int $sort = 4;
+    protected static ?int $sort = 1;
 
     protected function getStats(): array
     {

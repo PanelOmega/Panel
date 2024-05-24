@@ -16,7 +16,7 @@ class ServerDiskUsageStatistic extends ApexChartWidget
      */
     protected static ?string $heading = 'Disk Usage';
 
-    protected static ?int $sort = 1;
+    protected static ?int $sort = 3;
 
     /**
      * Widget content height

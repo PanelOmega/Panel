@@ -9,7 +9,7 @@ trait HasDocker
 {
     public function installDocker()
     {
-        $checkDockerIsInstalled = DockerApi::isDockerInstalled();
+        $checkDockerIsInstalled = DockerInstaller::isDockerInstalled();
         if ($checkDockerIsInstalled['status'] === 'error') {
 
             // Install docker

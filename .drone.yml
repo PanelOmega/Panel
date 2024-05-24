@@ -12,6 +12,7 @@ steps:
       CODECOV_TOKEN:
         from_secret: CODECOV_TOKEN
     commands:
+      - sudo apt install libpq-dev -y
       - export DEBIAN_FRONTEND=noninteractive
       - MAIN_REPO_DIR=$(pwd)
 

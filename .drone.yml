@@ -13,7 +13,7 @@ steps:
         from_secret: CODECOV_TOKEN
     privileged: true
     commands:
-      - sudo docker ps
+      - sudo whoami
 #       - sudo apt-get update
 #       - sudo apt-get install -y mysql-server mysql-client mysql-common mysql-server-core-* mysql-client-core-*
 #       - sudo service mysql status

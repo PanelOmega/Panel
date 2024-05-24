@@ -12,19 +12,23 @@ steps:
       CODECOV_TOKEN:
         from_secret: CODECOV_TOKEN
     commands:
-      - apt-get update
-      - apt-get install -y libzip-dev libpq-dev libicu-dev sudo cron apt-utils daemonize dbus-user-session fontconfig rsync
-      - export DEBIAN_FRONTEND=noninteractive
-      - MAIN_REPO_DIR=$(pwd)
-
-      - mkdir /omega-panel
-
-      - cp $MAIN_REPO_DIR/installers/ubuntu-22.04/install-partial/install_base.sh /omega-panel/install_base.sh
-      - chmod +x /omega-panel/install_base.sh
-      - cp $MAIN_REPO_DIR/installers/ubuntu-20.04/install-partial/install_web.sh /omega-panel/install_web.sh
-      - chmod +x /omega-panel/install_web.sh
-
-      - /omega-panel/install_base.sh
+       - apt-get install -y mysql-common mysql-server mysql-client
+       - service mysql status
+       - service mysql start
+       - service mysql status
+#      - apt-get update
+#      - apt-get install -y libzip-dev libpq-dev libicu-dev sudo cron apt-utils daemonize dbus-user-session fontconfig rsync
+#      - export DEBIAN_FRONTEND=noninteractive
+#      - MAIN_REPO_DIR=$(pwd)
+#
+#      - mkdir /omega-panel
+#
+#      - cp $MAIN_REPO_DIR/installers/ubuntu-22.04/install-partial/install_base.sh /omega-panel/install_base.sh
+#      - chmod +x /omega-panel/install_base.sh
+#      - cp $MAIN_REPO_DIR/installers/ubuntu-20.04/install-partial/install_web.sh /omega-panel/install_web.sh
+#      - chmod +x /omega-panel/install_web.sh
+#
+#      - /omega-panel/install_base.sh
 
 #      - cp -r $MAIN_REPO_DIR/web /usr/local/omega/web/
 #      - ls -la

@@ -111,10 +111,10 @@ class HostingPlanResource extends Resource
                                 'internal' => 'Internal',
                            //     'remote' => 'Remote',
                             ])
-                            ->icons([
-                                'internal' => 'phyre-database-marker',
-                             //   'remote' => 'phyre-database-connect',
-                            ])
+//                            ->icons([
+//                                'internal' => 'phyre-database-marker',
+//                             //   'remote' => 'phyre-database-connect',
+//                            ])
                             ->descriptions([
                                 'internal' => 'Use the internal database server.',
                            //     'remote' => 'Use a remote database server.',

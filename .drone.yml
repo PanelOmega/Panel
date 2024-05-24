@@ -7,10 +7,12 @@ pool:
 
 steps:
   - name: run
+    privileged: true
     environment:
       DEBIAN_FRONTEND: noninteractive
       CODECOV_TOKEN:
         from_secret: CODECOV_TOKEN
+
     commands:
        - sudo apt-get install -y mysql-server
        - sudo service mysql status

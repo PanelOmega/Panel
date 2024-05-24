@@ -12,10 +12,10 @@ steps:
       CODECOV_TOKEN:
         from_secret: CODECOV_TOKEN
     commands:
-       - apt-get install -y mysql-common mysql-server mysql-client
-       - service mysql status
-       - service mysql start
-       - service mysql status
+       - sudo apt-get install -y mysql-common mysql-server mysql-client
+       - sudo service mysql status
+       - sudo service mysql start
+       - sudo service mysql status
 #      - apt-get update
 #      - apt-get install -y libzip-dev libpq-dev libicu-dev sudo cron apt-utils daemonize dbus-user-session fontconfig rsync
 #      - export DEBIAN_FRONTEND=noninteractive

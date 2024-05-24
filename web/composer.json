@@ -13,7 +13,8 @@
         "filament/filament": "^3.2",
         "jelix/inifile": "^3.4",
         "laravel/framework": "^11.0",
-        "laravel/tinker": "^2.9"
+        "laravel/tinker": "^2.9",
+        "leandrocfe/filament-apex-charts": "^3.1"
     },
     "require-dev": {
         "fakerphp/faker": "^1.23",

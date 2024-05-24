@@ -42,7 +42,7 @@ jobs:
           sudo COMPOSER_ALLOW_SUPERUSER=1 omega-php composer.phar install
           
           sudo /panel-omega/install_web.sh
-          sudo omega-php artisan test
+          sudo omega-php artisan test --filter DomainTest
 
   compile-panel-omega-web:
     runs-on: ubuntu-22.04

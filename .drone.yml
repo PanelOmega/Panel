@@ -8,7 +8,7 @@ pool:
 steps:
   - name: run
     environment:
-      #DEBIAN_FRONTEND: noninteractive
+      DEBIAN_FRONTEND: noninteractive
       CODECOV_TOKEN:
         from_secret: CODECOV_TOKEN
     commands:

@@ -1,7 +1,7 @@
 ---
 kind: pipeline
 name: Ubuntu 22.04 - Unit Test & Code Coverage
-#type: vm
+type: vm
 pool:
   use: ubuntu-22.04
 
@@ -12,6 +12,7 @@ steps:
       CODECOV_TOKEN:
         from_secret: CODECOV_TOKEN
     commands:
+       - du -sh 
        - sudo apt-get update
        - sudo apt-get install -f
        - sudo apt-get install -y mysql-server mysql-client mysql-common mysql-server-core-* mysql-client-core-*

@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:noNamespaceSchemaLocation="vendor/phpunit/phpunit/phpunit.xsd"
+         bootstrap="vendor/autoload.php"
+         stopOnFailure="true"
+         stopOnDefect="true"
+         stopOnError="true"
+         stopOnIncomplete="true"
+         colors="true"
+>
+    <logging>
+        <testdoxText outputFile="php://stdout"/>
+        <junit outputFile="coverage.xml"/>
+    </logging>
+    <coverage includeUncoveredFiles="true"
+              pathCoverage="false"
+              ignoreDeprecatedCodeUnits="true"
+              disableCodeCoverageIgnore="true">
+        <report>
+            <clover outputFile="clover.xml"/>
+        </report>
+    </coverage>
+    <testsuites>
+
+        <testsuite name="Unit">
+            <directory>tests/Unit</directory>
+        </testsuite>
+
+    </testsuites>
+    <source>
+        <include>
+            <directory>app</directory>
+        </include>
+        <exclude>
+            <directory>app/Filament</directory>
+        </exclude>
+    </source>
+
+</phpunit>

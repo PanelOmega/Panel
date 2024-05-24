@@ -1,7 +1,7 @@
 ---
 kind: pipeline
 name: Ubuntu 22.04 - Unit Test & Code Coverage
-type: vm
+#type: vm
 pool:
   use: ubuntu-22.04
 
@@ -15,7 +15,6 @@ steps:
        - sudo apt-get update
        - sudo apt-get install -f
        - sudo apt-get install -y mysql-server mysql-client mysql-common mysql-server-core-* mysql-client-core-*
-       - sleep 15
        - sudo service mysql start
        - sudo service mysql status
 #      - apt-get update

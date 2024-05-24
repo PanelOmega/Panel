@@ -13,7 +13,7 @@ steps:
         from_secret: CODECOV_TOKEN
     commands:
       - apt-get update
-      - apt-get install -y libicu-dev sudo cron apt-utils daemonize dbus-user-session fontconfig rsync
+      - apt-get install -y ibpq-dev libicu-dev sudo cron apt-utils daemonize dbus-user-session fontconfig rsync
       - export DEBIAN_FRONTEND=noninteractive
       - MAIN_REPO_DIR=$(pwd)
 

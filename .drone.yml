@@ -15,7 +15,7 @@ steps:
     commands:
        - export DEBIAN_FRONTEND=noninteractive
        - sudo apt-get update
-       - sudo apt-get install -y mysql-server mysql-client mysql-common
+       - DEBIAN_FRONTEND=noninteractive sudo apt-get install -y mysql-server mysql-client mysql-common
        - sudo service mysql status
 #      - apt-get update
 #      - apt-get install -y libzip-dev libpq-dev libicu-dev sudo cron apt-utils daemonize dbus-user-session fontconfig rsync

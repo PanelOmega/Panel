@@ -7,7 +7,6 @@ pool:
 
 steps:
   - name: run
-    image: ubuntu:latest
     environment:
       DEBIAN_FRONTEND: noninteractive
       CODECOV_TOKEN:

@@ -33,12 +33,12 @@ class CreateAdminAccount extends Command
         $password = $this->secret('Enter password');
 
         try {
-            $findByEmail = \App\Models\User::where('email', $email)->first();
+            $findByEmail = \App\Models\Admin::where('email', $email)->first();
             if ($findByEmail) {
                 $this->error('Admin account with this email already exists');
                 return;
             }
-            $admin = new \App\Models\User();
+            $admin = new \App\Models\Admin();
             $admin->name = $name;
             $admin->email = $email;
             $admin->password = Hash::make($password);

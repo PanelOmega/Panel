@@ -18,6 +18,7 @@ $application->register('test')
 
         $serverNamePrefix = 'omega-test-commit-';
         $serverName = $serverNamePrefix . $input->getOption('GIT_COMMIT');
+        $serverName = substr($serverName, 0, 32);
 
         $hetznerClient = new \LKDev\HetznerCloud\HetznerAPIClient($input->getOption('HETZNER_API_KEY'));
 

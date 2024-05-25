@@ -18,6 +18,11 @@ jobs:
         run: |
           ls -la
           php -v
+          GITHUB_COMMIT_SHA=${{ github.sha }}
+          GITHUB_REPOSITORY=${{ github.repository }}
+        
+          echo $GITHUB_COMMIT_SHA
+          echo $GITHUB_REPOSITORY
 #
 #  panel-omega-unit-test:
 #    strategy:

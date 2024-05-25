@@ -1,0 +1,17 @@
+{
+    "name": "panel-omega/e2e-test",
+    "autoload": {
+        "psr-4": {
+            "PanelOmega\\E2eTest\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Bozhidar",
+            "email": "bobicloudvision@gmail.com"
+        }
+    ],
+    "require": {
+        "lkdevelopment/hetzner-cloud-php-sdk": "^2.7"
+    }
+}

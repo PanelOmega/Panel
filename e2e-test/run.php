@@ -76,17 +76,17 @@ $application->register('test')
         echo 'Server created!'.PHP_EOL;
         echo date('H:i:s').PHP_EOL;
 
-        sleep(30);
-        
+        sleep(40);
+
         $niceSSH = new NiceSSH();
         $niceSSH->ssh_host = $server->publicNet->ipv4->ip;
         $niceSSH->ssh_auth_user = 'root';
         $niceSSH->ssh_auth_pub = $publicSSHKeyFile;
         $niceSSH->ssh_auth_priv = $privateSSHKeyFile;
-        $niceSSH->connect();
+        $connect = $niceSSH->connect();
+        var_dump($connect);
 
         $output = $niceSSH->exec('ls -la');
-
         var_dump($output);
         die();
 

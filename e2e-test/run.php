@@ -8,13 +8,9 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use \Symfony\Component\Console\Input\InputOption;
 
-if (is_file(__DIR__.'/.env')) {
-    $dotenv = new \Symfony\Component\Dotenv\Dotenv();
-    $dotenv->load(__DIR__.'/.env');
-}
-
 $application = new Application();
 $application->register('test')
+    ->addOption('HETZNER_API_KEY', null, InputOption::VALUE_REQUIRED)
     ->addOption('GIT_REPO_URL', null, InputOption::VALUE_REQUIRED)
     ->addOption('GIT_BRANCH', null, InputOption::VALUE_REQUIRED)
     ->addOption('GIT_COMMIT', null, InputOption::VALUE_REQUIRED)
@@ -23,7 +19,7 @@ $application->register('test')
         $serverNamePrefix = 'omega-test-commit-';
         $serverName = $serverNamePrefix . $input->getOption('GIT_COMMIT');
 
-        $hetznerClient = new \LKDev\HetznerCloud\HetznerAPIClient($_ENV['HETZNER_API_KEY']);
+        $hetznerClient = new \LKDev\HetznerCloud\HetznerAPIClient($input->getOption('HETZNER_API_KEY'));
         foreach ($hetznerClient->servers()->all() as $server) {
             if (str_contains($server->name, $serverNamePrefix)) {
                 $getServer = $hetznerClient->servers()->get($server->id);

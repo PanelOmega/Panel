@@ -1,6 +1,7 @@
 <?php
 
 require_once __DIR__.'/vendor/autoload.php';
+require_once __DIR__.'/NiceSSH.php';
 
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Command\Command;
@@ -16,11 +17,32 @@ $application->register('test')
     ->addOption('GIT_COMMIT', null, InputOption::VALUE_REQUIRED)
     ->setCode(function (InputInterface $input, OutputInterface $output): int {
 
+        $gitCommit = $input->getOption('GIT_COMMIT');
+        $gitCommit = substr($gitCommit, 0, 32);
         $serverNamePrefix = 'omega-test-commit-';
-        $serverName = $serverNamePrefix . $input->getOption('GIT_COMMIT');
-        $serverName = substr($serverName, 0, 32);
+        $serverName = $serverNamePrefix . $gitCommit;
 
         $hetznerClient = new \LKDev\HetznerCloud\HetznerAPIClient($input->getOption('HETZNER_API_KEY'));
+
+        $hetznerSSHName = 'omega-e2e-test-' . $gitCommit;
+        $privateSSHKeyFile = 'omega-e2e-test-'.$gitCommit.'.key';
+        $publicSSHKeyFile = 'omega-e2e-test-'.$gitCommit.'.key.pub';
+
+
+        shell_exec('ssh-keygen -t rsa -b 4096 -f '.$privateSSHKeyFile.' -N ""');
+
+        $findSSHKey = false;
+        $getSSHKeys = $hetznerClient->sshKeys()->all();
+        if (!empty($getSSHKeys)) {
+            foreach ($getSSHKeys as $sshKey) {
+                if (str_contains($sshKey->name, 'omega-e2e-test-')) {
+                    $sshKey->delete();
+                }
+            }
+        }
+        if (!$findSSHKey) {
+            $hetznerClient->sshKeys()->create($hetznerSSHName, file_get_contents($publicSSHKeyFile));
+        }
 
         foreach ($hetznerClient->servers()->all() as $server) {
             if (str_contains($server->name, $serverNamePrefix)) {
@@ -51,21 +73,22 @@ $application->register('test')
             $nextAction->waitUntilCompleted();
         }
 
-        $rootPassword = $apiResponse->getResponsePart('root_password');
-
         echo 'Server created!'.PHP_EOL;
         echo date('H:i:s').PHP_EOL;
 
-        sleep(40);
+        sleep(30);
+        
+        $niceSSH = new NiceSSH();
+        $niceSSH->ssh_host = $server->publicNet->ipv4->ip;
+        $niceSSH->ssh_auth_user = 'root';
+        $niceSSH->ssh_auth_pub = $publicSSHKeyFile;
+        $niceSSH->ssh_auth_priv = $privateSSHKeyFile;
+        $niceSSH->connect();
 
-        $sshCommands = [];
-        $sshCommands[] = 'ssh root@'.$server->publicNet->ipv4->ip. ' ' . $rootPassword;
+        $output = $niceSSH->exec('ls -la');
 
-        $sshCommandsFile = __DIR__.'/ssh-commands-exec.sh';
-        file_put_contents($sshCommandsFile, implode(PHP_EOL, $sshCommands));
-        shell_exec('chmod +x '.$sshCommandsFile);
-
-        $output->writeln('SSH commands file created: '.$sshCommandsFile);
+        var_dump($output);
+        die();
 
         return Command::FAILURE;
     });

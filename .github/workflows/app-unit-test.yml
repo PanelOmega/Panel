@@ -13,7 +13,14 @@ jobs:
         with:
           repository: ${{ github.repository }}
           ref: ${{ github.sha }}
-
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          extensions: oci8
+        env:
+          fail-fast: true
+          
       - name: Create Server & Run E2E Test
         run: |
           GITHUB_COMMIT_SHA=${{ github.sha }}

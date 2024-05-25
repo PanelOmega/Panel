@@ -20,6 +20,7 @@ $application->register('test')
         $serverName = $serverNamePrefix . $input->getOption('GIT_COMMIT');
 
         $hetznerClient = new \LKDev\HetznerCloud\HetznerAPIClient($input->getOption('HETZNER_API_KEY'));
+
         foreach ($hetznerClient->servers()->all() as $server) {
             if (str_contains($server->name, $serverNamePrefix)) {
                 $getServer = $hetznerClient->servers()->get($server->id);
@@ -37,18 +38,22 @@ $application->register('test')
         $server = $apiResponse->getResponsePart('server');
         $action = $apiResponse->getResponsePart('action');
         $nextActions = $apiResponse->getResponsePart('next_actions');
+
         echo 'Server: '.$server->name.PHP_EOL;
         echo 'IP: '.$server->publicNet->ipv4->ip.PHP_EOL;
         echo 'Password: '.$apiResponse->getResponsePart('root_password').PHP_EOL;
         echo 'Now we wait on the success of the server creation!'.PHP_EOL;
         echo date('H:i:s').PHP_EOL;
+
         $action->waitUntilCompleted();
         foreach ($nextActions as $nextAction) {
             $nextAction->waitUntilCompleted();
         }
+
         echo date('H:i:s').PHP_EOL;
         echo 'Done!';
 
         return Command::SUCCESS;
     });
+
 $application->run();

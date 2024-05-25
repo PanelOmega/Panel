@@ -29,7 +29,7 @@ jobs:
           cd e2e-test
           sudo wget https://getcomposer.org/download/latest-stable/composer.phar
           sudo COMPOSER_ALLOW_SUPERUSER=1 php composer.phar install
-          sudo HETZNER_API_KEY=${{ secrets.HETZNER_API_KEY }} php run.php test --GIT_REPO_URL=$GITHUB_REPOSITORY --GIT_BRANCH=$GITHUB_BRANCH --GIT_COMMIT=$GITHUB_COMMIT_SHA
+          sudo php run.php test --HETZNER_API_KEY=${{ secrets.HETZNER_API_KEY }} --GIT_REPO_URL=$GITHUB_REPOSITORY --GIT_BRANCH=$GITHUB_BRANCH --GIT_COMMIT=$GITHUB_COMMIT_SHA
 #
 #  panel-omega-unit-test:
 #    strategy:

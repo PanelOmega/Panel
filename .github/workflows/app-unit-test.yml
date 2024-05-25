@@ -23,7 +23,8 @@ jobs:
 
       - name: Create Server & Run E2E Test
         run: |
-          pecl install ssh2
+          sudo pecl channel-update pecl.php.net
+          sudo pecl install ssh2
           GITHUB_COMMIT_SHA=${{ github.sha }}
           GITHUB_REPOSITORY=${{ github.repository }}
           GITHUB_BRANCH=${{ github.ref }}

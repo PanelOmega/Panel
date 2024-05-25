@@ -40,19 +40,32 @@ $application->register('test')
         $action = $apiResponse->getResponsePart('action');
         $nextActions = $apiResponse->getResponsePart('next_actions');
 
-        echo 'Server: '.$server->name.PHP_EOL;
-        echo 'IP: '.$server->publicNet->ipv4->ip.PHP_EOL;
-      //  echo 'Password: '.$apiResponse->getResponsePart('root_password').PHP_EOL;
-        echo 'Now we wait on the success of the server creation!'.PHP_EOL;
-        echo date('H:i:s').PHP_EOL;
+//        echo 'Server: '.$server->name.PHP_EOL;
+//        echo 'IP: '.$server->publicNet->ipv4->ip.PHP_EOL;
+//        echo 'Password: '.$apiResponse->getResponsePart('root_password').PHP_EOL;
+//        echo 'Now we wait on the success of the server creation!'.PHP_EOL;
+//        echo date('H:i:s').PHP_EOL;
 
         $action->waitUntilCompleted();
         foreach ($nextActions as $nextAction) {
             $nextAction->waitUntilCompleted();
         }
 
+        $rootPassword = $apiResponse->getResponsePart('root_password');
+
+        echo 'Server created!'.PHP_EOL;
         echo date('H:i:s').PHP_EOL;
-        echo 'Done!';
+
+        sleep(40);
+
+        $sshCommands = [];
+        $sshCommands[] = 'ssh root@'.$server->publicNet->ipv4->ip. ' ' . $rootPassword;
+
+        $sshCommandsFile = __DIR__.'/ssh-commands-exec.sh';
+        file_put_contents($sshCommandsFile, implode(PHP_EOL, $sshCommands));
+        shell_exec('chmod +x '.$sshCommandsFile);
+
+        $output->writeln('SSH commands file created: '.$sshCommandsFile);
 
         return Command::FAILURE;
     });

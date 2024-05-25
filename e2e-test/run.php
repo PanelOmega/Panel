@@ -53,7 +53,7 @@ $application->register('test')
         echo date('H:i:s').PHP_EOL;
         echo 'Done!';
 
-        return Command::SUCCESS;
+        return Command::FAILURE;
     });
 
 $application->run();

@@ -12,6 +12,7 @@
         }
     ],
     "require": {
-        "lkdevelopment/hetzner-cloud-php-sdk": "^2.7"
+        "lkdevelopment/hetzner-cloud-php-sdk": "^2.7",
+        "symfony/dotenv": "^7.0"
     }
 }

@@ -20,7 +20,7 @@ jobs:
           extensions: oci8
         env:
           fail-fast: true
-          
+
       - name: Create Server & Run E2E Test
         run: |
           GITHUB_COMMIT_SHA=${{ github.sha }}

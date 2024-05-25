@@ -2,7 +2,10 @@
 
 require_once __DIR__.'/vendor/autoload.php';
 
-$apiKey = env('HETZNER_API_KEY');
+$dotenv = new \Symfony\Component\Dotenv\Dotenv();
+$dotenv->load(__DIR__.'/.env');
+
+$apiKey = $_ENV['HETZNER_API_KEY'];
 
 $serverNamePrefix = 'omega-test-commit-';
 $serverName = $serverNamePrefix . rand(1000, 9999);

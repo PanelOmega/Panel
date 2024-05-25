@@ -8,8 +8,10 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use \Symfony\Component\Console\Input\InputOption;
 
-$dotenv = new \Symfony\Component\Dotenv\Dotenv();
-$dotenv->load(__DIR__.'/.env');
+if (is_file(__DIR__.'/.env')) {
+    $dotenv = new \Symfony\Component\Dotenv\Dotenv();
+    $dotenv->load(__DIR__.'/.env');
+}
 
 $application = new Application();
 $application->register('test')

@@ -82,7 +82,7 @@ $application->register('test')
             ->onPort(22)
             ->as('root')
             ->withPassword($apiResponse->getResponsePart('root_password'))
-           ->withPrivateKey($privateSSHKeyFile)
+            ->withKeyPair($publicSSHKeyFile, $privateSSHKeyFile)
            ->timeout(10)
            ->connect();
 

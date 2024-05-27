@@ -4,8 +4,53 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "a3b0758f7943447aeeb37dbb648d0b40",
+    "content-hash": "c12c545fc02af93f6e113dbf69615bea",
     "packages": [
+        {
+            "name": "divineomega/php-ssh-connection",
+            "version": "v1.3.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/DivineOmega/php-ssh-connection.git",
+                "reference": "1a19ccb6afd6a789f5f9e3a53b5ca1059b2ed366"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/DivineOmega/php-ssh-connection/zipball/1a19ccb6afd6a789f5f9e3a53b5ca1059b2ed366",
+                "reference": "1a19ccb6afd6a789f5f9e3a53b5ca1059b2ed366",
+                "shasum": ""
+            },
+            "require": {
+                "ext-ssh2": "*",
+                "php": ">=7.1"
+            },
+            "require-dev": {
+                "php-coveralls/php-coveralls": "^2.0",
+                "phpunit/phpunit": "^7.0||^8.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "DivineOmega\\SSHConnection\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "LGPL-3.0-only"
+            ],
+            "authors": [
+                {
+                    "name": "Jordan Hall",
+                    "email": "jordan@hall05.co.uk"
+                }
+            ],
+            "description": "Provides an elegant syntax to connect to SSH servers and execute commands.",
+            "support": {
+                "issues": "https://github.com/DivineOmega/php-ssh-connection/issues",
+                "source": "https://github.com/DivineOmega/php-ssh-connection/tree/master"
+            },
+            "time": "2019-08-07T21:16:13+00:00"
+        },
         {
             "name": "guzzlehttp/guzzle",
             "version": "7.8.1",

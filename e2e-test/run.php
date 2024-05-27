@@ -1,7 +1,6 @@
 <?php
 
 require_once __DIR__.'/vendor/autoload.php';
-require_once __DIR__.'/NiceSSH.php';
 
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Command\Command;
@@ -76,18 +75,23 @@ $application->register('test')
         echo 'Server created!'.PHP_EOL;
         echo date('H:i:s').PHP_EOL;
 
-        sleep(40);
+        sleep(30);
 
-        $niceSSH = new NiceSSH();
-        $niceSSH->ssh_host = $server->publicNet->ipv4->ip;
-        $niceSSH->ssh_auth_user = 'root';
-        $niceSSH->ssh_auth_pub = $publicSSHKeyFile;
-        $niceSSH->ssh_auth_priv = $privateSSHKeyFile;
-        $connect = $niceSSH->connect();
-        var_dump($connect);
+        $connection = (new \DivineOmega\SSHConnection\SSHConnection())
+            ->to($server->publicNet->ipv4->ip)
+            ->onPort(22)
+            ->as('root')
+            ->withPassword($apiResponse->getResponsePart('root_password'))
+           ->withPrivateKey($privateSSHKeyFile)
+           ->timeout(10)
+           ->connect();
 
-        $output = $niceSSH->exec('ls -la');
-        var_dump($output);
+        $command = $connection->run('echo "Hello world!"');
+
+        $command->getOutput();  // 'Hello World'
+        $command->getError();
+
+
         die();
 
         return Command::FAILURE;

@@ -83,8 +83,7 @@ $application->register('test')
             ->as('root')
             ->withPassword($apiResponse->getResponsePart('root_password'))
             ->withKeyPair($publicSSHKeyFile, $privateSSHKeyFile)
-           ->timeout(10)
-           ->connect();
+            ->connect();
 
         $command = $connection->run('echo "Hello world!"');
 

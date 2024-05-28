@@ -2,6 +2,10 @@
 
 require_once __DIR__.'/vendor/autoload.php';
 
+use phpseclib3\Net\SSH2;
+use phpseclib3\Crypt\PublicKeyLoader;
+use phpseclib3\Crypt\RSA;
+
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -9,6 +13,8 @@ use Symfony\Component\Console\Output\OutputInterface;
 use \Symfony\Component\Console\Input\InputOption;
 
 $application = new Application();
+$application->setName('PhyrePanel E2E Test');
+$application->setVersion('1.0.0');
 $application->register('test')
     ->addOption('HETZNER_API_KEY', null, InputOption::VALUE_REQUIRED)
     ->addOption('GIT_REPO_URL', null, InputOption::VALUE_REQUIRED)
@@ -25,10 +31,14 @@ $application->register('test')
 
         $hetznerSSHName = 'omega-e2e-test-' . $gitCommit;
         $privateSSHKeyFile = 'omega-e2e-test-'.$gitCommit.'.key';
-        $publicSSHKeyFile = 'omega-e2e-test-'.$gitCommit.'.key.pub';
+        $publicSSHKeyFile = 'omega-e2e-test-'.$gitCommit.'.pub';
 
+        $privateKeyGenerator = RSA::createKey(4096);
+        $privateKeyContent = $privateKeyGenerator->toString('openssh');
+        $publicKeyContent = $privateKeyGenerator->getPublicKey()->toString('openssh');
 
-        shell_exec('ssh-keygen -t rsa -b 4096 -f '.$privateSSHKeyFile.' -N ""');
+        file_put_contents(__DIR__.'/'.$privateSSHKeyFile, $privateKeyContent);
+        file_put_contents(__DIR__.'/'.$publicSSHKeyFile, $publicKeyContent);
 
         $findSSHKey = false;
         $getSSHKeys = $hetznerClient->sshKeys()->all();
@@ -52,20 +62,20 @@ $application->register('test')
             }
             echo 'ID: '.$server->id.' Name:'.$server->name.' Status: '.$server->status.PHP_EOL;
         }
-
+//
         $serverType = $hetznerClient->serverTypes()->get(1);
         $location = $hetznerClient->locations()->getByName('fsn1');
         $image = $hetznerClient->images()->getByName('ubuntu-22.04');
-        $apiResponse = $hetznerClient->servers()->createInLocation($serverName, $serverType, $image, $location);
+        $apiResponse = $hetznerClient->servers()->createInLocation($serverName, $serverType, $image, $location, [$hetznerSSHName]);
         $server = $apiResponse->getResponsePart('server');
         $action = $apiResponse->getResponsePart('action');
         $nextActions = $apiResponse->getResponsePart('next_actions');
 
-//        echo 'Server: '.$server->name.PHP_EOL;
-//        echo 'IP: '.$server->publicNet->ipv4->ip.PHP_EOL;
-//        echo 'Password: '.$apiResponse->getResponsePart('root_password').PHP_EOL;
-//        echo 'Now we wait on the success of the server creation!'.PHP_EOL;
-//        echo date('H:i:s').PHP_EOL;
+        echo 'Server: '.$server->name.PHP_EOL;
+        echo 'IP: '.$server->publicNet->ipv4->ip.PHP_EOL;
+        echo 'Password: '.$apiResponse->getResponsePart('root_password').PHP_EOL;
+        echo 'Now we wait on the success of the server creation!'.PHP_EOL;
+        echo date('H:i:s').PHP_EOL;
 
         $action->waitUntilCompleted();
         foreach ($nextActions as $nextAction) {
@@ -77,23 +87,21 @@ $application->register('test')
 
         sleep(30);
 
-        $connection = (new \DivineOmega\SSHConnection\SSHConnection())
-            ->to($server->publicNet->ipv4->ip)
-            ->onPort(22)
-            ->as('root')
-            ->withPassword($apiResponse->getResponsePart('root_password'))
-            ->withKeyPair($publicSSHKeyFile, $privateSSHKeyFile)
-            ->connect();
-
-        $command = $connection->run('echo "Hello world!"');
-
-        $command->getOutput();  // 'Hello World'
-        $command->getError();
+        $serverIp = $server->publicNet->ipv4->ip;
+        // $serverPassword = $apiResponse->getResponsePart('root_password');
 
 
-        die();
+        $ssh = new SSH2($serverIp);
+        $sshKey = PublicKeyLoader::load(file_get_contents($privateSSHKeyFile));
 
-        return Command::FAILURE;
+        if (!$ssh->login('root', $sshKey)) {
+            echo 'Login Failed';
+            return Command::FAILURE;
+        }
+
+        echo $ssh->exec('ls -la');
+
+        return Command::SUCCESS;
     });
 
 $application->run();

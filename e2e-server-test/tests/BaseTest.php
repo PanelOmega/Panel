@@ -33,4 +33,15 @@ class BaseTest
     {
         return $this->sshConnection->exec($command);
     }
+
+    public function sshWrite($command)
+    {
+        $this->sshConnection->write($command . PHP_EOL);
+    }
+
+    public function sshRead()
+    {
+        return $this->sshConnection->read();
+    }
+
 }

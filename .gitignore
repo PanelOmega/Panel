@@ -1,2 +1,2 @@
-/e2e-test/vendor/
-/e2e-test/.env
+/e2e-server-test/vendor/
+/e2e-server-test/.env

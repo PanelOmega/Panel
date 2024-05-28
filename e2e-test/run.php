@@ -1,9 +1,8 @@
 <?php
 
 require_once __DIR__.'/vendor/autoload.php';
+require_once __DIR__.'/tests/CommitTest.php';
 
-use phpseclib3\Net\SSH2;
-use phpseclib3\Crypt\PublicKeyLoader;
 use phpseclib3\Crypt\RSA;
 
 use Symfony\Component\Console\Application;
@@ -27,11 +26,24 @@ $application->register('test')
         $serverNamePrefix = 'omega-test-commit-';
         $serverName = $serverNamePrefix . $gitCommit;
 
-        $hetznerClient = new \LKDev\HetznerCloud\HetznerAPIClient($input->getOption('HETZNER_API_KEY'));
-
         $hetznerSSHName = 'omega-e2e-test-' . $gitCommit;
         $privateSSHKeyFile = 'omega-e2e-test-'.$gitCommit.'.key';
         $publicSSHKeyFile = 'omega-e2e-test-'.$gitCommit.'.pub';
+
+
+        $commitTest = new CommitTest([
+            'gitRepoUrl' => $input->getOption('GIT_REPO_URL'),
+            'gitBranch' => $input->getOption('GIT_BRANCH'),
+            'gitCommit' => $gitCommit,
+            'serverIp' => '78.46.217.196',
+            'privateSSHKeyFile' => __DIR__.'/'.$privateSSHKeyFile,
+        ]);
+        $commitTest->runTest();
+
+        return Command::SUCCESS;
+
+        $hetznerClient = new \LKDev\HetznerCloud\HetznerAPIClient($input->getOption('HETZNER_API_KEY'));
+
 
         $privateKeyGenerator = RSA::createKey(4096);
         $privateKeyContent = $privateKeyGenerator->toString('openssh');
@@ -90,16 +102,14 @@ $application->register('test')
         $serverIp = $server->publicNet->ipv4->ip;
         // $serverPassword = $apiResponse->getResponsePart('root_password');
 
-
-        $ssh = new SSH2($serverIp);
-        $sshKey = PublicKeyLoader::load(file_get_contents($privateSSHKeyFile));
-
-        if (!$ssh->login('root', $sshKey)) {
-            echo 'Login Failed';
-            return Command::FAILURE;
-        }
-
-        echo $ssh->exec('ls -la');
+        $commitTest = new CommitTest([
+            'gitRepoUrl' => $input->getOption('GIT_REPO_URL'),
+            'gitBranch' => $input->getOption('GIT_BRANCH'),
+            'gitCommit' => $gitCommit,
+            'serverIp' => $serverIp,
+            'privateSSHKeyFile' => __DIR__.'/'.$privateSSHKeyFile,
+        ]);
+        $status = $commitTest->runTest();
 
         return Command::SUCCESS;
     });

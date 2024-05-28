@@ -1,6 +1,7 @@
 <?php
 use phpseclib3\Net\SSH2;
 use phpseclib3\Crypt\PublicKeyLoader;
+use phpseclib3\File\ANSI;
 
 class BaseTest
 {
@@ -9,10 +10,17 @@ class BaseTest
 
     private $sshConnection;
 
+    protected $gitBranch;
+    protected $gitRepoUrl;
+    protected $gitCommit;
+
     public function __construct($params)
     {
         $this->serverIp = $params['serverIp'];
         $this->privateSSHKeyFile = $params['privateSSHKeyFile'];
+        $this->gitBranch = $params['gitBranch'];
+        $this->gitRepoUrl = $params['gitRepoUrl'];
+        $this->gitCommit = $params['gitCommit'];
 
         $this->sshConnection = new SSH2($this->serverIp);
         $sshKey = PublicKeyLoader::load(file_get_contents($this->privateSSHKeyFile));
@@ -21,10 +29,8 @@ class BaseTest
             throw new Exception('Login failed');
         }
     }
-
-    public function exec($command)
+    public function sshExec($command)
     {
         return $this->sshConnection->exec($command);
     }
-
 }

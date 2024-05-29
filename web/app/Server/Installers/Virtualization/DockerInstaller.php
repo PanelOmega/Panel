@@ -7,7 +7,6 @@ class DockerInstaller
     public string $logPath = '/var/log/omega/docker-installer.log';
     public function run()
     {
-
         $commands = [];
         $commands[] = 'sudo apt-get update -y';
         $commands[] = 'sudo apt-get install ca-certificates curl -y';
@@ -42,7 +41,7 @@ class DockerInstaller
         return [
             'status' => 'Install job is running in the background.',
             'message' => 'Docker is being installed in the background. Please check the log file for more details.',
-            'logFilepath' => $this->logPath
+            'logPath' => $this->logPath
         ];
     }
 

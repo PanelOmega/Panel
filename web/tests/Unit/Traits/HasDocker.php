@@ -30,6 +30,7 @@ trait HasDocker
                 }
                 sleep(1);
             }
+
             $this->assertTrue($isDockerInstalled);
 
         }

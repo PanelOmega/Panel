@@ -35,12 +35,15 @@ $application->register('test')
             'gitRepoUrl' => $input->getOption('GIT_REPO_URL'),
             'gitBranch' => $input->getOption('GIT_BRANCH'),
             'gitCommit' => $gitCommit,
-            'serverIp' => '49.13.209.144',
+            'serverIp' => '78.46.217.196',
             'privateSSHKeyFile' => __DIR__.'/'.$privateSSHKeyFile,
         ]);
         $commitTest->runTest();
 
         return Command::SUCCESS;
+
+
+
 
         $hetznerClient = new \LKDev\HetznerCloud\HetznerAPIClient($input->getOption('HETZNER_API_KEY'));
 

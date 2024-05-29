@@ -6,17 +6,17 @@ class CommitTest extends BaseTest
     public function runTest()
     {
 //        echo $this->sshRunCommand('rm -rf Panel');
-//        echo $this->sshRunCommand('git clone https://github.com/PanelOmega/Panel.git');
+        echo $this->sshRunCommand('git clone https://github.com/PanelOmega/Panel.git');
 //
         echo $this->sshRunCommand('cd Panel');
-//        echo $this->sshRunCommand('ls -la');
-//        echo $this->sshRunCommand('git checkout '.$this->gitBranch);
-//
-//        echo $this->sshRunCommand('chmod +x installers/ubuntu-22.04/install-partial/install_base.sh');
-//        echo $this->sshRunCommand('chmod +x installers/ubuntu-20.04/install-partial/install_web.sh');
+        echo $this->sshRunCommand('ls -la');
+        echo $this->sshRunCommand('git checkout '.$this->gitBranch);
 
-         echo $this->sshRunCommand('bash ./installers/ubuntu-22.04/install-partial/install_base.sh');
-         echo $this->sshRunCommand('omega-php -v');
+        echo $this->sshRunCommand('chmod +x installers/ubuntu-22.04/install-partial/install_base.sh');
+        echo $this->sshRunCommand('chmod +x installers/ubuntu-20.04/install-partial/install_web.sh');
+
+        echo $this->sshRunCommand('bash ./installers/ubuntu-22.04/install-partial/install_base.sh');
+//         echo $this->sshRunCommand('service omega status');
 
 
 //        echo $this->sshRunCommand('mkdir -p /usr/local/omega/web/');

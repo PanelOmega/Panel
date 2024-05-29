@@ -43,8 +43,14 @@ class BaseTest
 
     public function sshRunCommand($command)
     {
+        $this->sshTimeout(10000);
         $this->sshWrite($command);
         return $this->sshRead();
+    }
+
+    private function sshTimeout($timeout): void
+    {
+        $this->sshConnection->setTimeout($timeout);
     }
 
     private function sshWrite($command)

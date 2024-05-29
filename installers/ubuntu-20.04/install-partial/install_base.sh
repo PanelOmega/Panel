@@ -2,7 +2,7 @@
 
 INSTALL_DIR="/omega/install"
 
-apt-get update && apt-get install ca-certificates
+apt-get update && apt-get install ca-certificates -y
 
 mkdir -p $INSTALL_DIR
 

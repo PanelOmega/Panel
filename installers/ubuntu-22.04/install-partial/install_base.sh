@@ -2,7 +2,7 @@
 
 INSTALL_DIR="/omega/install"
 
-apt-get update && apt-get install ca-certificates
+apt-get update && apt-get install ca-certificates -y
 
 mkdir -p $INSTALL_DIR
 
@@ -57,3 +57,4 @@ service omega start
 OMEGA_PHP=/usr/local/omega/php/bin/php
 
 ln -s $OMEGA_PHP /usr/bin/omega-php
+

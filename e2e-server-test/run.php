@@ -31,17 +31,20 @@ $application->register('test')
         $publicSSHKeyFile = 'omega-e2e-test-'.$gitCommit.'.pub';
 
 
-        $commitTest = new CommitTest([
-            'gitRepoUrl' => $input->getOption('GIT_REPO_URL'),
-            'gitBranch' => $input->getOption('GIT_BRANCH'),
-            'gitCommit' => $gitCommit,
-            'serverIp' => '49.13.209.144',
-            'privateSSHKeyFile' => __DIR__.'/'.$privateSSHKeyFile,
-        ]);
-        $commitTest->runTest();
-
-        return Command::SUCCESS;
-
+//        $commitTest = new CommitTest([
+//            'gitRepoUrl' => $input->getOption('GIT_REPO_URL'),
+//            'gitBranch' => $input->getOption('GIT_BRANCH'),
+//            'gitCommit' => $gitCommit,
+//            'serverIp' => '49.13.209.144',
+//            'privateSSHKeyFile' => __DIR__.'/'.$privateSSHKeyFile,
+//        ]);
+//        $testStatus = $commitTest->runTest();
+//        if (isset($testStatus['testPassed']) && $testStatus['testPassed'] === true) {
+//            return Command::SUCCESS;
+//        }
+//
+//        return Command::FAILURE;
+//
 
 
         $hetznerClient = new \LKDev\HetznerCloud\HetznerAPIClient($input->getOption('HETZNER_API_KEY'));
@@ -109,8 +112,11 @@ $application->register('test')
             'privateSSHKeyFile' => __DIR__.'/'.$privateSSHKeyFile,
         ]);
         $status = $commitTest->runTest();
+        if (isset($testStatus['testPassed']) && $testStatus['testPassed'] === true) {
+            return Command::SUCCESS;
+        }
 
-        return Command::SUCCESS;
+        return Command::FAILURE;
     });
 
 $application->run();

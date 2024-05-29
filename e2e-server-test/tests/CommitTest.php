@@ -21,6 +21,20 @@ class CommitTest extends BaseTest
 //
 //        $this->sshExec('./Panel/installers/ubuntu-20.04/install-partial/install_web.sh', true, 8000);
 
+          $testPassed = true;
+          $this->sshExec('cd /usr/local/omega/web/ && omega-php artisan test', function ($data) {
+                echo "\033[0;34m " . $data . " \033[0m";
+                if (str_contains($data, 'FAIL  Tests')) {
+                    $testPassed = false;
+                }
+                if (str_contains($data, 'FAILED  Tests')) {
+                    $testPassed = false;
+                }
+          }, 8000);
+
+        return [
+            'testPassed' => $testPassed
+        ];
     }
 
 }

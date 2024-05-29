@@ -14,8 +14,7 @@ class DockerClientTest extends TestCase
      */
     public function testDockerCreation(): void
     {
-        $this->assertTrue(true);
-        return;
+  
         $this->installDocker();
 
         $dockerClient = new DockerClient();

@@ -5,7 +5,7 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  panel-omega-e2e-test:
+  panel-omega-e2e-server-test:
     runs-on: ubuntu-22.04
     steps:
       - name: Checkout Repository
@@ -19,7 +19,7 @@ jobs:
           php-version: '8.2'
           extensions: oci8, ssh2
 
-      - name: Create Server & Run E2E Test
+      - name: Create Server & Run E2E Server Test
         run: |
           sudo apt install php8.2-ssh2 -y
           GITHUB_COMMIT_SHA=${{ github.sha }}

@@ -22,7 +22,7 @@ DEPENDENCIES_LIST=(
     "lsb-release"
     "gnupg2"
     "ca-certificates"
-   "apt-transport-https"
+    "apt-transport-https"
     "software-properties-common"
     "supervisor"
     "libonig-dev"

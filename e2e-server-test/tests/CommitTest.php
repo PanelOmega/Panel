@@ -5,35 +5,21 @@ class CommitTest extends BaseTest
 {
     public function runTest()
     {
-//        echo $this->sshRunCommand('rm -rf Panel');
-//        echo $this->sshRunCommand('git clone https://github.com/PanelOmega/Panel.git');
+//        $this->sshExec('git clone https://github.com/PanelOmega/Panel.git', true, 8000);
 //
-        echo $this->sshRunCommand('cd Panel');
-//        echo $this->sshRunCommand('ls -la');
-//        echo $this->sshRunCommand('git checkout '.$this->gitBranch);
+//        $this->sshExec('cd Panel && git checkout '.$this->gitBranch, true);
 //
-//        echo $this->sshRunCommand('chmod +x installers/ubuntu-22.04/install-partial/install_base.sh');
-//        echo $this->sshRunCommand('chmod +x installers/ubuntu-20.04/install-partial/install_web.sh');
-
-
-        $this->sshExec('./Panel/installers/ubuntu-22.04/install-partial/install_base.sh', function($data) {
-            dump($data);
-        });
-
-//         echo $this->sshRunCommand('service omega status');
-
-
-//        echo $this->sshRunCommand('mkdir -p /usr/local/omega/web/');
-//        echo $this->sshRunCommand('cp -r web /usr/local/omega/web/');
-//        echo $this->sshRunCommand('cd /usr/local/omega/web/');
-//        echo $this->sshRunCommand('ls -la');
+//        $this->sshExec('chmod +x Panel/installers/ubuntu-22.04/install-partial/install_base.sh');
+//        $this->sshExec('chmod +x Panel/installers/ubuntu-20.04/install-partial/install_web.sh');
 //
-//        echo $this->sshRunCommand('wget https://getcomposer.org/download/latest-stable/composer.phar');
-//        echo $this->sshRunCommand('COMPOSER_ALLOW_SUPERUSER=1 omega-php composer.phar install');
+//        $this->sshExec('./Panel/installers/ubuntu-22.04/install-partial/install_base.sh', true, 8000);
 //
-//        echo $this->sshRunCommand('/omega-panel/install_web.sh');
+//        $this->sshExec('cp -r Panel/web/ /usr/local/omega/web/',true);
 //
-
+//        $this->sshExec('cd /usr/local/omega/web/ && wget https://getcomposer.org/download/latest-stable/composer.phar', true);
+//        $this->sshExec('cd /usr/local/omega/web/ && COMPOSER_ALLOW_SUPERUSER=1 omega-php composer.phar install', true, 8000);
+//
+//        $this->sshExec('./Panel/installers/ubuntu-20.04/install-partial/install_web.sh', true, 8000);
 
     }
 

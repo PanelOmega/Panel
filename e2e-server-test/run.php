@@ -35,13 +35,12 @@ $application->register('test')
             'gitRepoUrl' => $input->getOption('GIT_REPO_URL'),
             'gitBranch' => $input->getOption('GIT_BRANCH'),
             'gitCommit' => $gitCommit,
-            'serverIp' => '78.46.217.196',
+            'serverIp' => '49.13.209.144',
             'privateSSHKeyFile' => __DIR__.'/'.$privateSSHKeyFile,
         ]);
         $commitTest->runTest();
 
         return Command::SUCCESS;
-
 
 
 
@@ -102,14 +101,11 @@ $application->register('test')
 
         sleep(30);
 
-        $serverIp = $server->publicNet->ipv4->ip;
-        // $serverPassword = $apiResponse->getResponsePart('root_password');
-
         $commitTest = new CommitTest([
             'gitRepoUrl' => $input->getOption('GIT_REPO_URL'),
             'gitBranch' => $input->getOption('GIT_BRANCH'),
             'gitCommit' => $gitCommit,
-            'serverIp' => $serverIp,
+            'serverIp' => $server->publicNet->ipv4->ip,
             'privateSSHKeyFile' => __DIR__.'/'.$privateSSHKeyFile,
         ]);
         $status = $commitTest->runTest();

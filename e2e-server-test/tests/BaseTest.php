@@ -36,8 +36,19 @@ class BaseTest
         $this->username = trim($this->sshExec('whoami'));
 
     }
-    public function sshExec($command, Closure $callback = null)
+    public function sshExec($command, $callback = false, $timeout = null)
     {
+        if ($timeout) {
+            $this->sshTimeout($timeout);
+        }
+        if ($callback === false) {
+            $callback = null;
+        }
+        if ($callback === true) {
+            $callback = function ($data) {
+                echo "\033[0;32m " . $data . " \033[0m";
+            };
+        }
         return $this->sshConnection->exec($command, $callback);
     }
 

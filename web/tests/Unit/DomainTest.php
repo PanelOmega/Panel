@@ -14,9 +14,6 @@ class DomainTest extends TestCase
      */
     public function testDomainCreation(): void
     {
-        $this->assertTrue(true);
-        return;
-
         $this->installDocker();
 
         $domainDetails = [

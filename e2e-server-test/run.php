@@ -111,7 +111,7 @@ $application->register('test')
             'serverIp' => $server->publicNet->ipv4->ip,
             'privateSSHKeyFile' => __DIR__.'/'.$privateSSHKeyFile,
         ]);
-        $status = $commitTest->runTest();
+        $testStatus = $commitTest->runTest();
         if (isset($testStatus['testPassed']) && $testStatus['testPassed'] === true) {
             return Command::SUCCESS;
         }

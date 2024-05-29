@@ -22,7 +22,7 @@ $application->register('test')
     ->setCode(function (InputInterface $input, OutputInterface $output): int {
 
         $gitCommit = $input->getOption('GIT_COMMIT');
-        $gitCommit = substr($gitCommit, 0, 32);
+        $gitCommit = substr($gitCommit, 0, 12);
         $serverNamePrefix = 'omega-test-commit-';
         $serverName = $serverNamePrefix . $gitCommit;
 

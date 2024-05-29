@@ -14,6 +14,9 @@ class BaseTest
     protected $gitRepoUrl;
     protected $gitCommit;
 
+    protected $hostname;
+    protected $username;
+
     public function __construct($params)
     {
         $this->serverIp = $params['serverIp'];
@@ -28,20 +31,30 @@ class BaseTest
         if (!$this->sshConnection->login('root', $sshKey)) {
             throw new Exception('Login failed');
         }
+
+        $this->hostname = trim($this->sshExec('hostname'));
+        $this->username = trim($this->sshExec('whoami'));
+
     }
     public function sshExec($command)
     {
         return $this->sshConnection->exec($command);
     }
 
-    public function sshWrite($command)
+    public function sshRunCommand($command)
+    {
+        $this->sshWrite($command);
+        return $this->sshRead();
+    }
+
+    private function sshWrite($command)
     {
         $this->sshConnection->write($command . PHP_EOL);
     }
 
-    public function sshRead()
+    private function sshRead()
     {
-        return $this->sshConnection->read();
+        return $this->sshConnection->read($this->username . '@'.$this->hostname.':~$');
     }
 
 }

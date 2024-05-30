@@ -2,6 +2,7 @@
 
 require_once __DIR__.'/vendor/autoload.php';
 require_once __DIR__.'/tests/CommitTest.php';
+require_once __DIR__.'/tests/CodeCoverageTest.php';
 
 use phpseclib3\Crypt\RSA;
 
@@ -19,9 +20,13 @@ $application->register('test')
     ->addOption('GIT_REPO_URL', null, InputOption::VALUE_REQUIRED)
     ->addOption('GIT_BRANCH', null, InputOption::VALUE_REQUIRED)
     ->addOption('GIT_COMMIT', null, InputOption::VALUE_REQUIRED)
+    ->addOption('TEST_TYPE', null, InputOption::VALUE_REQUIRED)
+    ->addOption('CODECOV_TOKEN', null, InputOption::VALUE_OPTIONAL)
     ->setCode(function (InputInterface $input, OutputInterface $output): int {
 
+        $testType = $input->getOption('TEST_TYPE');
         $gitCommit = $input->getOption('GIT_COMMIT');
+        $codecovToken = $input->getOption('CODECOV_TOKEN');
         $gitCommit = substr($gitCommit, 0, 12);
         $serverNamePrefix = 'omega-test-commit-';
         $serverName = $serverNamePrefix . $gitCommit;
@@ -31,11 +36,11 @@ $application->register('test')
         $publicSSHKeyFile = 'omega-e2e-test-'.$gitCommit.'.pub';
 
 
-//        $commitTest = new CommitTest([
+//        $commitTest = new CodeCoverageTest([
 //            'gitRepoUrl' => $input->getOption('GIT_REPO_URL'),
 //            'gitBranch' => $input->getOption('GIT_BRANCH'),
 //            'gitCommit' => $gitCommit,
-//            'serverIp' => '49.13.209.144',
+//            'serverIp' => '78.46.217.196',
 //            'privateSSHKeyFile' => __DIR__.'/'.$privateSSHKeyFile,
 //        ]);
 //        $testStatus = $commitTest->runTest();
@@ -104,16 +109,29 @@ $application->register('test')
 
         sleep(30);
 
-        $commitTest = new CommitTest([
+        $testParams = [
             'gitRepoUrl' => $input->getOption('GIT_REPO_URL'),
             'gitBranch' => $input->getOption('GIT_BRANCH'),
             'gitCommit' => $gitCommit,
             'serverIp' => $server->publicNet->ipv4->ip,
-            'privateSSHKeyFile' => __DIR__.'/'.$privateSSHKeyFile,
-        ]);
-        $testStatus = $commitTest->runTest();
-        if (isset($testStatus['testPassed']) && $testStatus['testPassed'] === true) {
-            return Command::SUCCESS;
+            'privateSSHKeyFile' => __DIR__ . '/' . $privateSSHKeyFile,
+            'codecovToken' => $codecovToken,
+        ];
+
+        if ($testType == 'commit') {
+            $commitTest = new CommitTest($testParams);
+            $testStatus = $commitTest->runTest();
+            if (isset($testStatus['testPassed']) && $testStatus['testPassed'] === true) {
+                return Command::SUCCESS;
+            }
+        }
+
+        if ($testType == 'code-coverage') {
+            $commitTest = new CodeCoverageTest($testParams);
+            $testStatus = $commitTest->runTest();
+            if (isset($testStatus['testPassed']) && $testStatus['testPassed'] === true) {
+                return Command::SUCCESS;
+            }
         }
 
         return Command::FAILURE;

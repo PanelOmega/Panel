@@ -40,6 +40,7 @@ $application->register('test')
 //            'gitCommit' => $gitCommit,
 //            'serverIp' => '78.46.217.196',
 //            'privateSSHKeyFile' => __DIR__.'/'.$privateSSHKeyFile,
+//            'codecovToken' => $codecovToken,
 //        ]);
 //        $testStatus = $commitTest->runTest();
 //        if (isset($testStatus['testPassed']) && $testStatus['testPassed'] === true) {
@@ -47,10 +48,6 @@ $application->register('test')
 //        }
 //
 //        return Command::FAILURE;
-//
-
-
-        $hetznerClient = new \LKDev\HetznerCloud\HetznerAPIClient($input->getOption('HETZNER_API_KEY'));
 
 
         $privateKeyGenerator = RSA::createKey(4096);
@@ -61,6 +58,8 @@ $application->register('test')
         file_put_contents(__DIR__.'/'.$publicSSHKeyFile, $publicKeyContent);
 
         $findSSHKey = false;
+        $hetznerClient = new \LKDev\HetznerCloud\HetznerAPIClient($input->getOption('HETZNER_API_KEY'));
+
         $getSSHKeys = $hetznerClient->sshKeys()->all();
         if (!empty($getSSHKeys)) {
             foreach ($getSSHKeys as $sshKey) {
@@ -123,11 +122,11 @@ $application->register('test')
             $passStages[] = 'Commit Test';
         }
 
-//        $commitTest = new CodeCoverageTest($testParams);
-//        $codecovStatus = $commitTest->runTest();
-//        if (isset($codecovStatus['testPassed']) && $codecovStatus['testPassed'] === true) {
-//            $passStages[] = 'Code Coverage Test';
-//        }
+        $commitTest = new CodeCoverageTest($testParams);
+        $codecovStatus = $commitTest->runTest();
+        if (isset($codecovStatus['testPassed']) && $codecovStatus['testPassed'] === true) {
+            $passStages[] = 'Code Coverage Test';
+        }
 
         if (count($passStages) === 1) {
             return Command::SUCCESS;

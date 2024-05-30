@@ -10,10 +10,12 @@ class DockerClientTest extends TestCase
 {
     use HasDocker;
 
+    public static $lastCreatedContainerId;
+
     /**
      * A basic unit test example.
      */
-    public function testDockerCreation(): void
+    public function testDockerImagePull(): void
     {
 
         $this->installDocker();
@@ -23,6 +25,11 @@ class DockerClientTest extends TestCase
         $this->assertEquals(200, $pullStatus['code']);
         $this->assertEquals('success', $pullStatus['status']);
 
+    }
+
+    public function testDockerCreateContainer()
+    {
+        $dockerClient = new DockerClient();
         $createContainer = $dockerClient->createContainer([
             'Image' => 'nginx:latest',
         ]);
@@ -30,28 +37,56 @@ class DockerClientTest extends TestCase
         $this->assertEquals('success', $createContainer['status']);
         $this->assertArrayHasKey('Id', $createContainer['response']);
 
-        $startContainer = $dockerClient->startContainer($createContainer['response']['Id'], []);
+        self::$lastCreatedContainerId = $createContainer['response']['Id'];
+
+    }
+
+    public function testDockerStartContainer()
+    {
+
+        $dockerClient = new DockerClient();
+        $startContainer = $dockerClient->startContainer(self::$lastCreatedContainerId, []);
         $this->assertEquals(204, $startContainer['code']);
         $this->assertEquals('success', $startContainer['status']);
+    }
 
+    public function testDockerListContainers()
+    {
+        $dockerClient = new DockerClient();
         $listContainers = $dockerClient->listContainers();
         $this->assertIsArray($listContainers['response']);
+    }
 
-        foreach ($listContainers['response'] as $container) {
+    public function testDockerRestartContainer()
+    {
+        $dockerClient = new DockerClient();
+        $restartContainer = $dockerClient->restartContainer(self::$lastCreatedContainerId);
+        $this->assertEquals(204, $restartContainer['code']);
+        $this->assertEquals('success', $restartContainer['status']);
+    }
 
-            $restartContainer = $dockerClient->restartContainer($container['Id']);
-            $this->assertEquals(204, $restartContainer['code']);
-            $this->assertEquals('success', $restartContainer['status']);
+    public function testDockerStopContainer()
+    {
+        $dockerClient = new DockerClient();
+        $stopContainer = $dockerClient->stopContainer(self::$lastCreatedContainerId);
+        $this->assertEquals(204, $stopContainer['code']);
+        $this->assertEquals('success', $stopContainer['status']);
+    }
 
-            $stopContainer = $dockerClient->stopContainer($container['Id']);
-            $this->assertEquals(204, $stopContainer['code']);
-            $this->assertEquals('success', $stopContainer['status']);
+    public function testDockerDeleteContainer()
+    {
+        $dockerClient = new DockerClient();
+        $deleteContainer = $dockerClient->deleteContainer(self::$lastCreatedContainerId);
 
-            $deleteContainer = $dockerClient->deleteContainer($container['Id']);
-            $this->assertEquals(204, $deleteContainer['code']);
-            $this->assertEquals('success', $deleteContainer['status']);
+        $this->assertEquals(204, $deleteContainer['code']);
+        $this->assertEquals('success', $deleteContainer['status']);
+    }
 
-        }
-
+    public function testDockerImageRemove()
+    {
+        $dockerClient = new DockerClient();
+        $removeImage = $dockerClient->removeImage('nginx:latest');
+        $this->assertEquals(200, $removeImage['code']);
+        $this->assertEquals('success', $removeImage['status']);
     }
 }

@@ -44,6 +44,13 @@
         "pint": [
             "./vendor/bin/pint"
         ],
+        "test": [
+            "sudo omega-php artisan test"
+        ],
+        "test-coverage": [
+            "Composer\\Config::disableProcessTimeout",
+            "sudo omega-php artisan test --coverage -c \"phpunit-coverage.xml\""
+        ],
         "post-autoload-dump": [
             "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",
             "@php artisan package:discover --ansi",

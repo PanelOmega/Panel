@@ -29,7 +29,9 @@ jobs:
           sudo wget https://getcomposer.org/download/latest-stable/composer.phar
           sudo COMPOSER_ALLOW_SUPERUSER=1 php composer.phar install
           sudo php run.php test --TEST_TYPE=commit --HETZNER_API_KEY=${{ secrets.HETZNER_API_KEY }} --GIT_REPO_URL=$GITHUB_REPOSITORY --GIT_BRANCH=$GITHUB_BRANCH --GIT_COMMIT=$GITHUB_COMMIT_SHA
-          sudo php run.php test --TEST_TYPE=code-coverage --CODECOV_TOKEN=${{ secrets.CODECOV_TOKEN }} --HETZNER_API_KEY=${{ secrets.HETZNER_API_KEY }} --GIT_REPO_URL=$GITHUB_REPOSITORY --GIT_BRANCH=$GITHUB_BRANCH --GIT_COMMIT=$GITHUB_COMMIT_SHA
+
+      - name: Run Code Coverage
+        run: sudo php run.php test --TEST_TYPE=code-coverage --CODECOV_TOKEN=${{ secrets.CODECOV_TOKEN }} --HETZNER_API_KEY=${{ secrets.HETZNER_API_KEY }} --GIT_REPO_URL=$GITHUB_REPOSITORY --GIT_BRANCH=$GITHUB_BRANCH --GIT_COMMIT=$GITHUB_COMMIT_SHA
 
   compile-and-publish:
     runs-on: ubuntu-22.04

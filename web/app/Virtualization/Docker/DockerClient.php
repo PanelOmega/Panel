@@ -79,6 +79,11 @@ class DockerClient
         return $this->request('DELETE', "/containers/$containerId");
     }
 
+    public function pullImage($imageName): array
+    {
+        return $this->request('POST', "/images/create?fromImage=$imageName");
+    }
+
     public function __destruct()
     {
         curl_close($this->socket);

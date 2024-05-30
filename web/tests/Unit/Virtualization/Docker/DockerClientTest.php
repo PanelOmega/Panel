@@ -19,8 +19,12 @@ class DockerClientTest extends TestCase
         $this->installDocker();
 
         $dockerClient = new DockerClient();
+        $pullStatus = $dockerClient->pullImage('nginx:latest');
+        $this->assertEquals(200, $pullStatus['code']);
+        $this->assertEquals('success', $pullStatus['status']);
+
         $createContainer = $dockerClient->createContainer([
-            'Image' => 'nginx',
+            'Image' => 'nginx:latest',
         ]);
         $this->assertEquals(201, $createContainer['code']);
         $this->assertEquals('success', $createContainer['status']);

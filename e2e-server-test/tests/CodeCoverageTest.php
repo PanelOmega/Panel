@@ -11,8 +11,11 @@ class CodeCoverageTest extends BaseTest
 
 
         $this->sshExec("cd /usr/local/omega/php-xdebug/xdebug-3.3.2 \n /usr/local/omega/php/bin/phpize", true);
+        sleep(3);
         $this->sshExec("cd /usr/local/omega/php-xdebug/xdebug-3.3.2 \n ./configure --enable-xdebug --with-php-config=/usr/local/omega/php/bin/php-config", true);
+        sleep(3);
         $this->sshExec("cd /usr/local/omega/php-xdebug/xdebug-3.3.2 \n make", true);
+        sleep(3);
 
         $this->sshExec('mkdir -p /usr/local/omega/php/zend-xdebug', true);
         $this->sshExec('cp /usr/local/omega/php-xdebug/xdebug-3.3.2/modules/xdebug.so /usr/local/omega/php/zend-xdebug/xdebug.so', true);

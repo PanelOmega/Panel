@@ -20,11 +20,9 @@ $application->register('test')
     ->addOption('GIT_REPO_URL', null, InputOption::VALUE_REQUIRED)
     ->addOption('GIT_BRANCH', null, InputOption::VALUE_REQUIRED)
     ->addOption('GIT_COMMIT', null, InputOption::VALUE_REQUIRED)
-    ->addOption('TEST_TYPE', null, InputOption::VALUE_REQUIRED)
     ->addOption('CODECOV_TOKEN', null, InputOption::VALUE_OPTIONAL)
     ->setCode(function (InputInterface $input, OutputInterface $output): int {
 
-        $testType = $input->getOption('TEST_TYPE');
         $gitCommit = $input->getOption('GIT_COMMIT');
         $codecovToken = $input->getOption('CODECOV_TOKEN');
         $gitCommit = substr($gitCommit, 0, 12);
@@ -118,20 +116,21 @@ $application->register('test')
             'codecovToken' => $codecovToken,
         ];
 
-        if ($testType == 'commit') {
-            $commitTest = new CommitTest($testParams);
-            $testStatus = $commitTest->runTest();
-            if (isset($testStatus['testPassed']) && $testStatus['testPassed'] === true) {
-                return Command::SUCCESS;
-            }
+        $passStages = [];
+        $commitTest = new CommitTest($testParams);
+        $testStatus = $commitTest->runTest();
+        if (isset($testStatus['testPassed']) && $testStatus['testPassed'] === true) {
+            $passStages[] = 'Commit Test';
         }
 
-        if ($testType == 'code-coverage') {
-            $commitTest = new CodeCoverageTest($testParams);
-            $testStatus = $commitTest->runTest();
-            if (isset($testStatus['testPassed']) && $testStatus['testPassed'] === true) {
-                return Command::SUCCESS;
-            }
+        $commitTest = new CodeCoverageTest($testParams);
+        $codecovStatus = $commitTest->runTest();
+        if (isset($codecovStatus['testPassed']) && $codecovStatus['testPassed'] === true) {
+            $passStages[] = 'Code Coverage Test';
+        }
+
+        if (count($passStages) === 2) {
+            return Command::SUCCESS;
         }
 
         return Command::FAILURE;

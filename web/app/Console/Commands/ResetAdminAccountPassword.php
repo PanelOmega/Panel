@@ -34,8 +34,9 @@ class ResetAdminAccountPassword extends Command
 
         try {
             $findByEmail = \App\Models\Admin::where('email', $email)->first();
-            if (!$findByEmail) {
+            if (! $findByEmail) {
                 $this->error('Admin account with this email does not exist');
+
                 return;
             }
             $findByEmail->password = Hash::make($password);
@@ -43,6 +44,7 @@ class ResetAdminAccountPassword extends Command
         } catch (\Exception $e) {
             $this->error('Failed to reset admin account password');
             $this->error($e->getMessage());
+
             return;
         }
 

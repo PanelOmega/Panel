@@ -9,6 +9,7 @@ use Tests\Unit\Traits\HasDocker;
 class DomainTest extends TestCase
 {
     use HasDocker;
+
     /**
      * A basic unit test example.
      */

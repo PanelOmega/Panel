@@ -1,9 +1,11 @@
 <?php
+
 namespace App\Virtualization\Docker;
 
 class DockerClient
 {
     private $socketPath;
+
     private $socket;
 
     public function __construct($socketPath = '/var/run/docker.sock')
@@ -41,7 +43,7 @@ class DockerClient
         }
 
         return [
-            'status'=>$status,
+            'status' => $status,
             'response' => json_decode($response, true),
             'code' => $httpCode,
         ];
@@ -59,7 +61,7 @@ class DockerClient
 
     public function startContainer($containerId, $containerConfig = null): array
     {
-       return $this->request('POST', "/containers/$containerId/start", $containerConfig);
+        return $this->request('POST', "/containers/$containerId/start", $containerConfig);
     }
 
     public function stopContainer($containerId): array

@@ -3,7 +3,6 @@
 namespace Tests\Unit\Traits;
 
 use App\Server\Installers\Virtualization\DockerInstaller;
-use App\Virtualization\Docker\DockerApi;
 
 trait HasDocker
 {

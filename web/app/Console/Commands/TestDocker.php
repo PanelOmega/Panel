@@ -4,7 +4,6 @@ namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
 use Illuminate\Support\Str;
-use function Psy\sh;
 
 class TestDocker extends Command
 {
@@ -31,7 +30,7 @@ class TestDocker extends Command
         $domainName = 'omega.test';
 
         $availablePortScript = base_path('app/Docker/Shell/GetAvailablePort.sh');
-        shell_exec('chmod +x ' . $availablePortScript);
+        shell_exec('chmod +x '.$availablePortScript);
         $getAvailablePort = shell_exec($availablePortScript);
         $getAvailablePort = (int) $getAvailablePort;
 
@@ -48,13 +47,13 @@ class TestDocker extends Command
         ])->render();
 
         $dockerTempPath = base_path('docker-temp');
-        if (!is_dir($dockerTempPath)) {
+        if (! is_dir($dockerTempPath)) {
             mkdir($dockerTempPath, 0777, true);
         }
 
-        file_put_contents($dockerTempPath . '/docker-compose.yml', $dockerTemplate);
+        file_put_contents($dockerTempPath.'/docker-compose.yml', $dockerTemplate);
 
-        shell_exec('cd ' . $dockerTempPath . ' && docker compose up -d');
+        shell_exec('cd '.$dockerTempPath.' && docker compose up -d');
 
         dd($dockerTemplate);
 

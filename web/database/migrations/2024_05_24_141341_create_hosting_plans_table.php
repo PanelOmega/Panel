@@ -32,7 +32,6 @@ return new class extends Migration
             $table->longText('features')->nullable();
             $table->longText('limitations')->nullable();
 
-
             $table->timestamps();
         });
     }

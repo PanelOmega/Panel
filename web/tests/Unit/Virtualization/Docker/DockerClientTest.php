@@ -9,12 +9,13 @@ use Tests\Unit\Traits\HasDocker;
 class DockerClientTest extends TestCase
 {
     use HasDocker;
+
     /**
      * A basic unit test example.
      */
     public function testDockerCreation(): void
     {
-  
+
         $this->installDocker();
 
         $dockerClient = new DockerClient();

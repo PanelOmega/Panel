@@ -7,16 +7,11 @@ use App\Filament\Resources\HostingPlanResource\Pages;
 use App\Models\HostingPlan;
 use App\Models\RemoteDatabaseServer;
 use App\SupportedApplicationTypes;
-use Filament\Actions\DeleteAction;
 use Filament\Forms;
-use Filament\Forms\Components\CheckboxList;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Form;
 use Filament\Forms\Get;
 use Filament\Resources\Resource;
-use Filament\Support\Enums\Alignment;
-use Filament\Support\Enums\IconPosition;
-use Filament\Support\Enums\IconSize;
 use Filament\Tables;
 use Filament\Tables\Table;
 use JaOcero\RadioDeck\Forms\Components\RadioDeck;
@@ -33,7 +28,7 @@ class HostingPlanResource extends Resource
 
     public static function form(Form $form): Form
     {
-       // $remoteDatabaseServers = RemoteDatabaseServer::select(['name','id'])->get()->pluck('name', 'id');
+        // $remoteDatabaseServers = RemoteDatabaseServer::select(['name','id'])->get()->pluck('name', 'id');
 
         return $form
             ->schema([
@@ -42,74 +37,74 @@ class HostingPlanResource extends Resource
 
                     Forms\Components\Tabs\Tab::make('General')->schema([
 
-//                        RadioDeck::make('default_server_application_type')
-//                            ->default('apache_php')
-//                            ->options(ServerApplicationType::class)
-//                            ->icons(ServerApplicationType::class)
-//                            ->descriptions(ServerApplicationType::class)
-//                            ->required()
-//                            ->live()
-//                            ->color('primary')
-//                            ->columns(2),
+                        //                        RadioDeck::make('default_server_application_type')
+                        //                            ->default('apache_php')
+                        //                            ->options(ServerApplicationType::class)
+                        //                            ->icons(ServerApplicationType::class)
+                        //                            ->descriptions(ServerApplicationType::class)
+                        //                            ->required()
+                        //                            ->live()
+                        //                            ->color('primary')
+                        //                            ->columns(2),
 
                         // PHP Configuration
-//                        Select::make('default_server_application_settings.php_version')
-//                            ->hidden(function (Get $get) {
-//                                return $get('default_server_application_type') !== 'apache_php';
-//                            })
-//                            ->default('8.3')
-//                            ->label('PHP Version')
-//                            ->options(SupportedApplicationTypes::getPHPVersions())
-//                            ->columns(5)
-//                            ->required(),
+                        //                        Select::make('default_server_application_settings.php_version')
+                        //                            ->hidden(function (Get $get) {
+                        //                                return $get('default_server_application_type') !== 'apache_php';
+                        //                            })
+                        //                            ->default('8.3')
+                        //                            ->label('PHP Version')
+                        //                            ->options(SupportedApplicationTypes::getPHPVersions())
+                        //                            ->columns(5)
+                        //                            ->required(),
 
                         // End of PHP Configuration
 
                         // Node.js Configuration
-//                        Select::make('default_server_application_settings.nodejs_version')
-//                            ->hidden(function (Get $get) {
-//                                return $get('default_server_application_type') !== 'apache_nodejs';
-//                            })
-//                            ->label('Node.js Version')
-//                            ->default('20')
-//                            ->options(SupportedApplicationTypes::getNodeJsVersions())
-//                            ->columns(6)
-//                            ->required(),
+                        //                        Select::make('default_server_application_settings.nodejs_version')
+                        //                            ->hidden(function (Get $get) {
+                        //                                return $get('default_server_application_type') !== 'apache_nodejs';
+                        //                            })
+                        //                            ->label('Node.js Version')
+                        //                            ->default('20')
+                        //                            ->options(SupportedApplicationTypes::getNodeJsVersions())
+                        //                            ->columns(6)
+                        //                            ->required(),
 
                         // End of Node.js Configuration
 
                         // Python Configuration
 
-//                        Select::make('default_server_application_settings.python_version')
-//                            ->hidden(function (Get $get) {
-//                                return $get('default_server_application_type') !== 'apache_python';
-//                            })
-//                            ->label('Python Version')
-//                            ->default('3.10')
-//                            ->options(SupportedApplicationTypes::getPythonVersions())
-//                            ->columns(6)
-//                            ->required(),
+                        //                        Select::make('default_server_application_settings.python_version')
+                        //                            ->hidden(function (Get $get) {
+                        //                                return $get('default_server_application_type') !== 'apache_python';
+                        //                            })
+                        //                            ->label('Python Version')
+                        //                            ->default('3.10')
+                        //                            ->options(SupportedApplicationTypes::getPythonVersions())
+                        //                            ->columns(6)
+                        //                            ->required(),
 
                         // End of Python Configuration
 
                         // Ruby Configuration
 
-//                        Select::make('default_server_application_settings.ruby_version')
-//                            ->hidden(function (Get $get) {
-//                                return $get('server_application_type') !== 'apache_ruby';
-//                            })
-//                            ->label('Ruby Version')
-//                            ->default('3.4')
-//                            ->options(SupportedApplicationTypes::getRubyVersions())
-//                            ->columns(6)
-//                            ->required(),
+                        //                        Select::make('default_server_application_settings.ruby_version')
+                        //                            ->hidden(function (Get $get) {
+                        //                                return $get('server_application_type') !== 'apache_ruby';
+                        //                            })
+                        //                            ->label('Ruby Version')
+                        //                            ->default('3.4')
+                        //                            ->options(SupportedApplicationTypes::getRubyVersions())
+                        //                            ->columns(6)
+                        //                            ->required(),
 
                         RadioDeck::make('default_database_server_type')
                             ->live()
                             ->default('internal')
                             ->options([
                                 'internal' => 'Internal',
-                           //     'remote' => 'Remote',
+                                //     'remote' => 'Remote',
                             ])
 //                            ->icons([
 //                                'internal' => 'phyre-database-marker',
@@ -117,28 +112,27 @@ class HostingPlanResource extends Resource
 //                            ])
                             ->descriptions([
                                 'internal' => 'Use the internal database server.',
-                           //     'remote' => 'Use a remote database server.',
+                                //     'remote' => 'Use a remote database server.',
                             ])
                             ->required()
                             ->color('primary')
                             ->columns(2),
 
-//                        Forms\Components\Select::make('default_remote_database_server_id')
-//                            ->label('Remote Database Server')
-//                            ->hidden(fn(Forms\Get $get): bool => 'remote' !== $get('default_database_server_type'))
-//                            ->options($remoteDatabaseServers),
+                        //                        Forms\Components\Select::make('default_remote_database_server_id')
+                        //                            ->label('Remote Database Server')
+                        //                            ->hidden(fn(Forms\Get $get): bool => 'remote' !== $get('default_database_server_type'))
+                        //                            ->options($remoteDatabaseServers),
 
                         Forms\Components\TextInput::make('name')
                             ->label('Name')
                             ->required(),
 
-//                        Forms\Components\TextInput::make('slug')
-//                            ->label('Slug')
-//                            ->required(),
+                        //                        Forms\Components\TextInput::make('slug')
+                        //                            ->label('Slug')
+                        //                            ->required(),
 
                         Forms\Components\Textarea::make('description')
                             ->label('Description'),
-
 
                     ]),
 
@@ -201,28 +195,27 @@ class HostingPlanResource extends Resource
                             ->label('Free Domain'),
                     ]),
 
-                     Forms\Components\Tabs\Tab::make('Advanced')->schema([
+                    Forms\Components\Tabs\Tab::make('Advanced')->schema([
 
-                         Forms\Components\Select::make('additional_services')
-                             ->label('Additional Services')
-                             ->options([
-                                 'microweber' => 'Microweber',
-                                 'wordpress' => 'WordPress',
-                                 'opencart' => 'OpenCart',
-                             ])
-                             ->multiple(),
+                        Forms\Components\Select::make('additional_services')
+                            ->label('Additional Services')
+                            ->options([
+                                'microweber' => 'Microweber',
+                                'wordpress' => 'WordPress',
+                                'opencart' => 'OpenCart',
+                            ])
+                            ->multiple(),
 
-                         Forms\Components\Select::make('features')
-                             ->label('Features')
-                             ->options([
-                                 'ssl' => 'SSL',
-                                 'backup' => 'Backup',
-                             ])
-                             ->multiple(),
-                     ])
+                        Forms\Components\Select::make('features')
+                            ->label('Features')
+                            ->options([
+                                'ssl' => 'SSL',
+                                'backup' => 'Backup',
+                            ])
+                            ->multiple(),
+                    ]),
 
                 ])->columnSpanFull(),
-
 
             ]);
     }
@@ -235,9 +228,9 @@ class HostingPlanResource extends Resource
                     ->searchable()
                     ->label('Name'),
 
-//                Tables\Columns\TextColumn::make('slug')
-//                    ->searchable()
-//                    ->label('Slug'),
+                //                Tables\Columns\TextColumn::make('slug')
+                //                    ->searchable()
+                //                    ->label('Slug'),
 
                 Tables\Columns\TextColumn::make('additional_services')
                     ->label('Additional Services'),
@@ -251,7 +244,7 @@ class HostingPlanResource extends Resource
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
-                Tables\Actions\DeleteAction::make()
+                Tables\Actions\DeleteAction::make(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([

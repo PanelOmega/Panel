@@ -27,16 +27,16 @@ class HostingPlan extends Model
         'additional_services',
         'features',
         'limitations',
-//        'default_server_application_type',
-//        'default_database_server_type',
-//        'default_remote_database_server_id',
-//        'default_server_application_settings',
+        //        'default_server_application_type',
+        //        'default_database_server_type',
+        //        'default_remote_database_server_id',
+        //        'default_server_application_settings',
     ];
 
     protected $casts = [
         'additional_services' => 'array',
         'features' => 'array',
         'limitations' => 'array',
-//        'default_server_application_settings' => 'array',
+        //        'default_server_application_settings' => 'array',
     ];
 }

@@ -66,33 +66,31 @@ class CustomerResource extends Resource
     {
         return $table
             ->columns([
-//                Tables\Columns\TextColumn::make('phyre_server_id')
-//                    ->label('Server')
-//                    ->badge()
-//                    ->state(function ($record) {
-//                        if ($record->phyre_server_id > 0) {
-//                            $phyreServer = PhyreServer::where('id', $record->phyre_server_id)->first();
-//                            if ($phyreServer) {
-//                                return $phyreServer->name;
-//                            }
-//                        }
-//                        return 'MAIN';
-//                    })
-//                    ->searchable()
-//                    ->sortable(),
+                //                Tables\Columns\TextColumn::make('phyre_server_id')
+                //                    ->label('Server')
+                //                    ->badge()
+                //                    ->state(function ($record) {
+                //                        if ($record->phyre_server_id > 0) {
+                //                            $phyreServer = PhyreServer::where('id', $record->phyre_server_id)->first();
+                //                            if ($phyreServer) {
+                //                                return $phyreServer->name;
+                //                            }
+                //                        }
+                //                        return 'MAIN';
+                //                    })
+                //                    ->searchable()
+                //                    ->sortable(),
 
                 Tables\Columns\TextColumn::make('name')
                     ->label('Customer Name')
                     ->searchable()
                     ->sortable(),
-//                Tables\Columns\TextColumn::make('username')
-//                    ->searchable()
-//                    ->sortable(),
+                //                Tables\Columns\TextColumn::make('username')
+                //                    ->searchable()
+                //                    ->sortable(),
                 Tables\Columns\TextColumn::make('email')
                     ->searchable()
                     ->sortable(),
-
-
 
             ])
             ->defaultSort('id', 'desc')
@@ -101,9 +99,9 @@ class CustomerResource extends Resource
             ])
             ->actions([
 
-//                Impersonate::make('impersonate')
-//                    ->guard('customer')
-//                    ->redirectTo(route('filament.customer::admin.pages.dashboard')),
+                //                Impersonate::make('impersonate')
+                //                    ->guard('customer')
+                //                    ->redirectTo(route('filament.customer::admin.pages.dashboard')),
 
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\DeleteAction::make(),

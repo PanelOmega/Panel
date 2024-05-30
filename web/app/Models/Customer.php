@@ -34,5 +34,4 @@ class Customer extends Authenticatable
     {
         return true;
     }
-
 }

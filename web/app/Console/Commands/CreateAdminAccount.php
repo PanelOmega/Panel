@@ -36,6 +36,7 @@ class CreateAdminAccount extends Command
             $findByEmail = \App\Models\Admin::where('email', $email)->first();
             if ($findByEmail) {
                 $this->error('Admin account with this email already exists');
+
                 return;
             }
             $admin = new \App\Models\Admin();
@@ -46,6 +47,7 @@ class CreateAdminAccount extends Command
         } catch (\Exception $e) {
             $this->error('Failed to create admin account');
             $this->error($e->getMessage());
+
             return;
         }
 

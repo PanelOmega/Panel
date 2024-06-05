@@ -107,8 +107,8 @@ class HostingPlanResource extends Resource
                                 //     'remote' => 'Remote',
                             ])
 //                            ->icons([
-//                                'internal' => 'phyre-database-marker',
-//                             //   'remote' => 'phyre-database-connect',
+//                                'internal' => 'omega-database-marker',
+//                             //   'remote' => 'omega-database-connect',
 //                            ])
                             ->descriptions([
                                 'internal' => 'Use the internal database server.',

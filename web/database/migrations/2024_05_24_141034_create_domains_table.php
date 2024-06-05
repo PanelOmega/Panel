@@ -23,6 +23,8 @@ return new class extends Migration
 
             $table->integer('hosting_subscription_id')->nullable();
 
+            $table->integer('is_main')->nullable();
+
             $table->string('status')->nullable();
 
             $table->timestamps();

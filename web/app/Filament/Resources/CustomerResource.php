@@ -4,7 +4,6 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\CustomerResource\Pages;
 use App\Models\Customer;
-use App\Models\PhyreServer;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -66,20 +65,6 @@ class CustomerResource extends Resource
     {
         return $table
             ->columns([
-                //                Tables\Columns\TextColumn::make('phyre_server_id')
-                //                    ->label('Server')
-                //                    ->badge()
-                //                    ->state(function ($record) {
-                //                        if ($record->phyre_server_id > 0) {
-                //                            $phyreServer = PhyreServer::where('id', $record->phyre_server_id)->first();
-                //                            if ($phyreServer) {
-                //                                return $phyreServer->name;
-                //                            }
-                //                        }
-                //                        return 'MAIN';
-                //                    })
-                //                    ->searchable()
-                //                    ->sortable(),
 
                 Tables\Columns\TextColumn::make('name')
                     ->label('Customer Name')

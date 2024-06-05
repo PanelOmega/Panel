@@ -158,8 +158,7 @@ class HostingSubscription extends Model
         }
 
         $createLinuxWebUserOutput = LinuxUser::createWebUser($systemUsername, $systemPassword);
-
-        if (strpos($createLinuxWebUserOutput, 'Creating home directory') !== false) {
+        if (isset($createLinuxWebUserOutput['success'])) {
 
             return [
                 'system_username' => $systemUsername,

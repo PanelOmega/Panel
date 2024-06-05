@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Unit;
+namespace tests\Unit\Models;
 
 use App\Models\Domain;
 use Tests\TestCase;
@@ -17,9 +17,10 @@ class DomainTest extends TestCase
     {
         $this->installDocker();
 
+        $randomDomain = 'test' . rand(1, 1000) . '.com';
+
         $domainDetails = [
-            'domain' => 'example.com',
-            'status' => 'active',
+            'domain' => $randomDomain,
         ];
 
         $domain = new Domain();

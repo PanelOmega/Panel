@@ -54,9 +54,9 @@ class DockerClient
         return $this->request('GET', '/containers/json');
     }
 
-    public function createContainer($containerConfig): array
+    public function createContainer($containerName, $containerConfig): array
     {
-        return $this->request('POST', '/containers/create', $containerConfig);
+        return $this->request('POST', '/containers/create?name='.$containerName, $containerConfig);
     }
 
     public function startContainer($containerId, $containerConfig = null): array

@@ -15,26 +15,26 @@ class HostingSubscriptionTest extends TestCase
 
     public function testHostingSubscriptionCreation(): void
     {
-        $customerUsername = 'test' . rand(1, 1000);
+        $customerUsername = 'test' . rand(1000, 9999);
 
         $createCustomer = new Customer();
         $createCustomer->name = $customerUsername;
         $createCustomer->email = $customerUsername . '@mail.com';
         $createCustomer->username = $customerUsername;
-        $createCustomer->password = time() . rand(1, 1000);
+        $createCustomer->password = time() . rand(1000, 9999);
         $createCustomer->save();
         $this->assertDatabaseHas('customers', ['username' => $customerUsername]);
 
 
         $createHostingPlan = new HostingPlan();
-        $createHostingPlan->name = 'test' . rand(1, 1000);
+        $createHostingPlan->name = 'test' . rand(1000, 9999);
         $createHostingPlan->save();
         $this->assertDatabaseHas('hosting_plans', ['name' => $createHostingPlan->name]);
 
 
         $hostingSubscription = new HostingSubscription();
         $hostingSubscription->customer_id = $createCustomer->id;
-        $hostingSubscription->domain = 'test' . rand(1, 1000) . '.com';
+        $hostingSubscription->domain = 'test' . rand(1000, 9999) . '.com';
         $hostingSubscription->hosting_plan_id = $createHostingPlan->id;
         $hostingSubscription->save();
         $this->assertDatabaseHas('hosting_subscriptions', ['domain' => $hostingSubscription->domain]);

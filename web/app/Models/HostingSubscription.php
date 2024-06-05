@@ -99,10 +99,10 @@ class HostingSubscription extends Model
         return $this->belongsTo(HostingPlan::class);
     }
 
-    public function databases()
-    {
-        return $this->hasMany(Database::class);
-    }
+//    public function databases()
+//    {
+//        return $this->hasMany(Database::class);
+//    }
 
     public function backups()
     {

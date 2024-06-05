@@ -174,10 +174,10 @@ class HostingSubscriptionResource extends Resource
         return $page->generateNavigationItems([
          //   Pages\ViewHos::class,
             Pages\EditHostingSubscription::class,
-            Pages\ManageHostingSubscriptionDatabases::class,
-            Pages\ManageHostingSubscriptionBackups::class,
-            Pages\ManageHostingSubscriptionFtpAccounts::class,
-            Pages\ManageHostingSubscriptionFileManager::class
+         //   Pages\ManageHostingSubscriptionDatabases::class,
+           // Pages\ManageHostingSubscriptionBackups::class,
+            //Pages\ManageHostingSubscriptionFtpAccounts::class,
+          //  Pages\ManageHostingSubscriptionFileManager::class
         ]);
     }
 

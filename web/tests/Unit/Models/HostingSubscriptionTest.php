@@ -5,10 +5,14 @@ namespace tests\Unit\Models;
 use App\Models\Customer;
 use App\Models\HostingPlan;
 use App\Models\HostingSubscription;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
 use Tests\TestCase;
 
 class HostingSubscriptionTest extends TestCase
 {
+    public static $lastCreatedHostingSubscriptionId;
+
     public function testHostingSubscriptionCreation(): void
     {
         $customerUsername = 'test' . rand(1, 1000);
@@ -25,7 +29,7 @@ class HostingSubscriptionTest extends TestCase
         $createHostingPlan->save();
         $this->assertDatabaseHas('hosting_plans', ['name' => $createHostingPlan->name]);
 
-        
+
         $hostingSubscription = new HostingSubscription();
         $hostingSubscription->customer_id = $createCustomer->id;
         $hostingSubscription->domain = 'test' . rand(1, 1000) . '.com';
@@ -33,7 +37,15 @@ class HostingSubscriptionTest extends TestCase
         $hostingSubscription->save();
         $this->assertDatabaseHas('hosting_subscriptions', ['domain' => $hostingSubscription->domain]);
 
-
+        static::$lastCreatedHostingSubscriptionId = $hostingSubscription->id;
 
     }
+
+    public function testHostingSubscriptionDeletion(): void
+    {
+        $hostingSubscription = HostingSubscription::where('id',static::$lastCreatedHostingSubscriptionId)->first();
+        $hostingSubscription->delete();
+        $this->assertDatabaseMissing('hosting_subscriptions', ['id' => static::$lastCreatedHostingSubscriptionId]);
+    }
+
 }

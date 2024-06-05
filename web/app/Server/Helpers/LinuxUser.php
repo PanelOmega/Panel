@@ -88,4 +88,15 @@ class LinuxUser
 
         return $user;
     }
+
+    public static function deleteUser(string $username)
+    {
+        shell_exec('userdel '.$username);
+        shell_exec('rm -rf /home/'.$username);
+
+        return [
+            'success' => 'User deleted successfully',
+        ];
+    }
+
 }

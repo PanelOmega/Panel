@@ -71,4 +71,12 @@ class LinuxUserTest extends TestCase
         $this->assertSame('User already exists', $createUser['error']);
 
     }
+
+    public function testDeleteLinuxWebUser()
+    {
+        $deleteUser = LinuxUser::deleteUser(self::$lastCreatedUser);
+        $this->assertArrayHasKey('success', $deleteUser);
+
+        $this->assertFalse(is_dir('/home/'.self::$lastCreatedUser));
+    }
 }

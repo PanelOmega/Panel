@@ -72,14 +72,12 @@ class HostingSubscription extends Model
                 throw new \Exception('System username is empty');
             }
 
-            $getLinuxUser = new GetLinuxUser();
-            $getLinuxUser->setUsername($model->system_username);
-            $getLinuxUserStatus = $getLinuxUser->handle();
+            $getLinuxUserStatus = LinuxUser::getUser($model->system_username);
 
             if (! empty($getLinuxUserStatus)) {
-                shell_exec('userdel '.$model->system_username);
-                shell_exec('rm -rf /home/'.$model->system_username);
+                LinuxUser::deleteUser($model->system_username);
             }
+
             $findRelatedDomains = Domain::where('hosting_subscription_id', $model->id)->get();
             if ($findRelatedDomains->count() > 0) {
                 foreach ($findRelatedDomains as $domain) {

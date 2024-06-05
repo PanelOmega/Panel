@@ -12,6 +12,13 @@ class LinuxUser
      */
     public static function createUser(string $username, string $password, string $email)
     {
+        $checkUser = self::getUser($username);
+        if (!empty($checkUser)) {
+            return [
+                'error' => 'User already exists'
+            ];
+        }
+
         $output = '';
 
         $command = '/usr/sbin/useradd "' . $username . '" -c "' . $email . '" --no-create-home';
@@ -20,7 +27,10 @@ class LinuxUser
         $command = 'echo ' . $username . ':' . $password . ' | sudo chpasswd -e';
         $output .= shell_exec($command);
 
-        return $output;
+        return [
+            'success' => 'User created successfully',
+            'output' => $output,
+        ];
     }
 
     /**
@@ -31,6 +41,13 @@ class LinuxUser
     public static function createWebUser(string $username, string $password)
     {
         $output = '';
+
+        $checkUser = self::getUser($username);
+        if (!empty($checkUser)) {
+            return [
+                'error' => 'User already exists'
+            ];
+        }
 
         $command = 'sudo adduser --disabled-password --gecos "" "' . $username . '"';
         $output .= shell_exec($command);
@@ -50,7 +67,10 @@ class LinuxUser
         $command = 'sudo chmod 711 /home/' . $username;
         $output .= shell_exec($command);
 
-        return $output;
+        return [
+            'success' => 'User created successfully',
+            'output' => $output,
+        ];
     }
 
     /**

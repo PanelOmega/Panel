@@ -15,11 +15,12 @@ class LinuxUserTest extends TestCase
         $password = 'testpassword';
         $email = $username.'@email.com';
 
-        LinuxUser::createUser($username, $password, $email);
+        $createUser = LinuxUser::createUser($username, $password, $email);
+
+        $this->assertArrayHasKey('success', $createUser);
 
         self::$lastCreatedUser = $username;
 
-        $this->assertNotEmpty($username);
 
     }
 
@@ -31,7 +32,16 @@ class LinuxUserTest extends TestCase
         $this->assertEquals(self::$lastCreatedUser, $user[0]);
     }
 
-    public function testCreateWebUser(): void
+    public function testCreateExistingLinuxUser()
+    {
+        $createUser = LinuxUser::createUser(self::$lastCreatedUser, 'testpassword', 'testemail@mail.com');
+
+        $this->assertArrayHasKey('error', $createUser);
+        $this->assertSame('User already exists', $createUser['error']);
+
+    }
+
+    public function testCreateLinuxWebUser(): void
     {
         $username = 'testuser'.rand(1, 1000);
         $password = 'testpassword';
@@ -44,7 +54,7 @@ class LinuxUserTest extends TestCase
 
     }
 
-    public function testGetWebUser(): void
+    public function testGetLinuxWebUser(): void
     {
         $user = LinuxUser::getUser(self::$lastCreatedUser);
         $this->assertIsArray($user);
@@ -52,5 +62,13 @@ class LinuxUserTest extends TestCase
         $this->assertEquals(self::$lastCreatedUser, $user[0]);
 
         $this->assertTrue(is_dir('/home/'.self::$lastCreatedUser));
+    }
+
+    public function testCreateExistingLinuxWebUser()
+    {
+        $createUser = LinuxUser::createWebUser(self::$lastCreatedUser, 'testpassword');
+        $this->assertArrayHasKey('error', $createUser);
+        $this->assertSame('User already exists', $createUser['error']);
+
     }
 }

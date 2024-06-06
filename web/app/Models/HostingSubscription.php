@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Actions\CreateLinuxWebUser;
 use App\Actions\GetLinuxUser;
+use App\Jobs\ApacheBuild;
 use App\Server\Helpers\LinuxUser;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -86,6 +87,10 @@ class HostingSubscription extends Model
                     $domain->delete();
                 }
             }
+
+            // This must be in background
+            $apacheBuild = new ApacheBuild();
+            $apacheBuild->handle();
 
         });
 

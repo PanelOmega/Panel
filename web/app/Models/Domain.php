@@ -81,13 +81,28 @@ class Domain extends Model
             $apacheBuild->handle();
 
         });
+
+        static::deleted(function ($model) {
+
+            if (isset($this->docker_settings['containerId'])) {
+
+                $dockerClient = new DockerClient();
+                $dockerClient->stopContainer($this->docker_settings['containerId']);
+                $dockerClient->deleteContainer($this->docker_settings['containerId']);
+
+            }
+
+            $apacheBuild = new ApacheBuild();
+            $apacheBuild->handle();
+            
+        });
     }
 
     public function createDockerContainer()
     {
         $dockerClient = new DockerClient();
 
-        $containers = $dockerClient->listContainers()['response'];
+       // $containers = $dockerClient->listContainers()['response'];
        // dd($containers);
 //        foreach ($containers as $container) {
 //            $dockerClient->stopContainer($container['Id']);

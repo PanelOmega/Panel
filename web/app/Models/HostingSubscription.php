@@ -58,12 +58,14 @@ class HostingSubscription extends Model
         });
 
         static::created(function ($model) {
+
             $makeMainDomain = new Domain();
             $makeMainDomain->hosting_subscription_id = $model->id;
             $makeMainDomain->domain = $model->domain;
             $makeMainDomain->is_main = 1;
             $makeMainDomain->status = Domain::STATUS_ACTIVE;
             $makeMainDomain->save();
+
         });
 
         static::deleting(function ($model) {

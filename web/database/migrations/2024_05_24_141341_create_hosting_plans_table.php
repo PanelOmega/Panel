@@ -32,6 +32,9 @@ return new class extends Migration
             $table->longText('features')->nullable();
             $table->longText('limitations')->nullable();
 
+            $table->string('default_server_application_type')->nullable()->default('apache_php');
+            $table->longText('default_server_application_settings')->nullable();
+
             $table->timestamps();
         });
     }

@@ -25,6 +25,9 @@ return new class extends Migration
 
             $table->integer('is_main')->nullable();
 
+            $table->string('server_application_type')->nullable()->default('apache_php');
+            $table->longText('server_application_settings')->nullable();
+
             $table->string('status')->nullable();
 
             $table->timestamps();

@@ -15,6 +15,18 @@ class HostingSubscriptionTest extends TestCase
 
     public function testHostingSubscriptionCreation(): void
     {
+
+
+//        Schema::table('hosting_plans', function (Blueprint $table) {
+//            $table->string('default_server_application_type')->nullable()->default('apache_php');
+//            $table->longText('default_server_application_settings')->nullable();
+//        });
+
+//        Schema::table('domains', function (Blueprint $table) {
+//            $table->string('server_application_type')->nullable()->default('apache_php');
+//            $table->longText('server_application_settings')->nullable();
+//        });
+
         $customerUsername = 'test' . rand(1000, 9999);
 
         $createCustomer = new Customer();
@@ -28,13 +40,15 @@ class HostingSubscriptionTest extends TestCase
 
         $createHostingPlan = new HostingPlan();
         $createHostingPlan->name = 'test' . rand(1000, 9999);
+        $createHostingPlan->default_server_application_type = 'apache_php';
+        $createHostingPlan->default_server_application_settings = json_encode(['php_version' => '7.4']);
         $createHostingPlan->save();
         $this->assertDatabaseHas('hosting_plans', ['name' => $createHostingPlan->name]);
 
 
         $hostingSubscription = new HostingSubscription();
         $hostingSubscription->customer_id = $createCustomer->id;
-        $hostingSubscription->domain = 'test' . rand(1000, 9999) . '.com';
+        $hostingSubscription->domain = 'test' . rand(1000, 9999) . '.phyrevoice.com';
         $hostingSubscription->hosting_plan_id = $createHostingPlan->id;
         $hostingSubscription->save();
         $this->assertDatabaseHas('hosting_subscriptions', ['domain' => $hostingSubscription->domain]);

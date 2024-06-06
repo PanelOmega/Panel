@@ -84,17 +84,20 @@ class Domain extends Model
 
         static::deleted(function ($model) {
 
-            if (isset($this->docker_settings['containerId'])) {
+            if (isset($model->docker_settings['containerId'])) {
 
-                $dockerClient = new DockerClient();
-                $dockerClient->stopContainer($this->docker_settings['containerId']);
-                $dockerClient->deleteContainer($this->docker_settings['containerId']);
-
+                try {
+                    $dockerClient = new DockerClient();
+                    $dockerClient->stopContainer($model->docker_settings['containerId']);
+                    $dockerClient->deleteContainer($model->docker_settings['containerId']);
+                } catch (\Exception $e) {
+                    // Do nothing
+                }
             }
 
             $apacheBuild = new ApacheBuild();
             $apacheBuild->handle();
-            
+
         });
     }
 

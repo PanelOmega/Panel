@@ -104,6 +104,11 @@ $application->register('test')
         echo 'Server created!'.PHP_EOL;
         echo date('H:i:s').PHP_EOL;
 
+        $server = $hetznerClient->servers()->get($server->id);
+        $server->delete();
+
+        return Command::SUCCESS;
+
         sleep(30);
 
         $testParams = [

@@ -35,6 +35,8 @@ class ApacheVirtualHostSettings
 
     public $proxyPass = null;
 
+    public $fcgi = null;
+
     public $enableLogs = false;
 
     public function setPort($port)
@@ -131,6 +133,11 @@ class ApacheVirtualHostSettings
         $this->proxyPass = $proxyPass;
     }
 
+    public function setFcgi($fcgi)
+    {
+        $this->fcgi = $fcgi;
+    }
+
     public function setEnableLogs($enableLogs)
     {
         $this->enableLogs = $enableLogs;
@@ -158,6 +165,7 @@ class ApacheVirtualHostSettings
             'passengerAppType' => $this->passengerAppType,
             'passengerStartupFile' => $this->passengerStartupFile,
             'proxyPass' => $this->proxyPass,
+            'fcgi' => $this->fcgi,
             'enableLogs' => $this->enableLogs,
         ];
 

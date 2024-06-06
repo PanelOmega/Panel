@@ -27,10 +27,10 @@ class HostingSubscriptionTest extends TestCase
 //            $table->longText('docker_settings')->nullable();
 //        });
 
-        $docker = new DockerClient();
-        dd($docker->listContainers());
-
-        die();
+//        $docker = new DockerClient();
+//        dd($docker->listContainers());
+//
+//        die();
         $customerUsername = 'test' . rand(1000, 9999);
 
         $createCustomer = new Customer();

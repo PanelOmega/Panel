@@ -96,7 +96,7 @@ class Domain extends Model
             'Image' => 'php:5.6-fpm',
             'HostConfig'=>[
                 'Binds'=>[
-                    $this->domain_public . ':/var/www/html'
+                    $this->domain_public . ':'.$this->domain_public
                 ]
             ]
         ]);
@@ -290,10 +290,10 @@ class Domain extends Model
             $apacheVirtualHostBuilder->setAppVersion($appVersion);
 
             if ($this->server_application_type == 'docker_apache_php') {
-                $apacheVirtualHostBuilder->setAppType('docker');
+                $apacheVirtualHostBuilder->setAppType('php_proxy_fcgi');
                 $apacheVirtualHostBuilder->setAppVersion(null);
                 if (isset($this->docker_settings['containerIp'])) {
-                    $apacheVirtualHostBuilder->setProxyPass('http://'.$this->docker_settings['containerIp'].':9000');
+                    $apacheVirtualHostBuilder->setFCGI($this->docker_settings['containerIp'].':9000');
                 }
             }
 

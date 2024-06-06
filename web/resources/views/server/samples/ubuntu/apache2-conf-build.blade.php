@@ -143,11 +143,10 @@ IncludeOptional conf-enabled/*.conf
 
         @endif
 
-        @if($virtualHost['appType'] == 'php_fcgi')
-            AddHandler php5-fcgi .php
-            Action php5-fcgi /php5-fcgi
-            Alias /php5-fcgi /usr/lib/cgi-bin/php5-fcgi
-            FastCgiExternalServer /usr/lib/cgi-bin/php5-fcgi -host 172.17.0.2:9000 -pass-header Authorization
+        @if($virtualHost['appType'] == 'php_proxy_fcgi')
+            <Files *.php>
+                SetHandler "proxy:fcgi://{{$virtualHost['fcgi']}}"
+            </Files>
         @endif
 
         @if($virtualHost['appType'] == 'php')

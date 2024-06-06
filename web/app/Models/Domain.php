@@ -133,6 +133,10 @@ class Domain extends Model
                 ]
             ]
         ]);
+        
+        if (!isset($createDocker['response']['Id'])) {
+            throw new \Exception('Docker container not created. Error: '.json_encode($createDocker) ?? 'Unknown error');
+        }
 
         $startDockerContainer = $dockerClient->startContainer($createDocker['response']['Id']);
         $getDockerContainer = $dockerClient->getContainer($createDocker['response']['Id']);

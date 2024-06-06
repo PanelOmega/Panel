@@ -47,8 +47,6 @@ class PerformanceTest extends TestCase
                 $hostingSubscription->save();
                 $this->assertDatabaseHas('hosting_subscriptions', ['domain' => $hostingSubscription->domain]);
 
-                static::$lastCreatedHostingSubscriptionId = $hostingSubscription->id;
-
                 $apacheBuild = new ApacheBuild();
                 $apacheBuild->handle();
 

@@ -84,16 +84,18 @@ class Domain extends Model
 
         $containers = $dockerClient->listContainers()['response'];
        // dd($containers);
-        foreach ($containers as $container) {
-            $dockerClient->stopContainer($container['Id']);
-            $dockerClient->deleteContainer($container['Id']);
-        }
+//        foreach ($containers as $container) {
+//            $dockerClient->stopContainer($container['Id']);
+//            $dockerClient->deleteContainer($container['Id']);
+//        }
         //return;
 
-        $dockerClient->pullImage('php:5.6-fpm');
-        $dockerContainerName =  Str::slug('php-5.6-fpm-'. $this->domain);
+        $dockerImage = 'php:5.6-fpm';
+
+        $dockerClient->pullImage($dockerImage);
+        $dockerContainerName =  Str::slug($dockerImage . $this->domain);
         $createDocker = $dockerClient->createContainer($dockerContainerName, [
-            'Image' => 'php:5.6-fpm',
+            'Image' => $dockerImage,
             'HostConfig'=>[
                 'Binds'=>[
                     $this->domain_public . ':'.$this->domain_public
@@ -146,7 +148,7 @@ class Domain extends Model
 
         if ($installSamples) {
 
-            if ($this->server_application_type == 'apache_php') {
+            if ($this->server_application_type == 'docker_apache_php' || $this->server_application_type == 'apache_php') {
                 if (!is_file($this->domain_public . '/index.php')) {
                     $indexContent = view('server.samples.apache.php.app-php-sample')->render();
                     file_put_contents($this->domain_public . '/index.php', $indexContent);

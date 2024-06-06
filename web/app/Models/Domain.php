@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Jobs\ApacheBuild;
 use App\Server\VirtualHosts\DTO\ApacheVirtualHostSettings;
 use App\Virtualization\Docker\DockerClient;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -74,6 +75,10 @@ class Domain extends Model
             if ($model->server_application_type == 'docker_apache_php') {
                 $model->createDockerContainer();
             }
+
+            // This must be in background
+            $apacheBuild = new ApacheBuild(); 
+            $apacheBuild->handle();
 
         });
     }

@@ -72,7 +72,7 @@ class Domain extends Model
 
             $model->configureVirtualHost(true, true);
 
-            if ($model->server_application_type == 'docker_apache_php') {
+            if ($model->server_application_type == 'apache_php') {
                 $model->createDockerContainer();
             }
 
@@ -95,7 +95,15 @@ class Domain extends Model
 //        }
         //return;
 
-        $dockerImage = 'php:5.6-fpm';
+        if ($this->server_application_type !== 'apache_php') {
+            return;
+        }
+
+        $dockerImage = 'php:8.2-fpm';
+
+        if (isset($this->server_application_settings['php_version'])) {
+            $dockerImage = 'php:'.$this->server_application_settings['php_version'].'-fpm';
+        }
 
         $dockerClient->pullImage($dockerImage);
         $dockerContainerName =  Str::slug($dockerImage . $this->domain);
@@ -153,7 +161,7 @@ class Domain extends Model
 
         if ($installSamples) {
 
-            if ($this->server_application_type == 'docker_apache_php' || $this->server_application_type == 'apache_php') {
+            if ($this->server_application_type == 'apache_php') {
                 if (!is_file($this->domain_public . '/index.php')) {
                     $indexContent = view('server.samples.apache.php.app-php-sample')->render();
                     file_put_contents($this->domain_public . '/index.php', $indexContent);
@@ -236,17 +244,17 @@ class Domain extends Model
         $appType = 'php';
         $appVersion = '8.3';
 
-        if ($this->server_application_type == 'apache_php') {
-            if (isset($this->server_application_settings['php_version'])) {
-                $appVersion = $this->server_application_settings['php_version'];
-            }
-            if (!is_dir($this->domain_public . '/cgi-bin')) {
-                mkdir($this->domain_public . '/cgi-bin', 0755, true);
-            }
-            file_put_contents($this->domain_public . '/cgi-bin/php', '#!/usr/bin/php-cgi' . $appVersion . ' -cphp' . $appVersion . '-cgi.ini');
-            shell_exec('chown '.$findHostingSubscription->system_username.':'.$webUserGroup.' '.$this->domain_public . '/cgi-bin/php');
-            shell_exec('chmod -f 751 '.$this->domain_public . '/cgi-bin/php');
-        }
+//        if ($this->server_application_type == 'apache_php') {
+//            if (isset($this->server_application_settings['php_version'])) {
+//                $appVersion = $this->server_application_settings['php_version'];
+//            }
+//            if (!is_dir($this->domain_public . '/cgi-bin')) {
+//                mkdir($this->domain_public . '/cgi-bin', 0755, true);
+//            }
+//            file_put_contents($this->domain_public . '/cgi-bin/php', '#!/usr/bin/php-cgi' . $appVersion . ' -cphp' . $appVersion . '-cgi.ini');
+//            shell_exec('chown '.$findHostingSubscription->system_username.':'.$webUserGroup.' '.$this->domain_public . '/cgi-bin/php');
+//            shell_exec('chmod -f 751 '.$this->domain_public . '/cgi-bin/php');
+//        }
 
         $apacheVirtualHostBuilder = new ApacheVirtualHostSettings();
         $apacheVirtualHostBuilder->setDomain($this->domain);
@@ -296,7 +304,7 @@ class Domain extends Model
             $apacheVirtualHostBuilder->setAppType($appType);
             $apacheVirtualHostBuilder->setAppVersion($appVersion);
 
-            if ($this->server_application_type == 'docker_apache_php') {
+            if ($this->server_application_type == 'apache_php') {
                 $apacheVirtualHostBuilder->setAppType('php_proxy_fcgi');
                 $apacheVirtualHostBuilder->setAppVersion(null);
                 if (isset($this->docker_settings['containerIp'])) {

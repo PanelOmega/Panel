@@ -113,11 +113,6 @@ $application->register('test')
         echo 'Server created!'.PHP_EOL;
         echo date('H:i:s').PHP_EOL;
 
-        $server = $hetznerClient->servers()->get($server->id);
-     //   $delete = $server->delete();
-
-        return Command::SUCCESS;
-
         sleep(30);
 
         $testParams = [
@@ -142,6 +137,9 @@ $application->register('test')
 //            $passStages[] = 'Code Coverage Test';
 //        }
 
+        $server = $hetznerClient->servers()->get($server->id);
+        $delete = $server->delete();
+        
         if (count($passStages) === 1) {
             return Command::SUCCESS;
         }

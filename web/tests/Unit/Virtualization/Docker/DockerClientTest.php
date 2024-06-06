@@ -17,7 +17,6 @@ class DockerClientTest extends TestCase
      */
     public function testDockerImagePull(): void
     {
-
         $this->installDocker();
 
         $dockerClient = new DockerClient();
@@ -29,8 +28,9 @@ class DockerClientTest extends TestCase
 
     public function testDockerCreateContainer()
     {
+        $containerName = 'test' . rand(1000, 9999);
         $dockerClient = new DockerClient();
-        $createContainer = $dockerClient->createContainer([
+        $createContainer = $dockerClient->createContainer($containerName, [
             'Image' => 'nginx:latest',
         ]);
         $this->assertEquals(201, $createContainer['code']);
@@ -71,6 +71,14 @@ class DockerClientTest extends TestCase
         $stopContainer = $dockerClient->stopContainer(self::$lastCreatedContainerId);
         $this->assertEquals(204, $stopContainer['code']);
         $this->assertEquals('success', $stopContainer['status']);
+    }
+
+    public function testDockerGetContainer()
+    {
+        $dockerClient = new DockerClient();
+        $getContainer = $dockerClient->getContainer(self::$lastCreatedContainerId);
+        $this->assertEquals(200, $getContainer['code']);
+        $this->assertEquals('success', $getContainer['status']);
     }
 
     public function testDockerDeleteContainer()

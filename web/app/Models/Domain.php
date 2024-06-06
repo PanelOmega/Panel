@@ -77,7 +77,7 @@ class Domain extends Model
             }
 
             // This must be in background
-            $apacheBuild = new ApacheBuild(); 
+            $apacheBuild = new ApacheBuild();
             $apacheBuild->handle();
 
         });

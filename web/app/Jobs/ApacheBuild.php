@@ -32,12 +32,16 @@ class ApacheBuild implements ShouldQueue
         $getAllDomains = Domain::whereNot('status','<=>', 'broken')->get();
         $virtualHosts = [];
         foreach ($getAllDomains as $domain) {
-            $virtualHostSettings = $domain->configureVirtualHost();
-            if (isset($virtualHostSettings['virtualHostSettings'])) {
-                $virtualHosts[] = $virtualHostSettings['virtualHostSettings'];
-            }
-            if (isset($virtualHostSettings['virtualHostSettingsWithSSL'])) {
-                $virtualHosts[] = $virtualHostSettings['virtualHostSettingsWithSSL'];
+            try {
+                $virtualHostSettings = $domain->configureVirtualHost();
+                if (isset($virtualHostSettings['virtualHostSettings'])) {
+                    $virtualHosts[] = $virtualHostSettings['virtualHostSettings'];
+                }
+                if (isset($virtualHostSettings['virtualHostSettingsWithSSL'])) {
+                    $virtualHosts[] = $virtualHostSettings['virtualHostSettingsWithSSL'];
+                }
+            } catch (\Exception $e) {
+           //     echo $e->getMessage();
             }
         }
 

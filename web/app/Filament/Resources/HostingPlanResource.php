@@ -6,7 +6,7 @@ use App\Filament\Enums\ServerApplicationType;
 use App\Filament\Resources\HostingPlanResource\Pages;
 use App\Models\HostingPlan;
 use App\Models\RemoteDatabaseServer;
-use App\SupportedApplicationTypes;
+use App\Server\SupportedApplicationTypes;
 use Filament\Forms;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Form;
@@ -37,28 +37,28 @@ class HostingPlanResource extends Resource
 
                     Forms\Components\Tabs\Tab::make('General')->schema([
 
-                        //                        RadioDeck::make('default_server_application_type')
-                        //                            ->default('apache_php')
-                        //                            ->options(ServerApplicationType::class)
-                        //                            ->icons(ServerApplicationType::class)
-                        //                            ->descriptions(ServerApplicationType::class)
-                        //                            ->required()
-                        //                            ->live()
-                        //                            ->color('primary')
-                        //                            ->columns(2),
+                                                RadioDeck::make('default_server_application_type')
+                                                    ->default('apache_php')
+                                                    ->options(ServerApplicationType::class)
+                                                    ->icons(ServerApplicationType::class)
+                                                    ->descriptions(ServerApplicationType::class)
+                                                    ->required()
+                                                    ->live()
+                                                    ->color('primary')
+                                                    ->columns(2),
 
-                        // PHP Configuration
-                        //                        Select::make('default_server_application_settings.php_version')
-                        //                            ->hidden(function (Get $get) {
-                        //                                return $get('default_server_application_type') !== 'apache_php';
-                        //                            })
-                        //                            ->default('8.3')
-                        //                            ->label('PHP Version')
-                        //                            ->options(SupportedApplicationTypes::getPHPVersions())
-                        //                            ->columns(5)
-                        //                            ->required(),
+//                         PHP Configuration
+                                                Select::make('default_server_application_settings.php_version')
+                                                    ->hidden(function (Get $get) {
+                                                        return $get('default_server_application_type') !== 'apache_php';
+                                                    })
+                                                    ->default('8.3')
+                                                    ->label('PHP Version')
+                                                    ->options(SupportedApplicationTypes::getPHPVersions())
+                                                    ->columns(5)
+                                                    ->required(),
 
-                        // End of PHP Configuration
+//                         End of PHP Configuration
 
                         // Node.js Configuration
                         //                        Select::make('default_server_application_settings.nodejs_version')

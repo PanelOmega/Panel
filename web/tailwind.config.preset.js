@@ -6,6 +6,7 @@ export default {
     content: [
         './vendor/filament/**/*.blade.php',
         './resources/**/*.blade.php',
+        './vendor/jaocero/radio-deck/resources/views/**/*.blade.php',
     ],
     theme: {
         extend: {

@@ -81,6 +81,12 @@ $application->register('test')
             }
             echo 'ID: '.$server->id.' Name:'.$server->name.' Status: '.$server->status.PHP_EOL;
         }
+
+
+        foreach ($hetznerClient->serverTypes()->all() as $serverType) {
+            echo $serverType->name.PHP_EOL;
+        }
+        
 //
         $serverType = $hetznerClient->serverTypes()->get(1);
         $location = $hetznerClient->locations()->getByName('fsn1');

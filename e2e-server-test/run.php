@@ -81,10 +81,20 @@ $application->register('test')
             }
             echo 'ID: '.$server->id.' Name:'.$server->name.' Status: '.$server->status.PHP_EOL;
         }
-        
+
+
+        $serverTypeId = 1;
+        foreach ($hetznerClient->serverTypes()->all() as $serverType) {
+            if ($serverType->name == 'cx52') {
+                $serverTypeId = $serverType->id;
+            }
+        }
+
+//
+        $serverType = $hetznerClient->serverTypes()->get($serverTypeId);
         $location = $hetznerClient->locations()->getByName('fsn1');
         $image = $hetznerClient->images()->getByName('ubuntu-22.04');
-        $apiResponse = $hetznerClient->servers()->createInLocation($serverName, 'cx52', $image, $location, [$hetznerSSHName]);
+        $apiResponse = $hetznerClient->servers()->createInLocation($serverName, $serverType, $image, $location, [$hetznerSSHName]);
         $server = $apiResponse->getResponsePart('server');
         $action = $apiResponse->getResponsePart('action');
         $nextActions = $apiResponse->getResponsePart('next_actions');

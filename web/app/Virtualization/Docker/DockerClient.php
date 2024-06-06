@@ -74,6 +74,11 @@ class DockerClient
         return $this->request('POST', "/containers/$containerId/restart");
     }
 
+    public function getContainer($containerId): array
+    {
+        return $this->request('GET', "/containers/$containerId/json");
+    }
+
     public function deleteContainer($containerId): array
     {
         return $this->request('DELETE', "/containers/$containerId");

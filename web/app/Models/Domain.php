@@ -35,6 +35,7 @@ class Domain extends Model
 
     protected $casts = [
         'server_application_settings' => 'array',
+        'docker_settings' => 'array'
     ];
 
     public static function boot()
@@ -70,35 +71,48 @@ class Domain extends Model
 
             $model->configureVirtualHost(true, true);
 
-//            $dockerClient = new DockerClient();
-//
-//            $containers = $dockerClient->listContainers()['response'];
-//           // dd($containers);
-//            foreach ($containers as $container) {
-//                $dockerClient->stopContainer($container['Id']);
-//                $dockerClient->deleteContainer($container['Id']);
-//            }
-//            //return;
-//
-//            $dockerClient->pullImage('php:5.6-fpm');
-//            $dockerContainerName =  Str::slug('php-5.6-fpm-'. $model->domain);
-//            $createDocker = $dockerClient->createContainer($dockerContainerName, [
-//                'Image' => 'php:5.6-fpm',
-//                'HostConfig'=>[
-//                    'Binds'=>[
-//                        '/var/www/html:/var/www/html'
-//                    ]
-//                ]
-//            ]);
-//
-//            dump($createDocker);
-//
-//            $startDockerContainer = $dockerClient->startContainer($createDocker['response']['Id']);
-//            dd($startDockerContainer);
+            if ($model->server_application_type == 'docker_apache_php') {
+                $model->createDockerContainer();
+            }
 
         });
     }
 
+    public function createDockerContainer()
+    {
+        $dockerClient = new DockerClient();
+
+        $containers = $dockerClient->listContainers()['response'];
+       // dd($containers);
+        foreach ($containers as $container) {
+            $dockerClient->stopContainer($container['Id']);
+            $dockerClient->deleteContainer($container['Id']);
+        }
+        //return;
+
+        $dockerClient->pullImage('php:5.6-fpm');
+        $dockerContainerName =  Str::slug('php-5.6-fpm-'. $this->domain);
+        $createDocker = $dockerClient->createContainer($dockerContainerName, [
+            'Image' => 'php:5.6-fpm',
+            'HostConfig'=>[
+                'Binds'=>[
+                    $this->domain_public . ':/var/www/html'
+                ]
+            ]
+        ]);
+
+        $startDockerContainer = $dockerClient->startContainer($createDocker['response']['Id']);
+        $getDockerContainer = $dockerClient->getContainer($createDocker['response']['Id']);
+        $dockerContainerIp = $getDockerContainer['response']['NetworkSettings']['Networks']['bridge']['IPAddress'];
+
+        $this->docker_settings = [
+            'containerId' => $createDocker['response']['Id'],
+            'containerName' => $dockerContainerName,
+            'containerIp' => $dockerContainerIp
+        ];
+        $this->saveQuietly();
+
+    }
 
     public function configureVirtualHost($fixPermissions = false, $installSamples = false)
     {
@@ -274,6 +288,14 @@ class Domain extends Model
             $apacheVirtualHostBuilder->setAdditionalServices($findHostingPlan->additional_services);
             $apacheVirtualHostBuilder->setAppType($appType);
             $apacheVirtualHostBuilder->setAppVersion($appVersion);
+
+            if ($this->server_application_type == 'docker_apache_php') {
+                $apacheVirtualHostBuilder->setAppType('docker');
+                $apacheVirtualHostBuilder->setAppVersion(null);
+                if (isset($this->docker_settings['containerIp'])) {
+                    $apacheVirtualHostBuilder->setProxyPass('http://'.$this->docker_settings['containerIp'].':9000');
+                }
+            }
 
 //            if ($this->server_application_type == 'apache_nodejs') {
 //                $apacheVirtualHostBuilder->setAppType('nodejs');

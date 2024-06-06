@@ -1,7 +1,7 @@
 #=========================================================================#
-# PHYRE HOSTING PANEL - Default Web Domain Template                       #
+# OMEGA PANEL - Default Web Domain Template                       #
 # DO NOT MODIFY THIS FILE! CHANGES WILL BE LOST WHEN REBUILDING DOMAINS   #
-# https://phyrepanel.com/docs/server-administration/web-templates.html    #
+# https://omegapanel.com/docs/server-administration/web-templates.html    #
 #=========================================================================#
 
 DefaultRuntimeDir ${APACHE_RUN_DIR}
@@ -141,6 +141,13 @@ IncludeOptional conf-enabled/*.conf
                 PassengerStartupFile {{$virtualHost['passengerStartupFile']}}
             @endif
 
+        @endif
+
+        @if($virtualHost['appType'] == 'php_fcgi')
+            AddHandler php5-fcgi .php
+            Action php5-fcgi /php5-fcgi
+            Alias /php5-fcgi /usr/lib/cgi-bin/php5-fcgi
+            FastCgiExternalServer /usr/lib/cgi-bin/php5-fcgi -host 172.17.0.2:9000 -pass-header Authorization
         @endif
 
         @if($virtualHost['appType'] == 'php')

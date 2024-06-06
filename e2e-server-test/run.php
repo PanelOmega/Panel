@@ -105,11 +105,7 @@ $application->register('test')
         echo date('H:i:s').PHP_EOL;
 
         $server = $hetznerClient->servers()->get($server->id);
-        $delete = $server->delete();
-
-        var_dump($server->id);
-        var_dump($server);
-        var_dump($delete);
+     //   $delete = $server->delete();
 
         return Command::SUCCESS;
 

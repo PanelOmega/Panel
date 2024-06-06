@@ -11,6 +11,7 @@ use App\Server\SupportedApplicationTypes;
 use App\Virtualization\Docker\DockerClient;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Str;
 use Tests\TestCase;
 
 class HostingSubscriptionTest extends TestCase
@@ -33,9 +34,9 @@ class HostingSubscriptionTest extends TestCase
         $createHostingPlan = new HostingPlan();
         $createHostingPlan->name = 'test' . rand(1000, 9999);
         $createHostingPlan->default_server_application_type = 'apache_php';
-        $createHostingPlan->default_server_application_settings = json_encode([
+        $createHostingPlan->default_server_application_settings = [
             'php_version' => '5.6',
-        ]);
+        ];
         $createHostingPlan->save();
         $this->assertDatabaseHas('hosting_plans', ['name' => $createHostingPlan->name]);
 
@@ -52,6 +53,14 @@ class HostingSubscriptionTest extends TestCase
         $apacheBuild = new ApacheBuild();
         $apacheBuild->handle();
 
+        $findDomain = Domain::where('hosting_subscription_id', $hostingSubscription->id)->first();
+        $this->assertDatabaseHas('domains', ['domain' => $findDomain->domain]);
+
+        // Test domain php version
+        file_put_contents($findDomain->domain_public . '/index.php', '<?php echo "site-is-ok, "; echo phpversion(); ?>');
+        $domainHomePageContent = file_get_contents('http://' . $hostingSubscription->domain);
+        $this->assertTrue(Str::contains($domainHomePageContent, 'site-is-ok, 5.6'));
+
     }
 
     public function testHostingSubscriptionDeletion(): void
@@ -61,7 +70,7 @@ class HostingSubscriptionTest extends TestCase
         $this->assertDatabaseMissing('hosting_subscriptions', ['id' => static::$lastCreatedHostingSubscriptionId]);
     }
 
-    public function testHostingSubscriptionCreationMultiPHPVersions()
+    public function testHostingSubscriptionCreationMultiPhpVersions()
     {
         $customerUsername = 'test' . rand(1000, 9999);
 
@@ -80,9 +89,9 @@ class HostingSubscriptionTest extends TestCase
             $createHostingPlan = new HostingPlan();
             $createHostingPlan->name = 'test' . rand(1000, 9999);
             $createHostingPlan->default_server_application_type = 'apache_php';
-            $createHostingPlan->default_server_application_settings = json_encode([
+            $createHostingPlan->default_server_application_settings = [
                 'php_version' => $phpVersion,
-            ]);
+            ];
             $createHostingPlan->save();
             $this->assertDatabaseHas('hosting_plans', ['name' => $createHostingPlan->name]);
 
@@ -98,6 +107,14 @@ class HostingSubscriptionTest extends TestCase
 
             $apacheBuild = new ApacheBuild();
             $apacheBuild->handle();
+
+            $findDomain = Domain::where('hosting_subscription_id', $hostingSubscription->id)->first();
+            $this->assertDatabaseHas('domains', ['domain' => $findDomain->domain]);
+
+            // Test domain php version
+            file_put_contents($findDomain->domain_public . '/index.php', '<?php echo "site-is-ok, "; echo phpversion(); ?>');
+            $domainHomePageContent = file_get_contents('http://' . $hostingSubscription->domain);
+            $this->assertTrue(strpos($domainHomePageContent, 'site-is-ok, '.$phpVersion) !== false);
 
         }
     }

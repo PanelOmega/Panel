@@ -10,8 +10,8 @@ class ApacheInstaller
 
     public static function isApacheInstalled(): array
     {
-        $dockerVersion = shell_exec('apache2 -v');
-        if (str_contains($dockerVersion, 'Apache2 version')) {
+        $dockerVersion = shell_exec('service apache2 status');
+        if (str_contains($dockerVersion, 'The Apache HTTP Server')) {
             return [
                 'status' => 'success',
                 'message' => 'Apache2 is installed.',
@@ -68,7 +68,7 @@ class ApacheInstaller
         foreach ($commands as $command) {
             $shellFileContent .= $command . PHP_EOL;
         }
-        $shellFileContent .= 'echo "All packages installed successfully!"' . PHP_EOL;
+        $shellFileContent .= 'echo "Apache2 is installed successfully!"' . PHP_EOL;
         $shellFileContent .= 'echo "DONE!"' . PHP_EOL;
         $shellFileContent .= 'rm -f /tmp/apache-installer.sh';
 

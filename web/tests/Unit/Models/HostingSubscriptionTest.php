@@ -13,13 +13,18 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Str;
 use Tests\TestCase;
+use Tests\Unit\Traits\HasDocker;
 
 class HostingSubscriptionTest extends TestCase
 {
+    use HasDocker;
+
     public static $lastCreatedHostingSubscriptionId;
 
     public function testHostingSubscriptionCreation(): void
     {
+        $this->installDocker();
+
         $customerUsername = 'test' . rand(1000, 9999);
 
         $createCustomer = new Customer();

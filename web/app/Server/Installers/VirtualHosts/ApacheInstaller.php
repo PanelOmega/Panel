@@ -73,6 +73,11 @@ class ApacheInstaller
         $shellFileContent .= 'rm -f /tmp/apache-installer.sh';
 
         file_put_contents('/tmp/apache-installer.sh', $shellFileContent);
+
+        if (! is_dir(dirname($this->logPath))) {
+            shell_exec('mkdir -p '.dirname($this->logPath));
+        }
+
         shell_exec('bash /tmp/apache-installer.sh >> ' . $this->logPath . ' &');
 
         return [

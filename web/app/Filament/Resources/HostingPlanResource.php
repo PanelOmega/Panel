@@ -22,7 +22,7 @@ class HostingPlanResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-server-stack';
 
-    protected static ?string $navigationGroup = 'Hosting Services';
+//    protected static ?string $navigationGroup = 'Hosting Services';
 
     protected static ?int $navigationSort = 4;
 

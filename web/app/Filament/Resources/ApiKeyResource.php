@@ -16,11 +16,10 @@ class ApiKeyResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-key';
 
-    protected static ?string $navigationGroup = 'Server Management';
+//    protected static ?string $navigationGroup = 'Server Management';
 
     protected static ?int $navigationSort = 5;
 
-    protected static bool $shouldRegisterNavigation = false;
 
     public static function form(Form $form): Form
     {

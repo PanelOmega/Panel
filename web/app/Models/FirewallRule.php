@@ -9,6 +9,12 @@ class FirewallRule extends Model
 {
     use \Sushi\Sushi;
 
+    protected $fillable = [
+        'action',
+        'port_or_ip',
+        'comment',
+    ];
+
     protected $schema = [
         'id'=>'integer',
         'action'=>'string',
@@ -20,6 +26,24 @@ class FirewallRule extends Model
         'to_port'=>'string',
         'comment'=>'string',
     ];
+
+    public static function boot()
+    {
+        parent::boot();
+
+        static::deleting(function ($model) {
+            shell_exec('echo "y" | sudo ufw delete ' . $model->id);
+        });
+
+        static::creating(function ($model) {
+            $command = 'sudo ufw ';
+            $command .= $model->action . ' ';
+            $command .= $model->port_or_ip . ' ';
+            $command .= 'comment "' . $model->comment . '"';
+            shell_exec($command);
+            unset($model->port_or_ip);
+        });
+    }
 
     public function getRows()
     {

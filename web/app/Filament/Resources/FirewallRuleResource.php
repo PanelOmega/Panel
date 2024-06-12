@@ -19,6 +19,8 @@ class FirewallRuleResource extends Resource
 
     protected static ?string $navigationIcon = 'omega-firewall';
 
+    protected static ?int $navigationSort = 40;
+
     public static function form(Form $form): Form
     {
         return $form
@@ -26,8 +28,8 @@ class FirewallRuleResource extends Resource
                 Forms\Components\Select::make('action')
                     ->label('Action')
                     ->options([
-                        'allow' => 'Allow',
-                        'deny' => 'Deny',
+                        'allow' => 'ALLOW',
+                        'deny' => 'DENY',
                     ])
                     ->columnSpanFull()
                     ->required(),
@@ -35,6 +37,9 @@ class FirewallRuleResource extends Resource
                     ->label('Port or IP')
                     ->columnSpanFull()
                     ->required(),
+                Forms\Components\Textarea::make('comment')
+                    ->label('Comment')
+                    ->columnSpanFull(),
             ]);
     }
 

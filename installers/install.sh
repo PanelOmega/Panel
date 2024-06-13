@@ -24,12 +24,6 @@ if [[ $(uname -s) != "Linux" ]]; then
     exit 1
 fi
 
-# Check if the user is running a supported distro
-if [[ $(cat /etc/os-release | grep -w "ID_LIKE" | cut -d "=" -f 2) != "debian" ]]; then
-    echo "This script must be run on a Debian-based system. Exiting..."
-    exit 1
-fi
-
 # Check if the user is running a supported distro version
 DISTRO_VERSION=$(cat /etc/os-release | grep -w "VERSION_ID" | cut -d "=" -f 2)
 DISTRO_VERSION=${DISTRO_VERSION//\"/} # Remove quotes from version string

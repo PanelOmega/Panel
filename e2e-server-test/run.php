@@ -92,7 +92,8 @@ $application->register('test')
 
         $serverType = $hetznerClient->serverTypes()->get($serverTypeId);
         $location = $hetznerClient->locations()->getByName('fsn1');
-        $image = $hetznerClient->images()->getByName('alma-9');
+        $image = $hetznerClient->images()->getByName('ubuntu-22.04');
+        //$image = $hetznerClient->images()->getByName('alma-9');
         $apiResponse = $hetznerClient->servers()->createInLocation($serverName, $serverType, $image, $location, [$hetznerSSHName]);
         $server = $apiResponse->getResponsePart('server');
         $action = $apiResponse->getResponsePart('action');
@@ -102,7 +103,7 @@ $application->register('test')
         echo 'IP: '.$server->publicNet->ipv4->ip.PHP_EOL;
 //        echo 'Password: '.$apiResponse->getResponsePart('root_password').PHP_EOL;
         echo 'Now we wait on the success of the server creation!'.PHP_EOL;
-        echo date('H:i:s').PHP_EOL; 
+        echo date('H:i:s').PHP_EOL;
 
         $action->waitUntilCompleted();
         foreach ($nextActions as $nextAction) {

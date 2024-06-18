@@ -93,7 +93,7 @@ $application->register('test')
 //
         $serverType = $hetznerClient->serverTypes()->get($serverTypeId);
         $location = $hetznerClient->locations()->getByName('fsn1');
-        $image = $hetznerClient->images()->getByName('almalinux-9');
+        $image = $hetznerClient->images()->getByName('alma-9');
         $apiResponse = $hetznerClient->servers()->createInLocation($serverName, $serverType, $image, $location, [$hetznerSSHName]);
         $server = $apiResponse->getResponsePart('server');
         $action = $apiResponse->getResponsePart('action');

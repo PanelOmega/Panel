@@ -91,6 +91,7 @@ $application->register('test')
         }
 
 //
+        dd($hetznerClient->images()->all());
         $serverType = $hetznerClient->serverTypes()->get($serverTypeId);
         $location = $hetznerClient->locations()->getByName('fsn1');
         $image = $hetznerClient->images()->getByName('alma-9');

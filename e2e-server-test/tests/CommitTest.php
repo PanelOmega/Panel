@@ -10,10 +10,10 @@ class CommitTest extends BaseTest
 
         $this->sshExec('cd Panel && git checkout ' . $this->gitBranch, true);
 
-        $this->sshExec('chmod +x Panel/installers/ubuntu-22.04/install-partial/install_base.sh');
+        $this->sshExec('chmod +x Panel/installers/almalinux-9.4/install-partial/install_base.sh');
         $this->sshExec('chmod +x Panel/installers/ubuntu-20.04/install-partial/install_web.sh');
 
-        $this->sshExec('./Panel/installers/ubuntu-22.04/install-partial/install_base.sh', true, 8000);
+        $this->sshExec('./Panel/installers/almalinux-9.4/install-partial/install_base.sh', true, 8000);
 
         $this->sshExec('cp -r Panel/web/ /usr/local/omega/web/', true);
 

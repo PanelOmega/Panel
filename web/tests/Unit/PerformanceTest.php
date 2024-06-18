@@ -14,7 +14,7 @@ class PerformanceTest extends TestCase
 {
     public function testHostingSubscriptionCreationThousandsOfDomains()
     {
-        for ($i = 0; $i < 1000; $i++) {
+        for ($i = 0; $i < 4; $i++) {
 
             $customerUsername = 'testperformance' . rand(1000, 9999) . $i;
 

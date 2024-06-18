@@ -5,6 +5,7 @@ class CommitTest extends BaseTest
 {
     public function runTest()
     {
+        $this->sshExec('yum install git', true, 8000);
         $this->sshExec('git clone https://github.com/PanelOmega/Panel.git', true, 8000);
 
         $this->sshExec('cd Panel && git checkout ' . $this->gitBranch, true);

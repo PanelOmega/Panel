@@ -85,7 +85,8 @@ $application->register('test')
 
         $serverTypeId = 1;
         foreach ($hetznerClient->serverTypes()->all() as $serverType) {
-            if ($serverType->name == 'cx52') {
+            //cx52
+            if ($serverType->name == 'cpx21') {
                 $serverTypeId = $serverType->id;
             }
         }
@@ -93,7 +94,7 @@ $application->register('test')
 //
         $serverType = $hetznerClient->serverTypes()->get($serverTypeId);
         $location = $hetznerClient->locations()->getByName('fsn1');
-        $image = $hetznerClient->images()->getByName('ubuntu-22.04');
+        $image = $hetznerClient->images()->getByName('alma-9');
         $apiResponse = $hetznerClient->servers()->createInLocation($serverName, $serverType, $image, $location, [$hetznerSSHName]);
         $server = $apiResponse->getResponsePart('server');
         $action = $apiResponse->getResponsePart('action');

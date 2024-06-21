@@ -24,6 +24,8 @@ DEPENDENCIES_LIST=(
     "apt-transport-https"
     "software-properties-common"
     "supervisor"
+    "libsodium"
+    "libsodium-devel"
 )
 # Check if the dependencies are installed
 for DEPENDENCY in "${DEPENDENCIES_LIST[@]}"; do

@@ -45,11 +45,11 @@ wget https://raw.githubusercontent.com/PanelOmega/Panel/main/installers/ubuntu-2
 mv greeting.sh /etc/profile.d/omega-greeting.sh
 
 # Install OMEGA PHP
-wget https://github.com/PanelOmega/PHP/raw/main/compilators/debian/php/dist/omega-php-8.2.0-ubuntu-20.04.deb
+wget https://github.com/PanelOmega/Dist/raw/main/compilators/debian/php/dist/omega-php-8.2.0-ubuntu-20.04.deb
 dpkg -i omega-php-8.2.0-ubuntu-20.04.deb
 
 # Install OMEGA NGINX
-wget https://github.com/PanelOmega/NGINX/raw/main/compilators/debian/nginx/dist/omega-nginx-1.24.0-ubuntu-20.04.deb
+wget https://github.com/PanelOmega/Dist/raw/main/compilators/debian/nginx/dist/omega-nginx-1.24.0-ubuntu-20.04.deb
 dpkg -i omega-nginx-1.24.0-ubuntu-20.04.deb
 
 service omega start

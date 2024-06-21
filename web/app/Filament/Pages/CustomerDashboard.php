@@ -1,6 +1,6 @@
 <?php
 
-namespace app\Filament\Pages;
+namespace App\Filament\Pages;
 
 use App\ModulesManager;
 use Filament\Pages\Page;
@@ -11,7 +11,7 @@ class CustomerDashboard extends Page
 
     protected static string $view = 'filament.pages.customer-dashboard';
 
-    protected static ?string $navigationGroup = 'Server Management';
+    protected static ?string $navigationGroup = 'Demo Pages';
 
     protected static ?string $navigationLabel = 'Customer Dashboard';
 

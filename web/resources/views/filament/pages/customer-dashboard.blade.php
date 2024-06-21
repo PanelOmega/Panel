@@ -113,7 +113,7 @@
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 1 0-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H6.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z" />
                         </svg>
-                        <p class="dark:text-primary-400 text-primary-500"> 10iskata.microweber.me </p>
+                        <p class="dark:text-primary-400 text-primary-500"> 10iskata.yourdomain.com </p>
                     </div>
                     <div class="border-b dark:border-white/10 border-black/5 pt-[1rem]"></div>
 
@@ -222,7 +222,7 @@
 
 
     <div class="py-4">
-        <p class="text-white/50">&copy; 2024 Phyre Hosting Panel. All rights reserved.</p>
+        <p class="text-white/50">&copy; 2024 Omega Hosting Panel. All rights reserved.</p>
     </div>
 
 </div>

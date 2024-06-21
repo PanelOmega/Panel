@@ -19,6 +19,12 @@ class AppServiceProvider extends ServiceProvider
                 'prefix' => 'omega',
             ]);
         });
+        $this->callAfterResolving(Factory::class, function (Factory $factory) {
+            $factory->add('omega_customer', [
+                'path' => __DIR__ . '/../../resources/omega-customer-svg',
+                'prefix' => 'omega_customer',
+            ]);
+        });
     }
 
     /**

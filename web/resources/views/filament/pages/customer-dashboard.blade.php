@@ -55,11 +55,11 @@
                     <div x-data="{ open: false }" class="bg-white/10 mt-[2rem] rounded-xl px-2 shadow-sm  transition duration-500
                     hover:shadow-lg cursor-pointer">
                         <div  x-on:click="open = ! open" class="flex justify-between items-center">
-                            <div class="flex gap-4 p-[1rem]">
-                                <div class="mt-1">
-                                    @svg($menuItem['icon'], "h-12 w-12 text-black dark:text-white")
+                            <div class="flex gap-4 items-center px-4">
+                                <div>
+                                    @svg($menuItem['icon'], "h-10 w-10 text-black dark:text-white")
                                 </div>
-                                <div class="mt-[1rem]">{{$menuItem['title']}}</div>
+                                <div>{{$menuItem['title']}}</div>
                             </div>
                             <div class="p-[1rem]">
                                 <button>
@@ -77,7 +77,7 @@
 
                         <div class="border-t dark:border-white/10 border-black/10"></div>
 
-                        <div x-show="open" x-transition.duration.500ms class="grid xl:grid-cols-3 sm:grid-cols-2 grid-cols-1">
+                        <div x-show="open" x-transition.duration.500ms class="grid xl:grid-cols-3 sm:grid-cols-2 grid-cols-1 p-4">
                             @foreach($menuItem['menu'] as $menuItemLink)
 
                                 <div class="dark:text-white text-black transition duration-500
@@ -85,10 +85,10 @@
                                  dark:hover:text-primary-400 hover:text-primary-600 px-[1rem] py-3 mt-2">
                                     <a href="{{$menuItemLink['link']}}" class="flex gap-[1rem] items-center">
                                         <div class="">
-                                            @svg($menuItemLink['icon'], "h-12 w-12 text-black dark:text-white
+                                            @svg($menuItemLink['icon'], "h-10 w-10 text-black dark:text-white
                                             dark:group-hover:text-primary-400 transition duration-500 group-hover:text-primary-600")
                                         </div>
-                                        <div class="items-center">{{$menuItemLink['title']}}</div>
+                                        <div class="items-center text-sm">{{$menuItemLink['title']}}</div>
                                     </a>
                                 </div>
 

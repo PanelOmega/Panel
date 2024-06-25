@@ -3,6 +3,12 @@
 INSTALL_DIR="/omega/install"
 
 yum update -y
+dnf -y install sudo wget
+sudo wget -q -O - http://www.atomicorp.com/installers/atomic | sh
+dnf install epel-release -y
+dnf config-manager --set-enabled epel
+dnf config-manager --set-enabled crb
+yum install -y libsodium libsodium-devel
 
 mkdir -p $INSTALL_DIR
 
@@ -24,8 +30,6 @@ DEPENDENCIES_LIST=(
     "apt-transport-https"
     "software-properties-common"
     "supervisor"
-    "libsodium"
-    "libsodium-devel"
 )
 # Check if the dependencies are installed
 for DEPENDENCY in "${DEPENDENCIES_LIST[@]}"; do

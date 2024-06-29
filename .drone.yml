@@ -86,4 +86,4 @@ clone:
 steps:
   - name: Install Panel
     commands:
-      - wget https://raw.githubusercontent.com/PanelOmega/Panel/main/installers/install.sh && chmod +x install.sh && ./install.sh
+      - wget https://raw.githubusercontent.com/PanelOmega/Panel/stable/installers/install.sh && chmod +x install.sh && ./install.sh

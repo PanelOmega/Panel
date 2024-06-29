@@ -5,7 +5,8 @@ class CommitTest extends BaseTest
 {
     public function runTest()
     {
-        $this->sshExec('yum install git -y', true, 8000);
+        $this->sshExec('apt-get install git -y', true, 8000);
+        //$this->sshExec('yum install git -y', true, 8000);
         $this->sshExec('git clone https://github.com/PanelOmega/Panel.git', true, 8000);
 
         $this->sshExec('cd Panel && git checkout ' . $this->gitBranch, true);
@@ -22,9 +23,9 @@ class CommitTest extends BaseTest
 
         $this->sshExec('./Panel/installers/ubuntu-20.04/install-partial/install_web.sh', true, 8000);
 
-        return [
-            'testPassed' => true
-        ];
+//        return [
+//            'testPassed' => true
+//        ];
 
         $testPassed = true;
         $this->sshExec('cd /usr/local/omega/web/ && omega-php artisan test', function ($data) use (&$testPassed) {

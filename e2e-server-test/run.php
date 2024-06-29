@@ -16,6 +16,7 @@ $application = new Application();
 $application->setName('PhyrePanel E2E Test');
 $application->setVersion('1.0.0');
 $application->register('test')
+    ->addOption('OS', null, InputOption::VALUE_REQUIRED)
     ->addOption('HETZNER_API_KEY', null, InputOption::VALUE_REQUIRED)
     ->addOption('GIT_REPO_URL', null, InputOption::VALUE_REQUIRED)
     ->addOption('GIT_BRANCH', null, InputOption::VALUE_REQUIRED)
@@ -23,8 +24,7 @@ $application->register('test')
     ->addOption('CODECOV_TOKEN', null, InputOption::VALUE_OPTIONAL)
     ->setCode(function (InputInterface $input, OutputInterface $output): int {
 
-        $os = 'almalinux-9.4';
-
+        $os = $input->getOption('OS');
         $gitCommit = $input->getOption('GIT_COMMIT');
         $codecovToken = $input->getOption('CODECOV_TOKEN');
         $gitCommit = substr($gitCommit, 0, 12);
@@ -97,7 +97,7 @@ $application->register('test')
         $serverType = $hetznerClient->serverTypes()->get($serverTypeId);
         $location = $hetznerClient->locations()->getByName('fsn1');
 
-        if ($os == 'almalinux-9.4') {
+        if ($os == 'AlmaLinux-9.4') {
             $image = $hetznerClient->images()->getByName('alma-9');
         } else {
             $image = $hetznerClient->images()->getByName('ubuntu-22.04');
@@ -131,6 +131,7 @@ $application->register('test')
             'serverIp' => $server->publicNet->ipv4->ip,
             'privateSSHKeyFile' => __DIR__ . '/' . $privateSSHKeyFile,
             'codecovToken' => $codecovToken,
+            'os' => $os,
         ];
 
         $passStages = [];

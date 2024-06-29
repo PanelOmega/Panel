@@ -5,9 +5,7 @@ class CommitTest extends BaseTest
 {
     public function runTest()
     {
-        $os = 'almalinux-9.4';
-
-        if ($os == 'almalinux-9.4') {
+        if ($this->os == 'AlmaLinux-9.4') {
             $this->sshExec('yum install git -y', true, 8000);
         } else {
             $this->sshExec('apt-get install git -y', true, 8000);
@@ -17,10 +15,10 @@ class CommitTest extends BaseTest
 
         $this->sshExec('cd Panel && git checkout dev', true);
 
-        $this->sshExec('chmod +x Panel/installers/'.$os.'/install-partial/install_base.sh dev');
+        $this->sshExec('chmod +x Panel/installers/'.strtolower($this->os).'/install-partial/install_base.sh dev');
         $this->sshExec('chmod +x Panel/installers/ubuntu-20.04/install-partial/install_web.sh dev');
 
-        $this->sshExec('./Panel/installers/'.$os.'/install-partial/install_base.sh dev', true, 8000);
+        $this->sshExec('./Panel/installers/'.strtolower($this->os).'/install-partial/install_base.sh dev', true, 8000);
 
         $this->sshExec('cp -r Panel/web/ /usr/local/omega/web/', true);
 

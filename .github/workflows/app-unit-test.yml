@@ -11,7 +11,7 @@ jobs:
       fail-fast: true
       max-parallel: 1
       matrix:
-        os: ["Ubuntu-22.04", "AlmaLinux-9.3"]
+        os: ["AlmaLinux-9.3", "Ubuntu-22.04"]
 
     steps:
       - name: Checkout Repository

@@ -23,6 +23,8 @@ $application->register('test')
     ->addOption('CODECOV_TOKEN', null, InputOption::VALUE_OPTIONAL)
     ->setCode(function (InputInterface $input, OutputInterface $output): int {
 
+        $os = 'almalinux-9.4';
+
         $gitCommit = $input->getOption('GIT_COMMIT');
         $codecovToken = $input->getOption('CODECOV_TOKEN');
         $gitCommit = substr($gitCommit, 0, 12);
@@ -94,8 +96,13 @@ $application->register('test')
 //
         $serverType = $hetznerClient->serverTypes()->get($serverTypeId);
         $location = $hetznerClient->locations()->getByName('fsn1');
-      //  $image = $hetznerClient->images()->getByName('alma-9');
-        $image = $hetznerClient->images()->getByName('ubuntu-22.04');
+
+        if ($os == 'almalinux-9.4') {
+            $image = $hetznerClient->images()->getByName('alma-9');
+        } else {
+            $image = $hetznerClient->images()->getByName('ubuntu-22.04');
+        }
+
         $apiResponse = $hetznerClient->servers()->createInLocation($serverName, $serverType, $image, $location, [$hetznerSSHName]);
         $server = $apiResponse->getResponsePart('server');
         $action = $apiResponse->getResponsePart('action');

@@ -5,7 +5,6 @@ class CommitTest extends BaseTest
 {
     public function runTest()
     {
-
         $os = 'almalinux-9.4';
 
         if ($os == 'almalinux-9.4') {

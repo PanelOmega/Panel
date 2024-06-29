@@ -5,7 +5,6 @@ fi
 
 INSTALL_DIR="/omega/install"
 
-sudo yum install dnf -y
 yum update -y
 dnf -y install sudo wget
 sudo wget -q -O - http://www.atomicorp.com/installers/atomic | sh

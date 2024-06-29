@@ -93,7 +93,7 @@ cd /usr/local/omega/web
 
 # Create MySQL OMEGA user
 MYSQL_OMEGA_ROOT_USERNAME="omega"
-MYSQL_OMEGA_ROOT_PASSWORD="$(apg -a 1 -m 50 -x 50 -M SNCL -n 1)"
+MYSQL_OMEGA_ROOT_PASSWORD="$(apg -a 1 -m 50 -x 50 -M NCL -n 1)"
 
 mysql -u root <<MYSQL_SCRIPT
   CREATE USER "$MYSQL_OMEGA_ROOT_USERNAME"@"%" IDENTIFIED BY "$MYSQL_OMEGA_ROOT_PASSWORD";
@@ -102,7 +102,7 @@ mysql -u root <<MYSQL_SCRIPT
 MYSQL_SCRIPT
 
 # Create database
-PANEL_OMEGA_DB_PASSWORD="$(apg -a 1 -m 50 -x 50 -M SNCL -n 1)"
+PANEL_OMEGA_DB_PASSWORD="$(apg -a 1 -m 50 -x 50 -M NCL -n 1)"
 PANEL_OMEGA_DB_NAME="omega_$(tr -dc a-za-z0-9 </dev/urandom | head -c 13; echo)"
 PANEL_OMEGA_DB_USER="omega_$(tr -dc a-za-z0-9 </dev/urandom | head -c 13; echo)"
 
@@ -115,7 +115,7 @@ MYSQL_SCRIPT
 
 
 # Change mysql root password
-MYSQL_ROOT_PASSWORD="$(apg -a 1 -m 50 -x 50 -M SNCL -n 1)"
+MYSQL_ROOT_PASSWORD="$(apg -a 1 -m 50 -x 50 -M NCL -n 1)"
 mysql -u root <<MYSQL_SCRIPT
   ALTER USER 'root'@'localhost' IDENTIFIED BY "$MYSQL_ROOT_PASSWORD";
   FLUSH PRIVILEGES;

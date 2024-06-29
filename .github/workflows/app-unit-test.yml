@@ -57,7 +57,7 @@ jobs:
 
   compile-and-publish:
     runs-on: ubuntu-22.04
-    needs: e2e-server-test
+    needs: AlmaLinux-9-Unit-Test
     steps:
       - uses: actions/checkout@v2
         with:

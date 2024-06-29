@@ -5,7 +5,7 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  e2e-server-test:
+  Ubuntu-22.04-Unit-Test:
     runs-on: ubuntu-22.04
     steps:
       - name: Checkout Repository
@@ -28,7 +28,32 @@ jobs:
           cd e2e-server-test
           sudo wget https://getcomposer.org/download/latest-stable/composer.phar
           sudo COMPOSER_ALLOW_SUPERUSER=1 php composer.phar install
-          sudo php run.php test --HETZNER_API_KEY=${{ secrets.HETZNER_API_KEY }} --GIT_REPO_URL=$GITHUB_REPOSITORY --GIT_BRANCH=$GITHUB_BRANCH --GIT_COMMIT=$GITHUB_COMMIT_SHA
+          sudo php run.php test --OS=Ubuntu-22.04 --HETZNER_API_KEY=${{ secrets.HETZNER_API_KEY }} --GIT_REPO_URL=$GITHUB_REPOSITORY --GIT_BRANCH=$GITHUB_BRANCH --GIT_COMMIT=$GITHUB_COMMIT_SHA
+  AlmaLinux-9.4-Unit-Test:
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+        with:
+          repository: ${{ github.repository }}
+          ref: ${{ github.sha }}
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          extensions: oci8, ssh2
+
+      - name: Create Server & Run E2E Server Test
+        run: |
+          sudo apt install php8.2-ssh2 -y
+          GITHUB_COMMIT_SHA=${{ github.sha }}
+          GITHUB_REPOSITORY=${{ github.repository }}
+          GITHUB_BRANCH=${{ github.ref }}
+          cd e2e-server-test
+          sudo wget https://getcomposer.org/download/latest-stable/composer.phar
+          sudo COMPOSER_ALLOW_SUPERUSER=1 php composer.phar install
+          sudo php run.php test --OS=AlmaLinux-9.4 --HETZNER_API_KEY=${{ secrets.HETZNER_API_KEY }} --GIT_REPO_URL=$GITHUB_REPOSITORY --GIT_BRANCH=$GITHUB_BRANCH --GIT_COMMIT=$GITHUB_COMMIT_SHA
+
 
   compile-and-publish:
     runs-on: ubuntu-22.04

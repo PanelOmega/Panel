@@ -1,3 +1,8 @@
+GIT_BRANCH="stable"
+if [ -n "$1" ]; then
+    GIT_BRANCH=$1
+fi
+
 # Check dir exists
 if [ ! -d "/usr/local/omega/web" ]; then
   echo "PanelOmega directory not found."

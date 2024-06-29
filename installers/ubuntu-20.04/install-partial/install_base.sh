@@ -1,3 +1,8 @@
+GIT_BRANCH="stable"
+if [ -n "$1" ]; then
+    GIT_BRANCH=$1
+fi
+
 INSTALL_DIR="/omega/install"
 
 apt-get update && apt-get install ca-certificates -y
@@ -40,7 +45,7 @@ done
 # Start MySQL
 service mysql start
 
-wget https://raw.githubusercontent.com/PanelOmega/Panel/stable/installers/ubuntu-20.04/greeting.sh
+wget https://raw.githubusercontent.com/PanelOmega/Panel/$GIT_BRANCH/installers/ubuntu-20.04/greeting.sh
 mv greeting.sh /etc/profile.d/omega-greeting.sh
 
 # Install OMEGA PHP

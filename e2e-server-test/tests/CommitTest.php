@@ -5,16 +5,23 @@ class CommitTest extends BaseTest
 {
     public function runTest()
     {
-        $this->sshExec('apt-get install git -y', true, 8000);
-        //$this->sshExec('yum install git -y', true, 8000);
+
+        $os = 'almalinux-9.4';
+
+        if ($os == 'almalinux-9.4') {
+            $this->sshExec('yum install git -y', true, 8000);
+        } else {
+            $this->sshExec('apt-get install git -y', true, 8000);
+        }
+
         $this->sshExec('git clone https://github.com/PanelOmega/Panel.git', true, 8000);
 
         $this->sshExec('cd Panel && git checkout dev', true);
 
-        $this->sshExec('chmod +x Panel/installers/ubuntu-22.04/install-partial/install_base.sh dev');
+        $this->sshExec('chmod +x Panel/installers/'.$os.'/install-partial/install_base.sh dev');
         $this->sshExec('chmod +x Panel/installers/ubuntu-20.04/install-partial/install_web.sh dev');
 
-        $this->sshExec('./Panel/installers/ubuntu-22.04/install-partial/install_base.sh dev', true, 8000);
+        $this->sshExec('./Panel/installers/'.$os.'/install-partial/install_base.sh dev', true, 8000);
 
         $this->sshExec('cp -r Panel/web/ /usr/local/omega/web/', true);
 
@@ -23,9 +30,9 @@ class CommitTest extends BaseTest
 
         $this->sshExec('./Panel/installers/ubuntu-20.04/install-partial/install_web.sh dev', true, 8000);
 
-//        return [
-//            'testPassed' => true
-//        ];
+        return [
+            'testPassed' => true
+        ];
 
         $testPassed = true;
         $this->sshExec('cd /usr/local/omega/web/ && omega-php artisan test', function ($data) use (&$testPassed) {

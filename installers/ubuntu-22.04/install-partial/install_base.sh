@@ -9,6 +9,7 @@ mkdir -p $INSTALL_DIR
 cd $INSTALL_DIR
 
 DEPENDENCIES_LIST=(
+    "apg"
     "openssl"
     "jq"
     "curl"

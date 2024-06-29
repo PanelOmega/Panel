@@ -15,6 +15,7 @@ mkdir -p $INSTALL_DIR
 cd $INSTALL_DIR
 
 DEPENDENCIES_LIST=(
+    "apg"
     "openssl"
     "jq"
     "curl"
@@ -116,7 +117,6 @@ mysql -uroot -proot <<MYSQL_SCRIPT
   FLUSH PRIVILEGES;
 MYSQL_SCRIPT
 
-mysql_secure_installation --use-default
 
 # Change mysql root password
 MYSQL_ROOT_PASSWORD="$(apg -a 1 -m 50 -x 50 -M SNCL -n 1)"

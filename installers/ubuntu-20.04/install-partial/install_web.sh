@@ -9,9 +9,9 @@ fi
 # Go to web directory
 cd /usr/local/omega/web
 
-# Create MySQL user
+# Create MySQL OMEGA user
 MYSQL_OMEGA_ROOT_USERNAME="omega"
-MYSQL_OMEGA_ROOT_PASSWORD="$(tr -dc a-za-z0-9 </dev/urandom | head -c 32; echo)"
+MYSQL_OMEGA_ROOT_PASSWORD="$(apg -a 1 -m 50 -x 50 -M SNCL -n 1)"
 
 mysql -uroot -proot <<MYSQL_SCRIPT
   CREATE USER '$MYSQL_OMEGA_ROOT_USERNAME'@'%' IDENTIFIED BY '$MYSQL_OMEGA_ROOT_PASSWORD';
@@ -21,7 +21,7 @@ MYSQL_SCRIPT
 
 
 # Create database
-PANEL_OMEGA_DB_PASSWORD="$(tr -dc a-za-z0-9 </dev/urandom | head -c 32; echo)"
+PANEL_OMEGA_DB_PASSWORD="$(apg -a 1 -m 50 -x 50 -M SNCL -n 1)"
 PANEL_OMEGA_DB_NAME="omega_$(tr -dc a-za-z0-9 </dev/urandom | head -c 13; echo)"
 PANEL_OMEGA_DB_USER="omega_$(tr -dc a-za-z0-9 </dev/urandom | head -c 13; echo)"
 
@@ -35,7 +35,7 @@ MYSQL_SCRIPT
 mysql_secure_installation --use-default
 
 # Change mysql root password
-MYSQL_ROOT_PASSWORD="$(tr -dc a-za-z0-9 </dev/urandom | head -c 32; echo)"
+MYSQL_ROOT_PASSWORD="$(apg -a 1 -m 50 -x 50 -M SNCL -n 1)"
 mysql -uroot -proot <<MYSQL_SCRIPT
   ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password by '$MYSQL_ROOT_PASSWORD';
   FLUSH PRIVILEGES;

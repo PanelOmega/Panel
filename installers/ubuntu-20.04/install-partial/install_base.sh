@@ -1,5 +1,3 @@
-#!/bin/bash
-
 INSTALL_DIR="/omega/install"
 
 apt-get update && apt-get install ca-certificates -y

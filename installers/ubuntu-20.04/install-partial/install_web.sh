@@ -1,5 +1,3 @@
-#!/bin/bash
-
 # Check dir exists
 if [ ! -d "/usr/local/omega/web" ]; then
   echo "PanelOmega directory not found."

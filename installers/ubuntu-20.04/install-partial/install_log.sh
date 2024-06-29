@@ -1,5 +1,3 @@
-#!/bin/bash
-
 HOSTNAME=$(hostname)
 IP_ADDRESS=$(hostname -I | cut -d " " -f 1)
 

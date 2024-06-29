@@ -1,3 +1,5 @@
+#!/bin/bash
+
 # Default values for command-line arguments
 GIT_BRANCH="stable"
 

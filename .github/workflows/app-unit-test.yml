@@ -5,7 +5,7 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  Ubuntu-22.04-Unit-Test:
+  Ubuntu-22-Unit-Test:
     runs-on: ubuntu-22.04
     steps:
       - name: Checkout Repository
@@ -29,7 +29,7 @@ jobs:
           sudo wget https://getcomposer.org/download/latest-stable/composer.phar
           sudo COMPOSER_ALLOW_SUPERUSER=1 php composer.phar install
           sudo php run.php test --OS=Ubuntu-22.04 --HETZNER_API_KEY=${{ secrets.HETZNER_API_KEY }} --GIT_REPO_URL=$GITHUB_REPOSITORY --GIT_BRANCH=$GITHUB_BRANCH --GIT_COMMIT=$GITHUB_COMMIT_SHA
-  AlmaLinux-9.4-Unit-Test:
+  AlmaLinux-9-Unit-Test:
     runs-on: ubuntu-22.04
     steps:
       - name: Checkout Repository

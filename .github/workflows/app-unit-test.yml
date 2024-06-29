@@ -5,7 +5,7 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  unit-test:
+  UnitTest:
     runs-on: ubuntu-22.04
     strategy:
       matrix:
@@ -34,9 +34,9 @@ jobs:
           sudo COMPOSER_ALLOW_SUPERUSER=1 php composer.phar install
           sudo php run.php test --OS=${{ matrix.os }} --HETZNER_API_KEY=${{ secrets.HETZNER_API_KEY }} --GIT_REPO_URL=$GITHUB_REPOSITORY --GIT_BRANCH=$GITHUB_BRANCH --GIT_COMMIT=$GITHUB_COMMIT_SHA
 
-  compile-and-publish:
+  CompileAndPublish:
     runs-on: ubuntu-22.04
-    needs: unit-test
+    needs: UnitTest
     steps:
       - uses: actions/checkout@v2
         with:

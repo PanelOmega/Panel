@@ -120,7 +120,7 @@ MYSQL_SCRIPT
 # Change mysql root password
 MYSQL_ROOT_PASSWORD="$(apg -a 1 -m 50 -x 50 -M SNCL -n 1)"
 mysql -u root <<MYSQL_SCRIPT
-  ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password by "$MYSQL_ROOT_PASSWORD";
+  ALTER USER 'root'@'localhost' IDENTIFIED BY "$MYSQL_ROOT_PASSWORD";
   FLUSH PRIVILEGES;
 MYSQL_SCRIPT
 

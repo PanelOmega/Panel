@@ -15,7 +15,7 @@ wget https://raw.githubusercontent.com/PanelOmega/Panel/main/installers/install.
 
 FOR DEV:
 ```
-wget https://raw.githubusercontent.com/PanelOmega/Panel/dev/installers/install.sh --dev=1 && chmod +x install.sh && ./install.sh
+wget https://raw.githubusercontent.com/PanelOmega/Panel/dev/installers/install.sh --branch=dev && chmod +x install.sh && ./install.sh
 ```
 
 The admin panel can be opened on port: yourserver.com:8443

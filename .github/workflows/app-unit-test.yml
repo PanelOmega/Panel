@@ -9,6 +9,7 @@ jobs:
     runs-on: ubuntu-22.04
     strategy:
       matrix:
+        max-parallel: 1
         os: ["Ubuntu-22.04", "AlmaLinux-9.3"]
 
     steps:

@@ -1,29 +1,7 @@
-#!/bin/bash
-
-# Default values for command-line arguments
 GIT_BRANCH="stable"
-
-# Function to display usage information
-usage() {
-    echo "Usage: $0 [-b branch_name]"
-    echo "  -b branch_name FOR GIT BRANCH (if not provided, default is: stable)"
-    exit 1
-}
-
-# Parse command-line arguments
-while getopts "b:" opt; do
-    case $opt in
-        b)
-            GIT_BRANCH=$OPTARG
-            ;;
-        *)
-            usage
-            ;;
-    esac
-done
-
-echo "GIT_BRANCH: $GIT_BRANCH"
-#!/bin/bash
+if [ -n "$1" ]; then
+    GIT_BRANCH=$1
+fi
 
 INSTALL_DIR="/omega/install"
 
@@ -66,7 +44,7 @@ done
 systemctl start mysqld
 systemctl enable mysqld
 #
-wget https://raw.githubusercontent.com/PanelOmega/Panel/stable/installers/almalinux-9.4/greeting.sh
+wget https://raw.githubusercontent.com/PanelOmega/Panel/$GIT_BRANCH/installers/almalinux-9.4/greeting.sh
 mv greeting.sh /etc/profile.d/omega-greeting.sh
 
 #
@@ -98,12 +76,22 @@ DISTRO_NAME=${DISTRO_NAME//\"/} # Remove quotes from name string
 LOG_JSON='{"os": "'$DISTRO_NAME-$DISTRO_VERSION'", "host_name": "'$HOSTNAME'", "ip": "'$IP_ADDRESS'"}'
 
 curl -s https://panelomega.com/api/omega-installation-log -X POST -H "Content-Type: application/json" -d "$LOG_JSON"
+GIT_BRANCH="stable"
+if [ -n "$1" ]; then
+    GIT_BRANCH=$1
+fi
+
 wget https://github.com/PanelOmega/WebCompiledVersions/raw/main/panel-omega-latest.zip
 unzip -qq -o panel-omega-latest.zip -d /usr/local/omega/web
 rm -rf panel-omega-latest.zip
 
 chmod 711 /home
 chmod -R 750 /usr/local/omega
+GIT_BRANCH="stable"
+if [ -n "$1" ]; then
+    GIT_BRANCH=$1
+fi
+
 # Check dir exists
 if [ ! -d "/usr/local/omega/web" ]; then
   echo "PanelOmega directory not found."

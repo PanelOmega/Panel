@@ -40,7 +40,7 @@ done
 systemctl start mysqld
 systemctl enable mysqld
 #
-wget https://raw.githubusercontent.com/PanelOmega/Panel/main/installers/almalinux-9.4/greeting.sh
+wget https://raw.githubusercontent.com/PanelOmega/Panel/stable/installers/almalinux-9.4/greeting.sh
 mv greeting.sh /etc/profile.d/omega-greeting.sh
 
 #

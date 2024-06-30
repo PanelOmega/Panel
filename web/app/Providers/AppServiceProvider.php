@@ -2,8 +2,10 @@
 
 namespace App\Providers;
 
+use App\Livewire\Components\QuickServiceRestartMenu;
 use BladeUI\Icons\Factory;
 use Illuminate\Support\ServiceProvider;
+use Livewire\Livewire;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -32,6 +34,6 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+        Livewire::component('quick-service-restart-menu', QuickServiceRestartMenu::class);
     }
 }

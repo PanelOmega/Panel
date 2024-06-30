@@ -36,42 +36,54 @@ class ApacheInstaller
 
     public function run()
     {
+
+        $os = OS::getDistro();
+
         $commands = [];
         $commands[] = 'echo "Starting Apache Installation..."';
-        $commands[] = 'export DEBIAN_FRONTEND=noninteractive';
-        $commands[] = 'apt-get install -yq sudo';
-        $commands[] = 'add-apt-repository -y ppa:ondrej/apache2';
-
-        $dependenciesList = [
-            'apache2',
-            'apache2-suexec-custom',
-            'libapache2-mod-ruid2'
-        ];
 
 
-        $dependencies = implode(' ', $dependenciesList);
-        $commands[] = 'apt-get install -yq ' . $dependencies;
+        if ($os == OS::DEBIAN || $os == OS::UBUNTU) {
 
-        $commands[] = 'a2enmod cgi';
-        $commands[] = 'a2enmod mime';
-        $commands[] = 'a2enmod rewrite';
-        $commands[] = 'a2enmod env';
-        $commands[] = 'a2enmod ssl';
-        $commands[] = 'a2enmod actions';
-        $commands[] = 'a2enmod headers';
-        $commands[] = 'a2enmod suexec';
-        $commands[] = 'a2enmod ruid2';
-        $commands[] = 'a2enmod proxy';
-        $commands[] = 'a2enmod proxy_http';
+            $commands[] = 'export DEBIAN_FRONTEND=noninteractive';
+            $commands[] = 'apt-get install -yq sudo';
+            $commands[] = 'add-apt-repository -y ppa:ondrej/apache2';
+            $commands[] = 'apt-get install -yq apache2';
+            $commands[] = 'apt-get install -yq apache2-suexec-custom';
+            $commands[] = 'apt-get install -yq libapache2-mod-ruid2';
 
-        // For Fast CGI
-        $commands[] = 'a2enmod fcgid';
-        $commands[] = 'a2enmod alias';
-        $commands[] = 'a2enmod proxy_fcgi';
+            $commands[] = 'a2enmod cgi';
+            $commands[] = 'a2enmod mime';
+            $commands[] = 'a2enmod rewrite';
+            $commands[] = 'a2enmod env';
+            $commands[] = 'a2enmod ssl';
+            $commands[] = 'a2enmod actions';
+            $commands[] = 'a2enmod headers';
+            $commands[] = 'a2enmod suexec';
+            $commands[] = 'a2enmod ruid2';
+            $commands[] = 'a2enmod proxy';
+            $commands[] = 'a2enmod proxy_http';
+
+            // For Fast CGI
+            $commands[] = 'a2enmod fcgid';
+            $commands[] = 'a2enmod alias';
+            $commands[] = 'a2enmod proxy_fcgi';
 //        $commands[] = 'a2enmod setenvif';
 
-        // $commands[] = 'ufw allow in "Apache Full"';
-        $commands[] = 'systemctl restart apache2';
+            // $commands[] = 'ufw allow in "Apache Full"';
+            $commands[] = 'systemctl restart apache2';
+
+        } else if ($os == OS::ALMA_LINUX) {
+            $commands[] = 'yum install -y epel-release';
+            $commands[] = 'yum install -y httpd';
+
+            $commands[] = 'yum install -y mod_fcgid';
+            $commands[] = 'yum install -y mod_ssl';
+
+            $commands[] = 'systemctl enable httpd';
+            $commands[] = 'systemctl start httpd';
+
+        }
 
         $shellFileContent = '';
         foreach ($commands as $command) {

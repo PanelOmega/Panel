@@ -76,7 +76,7 @@ class ApacheBuild implements ShouldQueue
 
         $os = OS::getDistro();
 
-        $apache2 = view('server.samples.ubuntu.apache2-conf-build', [
+        $apache2 = view('server.samples.configs.apache2-conf-build', [
             'virtualHosts' => $virtualHosts,
             'os' => $os,
         ])->render();

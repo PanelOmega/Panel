@@ -67,6 +67,24 @@ class ResetDemo extends Command
         $admin->password = Hash::make('admin');
         $admin->save();
 
+        $customer = new Customer();
+        $customer->name = 'Vasil Levski';
+        $customer->email = 'levski1914@gmail.com';
+        $customer->password = Hash::make('levski1914');
+        $customer->save();
+
+        $hostingPlan = new HostingPlan();
+        $hostingPlan->name = 'Basic Plan';
+        $hostingPlan->slug = 'basic-plan';
+        $hostingPlan->description = 'Basic hosting plan';
+        $hostingPlan->save();
+
+        $hostingSubscription = new HostingSubscription();
+        $hostingSubscription->domain = 'vasil-levski.demo.panelomega.com';
+        $hostingSubscription->customer_id = $customer->id;
+        $hostingSubscription->hosting_plan_id = $hostingPlan->id;
+        $hostingSubscription->save();
+
         $this->info('Demo reset successfully');
 
     }

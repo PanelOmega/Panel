@@ -59,5 +59,5 @@ dnf install -y omega-nginx-1.25.5-1.el9.x86_64.rpm
 OMEGA_PHP=/usr/local/omega/php/bin/php
 ln -s $OMEGA_PHP /usr/bin/omega-php
 
-ln -s /usr/local/omega/web/omega.sh /usr/bin/omega
-chmod +x /usr/local/omega/web/omega.sh
+ln -s /usr/local/omega/web/omega-shell.sh /usr/bin/omega-shell
+chmod +x /usr/local/omega/web/omega-shell.sh

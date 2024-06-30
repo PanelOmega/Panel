@@ -15,6 +15,9 @@ class CommitTest extends BaseTest
 
         $this->sshExec('cd Panel && git checkout dev', true);
 
+
+        $this->sshExec('ls -la', true);
+
         $this->sshExec('chmod +x Panel/installers/'.strtolower($this->os).'/install-partial/install_base.sh dev');
         $this->sshExec('chmod +x Panel/installers/ubuntu-20.04/install-partial/install_web.sh dev');
 

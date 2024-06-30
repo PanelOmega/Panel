@@ -127,19 +127,9 @@ $application->register('test')
             $getServer = $hetznerClient->servers()->get($server->id);
             // Rebuild server
             echo 'Rebuilding server' . PHP_EOL;
-            $apiResponse = $getServer->rebuildFromImage($image);
+            $getServer->rebuildFromImage($image);
 
-            $server = $apiResponse->getResponsePart('server');
-            $action = $apiResponse->getResponsePart('action');
-            $nextActions = $apiResponse->getResponsePart('next_actions');
-
-            $action->waitUntilCompleted();
-            foreach ($nextActions as $nextAction) {
-                $nextAction->waitUntilCompleted();
-            }
-
-            echo 'Server rebuilded!' . PHP_EOL;
-            echo date('H:i:s') . PHP_EOL;
+            sleep(30);
         }
 
         $testParams = [

@@ -44,7 +44,7 @@ class CustomerPanelProvider extends PanelProvider
             ->viteTheme('resources/css/filament/admin/theme.css')
             //->colors(OmegaTheme::getColors())
           //  ->icons(OmegaTheme::getIcons())
-//            ->discoverResources(in: app_path('Filament/Resources'), for: 'App\\Filament\\Resources')
+            ->discoverResources(in: app_path('FilamentCustomer/Resources'), for: 'App\\FilamentCustomer\\Resources')
 //            ->discoverPages(in: app_path('Filament/Pages'), for: 'App\\Filament\\Pages')
             ->pages([
                 Pages\Dashboard::class,

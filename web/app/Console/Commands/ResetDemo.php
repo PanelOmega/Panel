@@ -3,6 +3,7 @@
 namespace app\Console\Commands;
 
 use App\Models\Admin;
+use App\Models\CronJob;
 use App\Models\Customer;
 use App\Models\HostingPlan;
 use App\Models\HostingSubscription;
@@ -96,11 +97,14 @@ class ResetDemo extends Command
         $hostingSubscription->hosting_plan_id = $hostingPlan->id;
         $hostingSubscription->save();
 
-        $hostingSubscription = new HostingSubscription();
-        $hostingSubscription->domain = 'opencart.demo.panelomega.com';
-        $hostingSubscription->customer_id = $customer->id;
-        $hostingSubscription->hosting_plan_id = $hostingPlan->id;
-        $hostingSubscription->save();
+//        $findCronJob = CronJob::where('command', 'omega-shell omega:reset-demo')->first();
+//        if (!$findCronJob) {
+//            $cronJob = new CronJob();
+//            $cronJob->schedule = '*/15 * * * *';
+//            $cronJob->command = 'omega-shell omega:reset-demo';
+//            $cronJob->user = 'root';
+//            $cronJob->save();
+//        }
 
         $this->info('Demo reset successfully');
 

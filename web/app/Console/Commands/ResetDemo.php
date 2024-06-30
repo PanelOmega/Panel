@@ -70,8 +70,8 @@ class ResetDemo extends Command
 
         $customer = new Customer();
         $customer->name = 'Vasil Levski';
-        $customer->email = 'levski1914@gmail.com';
-        $customer->password = Hash::make('levski1914');
+        $customer->email = 'customer@panelomega.com';
+        $customer->password = Hash::make('customer');
         $customer->save();
 
         $hostingPlan = new HostingPlan();

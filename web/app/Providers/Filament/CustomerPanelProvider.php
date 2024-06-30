@@ -5,6 +5,7 @@ namespace app\Providers\Filament;
 use App\Filament\OmegaTheme;
 use app\Filament\Pages\DemoAdminLogin;
 use App\FilamentCustomer\Pages\DemoCustomerLogin;
+use App\Http\Middleware\CustomerAuthenticate;
 use App\OmegaConfig;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\DisableBladeIconComponents;
@@ -43,12 +44,12 @@ class CustomerPanelProvider extends PanelProvider
             ->viteTheme('resources/css/filament/admin/theme.css')
             //->colors(OmegaTheme::getColors())
           //  ->icons(OmegaTheme::getIcons())
-            ->discoverResources(in: app_path('Filament/Resources'), for: 'App\\Filament\\Resources')
-            ->discoverPages(in: app_path('Filament/Pages'), for: 'App\\Filament\\Pages')
+//            ->discoverResources(in: app_path('Filament/Resources'), for: 'App\\Filament\\Resources')
+//            ->discoverPages(in: app_path('Filament/Pages'), for: 'App\\Filament\\Pages')
             ->pages([
                 Pages\Dashboard::class,
             ])
-            ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\\Filament\\Widgets')
+//            ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\\Filament\\Widgets')
             ->plugins([
                 FilamentTourPlugin::make(),
                 FilamentApexChartsPlugin::make(),
@@ -64,8 +65,9 @@ class CustomerPanelProvider extends PanelProvider
                 DisableBladeIconComponents::class,
                 DispatchServingFilamentEvent::class,
             ])
+            ->authGuard('customer')
             ->authMiddleware([
-                Authenticate::class,
+                CustomerAuthenticate::class,
             ]);
 
         if (OmegaConfig::get('APP_DEMO', false)) {

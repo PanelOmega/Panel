@@ -48,7 +48,7 @@ class HostingSubscriptionTest extends TestCase
 
         $hostingSubscription = new HostingSubscription();
         $hostingSubscription->customer_id = $createCustomer->id;
-        $hostingSubscription->domain = 'test' . rand(1000, 9999) . '.panelomega.com';
+        $hostingSubscription->domain = 'test' . rand(1000, 9999) . '.demo.panelomega.com';
         $hostingSubscription->hosting_plan_id = $createHostingPlan->id;
         $hostingSubscription->save();
         $this->assertDatabaseHas('hosting_subscriptions', ['domain' => $hostingSubscription->domain]);
@@ -104,7 +104,7 @@ class HostingSubscriptionTest extends TestCase
 
             $hostingSubscription = new HostingSubscription();
             $hostingSubscription->customer_id = $createCustomer->id;
-            $hostingSubscription->domain = 'test' . rand(1000, 9999) . '.panelomega.com';
+            $hostingSubscription->domain = 'test' . rand(1000, 9999) . '.demo.panelomega.com';
             $hostingSubscription->hosting_plan_id = $createHostingPlan->id;
             $hostingSubscription->save();
             $this->assertDatabaseHas('hosting_subscriptions', ['domain' => $hostingSubscription->domain]);

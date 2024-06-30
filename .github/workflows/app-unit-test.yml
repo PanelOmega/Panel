@@ -8,7 +8,6 @@ jobs:
   UnitTest:
     runs-on: ubuntu-22.04
     strategy:
-      fail-fast: true
       max-parallel: 1
       matrix:
         os: ["AlmaLinux-9.4", "Ubuntu-22.04"]

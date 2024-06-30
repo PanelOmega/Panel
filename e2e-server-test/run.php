@@ -15,6 +15,38 @@ use \Symfony\Component\Console\Input\InputOption;
 $application = new Application();
 $application->setName('PhyrePanel E2E Test');
 $application->setVersion('1.0.0');
+
+$application->register('generate-ssh')
+    ->addOption('HETZNER_API_KEY', null, InputOption::VALUE_REQUIRED)
+    ->setCode(function (InputInterface $input, OutputInterface $output): int {
+
+        $hetznerSSHName = 'OmegaUnitTest';
+        $privateSSHKeyFile = 'OmegaUnitTest.key';
+        $publicSSHKeyFile = 'OmegaUnitTest.pub';
+
+        $privateKeyGenerator = RSA::createKey(4096);
+        $privateKeyContent = $privateKeyGenerator->toString('openssh');
+        $publicKeyContent = $privateKeyGenerator->getPublicKey()->toString('openssh');
+
+        file_put_contents(__DIR__.'/'.$privateSSHKeyFile, $privateKeyContent);
+        file_put_contents(__DIR__.'/'.$publicSSHKeyFile, $publicKeyContent);
+
+
+        $hetznerClient = new \LKDev\HetznerCloud\HetznerAPIClient($input->getOption('HETZNER_API_KEY'));
+
+        $getSSHKeys = $hetznerClient->sshKeys()->all();
+        if (!empty($getSSHKeys)) {
+            foreach ($getSSHKeys as $sshKey) {
+                if (str_contains($sshKey->name, 'OmegaUnitTest')) {
+                    $sshKey->delete();
+                }
+            }
+        }
+        $hetznerClient->sshKeys()->create($hetznerSSHName, file_get_contents($publicSSHKeyFile));
+
+        return Command::SUCCESS;
+    });
+
 $application->register('test')
     ->addOption('OS', null, InputOption::VALUE_REQUIRED)
     ->addOption('HETZNER_API_KEY', null, InputOption::VALUE_REQUIRED)
@@ -31,10 +63,13 @@ $application->register('test')
         $serverNamePrefix = 'OmegaUnitTest-';
         $serverName = $serverNamePrefix . $gitCommit;
 
-        $hetznerSSHName = 'OmegaUnitTest-' . $gitCommit;
-        $privateSSHKeyFile = 'OmegaUnitTest-'.$gitCommit.'.key';
-        $publicSSHKeyFile = 'OmegaUnitTest-'.$gitCommit.'.pub';
+        $hetznerSSHName = 'OmegaUnitTest';
+        $privateSSHKeyFile = 'OmegaUnitTest.key';
+        $publicSSHKeyFile = 'OmegaUnitTest.pub';
 
+        return 1;
+
+        $hetznerClient = new \LKDev\HetznerCloud\HetznerAPIClient($input->getOption('HETZNER_API_KEY'));
 
 //        $commitTest = new CodeCoverageTest([
 //            'gitRepoUrl' => $input->getOption('GIT_REPO_URL'),
@@ -52,15 +87,6 @@ $application->register('test')
 //        return Command::FAILURE;
 
 
-        $privateKeyGenerator = RSA::createKey(4096);
-        $privateKeyContent = $privateKeyGenerator->toString('openssh');
-        $publicKeyContent = $privateKeyGenerator->getPublicKey()->toString('openssh');
-
-        file_put_contents(__DIR__.'/'.$privateSSHKeyFile, $privateKeyContent);
-        file_put_contents(__DIR__.'/'.$publicSSHKeyFile, $publicKeyContent);
-
-
-        $hetznerClient = new \LKDev\HetznerCloud\HetznerAPIClient($input->getOption('HETZNER_API_KEY'));
 
 
         $serverTypeId = 1;
@@ -93,17 +119,6 @@ $application->register('test')
         }
 
         if (!$serverIsFound) {
-
-            $getSSHKeys = $hetznerClient->sshKeys()->all();
-            if (!empty($getSSHKeys)) {
-                foreach ($getSSHKeys as $sshKey) {
-                    if (str_contains($sshKey->name, 'OmegaUnitTest-')) {
-                        $sshKey->delete();
-                    }
-                }
-            }
-            $hetznerClient->sshKeys()->create($hetznerSSHName, file_get_contents($publicSSHKeyFile));
-
             $apiResponse = $hetznerClient->servers()->createInLocation($serverName, $serverType, $image, $location, [$hetznerSSHName]);
             $server = $apiResponse->getResponsePart('server');
             $action = $apiResponse->getResponsePart('action');
@@ -131,16 +146,6 @@ $application->register('test')
             $getServer->rebuildFromImage($image);
 
             sleep(30);
-
-            $getSSHKeys = $hetznerClient->sshKeys()->all();
-            if (!empty($getSSHKeys)) {
-                foreach ($getSSHKeys as $sshKey) {
-                    if (str_contains($sshKey->name, 'OmegaUnitTest-')) {
-                        $sshKey->delete();
-                    }
-                }
-            }
-            $hetznerClient->sshKeys()->create($hetznerSSHName, file_get_contents($publicSSHKeyFile));
         }
 
         $testParams = [

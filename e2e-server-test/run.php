@@ -127,11 +127,20 @@ $application->register('test')
             $getServer = $hetznerClient->servers()->get($server->id);
             // Rebuild server
             echo 'Rebuilding server' . PHP_EOL;
-            $rebuildResponse = $getServer->rebuildFromImage($image);
-            echo json_encode($rebuildResponse, JSON_PRETTY_PRINT);
-        }
+            $apiResponse = $getServer->rebuildFromImage($image);
 
-        return Command::SUCCESS;
+            $server = $apiResponse->getResponsePart('server');
+            $action = $apiResponse->getResponsePart('action');
+            $nextActions = $apiResponse->getResponsePart('next_actions');
+
+            $action->waitUntilCompleted();
+            foreach ($nextActions as $nextAction) {
+                $nextAction->waitUntilCompleted();
+            }
+
+            echo 'Server rebuilded!' . PHP_EOL;
+            echo date('H:i:s') . PHP_EOL;
+        }
 
         $testParams = [
             'gitRepoUrl' => $input->getOption('GIT_REPO_URL'),

@@ -4,6 +4,7 @@ namespace App\Jobs;
 
 use App\MasterDomain;
 use App\Models\Domain;
+use App\Server\Helpers\OS;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -73,15 +74,22 @@ class ApacheBuild implements ShouldQueue
 //            }
 //        }
 
+        $os = OS::getDistro();
+
         $apache2 = view('server.samples.ubuntu.apache2-conf-build', [
-            'virtualHosts' => $virtualHosts
+            'virtualHosts' => $virtualHosts,
+            'os' => $os,
         ])->render();
 
         $apache2 = preg_replace('~(*ANY)\A\s*\R|\s*(?!\r\n)\s$~mu', '', $apache2);
 
-        file_put_contents('/etc/apache2/apache2.conf', $apache2);
-
-        shell_exec('systemctl reload apache2');
+        if ($os == OS::UBUNTU || $os == OS::DEBIAN) {
+            file_put_contents('/etc/apache2/apache2.conf', $apache2);
+            shell_exec('systemctl reload apache2');
+        } if ($os == OS::CENTOS || $os == OS::ALMA_LINUX) {
+            file_put_contents('/etc/httpd/conf/httpd.conf', $apache2);
+            shell_exec('systemctl reload httpd');
+        }
 
     }
 }

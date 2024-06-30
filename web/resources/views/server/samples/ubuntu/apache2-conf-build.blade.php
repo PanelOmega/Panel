@@ -4,8 +4,11 @@
 # https://omegapanel.com/docs/server-administration/web-templates.html    #
 #=========================================================================#
 
+@if($os == \App\Server\Helpers\OS::UBUNTU || \App\Server\Helpers\OS::DEBIAN)
 DefaultRuntimeDir ${APACHE_RUN_DIR}
 PidFile ${APACHE_PID_FILE}
+@endif
+
 Timeout 300
 KeepAlive On
 MaxKeepAliveRequests 100

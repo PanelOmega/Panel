@@ -42,7 +42,7 @@ class PerformanceTest extends TestCase
 
                 $hostingSubscription = new HostingSubscription();
                 $hostingSubscription->customer_id = $createCustomer->id;
-                $hostingSubscription->domain = 'test-performance' . rand(1000, 9999) .$i. '.phyrevoice.com';
+                $hostingSubscription->domain = 'test-performance' . rand(1000, 9999) .$i. '.panelomega.com';
                 $hostingSubscription->hosting_plan_id = $createHostingPlan->id;
                 $hostingSubscription->save();
                 $this->assertDatabaseHas('hosting_subscriptions', ['domain' => $hostingSubscription->domain]);

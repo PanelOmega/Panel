@@ -38,7 +38,7 @@ class ResetDemo extends Command
             $this->error('This command can only be run in demo environment');
             return;
         }
-        
+
         $findAdmins = Admin::all();
         foreach ($findAdmins as $admin) {
             $admin->delete();

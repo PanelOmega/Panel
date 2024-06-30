@@ -7,6 +7,7 @@ use App\Models\Customer;
 use App\Models\HostingPlan;
 use App\Models\HostingSubscription;
 use App\Models\User;
+use App\OmegaConfig;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Hash;
 
@@ -33,8 +34,7 @@ class ResetDemo extends Command
     {
         $this->info('Resetting demo...');
 
-        $checkEnv = config('app.env');
-        if ($checkEnv !== 'demo') {
+        if (!OmegaConfig::get('APP_DEMO', false)) {
             $this->error('This command can only be run in demo environment');
             return;
         }

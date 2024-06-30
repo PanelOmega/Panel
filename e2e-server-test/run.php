@@ -62,16 +62,6 @@ $application->register('test')
 
         $hetznerClient = new \LKDev\HetznerCloud\HetznerAPIClient($input->getOption('HETZNER_API_KEY'));
 
-        $getSSHKeys = $hetznerClient->sshKeys()->all();
-        if (!empty($getSSHKeys)) {
-            foreach ($getSSHKeys as $sshKey) {
-                if (str_contains($sshKey->name, 'OmegaUnitTest-')) {
-                    $sshKey->delete();
-                }
-            }
-        }
-
-        $hetznerClient->sshKeys()->create($hetznerSSHName, file_get_contents($publicSSHKeyFile));
 
         $serverTypeId = 1;
         foreach ($hetznerClient->serverTypes()->all() as $serverType) {
@@ -103,6 +93,17 @@ $application->register('test')
         }
 
         if (!$serverIsFound) {
+
+            $getSSHKeys = $hetznerClient->sshKeys()->all();
+            if (!empty($getSSHKeys)) {
+                foreach ($getSSHKeys as $sshKey) {
+                    if (str_contains($sshKey->name, 'OmegaUnitTest-')) {
+                        $sshKey->delete();
+                    }
+                }
+            }
+            $hetznerClient->sshKeys()->create($hetznerSSHName, file_get_contents($publicSSHKeyFile));
+
             $apiResponse = $hetznerClient->servers()->createInLocation($serverName, $serverType, $image, $location, [$hetznerSSHName]);
             $server = $apiResponse->getResponsePart('server');
             $action = $apiResponse->getResponsePart('action');
@@ -130,6 +131,16 @@ $application->register('test')
             $getServer->rebuildFromImage($image);
 
             sleep(30);
+
+            $getSSHKeys = $hetznerClient->sshKeys()->all();
+            if (!empty($getSSHKeys)) {
+                foreach ($getSSHKeys as $sshKey) {
+                    if (str_contains($sshKey->name, 'OmegaUnitTest-')) {
+                        $sshKey->delete();
+                    }
+                }
+            }
+            $hetznerClient->sshKeys()->create($hetznerSSHName, file_get_contents($publicSSHKeyFile));
         }
 
         $testParams = [

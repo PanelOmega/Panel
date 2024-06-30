@@ -3,6 +3,8 @@
 namespace App\Providers\Filament;
 
 use App\Filament\OmegaTheme;
+use app\Filament\Pages\DemoAdminLogin;
+use App\OmegaConfig;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
@@ -22,7 +24,7 @@ class AdminPanelProvider extends PanelProvider
 {
     public function panel(Panel $panel): Panel
     {
-        return $panel
+        $panelInstance = $panel
             ->default()
             ->id('admin')
             ->path('admin')
@@ -59,5 +61,11 @@ class AdminPanelProvider extends PanelProvider
             ->authMiddleware([
                 Authenticate::class,
             ]);
+
+        if (OmegaConfig::get('APP_DEMO', false)) {
+            $panelInstance->login(DemoAdminLogin::class);
+        }
+
+        return $panelInstance;
     }
 }

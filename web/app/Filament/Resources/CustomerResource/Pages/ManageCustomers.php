@@ -17,7 +17,7 @@ class ManageCustomers extends ManageRecords
 
     public function tours(): array {
         return [
-            Tour::make('customerx')
+            Tour::make('customer')
                 ->steps(
 
                     Step::make()

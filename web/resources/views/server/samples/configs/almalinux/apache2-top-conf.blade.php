@@ -17,7 +17,7 @@ Group apache
 
 ServerAdmin root@localhost
 
-<Directory>
+<Directory />
 AllowOverride none
 Require all denied
 </Directory>

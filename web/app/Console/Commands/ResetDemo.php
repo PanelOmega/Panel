@@ -84,6 +84,24 @@ class ResetDemo extends Command
         $hostingSubscription->hosting_plan_id = $hostingPlan->id;
         $hostingSubscription->save();
 
+        $hostingSubscription = new HostingSubscription();
+        $hostingSubscription->domain = 'wordpress.demo.panelomega.com';
+        $hostingSubscription->customer_id = $customer->id;
+        $hostingSubscription->hosting_plan_id = $hostingPlan->id;
+        $hostingSubscription->save();
+
+        $hostingSubscription = new HostingSubscription();
+        $hostingSubscription->domain = 'opencart.demo.panelomega.com';
+        $hostingSubscription->customer_id = $customer->id;
+        $hostingSubscription->hosting_plan_id = $hostingPlan->id;
+        $hostingSubscription->save();
+
+        $hostingSubscription = new HostingSubscription();
+        $hostingSubscription->domain = 'opencart.demo.panelomega.com';
+        $hostingSubscription->customer_id = $customer->id;
+        $hostingSubscription->hosting_plan_id = $hostingPlan->id;
+        $hostingSubscription->save();
+
         $this->info('Demo reset successfully');
 
     }

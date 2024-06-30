@@ -141,7 +141,7 @@ $application->register('test')
             echo 'Rebuilding server' . PHP_EOL;
             $getServer->rebuildFromImage($image);
 
-            sleep(30);
+            sleep(40);
         }
 
         $testParams = [

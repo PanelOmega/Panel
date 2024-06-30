@@ -11,6 +11,7 @@ use Filament\Http\Middleware\DispatchServingFilamentEvent;
 use Filament\Pages;
 use Filament\Panel;
 use Filament\PanelProvider;
+use Filament\View\PanelsRenderHook;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
 use Illuminate\Cookie\Middleware\EncryptCookies;
 use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
@@ -19,6 +20,7 @@ use Illuminate\Session\Middleware\AuthenticateSession;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
 use Leandrocfe\FilamentApexCharts\FilamentApexChartsPlugin;
+use Illuminate\Support\Facades\View;
 
 class AdminPanelProvider extends PanelProvider
 {
@@ -64,6 +66,12 @@ class AdminPanelProvider extends PanelProvider
 
         if (OmegaConfig::get('APP_DEMO', false)) {
             $panelInstance->login(DemoAdminLogin::class);
+            $panelInstance->renderHook(PanelsRenderHook::CONTENT_START, function () {
+                return View::make('filament.demo.banner', [
+                    'environment' => ucfirst(app()->environment()),
+                ]);
+            });
+
         }
 
         return $panelInstance;

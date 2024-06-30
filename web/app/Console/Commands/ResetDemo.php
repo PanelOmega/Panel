@@ -75,7 +75,6 @@ class ResetDemo extends Command
 
         $hostingPlan = new HostingPlan();
         $hostingPlan->name = 'Basic Plan';
-        $hostingPlan->slug = 'basic-plan';
         $hostingPlan->description = 'Basic hosting plan';
         $hostingPlan->save();
 

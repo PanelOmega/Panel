@@ -34,7 +34,7 @@ class AdminPanelProvider extends PanelProvider
             ->path('admin')
             ->authGuard('admin')
             ->login()
-            ->brandName('Panel Omega - Admin')
+            ->brandName('Panel Omega')
             ->sidebarWidth(34)
 //            ->brandLogo(asset('images/logo/2.svg'))
 //            ->brandLogoHeight(50)

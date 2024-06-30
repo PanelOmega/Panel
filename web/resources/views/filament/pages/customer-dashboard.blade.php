@@ -41,7 +41,7 @@
                             <h1 class="font-bold lg:py-2 py-1 text-center text-white xl:text-lg md:text-md sm:text-sm">Create your website with WordPress</h1>
 
                             <div class="px-[1rem] ml-4">
-                                <button class="bg-white/10 p-2 xl:text-lg md:text-md sm:text-sm rounded-xl text-white hover:bg-white hover:text-black transition duration-500"> Click to get started</button>
+                                <button class="bg-white/10 p-2 text-sm rounded-xl text-white hover:bg-white hover:text-black transition duration-500"> Click to get started</button>
                             </div>
                         </div>
                         <div class="">
@@ -52,7 +52,7 @@
                 </div>
 
                 @foreach($menu as $menuItem)
-                    <div x-data="{ open: false }" class="bg-white/10 mt-[2rem] rounded-xl px-2 shadow-sm  transition duration-500
+                    <div x-data="{ open: true }" class="bg-white/10 mt-[2rem] rounded-xl px-2 shadow-sm  transition duration-500
                     hover:shadow-lg cursor-pointer">
                         <div  x-on:click="open = ! open" class="flex justify-between items-center">
                             <div class="flex gap-4 items-center px-4">

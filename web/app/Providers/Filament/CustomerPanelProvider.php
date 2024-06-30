@@ -1,9 +1,10 @@
 <?php
 
-namespace App\Providers\Filament;
+namespace app\Providers\Filament;
 
 use App\Filament\OmegaTheme;
 use app\Filament\Pages\DemoAdminLogin;
+use App\FilamentCustomer\Pages\DemoCustomerLogin;
 use App\OmegaConfig;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\DisableBladeIconComponents;
@@ -24,17 +25,17 @@ use JibayMcs\FilamentTour\FilamentTourPlugin;
 use Leandrocfe\FilamentApexCharts\FilamentApexChartsPlugin;
 use Illuminate\Support\Facades\View;
 
-class AdminPanelProvider extends PanelProvider
+class CustomerPanelProvider extends PanelProvider
 {
     public function panel(Panel $panel): Panel
     {
         $panelInstance = $panel
             ->default()
-            ->id('admin')
-            ->path('admin')
-            ->authGuard('admin')
+            ->id('customer')
+            ->path('customer')
+            ->authGuard('customer')
             ->login()
-            ->brandName('Panel Omega - Admin')
+            ->brandName('Panel Omega - Customer')
             ->sidebarWidth(34)
 //            ->brandLogo(asset('images/logo/2.svg'))
 //            ->brandLogoHeight(50)
@@ -67,13 +68,8 @@ class AdminPanelProvider extends PanelProvider
                 Authenticate::class,
             ]);
 
-        $panelInstance->renderHook(
-            name: PanelsRenderHook::TOPBAR_START,
-            hook: fn (): string => Blade::render('@livewire(\'quick-service-restart-menu\')')
-        );
-
         if (OmegaConfig::get('APP_DEMO', false)) {
-            $panelInstance->login(DemoAdminLogin::class);
+            $panelInstance->login(DemoCustomerLogin::class);
             $panelInstance->renderHook(PanelsRenderHook::CONTENT_START, function () {
                 return View::make('filament.demo.banner', [
                     'environment' => ucfirst(app()->environment()),

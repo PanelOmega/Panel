@@ -22,8 +22,6 @@ class CronJobResource extends Resource
 
     protected static ?int $navigationSort = 5;
 
-    protected static ?string $navigationGroup = 'Hosting';
-
     public static function form(Form $form): Form
     {
         return $form

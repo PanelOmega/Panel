@@ -42,7 +42,7 @@ Require all granted
 </Directory>
 
 <IfModule dir_module>
-    DirectoryIndex index.html
+    DirectoryIndex index.html index.php
 </IfModule>
 
 <Files ".ht*">

@@ -59,20 +59,19 @@ $application->register('test')
         file_put_contents(__DIR__.'/'.$privateSSHKeyFile, $privateKeyContent);
         file_put_contents(__DIR__.'/'.$publicSSHKeyFile, $publicKeyContent);
 
-        $findSSHKey = false;
+
         $hetznerClient = new \LKDev\HetznerCloud\HetznerAPIClient($input->getOption('HETZNER_API_KEY'));
 
         $getSSHKeys = $hetznerClient->sshKeys()->all();
         if (!empty($getSSHKeys)) {
             foreach ($getSSHKeys as $sshKey) {
                 if (str_contains($sshKey->name, 'OmegaUnitTest-')) {
-                    $findSSHKey = true;
+                    $sshKey->delete();
                 }
             }
         }
-        if (!$findSSHKey) {
-            $hetznerClient->sshKeys()->create($hetznerSSHName, file_get_contents($publicSSHKeyFile));
-        }
+
+        $hetznerClient->sshKeys()->create($hetznerSSHName, file_get_contents($publicSSHKeyFile));
 
         $serverTypeId = 1;
         foreach ($hetznerClient->serverTypes()->all() as $serverType) {
@@ -93,11 +92,12 @@ $application->register('test')
         }
 
         $serverIsFound = false;
+        $serverId = null;
         foreach ($hetznerClient->servers()->all() as $server) {
             if (str_contains($server->name, $serverNamePrefix)) {
                 echo 'ID: '.$server->id.' Name:'.$server->name.' Status: '.$server->status.PHP_EOL;
-                $getServer = $hetznerClient->servers()->get($server->id);
                 $serverIsFound = true;
+                $serverId = $server->id;
                 break;
             }
         }
@@ -124,8 +124,11 @@ $application->register('test')
 
             sleep(30);
         } else {
+            $getServer = $hetznerClient->servers()->get($server->id);
             // Rebuild server
             echo 'Rebuilding server' . PHP_EOL;
+            $rebuildResponse = $getServer->rebuildFromImage($image);
+            echo json_encode($rebuildResponse, JSON_PRETTY_PRINT);
         }
 
         return Command::SUCCESS;

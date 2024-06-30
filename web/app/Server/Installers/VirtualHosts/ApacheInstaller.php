@@ -2,6 +2,8 @@
 
 namespace App\Server\Installers\VirtualHosts;
 
+use App\Server\Helpers\OS;
+
 class ApacheInstaller
 {
 
@@ -10,7 +12,14 @@ class ApacheInstaller
 
     public static function isApacheInstalled(): array
     {
-        $dockerVersion = shell_exec('service apache2 status');
+        $os = OS::getDistro();
+
+        if ($os == OS::DEBIAN || $os == OS::UBUNTU) {
+            $dockerVersion = shell_exec('service apache2 status');
+        } elseif ($os == OS::CENTOS || $os == OS::ALMA_LINUX) {
+            $dockerVersion = shell_exec('systemctl status httpd');
+        }
+
         if (str_contains($dockerVersion, 'The Apache HTTP Server')) {
             return [
                 'status' => 'success',

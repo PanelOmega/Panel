@@ -9,8 +9,8 @@ trait HasDocker
 {
     public function installDocker()
     {
-
         $checkApache2IsInstalled = ApacheInstaller::isApacheInstalled();
+
         if ($checkApache2IsInstalled['status'] === 'error') {
 
             // Install apache2

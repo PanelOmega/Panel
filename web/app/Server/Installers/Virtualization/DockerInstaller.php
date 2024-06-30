@@ -2,24 +2,38 @@
 
 namespace App\Server\Installers\Virtualization;
 
+use App\Server\Helpers\OS;
+
 class DockerInstaller
 {
     public string $logPath = '/var/log/omega/docker-installer.log';
 
     public function run()
     {
+        $os = OS::getDistro();
+
         $commands = [];
-        $commands[] = 'sudo apt-get update -y';
-        $commands[] = 'sudo apt-get install ca-certificates curl -y';
-        $commands[] = 'sudo install -m 0755 -d /etc/apt/keyrings';
-        $commands[] = 'sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc';
-        $commands[] = 'sudo chmod a+r /etc/apt/keyrings/docker.asc';
 
-        $commands[] = 'echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu $(. /etc/os-release && echo "$VERSION_CODENAME") stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null';
+        if ($os == OS::DEBIAN || $os == OS::UBUNTU) {
+            $commands[] = 'sudo apt-get update -y';
+            $commands[] = 'sudo apt-get install ca-certificates curl -y';
+            $commands[] = 'sudo install -m 0755 -d /etc/apt/keyrings';
+            $commands[] = 'sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc';
+            $commands[] = 'sudo chmod a+r /etc/apt/keyrings/docker.asc';
 
-        $commands[] = 'sudo apt-get update -y';
-        $commands[] = 'sudo apt-get install docker-compose docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin -y';
-        $commands[] = 'echo "Done!"';
+            $commands[] = 'echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu $(. /etc/os-release && echo "$VERSION_CODENAME") stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null';
+
+            $commands[] = 'sudo apt-get update -y';
+            $commands[] = 'sudo apt-get install docker-compose docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin -y';
+            $commands[] = 'echo "Done!"';
+        } elseif ($os == OS::ALMA_LINUX) {
+            $commands[] = 'sudo dnf update -y';
+            $commands[] = 'sudo dnf config-manager --add-repo=https://download.docker.com/linux/centos/docker-ce.repo';
+            $commands[] = 'sudo dnf install docker-ce docker-ce-cli containerd.io -y';
+            $commands[] = 'sudo systemctl start docker';
+            $commands[] = 'sudo systemctl enable docker';
+            $commands[] = 'echo "Done!"';
+        }
 
         $shellFileContent = '';
         foreach ($commands as $command) {

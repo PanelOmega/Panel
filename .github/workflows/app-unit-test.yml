@@ -35,11 +35,10 @@ jobs:
           sudo wget https://getcomposer.org/download/latest-stable/composer.phar
           sudo COMPOSER_ALLOW_SUPERUSER=1 php composer.phar install
           
-          sudo echo ${{ secrets.HETZNER_PRIVATE_SSH_KEY_FILE }} > OmegaUnitTest.key
-          sudo chmod 600 OmegaUnitTest.key
-          
-          sudo echo ${{ secrets.HETZNER_PUBLIC_SSH_KEY_FILE }} > OmegaUnitTest.pub
-          sudo chmod 600 OmegaUnitTest.pub 
+          echo "${{ secrets.HETZNER_PRIVATE_SSH_KEY_FILE }}" >> OmegaUnitTest.key
+          echo "${{ secrets.HETZNER_PUBLIC_SSH_KEY_FILE }}" >> OmegaUnitTest.pub
+          chmod 600 OmegaUnitTest.key
+          chmod 600 OmegaUnitTest.pub
           
           sudo php run.php test --OS=${{ matrix.os }} --HETZNER_API_KEY=${{ secrets.HETZNER_API_KEY }} --GIT_REPO_URL=$GITHUB_REPOSITORY --GIT_BRANCH=$GITHUB_BRANCH --GIT_COMMIT=$GITHUB_COMMIT_SHA
 

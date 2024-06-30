@@ -28,12 +28,12 @@ $application->register('test')
         $gitCommit = $input->getOption('GIT_COMMIT');
         $codecovToken = $input->getOption('CODECOV_TOKEN');
         $gitCommit = substr($gitCommit, 0, 12);
-        $serverNamePrefix = 'omega-test-commit-';
+        $serverNamePrefix = 'OmegaUnitTest-';
         $serverName = $serverNamePrefix . $gitCommit;
 
-        $hetznerSSHName = 'omega-e2e-test-' . $gitCommit;
-        $privateSSHKeyFile = 'omega-e2e-test-'.$gitCommit.'.key';
-        $publicSSHKeyFile = 'omega-e2e-test-'.$gitCommit.'.pub';
+        $hetznerSSHName = 'OmegaUnitTest-' . $gitCommit;
+        $privateSSHKeyFile = 'OmegaUnitTest-'.$gitCommit.'.key';
+        $publicSSHKeyFile = 'OmegaUnitTest-'.$gitCommit.'.pub';
 
 
 //        $commitTest = new CodeCoverageTest([
@@ -65,25 +65,14 @@ $application->register('test')
         $getSSHKeys = $hetznerClient->sshKeys()->all();
         if (!empty($getSSHKeys)) {
             foreach ($getSSHKeys as $sshKey) {
-                if (str_contains($sshKey->name, 'omega-e2e-test-')) {
-                    $sshKey->delete();
+                if (str_contains($sshKey->name, 'OmegaUnitTest-')) {
+                    $findSSHKey = true;
                 }
             }
         }
         if (!$findSSHKey) {
             $hetznerClient->sshKeys()->create($hetznerSSHName, file_get_contents($publicSSHKeyFile));
         }
-
-        foreach ($hetznerClient->servers()->all() as $server) {
-            if (str_contains($server->name, $serverNamePrefix)) {
-                $getServer = $hetznerClient->servers()->get($server->id);
-                $getServer->delete();
-                echo 'Deleting server: '.$server->name.PHP_EOL;
-                continue;
-            }
-            echo 'ID: '.$server->id.' Name:'.$server->name.' Status: '.$server->status.PHP_EOL;
-        }
-
 
         $serverTypeId = 1;
         foreach ($hetznerClient->serverTypes()->all() as $serverType) {
@@ -103,26 +92,43 @@ $application->register('test')
             $image = $hetznerClient->images()->getByName('ubuntu-22.04');
         }
 
-        $apiResponse = $hetznerClient->servers()->createInLocation($serverName, $serverType, $image, $location, [$hetznerSSHName]);
-        $server = $apiResponse->getResponsePart('server');
-        $action = $apiResponse->getResponsePart('action');
-        $nextActions = $apiResponse->getResponsePart('next_actions');
-
-        echo 'Server: '.$server->name.PHP_EOL;
-        echo 'IP: '.$server->publicNet->ipv4->ip.PHP_EOL;
-//        echo 'Password: '.$apiResponse->getResponsePart('root_password').PHP_EOL;
-        echo 'Now we wait on the success of the server creation!'.PHP_EOL;
-        echo date('H:i:s').PHP_EOL;
-
-        $action->waitUntilCompleted();
-        foreach ($nextActions as $nextAction) {
-            $nextAction->waitUntilCompleted();
+        $serverIsFound = false;
+        foreach ($hetznerClient->servers()->all() as $server) {
+            if (str_contains($server->name, $serverNamePrefix)) {
+                echo 'ID: '.$server->id.' Name:'.$server->name.' Status: '.$server->status.PHP_EOL;
+                $getServer = $hetznerClient->servers()->get($server->id);
+                $serverIsFound = true;
+                break;
+            }
         }
 
-        echo 'Server created!'.PHP_EOL;
-        echo date('H:i:s').PHP_EOL;
+        if (!$serverIsFound) {
+            $apiResponse = $hetznerClient->servers()->createInLocation($serverName, $serverType, $image, $location, [$hetznerSSHName]);
+            $server = $apiResponse->getResponsePart('server');
+            $action = $apiResponse->getResponsePart('action');
+            $nextActions = $apiResponse->getResponsePart('next_actions');
 
-        sleep(30);
+            echo 'Server: ' . $server->name . PHP_EOL;
+            echo 'IP: ' . $server->publicNet->ipv4->ip . PHP_EOL;
+//        echo 'Password: '.$apiResponse->getResponsePart('root_password').PHP_EOL;
+            echo 'Now we wait on the success of the server creation!' . PHP_EOL;
+            echo date('H:i:s') . PHP_EOL;
+
+            $action->waitUntilCompleted();
+            foreach ($nextActions as $nextAction) {
+                $nextAction->waitUntilCompleted();
+            }
+
+            echo 'Server created!' . PHP_EOL;
+            echo date('H:i:s') . PHP_EOL;
+
+            sleep(30);
+        } else {
+            // Rebuild server
+            echo 'Rebuilding server' . PHP_EOL;
+        }
+
+        return Command::SUCCESS;
 
         $testParams = [
             'gitRepoUrl' => $input->getOption('GIT_REPO_URL'),
@@ -146,9 +152,6 @@ $application->register('test')
 //        if (isset($codecovStatus['testPassed']) && $codecovStatus['testPassed'] === true) {
 //            $passStages[] = 'Code Coverage Test';
 //        }
-
-        $server = $hetznerClient->servers()->get($server->id);
-        $delete = $server->delete();
 
         if (count($passStages) === 1) {
             return Command::SUCCESS;

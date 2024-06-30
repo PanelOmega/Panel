@@ -124,7 +124,7 @@ $application->register('test')
 
             sleep(30);
         } else {
-            $getServer = $hetznerClient->servers()->get($server->id);
+            $getServer = $hetznerClient->servers()->get($serverId);
             // Rebuild server
             echo 'Rebuilding server' . PHP_EOL;
             $getServer->rebuildFromImage($image);

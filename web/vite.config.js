@@ -6,6 +6,7 @@ export default defineConfig({
         laravel({
             input: [
                 'resources/css/filament/admin/theme.css',
+                'resources/css/filament/customer/theme.css',
                 'resources/css/app.css',
                 'resources/js/app.js'
             ],

@@ -1,21 +1,18 @@
 <?php
 
-namespace App\Filament\Pages;
+namespace App\FilamentCustomer\Pages;
 
 use App\ModulesManager;
 use Filament\Pages\Page;
 
 class CustomerDashboard extends Page
 {
-    protected static ?string $navigationIcon = 'heroicon-o-star';
+    protected static ?string $navigationIcon = 'heroicon-o-home';
 
     protected static string $view = 'filament.pages.customer-dashboard';
+    protected static ?string $navigationLabel = 'Dashboard';
 
-    protected static ?string $navigationGroup = 'Demo Pages';
-
-    protected static ?string $navigationLabel = 'Customer Dashboard';
-
-    protected static ?int $navigationSort = 1;
+    protected static ?int $navigationSort = 0;
 
     protected function getViewData(): array
     {

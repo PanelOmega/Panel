@@ -4,6 +4,7 @@ namespace app\Providers\Filament;
 
 use App\Filament\OmegaTheme;
 use app\Filament\Pages\DemoAdminLogin;
+use App\FilamentCustomer\Pages\CustomerDashboard;
 use App\FilamentCustomer\Pages\DemoCustomerLogin;
 use App\Http\Middleware\CustomerAuthenticate;
 use App\OmegaConfig;
@@ -41,13 +42,13 @@ class CustomerPanelProvider extends PanelProvider
 //            ->brandLogo(asset('images/logo/2.svg'))
 //            ->brandLogoHeight(50)
           //  ->plugin(new OmegaTheme())
-            ->viteTheme('resources/css/filament/admin/theme.css')
+            ->viteTheme('resources/css/filament/customer/theme.css')
             //->colors(OmegaTheme::getColors())
           //  ->icons(OmegaTheme::getIcons())
             ->discoverResources(in: app_path('FilamentCustomer/Resources'), for: 'App\\FilamentCustomer\\Resources')
 //            ->discoverPages(in: app_path('Filament/Pages'), for: 'App\\Filament\\Pages')
             ->pages([
-                Pages\Dashboard::class,
+                CustomerDashboard::class,
             ])
 //            ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\\Filament\\Widgets')
             ->plugins([

@@ -57,7 +57,7 @@ wget https://github.com/PanelOmega/Dist/raw/main/compilators/almalinux/nginx/dis
 dnf install -y omega-nginx-1.25.5-1.el9.x86_64.rpm
 
 OMEGA_PHP=/usr/local/omega/php/bin/php
-
 ln -s $OMEGA_PHP /usr/bin/omega-php
 
-omega-php -v
+ln -s /usr/local/omega/web/omega.sh /usr/bin/omega
+chmod +x /usr/local/omega/web/omega.sh

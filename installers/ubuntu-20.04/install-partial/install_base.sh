@@ -59,5 +59,7 @@ dpkg -i omega-nginx-1.24.0-ubuntu-20.04.deb
 service omega start
 
 OMEGA_PHP=/usr/local/omega/php/bin/php
-
 ln -s $OMEGA_PHP /usr/bin/omega-php
+
+ln -s /usr/local/omega/web/omega.sh /usr/bin/omega
+chmod +x /usr/local/omega/web/omega.sh

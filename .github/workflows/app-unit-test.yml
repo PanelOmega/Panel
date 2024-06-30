@@ -39,7 +39,7 @@ jobs:
           sudo chmod 600 OmegaUnitTest.key
           
           sudo echo ${{ secrets.HETZNER_PUBLIC_SSH_KEY_FILE }} > OmegaUnitTest.pub
-          sudo chmod 600 OmegaUnitTest.pub
+          sudo chmod 600 OmegaUnitTest.pub 
           
           sudo php run.php test --OS=${{ matrix.os }} --HETZNER_API_KEY=${{ secrets.HETZNER_API_KEY }} --GIT_REPO_URL=$GITHUB_REPOSITORY --GIT_BRANCH=$GITHUB_BRANCH --GIT_COMMIT=$GITHUB_COMMIT_SHA
 

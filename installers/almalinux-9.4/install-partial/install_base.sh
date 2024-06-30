@@ -56,7 +56,8 @@ dnf install -y omega-php-8.2-1.el9.x86_64.rpm
 wget https://github.com/PanelOmega/Dist/raw/main/compilators/almalinux/nginx/dist/omega-nginx-1.25.5-1.el9.x86_64.rpm
 dnf install -y omega-nginx-1.25.5-1.el9.x86_64.rpm
 
-service omega start
+systemctl start omega
+systemctl enable omega
 
 OMEGA_PHP=/usr/local/omega/php/bin/php
 

@@ -31,18 +31,17 @@ $application->register('generate-ssh')
         file_put_contents(__DIR__.'/'.$privateSSHKeyFile, $privateKeyContent);
         file_put_contents(__DIR__.'/'.$publicSSHKeyFile, $publicKeyContent);
 
-
-        $hetznerClient = new \LKDev\HetznerCloud\HetznerAPIClient($input->getOption('HETZNER_API_KEY'));
-
-        $getSSHKeys = $hetznerClient->sshKeys()->all();
-        if (!empty($getSSHKeys)) {
-            foreach ($getSSHKeys as $sshKey) {
-                if (str_contains($sshKey->name, 'OmegaUnitTest')) {
-                    $sshKey->delete();
-                }
-            }
-        }
-        $hetznerClient->sshKeys()->create($hetznerSSHName, file_get_contents($publicSSHKeyFile));
+//        $hetznerClient = new \LKDev\HetznerCloud\HetznerAPIClient($input->getOption('HETZNER_API_KEY'));
+//
+//        $getSSHKeys = $hetznerClient->sshKeys()->all();
+//        if (!empty($getSSHKeys)) {
+//            foreach ($getSSHKeys as $sshKey) {
+//                if (str_contains($sshKey->name, 'OmegaUnitTest')) {
+//                    $sshKey->delete();
+//                }
+//            }
+//        }
+//        $hetznerClient->sshKeys()->create($hetznerSSHName, file_get_contents($publicSSHKeyFile));
 
         return Command::SUCCESS;
     });
@@ -60,14 +59,11 @@ $application->register('test')
         $gitCommit = $input->getOption('GIT_COMMIT');
         $codecovToken = $input->getOption('CODECOV_TOKEN');
         $gitCommit = substr($gitCommit, 0, 12);
-        $serverNamePrefix = 'OmegaUnitTest-';
-        $serverName = $serverNamePrefix . $gitCommit;
 
+        $serverName = 'OmegaUnitTest';
         $hetznerSSHName = 'OmegaUnitTest';
         $privateSSHKeyFile = 'OmegaUnitTest.key';
         $publicSSHKeyFile = 'OmegaUnitTest.pub';
-
-        return 1;
 
         $hetznerClient = new \LKDev\HetznerCloud\HetznerAPIClient($input->getOption('HETZNER_API_KEY'));
 
@@ -110,7 +106,7 @@ $application->register('test')
         $serverIsFound = false;
         $serverId = null;
         foreach ($hetznerClient->servers()->all() as $server) {
-            if (str_contains($server->name, $serverNamePrefix)) {
+            if ($server->name == $serverName) {
                 echo 'ID: '.$server->id.' Name:'.$server->name.' Status: '.$server->status.PHP_EOL;
                 $serverIsFound = true;
                 $serverId = $server->id;

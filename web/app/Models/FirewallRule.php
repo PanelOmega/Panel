@@ -109,9 +109,7 @@ class FirewallRule extends Model
         $os = OS::getDistro();
         $output = shell_exec('sudo ufw --force enable');
         if (str_contains($output, 'Firewall is active')) {
-
             self::enableSystemPorts();
-
             return true;
         } else {
             if ($os == OS::UBUNTU) {

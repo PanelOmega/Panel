@@ -35,7 +35,13 @@ DISTRO_NAME=$(echo $DISTRO_NAME | tr '[:upper:]' '[:lower:]')
 # replace spaces
 DISTRO_NAME=${DISTRO_NAME// /-}
 
-INSTALLER_URL="https://raw.githubusercontent.com/PanelOmega/Panel/stable/installers/${DISTRO_NAME}-${DISTRO_VERSION}/install.sh"
+# Default values for command-line arguments
+GIT_BRANCH="stable"
+if [ -n "$1" ]; then
+    GIT_BRANCH=$1
+fi
+
+INSTALLER_URL="https://raw.githubusercontent.com/PanelOmega/Panel/$GIT_BRANCH/installers/${DISTRO_NAME}-${DISTRO_VERSION}/install.sh"
 
 INSTALLER_CONTENT=$(wget ${INSTALLER_URL} 2>&1)
 if [[ "$INSTALLER_CONTENT" =~ 404\ Not\ Found ]]; then

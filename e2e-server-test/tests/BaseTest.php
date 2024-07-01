@@ -16,6 +16,8 @@ class BaseTest
 
     protected $codecovToken;
 
+    protected $os;
+
     protected $hostname;
     protected $username;
 
@@ -27,6 +29,7 @@ class BaseTest
         $this->gitRepoUrl = $params['gitRepoUrl'];
         $this->gitCommit = $params['gitCommit'];
         $this->codecovToken = $params['codecovToken'];
+        $this->os = $params['os'];
 
         $this->sshConnection = new SSH2($this->serverIp);
         $sshKey = PublicKeyLoader::load(file_get_contents($this->privateSSHKeyFile));

@@ -4,6 +4,11 @@ namespace App\Server\Helpers;
 
 class LinuxUser
 {
+
+    public const USER_FILE_PERMISSION = 0644;
+    public const USER_DIRECTORY_PERMISSION = 0711;
+    public const USER_GROUP = 'www-data';
+
     /**
      * @param string $username
      * @param string $password
@@ -49,11 +54,23 @@ class LinuxUser
             ];
         }
 
-        $command = 'sudo adduser --disabled-password --gecos "" "' . $username . '"';
-        $output .= shell_exec($command);
+        $distro = OS::getDistro();
+        if ($distro === OS::UNKNOWN) {
+            throw new \Exception('Unknown OS');
+        }
 
-        $command = 'sudo usermod -a -G www-data ' . $username;
-        $output .= shell_exec($command);
+        if ($distro === OS::DEBIAN || $distro === OS::UBUNTU) {
+            $command = 'sudo adduser --disabled-password --gecos "" "' . $username . '"';
+            $output .= shell_exec($command);
+        } else if ($distro === OS::ALMA_LINUX || $distro === OS::CENTOS) {
+            $command = 'sudo useradd "' . $username . '"';
+            $output .= shell_exec($command);
+        }
+
+        if ($distro === OS::DEBIAN || $distro === OS::UBUNTU) {
+            $command = 'sudo usermod -a -G www-data ' . $username;
+            $output .= shell_exec($command);
+        }
 
         $command = 'sudo echo ' . $username . ':' . $password . ' | chpasswd -e';
         $output .= shell_exec($command);

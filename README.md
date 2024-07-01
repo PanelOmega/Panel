@@ -6,7 +6,16 @@
 
 ## Installation
 To install Panel Omega, you need to run this commands:
+
+FOR STABLE:
 ```
-wget https://raw.githubusercontent.com/PanelOmega/Panel/stable/installers/install.sh && chmod +x install.sh && ./install.sh
+wget https://raw.githubusercontent.com/PanelOmega/Panel/main/installers/install.sh && chmod +x install.sh && ./install.sh
 ```
+
+
+FOR DEV:
+```
+wget https://raw.githubusercontent.com/PanelOmega/Panel/dev/installers/install.sh && chmod +x install.sh && ./install.sh dev
+```
+
 The admin panel can be opened on port: yourserver.com:8443

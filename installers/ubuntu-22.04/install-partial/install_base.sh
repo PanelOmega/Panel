@@ -1,6 +1,9 @@
-#!/bin/bash
-
 INSTALL_DIR="/omega/install"
+
+GIT_BRANCH="stable"
+if [ -n "$1" ]; then
+    GIT_BRANCH=$1
+fi
 
 apt-get update && apt-get install ca-certificates -y
 
@@ -9,6 +12,7 @@ mkdir -p $INSTALL_DIR
 cd $INSTALL_DIR
 
 DEPENDENCIES_LIST=(
+    "apg"
     "openssl"
     "jq"
     "curl"
@@ -41,7 +45,7 @@ done
 # Start MySQL
 service mysql start
 
-wget https://raw.githubusercontent.com/PanelOmega/Panel/stable/installers/ubuntu-22.04/greeting.sh
+wget https://raw.githubusercontent.com/PanelOmega/Panel/$GIT_BRANCH/installers/ubuntu-22.04/greeting.sh
 mv greeting.sh /etc/profile.d/omega-greeting.sh
 
 # Install OMEGA PHP
@@ -55,6 +59,7 @@ dpkg -i omega-nginx-1.24.0-ubuntu-22.04.deb
 service omega start
 
 OMEGA_PHP=/usr/local/omega/php/bin/php
-
 ln -s $OMEGA_PHP /usr/bin/omega-php
 
+ln -s /usr/local/omega/web/omega-shell.sh /usr/bin/omega-shell
+chmod +x /usr/local/omega/web/omega-shell.sh

@@ -67,6 +67,7 @@ class LinuxUserTest extends TestCase
     public function testCreateExistingLinuxWebUser()
     {
         $createUser = LinuxUser::createWebUser(self::$lastCreatedUser, 'testpassword');
+
         $this->assertArrayHasKey('error', $createUser);
         $this->assertSame('User already exists', $createUser['error']);
 

@@ -121,11 +121,6 @@ class HostingSubscription extends Model
         return $this->hasMany(Domain::class);
     }
 
-    public function ftpAccounts()
-    {
-        return $this->hasMany(HostingSubscriptionFtpAccount::class);
-    }
-
     private function _createLinuxWebUser($model): array
     {
         $findCustomer = Customer::where('id', $model->customer_id)->first();

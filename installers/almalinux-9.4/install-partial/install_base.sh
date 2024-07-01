@@ -1,4 +1,7 @@
-#!/bin/bash
+GIT_BRANCH="stable"
+if [ -n "$1" ]; then
+    GIT_BRANCH=$1
+fi
 
 INSTALL_DIR="/omega/install"
 
@@ -15,6 +18,7 @@ mkdir -p $INSTALL_DIR
 cd $INSTALL_DIR
 
 DEPENDENCIES_LIST=(
+    "apg"
     "openssl"
     "jq"
     "curl"
@@ -40,7 +44,7 @@ done
 systemctl start mysqld
 systemctl enable mysqld
 #
-wget https://raw.githubusercontent.com/PanelOmega/Panel/stable/installers/almalinux-9.4/greeting.sh
+wget https://raw.githubusercontent.com/PanelOmega/Panel/$GIT_BRANCH/installers/almalinux-9.4/greeting.sh
 mv greeting.sh /etc/profile.d/omega-greeting.sh
 
 #
@@ -52,11 +56,8 @@ dnf install -y omega-php-8.2-1.el9.x86_64.rpm
 wget https://github.com/PanelOmega/Dist/raw/main/compilators/almalinux/nginx/dist/omega-nginx-1.25.5-1.el9.x86_64.rpm
 dnf install -y omega-nginx-1.25.5-1.el9.x86_64.rpm
 
-#
-#service omega start
-#
 OMEGA_PHP=/usr/local/omega/php/bin/php
-
 ln -s $OMEGA_PHP /usr/bin/omega-php
 
-omega-php -v
+ln -s /usr/local/omega/web/omega-shell.sh /usr/bin/omega-shell
+chmod +x /usr/local/omega/web/omega-shell.sh

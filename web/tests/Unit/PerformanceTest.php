@@ -42,7 +42,7 @@ class PerformanceTest extends TestCase
 
                 $hostingSubscription = new HostingSubscription();
                 $hostingSubscription->customer_id = $createCustomer->id;
-                $hostingSubscription->domain = 'test-performance' . rand(1000, 9999) .$i. '.phyrevoice.com';
+                $hostingSubscription->domain = 'test-performance' . rand(1000, 9999) .$i. '.demo.panelomega.com';
                 $hostingSubscription->hosting_plan_id = $createHostingPlan->id;
                 $hostingSubscription->save();
                 $this->assertDatabaseHas('hosting_subscriptions', ['domain' => $hostingSubscription->domain]);
@@ -53,9 +53,15 @@ class PerformanceTest extends TestCase
                 $findDomain = Domain::where('hosting_subscription_id', $hostingSubscription->id)->first();
                 $this->assertDatabaseHas('domains', ['domain' => $findDomain->domain]);
 
+                $hostsContent = file_get_contents('/etc/hosts');
+                $hostsContent .= '127.0.0.1 ' . $hostingSubscription->domain . PHP_EOL;
+                $hostsContent .= '::1 ' . $hostingSubscription->domain . PHP_EOL;
+                file_put_contents('/etc/hosts', $hostsContent);
+
                 // Test domain php version
                 file_put_contents($findDomain->domain_public . '/index.php', '<?php echo "site-is-ok, "; echo phpversion(); ?>');
                 $domainHomePageContent = file_get_contents('http://' . $hostingSubscription->domain);
+
                 $this->assertTrue(strpos($domainHomePageContent, 'site-is-ok, ' . $phpVersion) !== false);
 
             }

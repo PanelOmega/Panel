@@ -6,6 +6,7 @@ use App\Actions\CreateLinuxWebUser;
 use App\Actions\GetLinuxUser;
 use App\Jobs\ApacheBuild;
 use App\Server\Helpers\LinuxUser;
+use App\Server\Helpers\FtpAccount;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -46,16 +47,19 @@ class HostingSubscription extends Model
             if ($findDomain) {
                 throw new \Exception('Domain already exists');
             }
+
             $create = $model->_createLinuxWebUser($model);
             if (isset($create['error'])) {
                 throw new \Exception($create['message']);
             }
+            
             if (isset($create['system_username']) && isset($create['system_password'])) {
                 $model->system_username = $create['system_username'];
                 $model->system_password = $create['system_password'];
             } else {
                 return false;
             }
+            
         });
 
         static::created(function ($model) {
@@ -66,6 +70,12 @@ class HostingSubscription extends Model
             $makeMainDomain->is_main = 1;
             $makeMainDomain->status = Domain::STATUS_ACTIVE;
             $makeMainDomain->save();
+
+            $createFtp = $model->_createFtpAccount($model);
+            
+            if(isset($createFtp['error'])) {
+                throw new \Exception($createFtp['message']);
+            }
 
         });
 
@@ -79,6 +89,12 @@ class HostingSubscription extends Model
 
             if (! empty($getLinuxUserStatus)) {
                 LinuxUser::deleteUser($model->system_username);
+            }
+
+            $getFptAccount = FtpAccount::getFtpAccount($model->system_username);
+
+            if(!empty($getFtpAccount)) {
+                FtpAccount::deleteFtpAccount($model->system_username);
             }
 
             $findRelatedDomains = Domain::where('hosting_subscription_id', $model->id)->get();
@@ -119,6 +135,11 @@ class HostingSubscription extends Model
     public function domain()
     {
         return $this->hasMany(Domain::class);
+    }
+
+    public function ftpAccounts()
+    {
+        return $this->hasMany(HostingSubscriptionFtpAccount::class);
     }
 
     private function _createLinuxWebUser($model): array
@@ -188,5 +209,44 @@ class HostingSubscription extends Model
     }
     private function _startsWithNumber($string) {
         return strlen($string) > 0 && ctype_digit(substr($string, 0, 1));
+    }
+
+    public function _createFtpAccount($model) {
+
+        $findCustomer = Customer::where('id', $model->customer_id)->first();
+        if (! $findCustomer) {
+            return [];
+        }
+
+        if (!empty($model->system_username)) {
+
+            $ftpAccount = FtpAccount::getFtpAccount($model->system_username, $model->domain);
+            
+            if (!empty($ftpAccount)) {
+                return [
+                    'error' => true,
+                    'message' => 'Ftp account already exists.'
+                ];
+            }
+
+            $subscription_data = [
+                'hosting_subscription_id' => $model->id,
+                'ftp_username' => $model->system_username,
+                'ftp_password' => $model->system_password,
+                'domain' => $model->domain
+            ];
+    
+            $createFtpAccountResult = FtpAccount::createFtpAccount($subscription_data);
+    
+            if (isset($createFtpAccountResult['error'])) {
+                return $createFtpAccountResult;
+            }
+    
+            return [
+                'success' => 'Ftp Account created successfully',
+            ];
+        }
+
+
     }
 }

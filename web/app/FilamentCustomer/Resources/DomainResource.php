@@ -1,6 +1,6 @@
 <?php
 
-namespace App\FilamentCustomer\Resources;
+namespace App\FilamentCustomer\Resources; 
 
 use App\Filament\Enums\ServerApplicationType;
 use App\Models\Domain;
@@ -281,7 +281,7 @@ class DomainResource extends Resource
                     ->label('Open website')
                     ->icon('heroicon-m-arrow-top-right-on-square')
                     ->color('gray')
-                    ->url(fn($record): string => 'http://' . $record->domain, true), 
+                    ->url(fn($record): string => 'http://' . $record->domain, true),
                 Tables\Actions\EditAction::make(),
             ])
             ->bulkActions([

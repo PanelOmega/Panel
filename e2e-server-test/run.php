@@ -81,7 +81,7 @@ $application->register('test')
 //        }
 //
 //        return Command::FAILURE;
-        
+
 
         $serverTypeId = 1;
         foreach ($hetznerClient->serverTypes()->all() as $serverType) {
@@ -159,11 +159,11 @@ $application->register('test')
             $passStages[] = 'Commit Test';
         }
 
-//        $commitTest = new CodeCoverageTest($testParams);
-//        $codecovStatus = $commitTest->runTest();
-//        if (isset($codecovStatus['testPassed']) && $codecovStatus['testPassed'] === true) {
-//            $passStages[] = 'Code Coverage Test';
-//        }
+        $commitTest = new CodeCoverageTest($testParams);
+        $codecovStatus = $commitTest->runTest();
+        if (isset($codecovStatus['testPassed']) && $codecovStatus['testPassed'] === true) {
+            $passStages[] = 'Code Coverage Test';
+        }
 
         if (count($passStages) === 1) {
             return Command::SUCCESS;

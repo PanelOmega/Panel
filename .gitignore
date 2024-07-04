@@ -2,3 +2,4 @@
 /e2e-server-test/.env
 /e2e-server-test/OmegaUnitTest.key
 /e2e-server-test/OmegaUnitTest.pub
+.cloudlinux

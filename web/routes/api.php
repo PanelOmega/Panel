@@ -8,9 +8,15 @@ Route::any('cloud-linux/send-request', function () {
 
     $cloudlinuxCli = '/usr/bin/sudo /usr/share/l.v.e-manager/utils/cloudlinux-cli.py';
 
+    $command = request()->get('command');
+    $params = request()->get('params');
+    $method = request()->get('method');
+
     $data = [];
     $data['owner'] = 'admin';
-    $data['command'] = 'external-info';
+    $data['command'] = $command;
+    $data['params'] = $params;
+    $data['method'] = $method;
 
     $data['user_info'] = array(
         'userName' => 'admin',

@@ -14,9 +14,16 @@ Route::any('cloud-linux/send-request', function () {
 
     $data = [];
     $data['owner'] = 'admin';
-    $data['command'] = $command;
-    $data['params'] = $params;
-    $data['method'] = $method;
+
+    if ($command) {
+        $data['command'] = $command;
+    }
+    if ($params) {
+        $data['params'] = $params;
+    }
+    if ($method) {
+        $data['method'] = $method;
+    }
 
     $data['user_info'] = array(
         'userName' => 'admin',

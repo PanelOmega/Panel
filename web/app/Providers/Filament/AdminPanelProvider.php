@@ -3,7 +3,7 @@
 namespace App\Providers\Filament;
 
 use App\Filament\OmegaTheme;
-use app\Filament\Pages\DemoAdminLogin;
+use App\Filament\Pages\DemoAdminLogin;
 use App\OmegaConfig;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\DisableBladeIconComponents;

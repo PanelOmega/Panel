@@ -1,4 +1,4 @@
-<div>
+<div class="mt-6">
 
     <link rel="stylesheet" href="/assets/css/bootstrap.min.css" />
     <link rel="stylesheet" href="/assets/css/style.css" />
@@ -19,7 +19,7 @@
     <script type="text/javascript">
         var APP_MODE = 'PRODUCTION_MODE';
         var mainAction = '{{url('api/cloud-linux/send-request')}}';
-        var panelName = 'Unknown';
+        var panelName = 'PanelOmega'; 
         var pluginVersion = '7.11.5-1';
         var userType = 'admin';
         var userName = 'admin';
@@ -27,7 +27,7 @@
         var localePath = '/assets/i18n/';
         var assetsStaticPath = '/assets/';
     </script>
-    <script src="/assets/js/locales/.js"></script>
+    <script src="/assets/js/locales/en.js"></script>
 
     <script src="/assets/static/common.bundle.min.js?v=7.11.5-1"></script>
     <script src="/assets/static/polyfills.bundle.min.js?v=7.11.5-1"></script>

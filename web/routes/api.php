@@ -6,23 +6,32 @@ Route::any('cloud-linux/send-request', function () {
 
     require_once('/usr/share/l.v.e-manager/panelless-version/lvemanager/LveManager.php');
 
-    $integrationIniFile = '/opt/cpvendor/etc/integration.ini';
-    if (!file_exists($integrationIniFile)) {
-        shell_exec('mkdir -p /opt/cpvendor/etc');
-        $integrationIniContent = '
-[lvemanager_config]
-# Required
-ui_user_info = /usr/local/omega/web/ui_user_info.sh
+    $cloudlinuxCli = '/usr/bin/sudo /usr/share/l.v.e-manager/utils/cloudlinux-cli.py';
 
-#
-ui_user_info script
-        ';
+    $data = [];
+    $data['owner'] = 'admin';
+    $data['command'] = 'external-info';
 
-        file_put_contents($integrationIniFile, $integrationIniContent);
-    }
+    $data['user_info'] = array(
+        'userName' => 'admin',
+        'userType' => 'admin',
+    );
 
-    $manager = new LveManager();
-    return $manager->processRequest(LveManager::OWNER_ADMIN);
+    $fullCommandStr = sprintf(
+        "%s --data=%s 2>&1",
+        $cloudlinuxCli, base64_encode(json_encode($data))
+    );
+
+    putenv('LC_ALL=en_US.UTF-8');
+
+    ob_start();
+    passthru($fullCommandStr);
+    $responseInJson = ob_get_contents();
+    ob_end_clean();
+
+    $response = json_decode($responseInJson, true);
+
+    return response()->json($response);
 
 })->middleware([
 

@@ -7,8 +7,8 @@
     flex gap-2
         mt-4 hidden sm:flex items-center py-4 px-3 text-sm font-medium
         rounded-lg shadow-sm ring-1
-        ring-custom-600/20 bg-custom-50 text-custom-600
-        dark:ring-custom-400/30 dark:bg-custom-400/10 dark:text-custom-400
+        ring-yellow-600/20 bg-yellow-50 text-yellow-600
+        dark:ring-yellow-400/30 dark:bg-yellow-400/10 dark:text-yellow-400
     "
     style="
         --c-50: {{ $color[50] }};

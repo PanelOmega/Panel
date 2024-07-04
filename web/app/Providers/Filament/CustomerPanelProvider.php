@@ -37,6 +37,9 @@ class CustomerPanelProvider extends PanelProvider
             ->path('customer')
             ->authGuard('customer')
             ->login()
+            ->colors([
+                'primary' => '#32b77d',
+            ])
           //  ->darkMode(false)
             ->sidebarWidth('16rem')
             ->brandName('Panel Omega')

@@ -38,15 +38,15 @@ class CustomerPanelProvider extends PanelProvider
             ->authGuard('customer')
             ->login()
             ->colors([
-                'primary' => '#32b77d',
+                'primary' => '#e16449',
             ])
           //  ->darkMode(false)
-            ->sidebarWidth('16rem')
+            ->sidebarWidth('14rem')
             ->brandName('Panel Omega')
             ->font('Nunito Sans')
             ->brandLogo(asset('images/logo/omega.svg'))
             ->darkModeBrandLogo(asset('images/logo/omega-dark.svg'))
-            ->brandLogoHeight('4rem')
+            ->brandLogoHeight('5rem')
           //  ->plugin(new OmegaTheme())
           ->viteTheme('resources/css/filament/admin/theme.css')
             //->colors(OmegaTheme::getColors())

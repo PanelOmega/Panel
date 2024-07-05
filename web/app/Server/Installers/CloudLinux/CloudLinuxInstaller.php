@@ -50,4 +50,13 @@ class CloudLinuxInstaller
             'logPath' => $this->logPath,
         ];
     }
+
+    public function installNodeJSSelector()
+    {
+        $commands = [];
+        $commands[] = 'yum groupinstall alt-nodejs -y';
+        $commands[] = 'yum install lvemanager lve-utils-y';
+        $commands[] = 'cloudlinux-selector set --json --interpreter nodejs --selector-status enabled';
+    }
+
 }

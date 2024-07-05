@@ -34,12 +34,15 @@ class AdminPanelProvider extends PanelProvider
             ->path('admin')
             ->authGuard('admin')
             ->login()
+            ->colors([
+                'primary' => '#e16449',
+            ])
             ->brandName('Panel Omega')
             ->sidebarWidth('16rem')
             ->font('Nunito Sans')
             ->brandLogo(asset('images/logo/omega.svg'))
             ->darkModeBrandLogo(asset('images/logo/omega-dark.svg'))
-            ->brandLogoHeight('4rem')
+            ->brandLogoHeight('3.5rem')
           //  ->plugin(new OmegaTheme())
             ->viteTheme('resources/css/filament/admin/theme.css')
             //->colors(OmegaTheme::getColors())

@@ -21,7 +21,7 @@
                     <header class="grid grid-cols-2 items-center gap-2 py-10 lg:grid-cols-3">
                         <div class="flex lg:justify-center lg:col-start-2">
                             <div>
-                                <img src="{{asset('images/logo/omega.svg')}}" />
+                                <img src="{{asset('images/logo/omega.svg')}}" class="fi-logo flex dark:hidden mb-4" style="height: 3.5rem;" />
                             </div>
                         </div>
                     </header>
@@ -34,8 +34,8 @@
                                 href="/admin"
                                 class="flex items-start gap-4 rounded-lg bg-white p-6 shadow-[0px_14px_34px_0px_rgba(0,0,0,0.08)] ring-1 ring-white/[0.05] transition duration-300 hover:text-black/70 hover:ring-black/20 focus:outline-none focus-visible:ring-[#FF2D20] lg:pb-10 dark:bg-zinc-900 dark:ring-zinc-800 dark:hover:text-white/70 dark:hover:ring-zinc-700 dark:focus-visible:ring-[#FF2D20]"
                             >
-                                <div class="flex size-12 shrink-0 items-center justify-center rounded-full bg-[#32b77d]/10 sm:size-16">
-                                    <svg  class="size-8 sm:size-8"  fill="#32b77d" height="800px" width="800px" version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+                                <div class="flex size-12 shrink-0 items-center justify-center rounded-full bg-[#e16449]/10 sm:size-16">
+                                    <svg  class="size-8 sm:size-8"  fill="#e16449" height="800px" width="800px" version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
                                          viewBox="0 0 474.565 474.565" xml:space="preserve">
 <g>
     <path d="M255.204,102.3c-0.606-11.321-12.176-9.395-23.465-9.395C240.078,95.126,247.967,98.216,255.204,102.3z"/>
@@ -87,16 +87,16 @@
                                     </div>
                                 </div>
 
-                                <svg class="size-6 shrink-0 self-center stroke-[#32b77d]" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12h15m0 0l-6.75-6.75M19.5 12l-6.75 6.75"/></svg>
+                                <svg class="size-6 shrink-0 self-center stroke-[#e16449]" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12h15m0 0l-6.75-6.75M19.5 12l-6.75 6.75"/></svg>
                             </a>
 
                             <a
                                 href="/customer"
                                 class="flex items-start gap-4 rounded-lg bg-white p-6 shadow-[0px_14px_34px_0px_rgba(0,0,0,0.08)] ring-1 ring-white/[0.05] transition duration-300 hover:text-black/70 hover:ring-black/20 focus:outline-none focus-visible:ring-[#FF2D20] lg:pb-10 dark:bg-zinc-900 dark:ring-zinc-800 dark:hover:text-white/70 dark:hover:ring-zinc-700 dark:focus-visible:ring-[#FF2D20]"
                             >
-                                <div class="flex size-12 shrink-0 items-center justify-center rounded-full bg-[#32b77d]/10 sm:size-16">
+                                <div class="flex size-12 shrink-0 items-center justify-center rounded-full bg-[#e16449]/10 sm:size-16">
                                     <svg  class="size-8 sm:size-8" xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 256 256">
-                                        <path fill="#32b77d" d="M234.38 210a123.36 123.36 0 0 0-60.78-53.23a76 76 0 1 0-91.2 0A123.36 123.36 0 0 0 21.62 210a12 12 0 1 0 20.77 12c18.12-31.32 50.12-50 85.61-50s67.49 18.69 85.61 50a12 12 0 0 0 20.77-12M76 96a52 52 0 1 1 52 52a52.06 52.06 0 0 1-52-52" />
+                                        <path fill="#e16449" d="M234.38 210a123.36 123.36 0 0 0-60.78-53.23a76 76 0 1 0-91.2 0A123.36 123.36 0 0 0 21.62 210a12 12 0 1 0 20.77 12c18.12-31.32 50.12-50 85.61-50s67.49 18.69 85.61 50a12 12 0 0 0 20.77-12M76 96a52 52 0 1 1 52 52a52.06 52.06 0 0 1-52-52" />
                                     </svg>
                                 </div>
 
@@ -116,7 +116,7 @@
                                     </p>
                                 </div>
 
-                                <svg class="size-6 shrink-0 self-center stroke-[#32b77d]" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12h15m0 0l-6.75-6.75M19.5 12l-6.75 6.75"/></svg>
+                                <svg class="size-6 shrink-0 self-center stroke-[#e16449]" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12h15m0 0l-6.75-6.75M19.5 12l-6.75 6.75"/></svg>
                             </a>
 
                         </div>

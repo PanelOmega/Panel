@@ -116,6 +116,7 @@ class Domain extends Model
         if ($this->server_application_type !== 'apache_php') {
             return;
         }
+        return;
 
         $dockerImage = 'php:8.2-fpm';
 

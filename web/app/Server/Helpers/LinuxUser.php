@@ -108,7 +108,7 @@ class LinuxUser
 
     public static function deleteUser(string $username)
     {
-        shell_exec('userdel '.$username);
+        shell_exec('userdel -r '.$username);
         shell_exec('rm -rf /home/'.$username);
 
         return [

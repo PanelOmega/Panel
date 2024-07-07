@@ -3,7 +3,7 @@
 namespace App\Providers\Filament;
 
 use App\Filament\OmegaTheme;
-use app\Filament\Pages\DemoAdminLogin;
+use App\Filament\Pages\DemoAdminLogin;
 use App\OmegaConfig;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\DisableBladeIconComponents;
@@ -34,10 +34,15 @@ class AdminPanelProvider extends PanelProvider
             ->path('admin')
             ->authGuard('admin')
             ->login()
+            ->colors([
+                'primary' => '#e16449',
+            ])
             ->brandName('Panel Omega')
-            ->sidebarWidth(34)
-//            ->brandLogo(asset('images/logo/2.svg'))
-//            ->brandLogoHeight(50)
+            ->sidebarWidth('16rem')
+            ->font('Nunito Sans')
+            ->brandLogo(asset('images/logo/omega.svg'))
+            ->darkModeBrandLogo(asset('images/logo/omega-dark.svg'))
+            ->brandLogoHeight('3.5rem')
           //  ->plugin(new OmegaTheme())
             ->viteTheme('resources/css/filament/admin/theme.css')
             //->colors(OmegaTheme::getColors())

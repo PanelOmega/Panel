@@ -5,6 +5,7 @@ namespace App\Providers\Filament;
 use App\Filament\OmegaTheme;
 use App\Filament\Pages\DemoAdminLogin;
 use App\OmegaConfig;
+use App\Server\Helpers\OS;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
@@ -86,6 +87,13 @@ class AdminPanelProvider extends PanelProvider
             });
 
         }
+
+        $panelInstance->renderHook(PanelsRenderHook::FOOTER, function () {
+            return View::make('filament.footer', [
+                'environment' => ucfirst(app()->environment()),
+                'os' => OS::getDistro(),
+            ]);
+        });
 
         return $panelInstance;
     }

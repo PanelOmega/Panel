@@ -27,6 +27,9 @@ class CloudLinuxInstaller
             $commands[] = 'bash cldeploy -k '.$activationKey;
         }
 
+        $commands[] = 'mkdir -p /usr/local/omega/web/public/thirdparty/cloudlinux';
+        $commands[] = 'ln -s /usr/share/l.v.e-manager/commons/spa-resources/ /usr/local/omega/web/public/thirdparty/cloudlinux';
+
         $shellFileContent = '';
         foreach ($commands as $command) {
             $shellFileContent .= $command.PHP_EOL;

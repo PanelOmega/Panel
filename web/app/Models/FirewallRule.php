@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Server\Helpers\OS;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -32,22 +33,20 @@ class FirewallRule extends Model
         parent::boot();
 
         static::deleting(function ($model) {
+            if ($model->to_port == '8443') {
+                throw new \Exception('Cannot delete port 8443');
+            }
             shell_exec('echo "y" | sudo ufw delete ' . $model->id);
         });
 
         static::creating(function ($model) {
-            $command = 'sudo ufw ';
-            $command .= $model->action . ' ';
-            $command .= $model->port_or_ip . ' ';
-            $command .= 'comment "' . $model->comment . '"';
-            shell_exec($command);
+            $model->_portAction($model->action, $model->port_or_ip, $model->comment);
             unset($model->port_or_ip);
         });
     }
 
     public function getRows()
     {
-
         // Get Linux Firewall Rules
         $firewallRules = shell_exec('sudo ufw status numbered | jc --ufw');
         $firewallRules = json_decode($firewallRules, true);
@@ -61,6 +60,9 @@ class FirewallRule extends Model
 
         $rules = [];
         foreach ($firewallRules['rules'] as $firewallRule) {
+            if (!isset($firewallRule['to_ports'])) {
+                $firewallRule['to_ports'] = [' - '];
+            }
             $rules[] = [
                 'id' => $firewallRule['index'],
                 'action' => $firewallRule['action'],
@@ -75,5 +77,52 @@ class FirewallRule extends Model
         }
 
         return $rules;
+    }
+
+    public static function isEnabled()
+    {
+        $status = shell_exec('sudo ufw status');
+        if (str_contains($status, 'Status: active')) {
+            return true;
+        }
+        return false;
+    }
+
+    private static function _portAction($action, $portOrIp, $comment = '')
+    {
+        $command = 'sudo ufw ';
+        $command .= $action . ' ';
+        $command .= $portOrIp . ' ';
+        $command .= 'comment "' . $comment . '"';
+
+        shell_exec($command);
+    }
+
+    public static function enableSystemPorts()
+    {
+        self::_portAction('allow', '8443', 'PanelOmega - Admin');
+        self::_portAction('allow', '80', 'PanelOmega - HTTP');
+        self::_portAction('allow', '443', 'PanelOmega - HTTPS');
+    }
+    public static function enableFirewall()
+    {
+        $os = OS::getDistro();
+        $output = shell_exec('sudo ufw --force enable');
+        if (str_contains($output, 'Firewall is active')) {
+            self::enableSystemPorts();
+            return true;
+        } else {
+            if ($os == OS::UBUNTU) {
+                shell_exec('sudo apt install ufw jc -y');
+            } else if ($os == OS::ALMA_LINUX) {
+                shell_exec('sudo dnf install ufw jc -y');
+            }
+            $output = shell_exec('sudo ufw --force enable');
+            if (str_contains($output, 'Firewall is active')) {
+                self::enableSystemPorts();
+                return true;
+            }
+        }
+        return false;
     }
 }

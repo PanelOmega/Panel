@@ -7,6 +7,7 @@ use App\Filament\Resources\FirewallRuleResource\RelationManagers;
 use App\Models\FirewallRule;
 use Filament\Forms;
 use Filament\Forms\Form;
+use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
@@ -45,8 +46,23 @@ class FirewallRuleResource extends Resource
 
     public static function table(Table $table): Table
     {
-        return $table
-            ->columns([
+
+        $firewallStatus = FirewallRule::isEnabled();
+
+        $emptyStateActions = [];
+        $tableColumns = [];
+
+        if ($firewallStatus) {
+
+            $emptyStateHeading = 'No firewall rules';
+            $emptyStateDescription = 'Create a firewall rule to secure your server.';
+
+            $emptyStateActions[] = Tables\Actions\CreateAction::make('create')
+                ->label('Create first firewall rule')
+                ->icon('heroicon-m-plus')
+                ->button();
+
+            $tableColumns = [
                 Tables\Columns\TextColumn::make('id')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('action')
@@ -57,19 +73,52 @@ class FirewallRuleResource extends Resource
                     ->searchable(),
 //                Tables\Columns\TextColumn::make('direction')
 //                    ->searchable(),
+                //                Tables\Columns\TextColumn::make('protocol')
+//                    ->searchable(),
+//                Tables\Columns\TextColumn::make('from_port')
+//                    ->searchable(),
+                Tables\Columns\TextColumn::make('from_ip')
+                    ->searchable(),
                 Tables\Columns\TextColumn::make('to_port')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('to_ip')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('comment')
                     ->searchable(),
-//                Tables\Columns\TextColumn::make('protocol')
-//                    ->searchable(),
-//                Tables\Columns\TextColumn::make('from_port')
-//                    ->searchable(),
-                Tables\Columns\TextColumn::make('from_ip')
-                    ->searchable(),
-            ])
+            ];
+        } else {
+            $emptyStateHeading = 'Firewall is disabled';
+            $emptyStateDescription = 'Enable the firewall to create firewall rules.';
+            $emptyStateActions[] = Tables\Actions\Action::make('enable')
+                ->label('Enable firewall')
+                ->action(function (Tables\Actions\Action $action) {
+                    if (FirewallRule::enableFirewall()) {
+                        Notification::make()
+                            ->icon('heroicon-m-shield-check')
+                            ->title('Firewall enabled')
+                            ->body('The firewall has been enabled.')
+                            ->send();
+
+                        $action->redirect(route('filament.admin.resources.firewall-rules.index'));
+
+                    } else {
+                        Notification::make()
+                            ->icon('heroicon-m-shield-x')
+                            ->title('Failed to enable firewall')
+                            ->body('An error occurred while enabling the firewall.')
+                            ->send();
+                    }
+                })
+                ->icon('heroicon-m-shield-check')
+                ->button();
+        }
+
+
+        return $table
+            ->columns($tableColumns)
+            ->emptyStateHeading($emptyStateHeading)
+            ->emptyStateDescription($emptyStateDescription)
+            ->emptyStateActions($emptyStateActions)
             ->filters([
                 //
             ])

@@ -40,6 +40,11 @@ class ResetDemo extends Command
             return;
         }
 
+        $findHostingSubscriptions = HostingSubscription::all();
+        foreach ($findHostingSubscriptions as $hostingSubscription) {
+            $hostingSubscription->delete();
+        }
+
         $findAdmins = Admin::all();
         foreach ($findAdmins as $admin) {
             $admin->delete();
@@ -56,10 +61,6 @@ class ResetDemo extends Command
         $findHostingPlans = HostingPlan::all();
         foreach ($findHostingPlans as $hostingPlan) {
             $hostingPlan->delete();
-        }
-        $findHostingSubscriptions = HostingSubscription::all();
-        foreach ($findHostingSubscriptions as $hostingSubscription) {
-            $hostingSubscription->delete();
         }
 
         $admin = new Admin();

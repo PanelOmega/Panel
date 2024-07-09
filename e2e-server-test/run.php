@@ -81,7 +81,7 @@ $application->register('test')
 //        }
 //
 //        return Command::FAILURE;
-        
+
 
         $serverTypeId = 1;
         foreach ($hetznerClient->serverTypes()->all() as $serverType) {

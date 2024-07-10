@@ -116,6 +116,15 @@
                 </div>
             </x-filament::dropdown.list.item>
 
+            <x-filament::dropdown.list.item wire:key="restart-ftp"  wire:click="restartFtp" tag="button">
+                <div class="flex items-center gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-6" viewBox="0 0 128 128">
+
+                    </svg>
+                    Restart FTP
+                </div>
+            </x-filament::dropdown.list.item>
+
             <x-filament::dropdown.list.item wire:key="restart-supervisor" wire:click="restartSupervisor" tag="button">
                 <div class="flex items-center gap-2">
                     <svg xmlns="http://www.w3.org/2000/svg" class="text-primary-500 w-6" viewBox="0 0 512 512">

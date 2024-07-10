@@ -2,10 +2,10 @@
 
 namespace App\Models;
 
+use App\Server\Helpers\FtpAccount;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use App\Server\Installers\FtpServers\FtpServerInstaller;
-
+use App\Jobs\UpdateVsftpdUserlist;
 class HostingSubscriptionFtpAccount extends Model
 {
     use HasFactory;
@@ -14,8 +14,9 @@ class HostingSubscriptionFtpAccount extends Model
         'hosting_subscription_id',
         'ftp_username',
         'ftp_password',
-        'domain',
-        'status',
+        'ftp_path',
+        'ftp_quota',
+        'ftp_quota_unlimited',
     ];
 
     public function hostingSubscription()
@@ -23,24 +24,33 @@ class HostingSubscriptionFtpAccount extends Model
         return $this->belongsTo(HostingSubscription::class);
     }
 
-    protected static function booted(): void
-    {
+    public static function boot() {
 
-        $ftpServerStatus = FtpServerInstaller::isFtpServerInstalled();
+        parent::boot();
 
-        if ($ftpServerStatus['status'] === 'error') {
+        static::created(function ($model) {
 
-            $ftpInstaller = new FtpServerInstaller();
-            $ftpInstaller->run();
+            $createFtpAccount = FtpAccount::createFtpAccount($model);
 
-        } else {
-
-            $ftpServerRunning = trim(shell_exec('sudo systemctl is-active vsftpd'));
-            if ($ftpServerRunning !== 'active') {
-                shell_exec('sudo systemctl start vsftpd');
+            if(isset($createFtpAccount['error'])) {
+                throw new \Exception($createFtpAccount['message']);
             }
 
-        }
+        });
+
+        static::deleting(function ($model) {
+
+            $deleteFtpAccount = FtpAccount::deleteFtpAccount($model->ftp_username);
+
+            if(isset($deleteFtpAccount['error'])) {
+                throw new \Exception($deleteFtpAccount['message']);
+            }
+
+            $updateFtpUsers = new UpdateVsftpdUserlist();
+            $updateFtpUsers->handle();
+
+        });
+
     }
 
 }

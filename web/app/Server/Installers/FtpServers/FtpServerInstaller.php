@@ -2,19 +2,31 @@
 
     namespace App\Server\Installers\FtpServers;
 
+    use App\Server\Helpers\OS;
 
     class FtpServerInstaller {
 
         public string $logPath = '/var/log/omega/ftp-server-installer.log';
 
+        public function setLogFilePath($path)
+        {
+            $this->logPath = $path;
+        }
+
         public static function isFtpServerInstalled(): array
         {
-            $vsftpdVersion = shell_exec('vsftpd -v');
-            if (str_contains($vsftpdVersion, 'vsftpd')) {
+            $os = OS::getDistro();
+
+            if ($os == OS::DEBIAN || $os == OS::UBUNTU) {
+                $isInstalled = shell_exec('apt-cache policy vsftpd | grep Installed');
+            } elseif($os == OS::CENTOS || $os == OS::ALMA_LINUX) {
+                $isInstalled = shell_exec('rpm -qa | grep vsftpd');
+            }
+
+            if (str_contains($isInstalled, 'Installed') || str_contains($isInstalled, 'vsftpd')) {
                 return [
                     'status' => 'success',
                     'message' => 'FTP Server (vsftpd) is installed.',
-                    'version' => $vsftpdVersion,
                 ];
             }
 
@@ -26,12 +38,20 @@
 
         public function run()
         {
+            $os = OS::getDistro();
             $commands = [];
-            $commands[] = 'sudo apt-get update -y';
-            $commands[] = 'sudo apt-get install vsftpd -y';
 
-            $commands[] = 'sudo sed -i "s/#write_enable=YES/write_enable=YES/" /etc/vsftpd.conf';
+
+            if($os == OS::DEBIAN || $os == OS::UBUNTU) {
+                $commands[] = 'sudo apt-get update -y';
+                $commands[] = 'sudo apt-get install vsftpd -y';
+            } elseif($os == OS::CENTOS || $os == OS::ALMA_LINUX) {
+                $commands[] = 'sudo yum update -y';
+                $commands[] = 'sudo yum install vsftpd -y';
+            }
+
             $commands[] = 'sudo systemctl restart vsftpd';
+            $commands[] = 'omega-shell omega:update-vsftpd-config';
 
             $shellFileContent = '';
             foreach ($commands as $command) {

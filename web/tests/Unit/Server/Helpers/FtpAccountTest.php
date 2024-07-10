@@ -14,7 +14,6 @@ class FtpAccountTest extends TestCase
             'hosting_subscription_id' => 1,
             'ftp_username' => 'testuser' . rand(1, 1000),
             'ftp_password' => 'testpassword',
-            'domain' => 'example.com',
         ];
 
         $result = FtpAccount::createFtpAccount($subscription_data);
@@ -28,7 +27,7 @@ class FtpAccountTest extends TestCase
 
         $this->assertTrue(is_dir('/home/' . $subscription_data['ftp_username']));
         $this->assertTrue(is_dir('/home/' . $subscription_data['ftp_username'] . '/ftp_rootpath'));
-    
+
     }
 
     public function testCreateExistingFtpAccount(): void
@@ -43,7 +42,7 @@ class FtpAccountTest extends TestCase
 
         HostingSubscriptionFtpAccount::create($existing_account);
         $result = FtpAccount::createFtpAccount($existing_account);
-                
+
         $this->assertTrue($result['error']);
         $this->assertSame('Ftp account already exists.', $result['message']);
     }
@@ -75,7 +74,7 @@ class FtpAccountTest extends TestCase
         $userListPath = '/etc/vsftpd.userlist';
         $command = "cat {$userListPath}";
         exec($command, $userList, $returnCode);
-        
+
         $userExistsInList = array_filter($userList, function($user) use ($subscription_data) {
             return str_starts_with($user, $subscription_data['ftp_username'] . ':');
         });

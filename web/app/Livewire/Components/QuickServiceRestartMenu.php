@@ -35,6 +35,11 @@ class QuickServiceRestartMenu extends Component implements HasForms, HasActions
         shell_exec('sudo service omega restart');
     }
 
+    public function restartFtp()
+    {
+        shell_exec('sudo systemctl restart vsftpd');
+    }
+
     public function restartOmegaServices()
     {
         shell_exec('sudo service omega restart');

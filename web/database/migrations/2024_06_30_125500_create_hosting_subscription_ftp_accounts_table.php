@@ -10,11 +10,12 @@ class CreateHostingSubscriptionFtpAccountsTable extends Migration
     {
         Schema::create('hosting_subscription_ftp_accounts', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('hosting_subscription_id');
-            $table->string('ftp_username');
-            $table->string('ftp_password');
-            $table->string('domain');
-            $table->enum('status', ['active', 'inactive'])->default('active');
+            $table->unsignedBigInteger('hosting_subscription_id')->nullable();
+            $table->string('ftp_username')->nullable();
+            $table->string('ftp_password')->nullable();
+            $table->string('ftp_path')->nullable();
+            $table->string('ftp_quota')->nullable();
+            $table->string('ftp_quota_unlimited')->nullable();
             $table->timestamps();
         });
     }

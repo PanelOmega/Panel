@@ -13,12 +13,7 @@ class UpdateVsftpdUserlist implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    public $fixPermissions = false;
-
-    public function __construct($fixPermissions = false)
-    {
-        $this->fixPermissions = $fixPermissions;
-    }
+    public static $handled;
 
     public function handle(): void
     {
@@ -27,7 +22,7 @@ class UpdateVsftpdUserlist implements ShouldQueue
         $tempFilePath = $filePath . '.tmp';
 
         try {
-            $updateVsfpdUserlist = view('server.samples.ubuntu.vsftpd-userlist-conf', [
+            $updateVsfpdUserlist = view('server.samples.vsdftpd.vsftpd-userlist-conf', [
                 'ftpAccounts' => $ftpAccounts
             ])->render();
 
@@ -40,9 +35,11 @@ class UpdateVsftpdUserlist implements ShouldQueue
             }
 
             echo "vsftpd.userlist updated successfully.";
-            
+            self::$handled = true;
+
         } catch (\Exception $e) {
             echo "Failed to update vsftpd.userlist: " . $e->getMessage();
+            self::$handled = false;
         }
     }
 }

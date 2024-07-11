@@ -57,6 +57,7 @@ class CloudLinuxInstaller
     public function installPHPSelector()
     {
         $commands = [];
+        $commands[] = 'yum install php php-gd php-mbstring php-pdo php-xml';
         $commands[] = 'yum groupinstall alt-php -y';
         $commands[] = 'yum install lvemanager lve-utils-y';
         $commands[] = 'cloudlinux-selector set --json --interpreter php --selector-status enabled';
@@ -65,6 +66,7 @@ class CloudLinuxInstaller
     public function installNodeJSSelector()
     {
         $commands = [];
+        $commands[] = 'yum install nodejs';
         $commands[] = 'yum groupinstall alt-nodejs -y';
         $commands[] = 'yum install lvemanager lve-utils-y';
         $commands[] = 'cloudlinux-selector set --json --interpreter nodejs --selector-status enabled';

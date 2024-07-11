@@ -29,6 +29,18 @@ class CloudLinux extends Command
 
         $action = $this->argument('action');
 
+        if ($action == 'ui-user-info') {
+
+            echo '{
+    "userName": "user1",
+    "userId": 1000,
+    "userType": "user",
+    "baseUri": "/user2/lvemanager/",
+    "assetsUri": "/userdata/assets/lvemanager",
+    "lang": "en",
+    "userDomain": "current-user-domain.com"
+}';
+        }
         if ($action == 'panel-info') {
             $panelInfo = [
                 'data' => [

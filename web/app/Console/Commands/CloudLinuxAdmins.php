@@ -5,14 +5,15 @@ namespace App\Console\Commands;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Hash;
 
-class CloudLinuxPackages extends Command
+class CloudLinuxAdmins extends Command
 {
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'omega:cloud-linux-packages {--o|owner=}';
+
+    protected $signature = 'omega:cloud-linux-admins {--name=} {--is-main=}';
 
     /**
      * The console command description.
@@ -29,25 +30,22 @@ class CloudLinuxPackages extends Command
 
 //        $action = $this->argument('action');
 
-            echo '{
-  "data": [
-    {
-      "name": "package",
-      "owner": "root"
-    },
-    {
-      "name": "package",
-      "owner": "admin"
-    },
-    {
-      "name": "package",
-      "owner": "reseller"
-    }
-  ],
-  "metadata": {
-    "result": "ok"
-  }
-}';
+            echo '
+{
+   "data":[
+      {
+         "name":"root",
+         "unix_user":"root",
+         "locale_code":"EN_us",
+         "email":"admin1@domain.zone",
+         "is_main":true
+      }
+   ],
+   "metadata":{
+      "result":"ok"
+   }
+}
+';
 
 
 

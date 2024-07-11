@@ -19,6 +19,8 @@
         "laravel/sanctum": "^4.0",
         "laravel/tinker": "^2.9",
         "leandrocfe/filament-apex-charts": "^3.1",
+        "monarobase/country-list": "^3.5",
+        "outerweb/filament-settings": "^1.2",
         "stechstudio/filament-impersonate": "^3.8"
     },
     "require-dev": {

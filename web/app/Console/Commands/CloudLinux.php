@@ -12,7 +12,7 @@ class CloudLinux extends Command
      *
      * @var string
      */
-    protected $signature = 'omega:cloud-linux';
+    protected $signature = 'omega:cloud-linux {action}';
 
     /**
      * The console command description.
@@ -27,45 +27,25 @@ class CloudLinux extends Command
     public function handle()
     {
 
-        $arguments = $this->getArguments();
+        $action = $this->argument('action');
 
-        dd($arguments);
+        if ($action == 'panel-info') {
+            $panelInfo = [
+                'data' => [
+                    'name' => 'PanelOmega',
+                    'version' => '1.0.0',
+                    'user_login_url' => '',
+                    'supported_cl_features' => [
+                        'autotracing' => true
+                    ]
+                ],
+                'metadata' => [
+                    'result' => 'ok'
+                ]
+            ];
+            echo json_encode($panelInfo, JSON_PRETTY_PRINT);
+        }
 
-
-//        echo json_encode([
-//            'data'=>[
-//                'name' => 'PanelOmega',
-//                'description' => 'Panel Omega is a cloud-based web hosting control panel that makes it easy to manage websites, databases, and email accounts.',
-//                'version' => '1.0.0',
-//                'user_login_url' => 'https://omega.com/login',
-//            ],
-//            'metadata'=>[]
-//        ]);
-
-
-        echo '{
-	"data": {
-		"name": "PanelOmega",
-		"version": "1.0.1",
-		"user_login_url": "http://demo.panelomega:8443/customer",
-		"supported_cl_features": {
-			"php_selector": true,
-			"ruby_selector": true,
-			"python_selector": true,
-			"nodejs_selector": false,
-			"mod_lsapi": true,
-			"mysql_governor": true,
-			"cagefs": true,
-			"reseller_limits": true,
-			"xray": false,
-			"accelerate_wp": false,
-      "autotracing": true
-		}
-	},
-	"metadata": {
-		"result": "ok"
-	}
-}';
 
     }
 }

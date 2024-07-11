@@ -72,4 +72,20 @@ class CloudLinuxInstaller
         $commands[] = 'cloudlinux-selector set --json --interpreter nodejs --selector-status enabled';
     }
 
+    public static function isCloudLinuxInstalled(): array
+    {
+        $cloudLinuxVersion = shell_exec('cat /etc/redhat-release');
+        if (str_contains($cloudLinuxVersion, 'CloudLinux')) {
+            return [
+                'status' => 'success',
+                'message' => 'CloudLinux is installed.',
+            ];
+        }
+
+        return [
+            'status' => 'error',
+            'message' => 'CloudLinux is not installed.',
+        ];
+
+    }
 }

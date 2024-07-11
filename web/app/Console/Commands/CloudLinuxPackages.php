@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Models\HostingPlan;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Hash;
 
@@ -29,27 +30,24 @@ class CloudLinuxPackages extends Command
 
 //        $action = $this->argument('action');
 
-            echo '{
-  "data": [
-    {
-      "name": "package",
-      "owner": "root"
-    },
-    {
-      "name": "package",
-      "owner": "admin"
-    },
-    {
-      "name": "package",
-      "owner": "reseller"
-    }
-  ],
-  "metadata": {
-    "result": "ok"
-  }
-}';
+        $packages = [];
 
+        $findHostingPlans = HostingPlan::all();
+        if ($findHostingPlans) {
+            foreach ($findHostingPlans as $findHostingPlan) {
+                $packages[] = [
+                    'name' => $findHostingPlan->name,
+                    'owner' => 'root'
+                ];
+            }
+        }
 
+        echo json_encode([
+            'data' => $packages,
+            'metadata' => [
+                'result' => 'ok'
+            ]
+        ], JSON_PRETTY_PRINT);
 
     }
 }

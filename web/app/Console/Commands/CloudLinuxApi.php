@@ -68,6 +68,38 @@ class CloudLinuxApi extends Command
             return $this->domains($jsonOptions);
         }
 
+//        if ($request == 'php') {
+//            return $this->php($jsonOptions);
+//        }
+
+    }
+
+
+    public function php($jsonOptions)
+    {
+         echo '{
+  "data": [
+    {
+      "identifier":  "alt-php74",
+      "version": "7.4",
+      "modules_dir":  "/opt/alt/php74/usr/lib64/modules",
+      "dir": "/opt/alt/php74/",
+      "bin":  "/opt/alt/php74/usr/bin/php",
+      "ini": "/opt/alt/php74/link/conf/default.ini"
+    },
+    {
+      "identifier":  "ea-php74",
+      "version": "7.4",
+      "modules_dir":  "/opt/cpanel/ea-php74/usr/lib64/modules",
+      "dir": "/opt/cpanel/ea-php74/",
+      "bin":  "/opt/cpanel/ea-php74/usr/bin/php",
+      "ini": "/opt/cpanel/ea-php74/etc/php.ini"
+    }
+  ],
+  "metadata": {
+    "result": "ok"
+  }
+}';
     }
 
     public function domains($jsonOptions)

@@ -17,7 +17,7 @@ class CloudLinuxApi extends Command
      *
      * @var string
      */
-    protected $signature = 'omega:cloud-linux-api {--request=} {--json-options=}';
+    protected $signature = 'omega:cloud-linux-api {--request=} {--encoded-options=}';
 
     /**
      * The console command description.
@@ -31,7 +31,8 @@ class CloudLinuxApi extends Command
      */
     public function handle()
     {
-        $jsonOptions = $this->option('json-options');
+        $encodedOptions = $this->option('encoded-options');
+        $jsonOptions = base64_decode($encodedOptions);
         $jsonOptions = json_decode($jsonOptions, true);
         if (!empty($jsonOptions)) {
             $jsonOptions = array_merge(['options'], $jsonOptions);
@@ -58,18 +59,63 @@ class CloudLinuxApi extends Command
         if ($request == 'packages') {
             return $this->packages($jsonOptions);
         }
+        if ($request == 'resellers') {
+            return $this->resellers($jsonOptions);
+        }
 
+        if ($request == 'domains') {
+            return $this->domains($jsonOptions);
+        }
+
+    }
+
+    public function domains($jsonOptions)
+    {
+        echo '{
+  "data": {
+    "domain.com": {
+      "owner": "username",
+      "document_root": "/home/username/public_html/",
+      "is_main": true
+    },
+    "subdomain.domain.com": {
+      "owner": "username",
+      "document_root": "/home/username/public_html/subdomain/",
+      "is_main": false
+    }
+  },
+  "metadata": {
+    "result": "ok"
+  }
+}';
+    }
+
+    public function resellers($jsonOptions)
+    {
+        echo '{
+  "data": [
+    {
+      "name": "reseller",
+      "locale_code": "EN_us",
+      "email": "reseller@domain.zone",
+      "id": 10001
+    }
+  ],
+  "metadata": {
+    "result": "ok"
+  }
+}';
     }
 
     public function users($jsonOptions)
     {
         $input = new ArgvInput($jsonOptions, new InputDefinition(array(
             new InputOption('owner', 'o', InputOption::VALUE_OPTIONAL),
-            new InputOption('package-name', 'p', InputOption::VALUE_OPTIONAL),
-            new InputOption('package-owner', 'w', InputOption::VALUE_OPTIONAL),
-            new InputOption('username', 'u', InputOption::VALUE_OPTIONAL),
-            new InputOption('unix-id', 'i', InputOption::VALUE_OPTIONAL),
-            new InputOption('fields', 'f', InputOption::VALUE_OPTIONAL)
+            new InputOption('package-name', null, InputOption::VALUE_OPTIONAL),
+            new InputOption('package-owner', null, InputOption::VALUE_OPTIONAL),
+            new InputOption('username', null, InputOption::VALUE_OPTIONAL),
+            new InputOption('unix-id', null, InputOption::VALUE_OPTIONAL),
+            new InputOption('fields', null, InputOption::VALUE_OPTIONAL)
         )));
         $options = $input->getOptions();
 
@@ -103,10 +149,10 @@ class CloudLinuxApi extends Command
 
     public function packages($jsonOptions)
     {
-        $input = new ArgvInput($jsonOptions, new InputDefinition(array(
-            new InputOption('owner', 'o', InputOption::VALUE_OPTIONAL)
-        )));
-        $options = $input->getOptions();
+//        $input = new ArgvInput($jsonOptions, new InputDefinition(array(
+//            new InputOption('owner', 'o', InputOption::VALUE_OPTIONAL)
+//        )));
+//        $options = $input->getOptions();
 
         $packages = [];
 
@@ -117,6 +163,7 @@ class CloudLinuxApi extends Command
                     'name' => $findHostingPlan->name,
                     'owner' => 'root'
                 ];
+                continue;
             }
         }
 
@@ -131,11 +178,11 @@ class CloudLinuxApi extends Command
 
     public function admins($jsonOptions)
     {
-        $input = new ArgvInput($jsonOptions, new InputDefinition(array(
-            new InputOption('name', 'n', InputOption::VALUE_OPTIONAL),
-            new InputOption('is-main', 'm', InputOption::VALUE_OPTIONAL)
-        )));
-        $options = $input->getOptions();
+//        $input = new ArgvInput($jsonOptions, new InputDefinition(array(
+//            new InputOption('name', 'n', InputOption::VALUE_OPTIONAL),
+//            new InputOption('is-main', 'm', InputOption::VALUE_OPTIONAL)
+//        )));
+//        $options = $input->getOptions();
 
         echo '
 {

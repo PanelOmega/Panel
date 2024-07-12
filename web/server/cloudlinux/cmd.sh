@@ -15,7 +15,10 @@ done
 
 # Close the JSON array
 json+="]"
+encodedOptions=$(echo "$json" | base64)
 
-#jsonEscaped=$(echo $json | jq -cM '. | @text ')
+# log all requests
+mkdir -p /var/log/omega
+echo "Request: omega-php /usr/local/omega/web/artisan omega:cloud-linux-api --request $1 --encoded-options $encodedOptions" >> /var/log/omega/cloudlinux-api.log
 
-omega-shell omega:cloud-linux-api --request $1 --json-options $json
+omega-php /usr/local/omega/web/artisan omega:cloud-linux-api --request $1 --encoded-options "$encodedOptions"

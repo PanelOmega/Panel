@@ -9,6 +9,14 @@ class LinuxUser
     public const USER_DIRECTORY_PERMISSION = 0711;
     public const USER_GROUP = 'www-data';
 
+    public static function getLinuxUserIdByUsername($username)
+    {
+        $output = shell_exec('id -u ' . $username);
+        $output = intval($output);
+        
+        return $output;
+    }
+
     /**
      * @param string $username
      * @param string $password

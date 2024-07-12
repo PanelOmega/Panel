@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use App\Models\HostingPlan;
 use App\Models\HostingSubscription;
+use App\Server\Helpers\LinuxUser;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Hash;
 use Symfony\Component\Console\Input\ArgvInput;
@@ -119,12 +120,17 @@ class CloudLinuxApi extends Command
         )));
         $options = $input->getOptions();
 
+//        dd($options);
+
         $hostingSubscriptions = [];
         $getHostingSubscriptions = HostingSubscription::all();
         if ($getHostingSubscriptions) {
             foreach ($getHostingSubscriptions as $getHostingSubscription) {
-                $hostingSubscriptions[] = [
-                    'id' => $getHostingSubscription->id,
+
+                $linuxUserId = LinuxUser::getLinuxUserIdByUsername($getHostingSubscription->system_username);
+
+                $hostingSubscription = [
+                    'id' => $linuxUserId,
                     'username' => $getHostingSubscription->system_username,
                     'owner' => 'root',
                     'domain' => $getHostingSubscription->domain,
@@ -135,6 +141,8 @@ class CloudLinuxApi extends Command
                     'email' => $getHostingSubscription->customer->email,
                     'locale_code' => 'EN_us'
                 ];
+
+                $hostingSubscriptions[] = $hostingSubscription;
             }
         }
 

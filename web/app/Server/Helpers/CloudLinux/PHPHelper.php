@@ -23,8 +23,8 @@ class PHPHelper
         // /usr/share/cloudlinux/hooks/post_modify_admin.py create --name admin
     }
 
-    public function createUserAccount()
-
-        // /usr/share/cloudlinux/hooks/post_modify_user.py create --username daip4454yuwx --owner admin
-    }
+//    public function createUserAccount()
+//
+//        // /usr/share/cloudlinux/hooks/post_modify_user.py create --username daip4454yuwx --owner admin
+//    }
 }

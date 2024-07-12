@@ -13,7 +13,7 @@ class LinuxUser
     {
         $output = shell_exec('id -u ' . $username);
         $output = intval($output);
-        
+
         return $output;
     }
 

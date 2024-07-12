@@ -233,6 +233,16 @@ class CloudLinuxApi extends Command
                 'version' => '1.0.0',
                 'user_login_url' => '',
                 'supported_cl_features' => [
+                    'php_selector' => true,
+                    'ruby_selector' => true,
+                    'python_selector' => true,
+                    'nodejs_selector' => false,
+                    'mod_lsapi' => true,
+                    'mysql_governor' => true,
+                    'cagefs' => true,
+                    'reseller_limits' => true,
+                    'xray' => false,
+                    'accelerate_wp' => false,
                     'autotracing' => true
                 ]
             ],

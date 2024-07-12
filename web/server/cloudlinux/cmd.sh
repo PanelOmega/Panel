@@ -18,7 +18,7 @@ json+="]"
 encodedOptions=$(echo "$json" | base64)
 
 # log all requests
-mkdir -p /var/log/omega
-echo "Request: omega-php /usr/local/omega/web/artisan omega:cloud-linux-api --request $1 --encoded-options $encodedOptions" >> /var/log/omega/cloudlinux-api.log
+#mkdir -p /var/log/omega
+#echo "Request: omega-php /usr/local/omega/web/artisan omega:cloud-linux-api --request $1 --encoded-options $encodedOptions" >> /var/log/omega/cloudlinux-api.log
 
 omega-php /usr/local/omega/web/artisan omega:cloud-linux-api --request $1 --encoded-options "$encodedOptions"

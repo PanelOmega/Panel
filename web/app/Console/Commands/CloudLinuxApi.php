@@ -236,7 +236,7 @@ class CloudLinuxApi extends Command
                     'php_selector' => true,
                     'ruby_selector' => true,
                     'python_selector' => true,
-                    'nodejs_selector' => false,
+                    'nodejs_selector' => true,
                     'mod_lsapi' => true,
                     'mysql_governor' => true,
                     'cagefs' => true,

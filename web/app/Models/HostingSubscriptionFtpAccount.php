@@ -112,32 +112,32 @@ class HostingSubscriptionFtpAccount extends Model
         $ftpUsername = Str::slug($this->ftp_username, '_');
         $ftpUsernamePrefix = $hostingSubscription->system_username . '_';
 
-//        $ftpUsernameWithPrefix = $ftpUsernamePrefix . $ftpUsername;
-//        $rootPath = "/home/$hostingSubscription->system_username";
-//        if (!empty($this->ftp_path)) {
-//            $rootPath .= '/' . $this->ftp_path;
-//        }
+        $ftpUsernameWithPrefix = $ftpUsernamePrefix . $ftpUsername;
+        $rootPath = "/home/$hostingSubscription->system_username";
+        if (!empty($this->ftp_path)) {
+            $rootPath .= '/' . $this->ftp_path;
+        }
 
-//        $creteLinuxUser = LinuxUser::createUser(
-//            $ftpUsernameWithPrefix,
-//            $this->ftp_password,
-//            $hostingSubscription->customer->email,
-//            [
-//                'homeDir' => $rootPath,
-////                'noLogin' => true,
-//            ]
-//        );
-//
-//        $commands = [
-//            "sudo usermod -d $rootPath $ftpUsernameWithPrefix",
-//            "sudo usermod -a -G $hostingSubscription->system_username $ftpUsernameWithPrefix",
-//            "sudo chown -R $ftpUsernameWithPrefix:$hostingSubscription->system_username $rootPath",
-//        ];
+        $creteLinuxUser = LinuxUser::createUser(
+            $ftpUsernameWithPrefix,
+            $this->ftp_password,
+            $hostingSubscription->customer->email,
+            [
+                'homeDir' => $rootPath,
+//                'noLogin' => true,
+            ]
+        );
 
-//        $output = '';
-//        foreach ($commands as $command) {
-//            $output .= shell_exec($command);
-//        }
+        $commands = [
+            "sudo usermod -d $rootPath $ftpUsernameWithPrefix",
+            "sudo usermod -a -G $hostingSubscription->system_username $ftpUsernameWithPrefix",
+            "sudo chown -R $ftpUsernameWithPrefix:$hostingSubscription->system_username $rootPath",
+        ];
+
+        $output = '';
+        foreach ($commands as $command) {
+            $output .= shell_exec($command);
+        }
 
         return [
             'success' => true,

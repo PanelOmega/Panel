@@ -15,28 +15,26 @@ class UpdateVsftpdUserlist implements ShouldQueue
 
     public function handle(): void
     {
-        $ftpAccounts = HostingSubscriptionFtpAccount::all();
-
-        $filePath = '/etc/vsftpd/user_list';
-        $tempFilePath = $filePath . '.tmp';
 
         try {
+
+            $ftpAccounts = HostingSubscriptionFtpAccount::all();
+
             $updateVsfpdUserlist = view('server.samples.vsftpd.vsftpd-userlist-conf', [
                 'ftpAccounts' => $ftpAccounts
             ])->render();
 
             $updateVsfpdUserlist = preg_replace('/^\s+|\s+$/m', '', $updateVsfpdUserlist);
 
-            file_put_contents($tempFilePath, $updateVsfpdUserlist);
-
-            if (!rename($tempFilePath, $filePath)) {
+            $save = file_put_contents('/etc/vsftpd/user_list', $updateVsfpdUserlist);
+            if (!$save) {
                 throw new \Exception("Failed to update vsftpd.userlist");
             }
 
-            echo "vsftpd.userlist updated successfully.";
+//            echo "vsftpd.userlist updated successfully.";
 
         } catch (\Exception $e) {
-            echo "Failed to update vsftpd.userlist: " . $e->getMessage();
+//            echo "Failed to update vsftpd.userlist: " . $e->getMessage();
 
         }
     }

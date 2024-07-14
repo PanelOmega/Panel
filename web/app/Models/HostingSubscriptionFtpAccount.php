@@ -117,7 +117,7 @@ class HostingSubscriptionFtpAccount extends Model
 
 
         $commands = [
-            "sudo useradd {$ftpUsernameWithPrefix}",
+            "sudo useradd -m {$ftpUsernameWithPrefix} -s /usr/sbin/nologin",
             "echo '{$ftpUsernameWithPrefix}:{$this->ftp_password}' | sudo chpasswd",
         ];
 

@@ -212,6 +212,16 @@ class HostingSubscriptionFtpAccount extends Model
         return $mainPath;
     }
 
+    public function getFtpPortTextAttribute()
+    {
+        return '21';
+    }
+
+    public function getFtpHostTextAttribute()
+    {
+        return 'ftp.' . $this->domain;
+    }
+
     /**
      * @param
      * @return string

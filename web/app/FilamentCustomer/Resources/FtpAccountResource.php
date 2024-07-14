@@ -35,6 +35,10 @@ class FtpAccountResource extends Resource
     public static function infolist(Infolist $infolist): Infolist
     {
         return $infolist->schema([
+            TextEntry::make('ftpHostText')
+                ->label('Host'),
+            TextEntry::make('ftpPortText')
+                ->label('Port'),
             TextEntry::make('ftpUsernameWithPrefix')
                 ->label('Username'),
             TextEntry::make('ftpPathText')

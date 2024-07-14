@@ -7,7 +7,7 @@ use Illuminate\Console\Command;
 class UpdateVsftpdConfig extends Command
 {
 
-    // commands for updating the vsftpd config file
+    // command for updating the vsftpd config file
 
     /**
      * The name and signature of the console command.
@@ -30,14 +30,20 @@ class UpdateVsftpdConfig extends Command
     {
         $vsftpd = view('server.samples.vsftpd.vsftpd-conf', [])->render();
 
-        if (file_put_contents('/etc/vsftpd/vsftpd.conf', $vsftpd)) {
+        $command = "
+            if [ ! -d '/etc/vsftpd/' ]; then
+                sudo mkdir -p /etc/vsftpd/
+            fi
+            echo \"{$vsftpd}\" | sudo tee /etc/vsftpd/vsftpd.conf
+        ";
 
+        $result = shell_exec($command);
+
+        if ($result !== null) {
             $this->info('The vsftpd configuration is updated.');
         } else {
-
             $this->info('Not updated.');
         }
-
 
     }
 

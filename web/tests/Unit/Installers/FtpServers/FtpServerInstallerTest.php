@@ -2,9 +2,9 @@
 
 namespace Tests\Unit\Installers\FtpServers;
 
-use Tests\TestCase;
 use App\Server\Helpers\OS;
 use App\Server\Installers\FtpServers\FtpServerInstaller;
+use Tests\TestCase;
 
 class FtpServerInstallerTest extends TestCase
 {
@@ -51,25 +51,28 @@ class FtpServerInstallerTest extends TestCase
 
             $result = (new FtpServerInstaller())->run();
 
-            $expectedCommands = [];
-            if ($distro == OS::DEBIAN || $distro == OS::UBUNTU) {
-                $expectedCommands[] = 'sudo apt-get update -y';
-                $expectedCommands[] = 'sudo apt-get install vsftpd -y';
-            } elseif ($distro == OS::CLOUD_LINUX || $distro == OS::CENTOS || $distro == OS::ALMA_LINUX) {
-                $expectedCommands[] = 'sudo yum update -y';
-                $expectedCommands[] = 'sudo yum install vsftpd -y';
-            }
-            $expectedCommands[] = 'sudo systemctl restart vsftpd';
-            $expectedCommands[] = 'omega-shell omega:update-vsftpd-config';
-
-            $shellFileContent = file_get_contents('/tmp/ftp-server-installer.sh');
-            foreach ($expectedCommands as $command) {
-                $this->assertStringContainsString($command, $shellFileContent);
-            }
-
             $this->assertEquals('Install job is running in the background.', $result['status']);
             $this->assertEquals('FTP Server is being installed and configured. Please check the log file for more details.', $result['message']);
             $this->assertEquals('/var/log/omega/ftp-server-installer.log', $result['logPath']);
+
+            $isFtpServerInstalled = false;
+            $ftpServerFailedToStart = false;
+            for ($i = 0; $i < 200; $i++) {
+                if (is_file($result['logPath'])) {
+                    $ftpServerLogPath = file_get_contents($result['logPath']);
+                    if (str_contains($ftpServerLogPath, 'FTP Server is installed and configured successfully!')) {
+                        $isFtpServerInstalled = true;
+                        break;
+                    } elseif (str_contains($ftpServerLogPath, 'FTP Server failed to start')) {
+                        $ftpServerFailedToStart = true;
+                        break;
+                    }
+                }
+                sleep(1);
+            }
+
+            $this->assertTrue($isFtpServerInstalled);
+            $this->assertFalse($ftpServerFailedToStart);
 
         }
     }

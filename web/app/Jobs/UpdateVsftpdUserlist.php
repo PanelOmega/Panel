@@ -18,8 +18,11 @@ class UpdateVsftpdUserlist implements ShouldQueue
     public function handle(): void
     {
         $ftpAccounts = HostingSubscriptionFtpAccount::all();
-        $filePath = '/etc/vsftpd.userlist';
+
+        $filePath = '/etc/vsftpd/user_list';
         $tempFilePath = $filePath . '.tmp';
+
+//        dd($ftpAccounts);
 
         try {
             $updateVsfpdUserlist = view('server.samples.vsdftpd.vsftpd-userlist-conf', [

@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Jobs\ApacheBuild;
 use App\Server\VirtualHosts\DTO\ApacheVirtualHostSettings;
 use App\Virtualization\Docker\DockerClient;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
@@ -39,8 +40,21 @@ class Domain extends Model
         'docker_settings' => 'array'
     ];
 
+
+    protected static function booted(): void
+    {
+        static::addGlobalScope('customer', function (Builder $query) {
+            if (auth()->check() && auth()->guard()->name == 'customer') {
+                $query->whereHas('hostingSubscription', function ($query) {
+                    $query->where('customer_id', auth()->user()->id);
+                });
+            }
+        });
+    }
+
     public static function boot()
     {
+
         parent::boot();
 
         static::created(function ($model) {
@@ -99,6 +113,12 @@ class Domain extends Model
             $apacheBuild->handle();
 
         });
+    }
+
+
+    public function hostingSubscription()
+    {
+        return $this->belongsTo(HostingSubscription::class);
     }
 
     public function createDockerContainer()

@@ -3,13 +3,9 @@
 namespace App\Filament\Pages;
 
 use App\Livewire\Installer;
-//use App\Server\SupportedApplicationTypes;
-use Filament\Forms\Components\CheckboxList;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Wizard;
 use Filament\Forms\Form;
-use Filament\Forms\Get;
-use Filament\Pages\Page;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\HtmlString;
 use Filament\Forms\Components\Placeholder;
@@ -74,7 +70,8 @@ class FtpServerInstaller extends Installer
                         >
                             Submit
                         </x-filament::button>
-                    BLADE)))
+                    BLADE
+                    )))
 
             ]);
 

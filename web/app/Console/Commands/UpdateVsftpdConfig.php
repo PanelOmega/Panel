@@ -28,17 +28,16 @@ class UpdateVsftpdConfig extends Command
      */
     public function handle()
     {
-        $vsftpd = view('server.samples.vsftpd.vsftpd-conf', [
+        $vsftpd = view('server.samples.vsftpd.vsftpd-conf', [])->render();
 
-        ])->render();
-
-        if(file_put_contents('/etc/vsftpd/vsftpd.conf', $vsftpd)){
+        if (file_put_contents('/etc/vsftpd/vsftpd.conf', $vsftpd)) {
 
             $this->info('The vsftpd configuration is updated.');
+        } else {
 
+            $this->info('Not updated.');
         }
 
-        $this->info('Not updated.');
 
     }
 

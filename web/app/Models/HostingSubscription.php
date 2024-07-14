@@ -71,13 +71,6 @@ class HostingSubscription extends Model
             $makeMainDomain->status = Domain::STATUS_ACTIVE;
             $makeMainDomain->save();
 
-            $makeFtpAccount = new HostingSubscriptionFtpAccount();
-            $makeFtpAccount->hosting_subscription_id = $model->id;
-            $makeFtpAccount->ftp_username = $model->system_username;
-            $makeFtpAccount->ftp_password = $model->system_password;
-            $makeFtpAccount->ftp_path = $model->domain;
-            $makeFtpAccount->save();
-
         });
 
         static::deleting(function ($model) {
@@ -92,9 +85,9 @@ class HostingSubscription extends Model
                 LinuxUser::deleteUser($model->system_username);
             }
 
-            $getFptUser = HostingSubscriptionFtpAccount::where($model->system_username)->get();
+            $getFptUser = HostingSubscriptionFtpAccount::where('ftp_username', $model->system_username)->get();
 
-            if (! empty($getFptUser)) {
+            if (! $getFptUser->isEmpty()) {
                 $getFptUser->delete();
             }
 

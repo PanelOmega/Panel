@@ -9,16 +9,17 @@ use App\Server\Installers\FtpServers\FtpServerInstaller;
 class FtpServerInstallerTest extends TestCase
 {
 
-    public function testIsFtpServerInstalled() {
+    public function testIsFtpServerInstalled()
+    {
 
         $supportedDistros = [OS::DEBIAN, OS::UBUNTU, OS::CENTOS, OS::ALMA_LINUX];
 
         foreach ($supportedDistros as $distro) {
 
             $os = new OS();
-            $current_distro = $os->getDistro();
+            $currentDistro = $os->getDistro();
 
-            if($current_distro !== $distro) {
+            if ($currentDistro !== $distro) {
                 continue;
             }
 
@@ -39,12 +40,12 @@ class FtpServerInstallerTest extends TestCase
     {
         $supportedDistros = [OS::DEBIAN, OS::UBUNTU, OS::CENTOS, OS::ALMA_LINUX];
 
-        foreach($supportedDistros as $distro) {
+        foreach ($supportedDistros as $distro) {
 
             $os = new OS();
             $currentDistro = $os->getDistro();
 
-            if($currentDistro !== $distro) {
+            if ($currentDistro !== $distro) {
                 continue;
             }
 

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\FilamentCustomer\Resources; 
+namespace App\FilamentCustomer\Resources;
 
 use App\Filament\Enums\ServerApplicationType;
 use App\Models\Domain;

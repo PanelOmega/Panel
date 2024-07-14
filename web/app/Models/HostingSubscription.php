@@ -6,6 +6,7 @@ use App\Actions\CreateLinuxWebUser;
 use App\Actions\GetLinuxUser;
 use App\Jobs\ApacheBuild;
 use App\Server\Helpers\LinuxUser;
+use App\Server\Helpers\FtpAccount;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -46,10 +47,12 @@ class HostingSubscription extends Model
             if ($findDomain) {
                 throw new \Exception('Domain already exists');
             }
+
             $create = $model->_createLinuxWebUser($model);
             if (isset($create['error'])) {
                 throw new \Exception($create['message']);
             }
+
             if (isset($create['system_username']) && isset($create['system_password'])) {
                 $model->system_username = $create['system_username'];
                 $model->system_password = $create['system_password'];
@@ -57,6 +60,7 @@ class HostingSubscription extends Model
             } else {
                 return false;
             }
+
         });
 
         static::created(function ($model) {
@@ -80,6 +84,12 @@ class HostingSubscription extends Model
 
             if (! empty($getLinuxUserStatus)) {
                 LinuxUser::deleteUser($model->system_username);
+            }
+
+            $getFptUser = HostingSubscriptionFtpAccount::where('ftp_username', $model->system_username)->get();
+
+            if (! $getFptUser->isEmpty()) {
+                $getFptUser->delete();
             }
 
             $findRelatedDomains = Domain::where('hosting_subscription_id', $model->id)->get();
@@ -120,6 +130,11 @@ class HostingSubscription extends Model
     public function domain()
     {
         return $this->hasMany(Domain::class);
+    }
+
+    public function ftpAccounts()
+    {
+        return $this->hasMany(HostingSubscriptionFtpAccount::class);
     }
 
     private function _createLinuxWebUser($model): array
@@ -191,4 +206,5 @@ class HostingSubscription extends Model
     private function _startsWithNumber($string) {
         return strlen($string) > 0 && ctype_digit(substr($string, 0, 1));
     }
+
 }

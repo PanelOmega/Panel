@@ -23,7 +23,7 @@ class LinuxUser
      * @param string $email
      * @return string
      */
-    public static function createUser(string $username, string $password, string $email)
+    public static function createUser(string $username, string $password, string $email, array $options = [])
     {
         $checkUser = self::getUser($username);
         if (!empty($checkUser)) {
@@ -35,6 +35,12 @@ class LinuxUser
         $output = '';
 
         $command = '/usr/sbin/useradd "' . $username . '" -c "' . $email . '" --no-create-home';
+        if (isset($options['homeDir'])) {
+            $command .= ' -d ' . $options['homeDir'];
+        }
+        if (isset($options['noLogin']) && $options['noLogin'] === true) {
+            $command .= ' -s /usr/sbin/nologin';
+        }
         $output .= shell_exec($command);
 
         $command = 'echo ' . $username . ':' . $password . ' | sudo chpasswd -e';

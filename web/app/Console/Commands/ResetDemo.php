@@ -7,6 +7,7 @@ use App\Models\CronJob;
 use App\Models\Customer;
 use App\Models\HostingPlan;
 use App\Models\HostingSubscription;
+use App\Models\HostingSubscriptionFtpAccount;
 use App\Models\User;
 use App\OmegaConfig;
 use Illuminate\Console\Command;
@@ -61,6 +62,10 @@ class ResetDemo extends Command
         $findHostingPlans = HostingPlan::all();
         foreach ($findHostingPlans as $hostingPlan) {
             $hostingPlan->delete();
+        }
+        $ftpAccounts = HostingSubscriptionFtpAccount::all();
+        foreach ($ftpAccounts as $ftpAccount) {
+            $ftpAccount->delete();
         }
 
         $admin = new Admin();

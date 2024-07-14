@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Server\Helpers\FtpAccount;
+use App\Server\Helpers\LinuxUser;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -50,7 +51,6 @@ class HostingSubscriptionFtpAccount extends Model
 
             $model->ftp_username = $create['ftp_username'];
             $model->ftp_username_prefix = $create['ftp_username_prefix'];
-            $model->ftp_path = $create['ftp_path'];
             $model->hosting_subscription_id = $create['hosting_subscription_id'];
 
         });
@@ -112,17 +112,30 @@ class HostingSubscriptionFtpAccount extends Model
         $ftpUsername = Str::slug($this->ftp_username, '_');
         $ftpUsernamePrefix = $hostingSubscription->system_username . '_';
 
-        $ftpUsernameWithPrefix = $this->ftp_username_prefix . $this->ftp_username;
-        $rootPath = "/home/{$hostingSubscription->system_username}/{$this->ftp_path}";
+        $ftpUsernameWithPrefix = $ftpUsernamePrefix . $ftpUsername;
+        $rootPath = "/home/$hostingSubscription->system_username";
+        if (!empty($this->ftp_path)) {
+            $rootPath .= '/' . $this->ftp_path;
+        }
 
+        $creteLinuxUser = LinuxUser::createUser(
+            $ftpUsernameWithPrefix,
+            $this->ftp_password,
+            $hostingSubscription->customer->email,
+            [
+                'homeDir' => $rootPath,
+//                'noLogin' => true,
+            ]
+        );
 
         $commands = [
-            "sudo useradd -m {$ftpUsernameWithPrefix} -s /usr/sbin/nologin",
-            "echo '{$ftpUsernameWithPrefix}:{$this->ftp_password}' | sudo chpasswd",
+            "sudo usermod -d $rootPath $ftpUsernameWithPrefix",
+            "sudo usermod -a -G $hostingSubscription->system_username $ftpUsernameWithPrefix"
         ];
 
+        $output = '';
         foreach ($commands as $command) {
-            shell_exec($command);
+            $output .= shell_exec($command);
         }
 
         return [
@@ -131,7 +144,6 @@ class HostingSubscriptionFtpAccount extends Model
             'hosting_subscription_id' => $hostingSubscriptionId,
             'ftp_username' => $ftpUsername,
             'ftp_username_prefix' => $ftpUsernamePrefix,
-            'ftp_path' => $rootPath,
         ];
 
     }

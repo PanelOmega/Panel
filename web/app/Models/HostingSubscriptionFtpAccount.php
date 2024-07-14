@@ -34,7 +34,7 @@ class HostingSubscriptionFtpAccount extends Model
             }
         });
     }
-    
+
     public static function boot()
     {
 
@@ -42,24 +42,16 @@ class HostingSubscriptionFtpAccount extends Model
 
         static::creating(function ($model) {
 
-            $hostingSubscription = HostingSubscription::where('domain', $model->domain)->first();
-
-            if (empty($hostingSubscription)) {
-                return [
-                    'error' => true,
-                    'message' => 'Hosting subscription not found.'
-                ];
-            }
-            $model->hosting_subscription_id = $hostingSubscription->id;
-
-            $model->ftp_username = Str::slug($model->ftp_username, '_');
-            $model->ftp_username_prefix = $hostingSubscription->system_username . '_';
-
-            $create = $model->createFtpAccount();
+            $create = $model->_createFtpAccount();
 
             if (isset($create['error'])) {
                 throw new \Exception($create['message']);
             }
+
+            $model->ftp_username = $create['ftp_username'];
+            $model->ftp_username_prefix = $create['ftp_username_prefix'];
+            $model->ftp_path = $create['ftp_path'];
+            $model->hosting_subscription_id = $create['hosting_subscription_id'];
 
         });
 
@@ -76,7 +68,7 @@ class HostingSubscriptionFtpAccount extends Model
 
         static::deleting(function ($model) {
 
-            $deleteFtpAccount = $model->deleteFtpAccount();
+            $deleteFtpAccount = $model->_deleteFtpAccount();
 
             if (isset($deleteFtpAccount['error'])) {
                 throw new \Exception($deleteFtpAccount['message']);
@@ -98,34 +90,35 @@ class HostingSubscriptionFtpAccount extends Model
      * @param
      * @return array
      */
-    public function createFtpAccount(): array
+    private function _createFtpAccount(): array
     {
-
-        if (!$this->checkFtpConnection()) {
+        $hostingSubscription = HostingSubscription::where('domain', $this->domain)->first();
+        if (empty($hostingSubscription)) {
             return [
                 'error' => true,
-                'message' => 'Failed to start FTP server.'
+                'message' => 'Hosting subscription not found.'
             ];
         }
-
-        $checkFtpUser = $this->getFtpAccount($this->ftp_username);
-
+        $checkFtpUser = $this->_getFtpAccountByUsername($this->ftp_username);
         if (!empty($checkFtpUser)) {
             return [
                 'error' => true,
                 'message' => 'Ftp account already exists.'
             ];
         }
-        $ftpUsername = $this->ftp_username_prefix . $this->ftp_username;
-        $this->ftp_password = md5(uniqid($this->ftp_password, true));
-        $ftpPassword = $this->ftp_password;
-        $rootPath = "/home/{$this->ftp_username_prefix}/{$this->ftp_path}";
+
+
+        $hostingSubscriptionId = $hostingSubscription->id;
+        $ftpUsername = Str::slug($this->ftp_username, '_');
+        $ftpUsernamePrefix = $hostingSubscription->system_username . '_';
+
+        $ftpUsernameWithPrefix = $this->ftp_username_prefix . $this->ftp_username;
+        $rootPath = "/home/{$hostingSubscription->system_username}/{$this->ftp_path}";
+
 
         $commands = [
-            "sudo useradd {$ftpUsername}",
-            "echo '{$ftpUsername}:{$ftpPassword}' | sudo chpasswd",
-            "sudo mkdir -p {$rootPath}",
-            "sudo chown -R {$ftpUsername}: {$rootPath}",
+            "sudo useradd {$ftpUsernameWithPrefix}",
+            "echo '{$ftpUsernameWithPrefix}:{$this->ftp_password}' | sudo chpasswd",
         ];
 
         foreach ($commands as $command) {
@@ -134,7 +127,11 @@ class HostingSubscriptionFtpAccount extends Model
 
         return [
             'success' => true,
-            'message' => 'Ftp account has been created.'
+            'message' => 'Ftp account has been created.',
+            'hosting_subscription_id' => $hostingSubscriptionId,
+            'ftp_username' => $ftpUsername,
+            'ftp_username_prefix' => $ftpUsernamePrefix,
+            'ftp_path' => $rootPath,
         ];
 
     }
@@ -143,7 +140,7 @@ class HostingSubscriptionFtpAccount extends Model
      * @param string $username
      * @return string[]|null
      */
-    public function getFtpAccount(string $username)
+    private function _getFtpAccountByUsername(string $username)
     {
 
         $accountData = HostingSubscriptionFtpAccount::where('ftp_username', $username)->first();
@@ -159,7 +156,7 @@ class HostingSubscriptionFtpAccount extends Model
      * @param string $username
      * @return array
      */
-    public function deleteFtpAccount(): array
+    private function _deleteFtpAccount(): array
     {
 
         $ftpUsername = strtolower($this->ftp_username_prefix . $this->ftp_username);
@@ -179,24 +176,6 @@ class HostingSubscriptionFtpAccount extends Model
         return [
             'success' => 'User deleted successfully',
         ];
-    }
-
-    /**
-     * @param
-     * @return bool
-     */
-    public function checkFtpConnection(): bool
-    {
-
-        $isFtpServerActive = function () {
-            return trim(shell_exec('sudo systemctl is-active vsftpd')) === 'active';
-        };
-
-        if (!$isFtpServerActive()) {
-            shell_exec('sudo systemctl start vsftpd');
-        }
-
-        return $isFtpServerActive();
     }
 
     /**

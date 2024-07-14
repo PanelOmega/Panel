@@ -19,7 +19,7 @@
 
             if ($os == OS::DEBIAN || $os == OS::UBUNTU) {
                 $isInstalled = shell_exec('apt-cache policy vsftpd | grep Installed');
-            } elseif($os == OS::CENTOS || $os == OS::ALMA_LINUX) {
+            } elseif($os == OS::CLOUD_LINUX || $os == OS::CENTOS || $os == OS::ALMA_LINUX) {
                 $isInstalled = shell_exec('rpm -qa | grep vsftpd');
             }
 
@@ -45,7 +45,7 @@
             if($os == OS::DEBIAN || $os == OS::UBUNTU) {
                 $commands[] = 'sudo apt-get update -y';
                 $commands[] = 'sudo apt-get install vsftpd -y';
-            } elseif($os == OS::CENTOS || $os == OS::ALMA_LINUX) {
+            } elseif($os == OS::CLOUD_LINUX || $os == OS::CENTOS || $os == OS::ALMA_LINUX) {
                 $commands[] = 'sudo yum update -y';
                 $commands[] = 'sudo yum install vsftpd -y';
             }

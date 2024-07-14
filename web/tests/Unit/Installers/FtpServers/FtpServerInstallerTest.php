@@ -12,7 +12,7 @@ class FtpServerInstallerTest extends TestCase
     public function testIsFtpServerInstalled()
     {
 
-        $supportedDistros = [OS::DEBIAN, OS::UBUNTU, OS::CENTOS, OS::ALMA_LINUX];
+        $supportedDistros = [OS::CLOUD_LINUX, OS::DEBIAN, OS::UBUNTU, OS::CENTOS, OS::ALMA_LINUX];
 
         foreach ($supportedDistros as $distro) {
 
@@ -38,7 +38,7 @@ class FtpServerInstallerTest extends TestCase
 
     public function testRun()
     {
-        $supportedDistros = [OS::DEBIAN, OS::UBUNTU, OS::CENTOS, OS::ALMA_LINUX];
+        $supportedDistros = [OS::CLOUD_LINUX, OS::DEBIAN, OS::UBUNTU, OS::CENTOS, OS::ALMA_LINUX];
 
         foreach ($supportedDistros as $distro) {
 
@@ -55,7 +55,7 @@ class FtpServerInstallerTest extends TestCase
             if ($distro == OS::DEBIAN || $distro == OS::UBUNTU) {
                 $expectedCommands[] = 'sudo apt-get update -y';
                 $expectedCommands[] = 'sudo apt-get install vsftpd -y';
-            } elseif ($distro == OS::CENTOS || $distro == OS::ALMA_LINUX) {
+            } elseif ($distro == OS::CLOUD_LINUX || $distro == OS::CENTOS || $distro == OS::ALMA_LINUX) {
                 $expectedCommands[] = 'sudo yum update -y';
                 $expectedCommands[] = 'sudo yum install vsftpd -y';
             }

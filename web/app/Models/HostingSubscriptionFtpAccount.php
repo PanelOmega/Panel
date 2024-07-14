@@ -131,8 +131,11 @@ class HostingSubscriptionFtpAccount extends Model
         $commands = [
             "sudo usermod -d $rootPath $ftpUsernameWithPrefix",
             "sudo usermod -a -G $hostingSubscription->system_username $ftpUsernameWithPrefix",
-            "sudo chown -R $ftpUsernameWithPrefix:$hostingSubscription->system_username $rootPath",
+            "sudo usermod -a -G $hostingSubscription->system_username $hostingSubscription->system_username",
+            "sudo chgrp -R $hostingSubscription->system_username $rootPath",
+            "sudo chmod -R 770 $rootPath",
         ];
+
 
         $output = '';
         foreach ($commands as $command) {

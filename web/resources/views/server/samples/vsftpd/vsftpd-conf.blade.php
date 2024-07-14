@@ -124,3 +124,5 @@ listen_ipv6=YES
 
 pam_service_name=vsftpd
 userlist_enable=YES
+userlist_file=/etc/vsftpd/user_list
+userlist_deny=NO

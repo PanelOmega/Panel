@@ -48,7 +48,9 @@ class FtpAccountResource extends Resource
 
                                 TextInput::make('ftp_username')
                                     ->label('Log In')
-                                    ->suffix('@')
+                                    ->prefix(function (Forms\Get $get) use($pathUsername) {
+                                        return $pathUsername . '_';
+                                    })
                                     ->required(),
 
                                 Select::make('domain')

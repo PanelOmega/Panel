@@ -73,9 +73,11 @@ class LinuxUser
         if ($distro === OS::DEBIAN || $distro === OS::UBUNTU) {
             $command = 'sudo adduser --disabled-password --gecos "" "' . $username . '"';
             $output .= shell_exec($command);
-        } else if ($distro === OS::ALMA_LINUX || $distro === OS::CENTOS) {
+        } else if ($distro === OS::CLOUD_LINUX || $distro === OS::ALMA_LINUX || $distro === OS::CENTOS) {
             $command = 'sudo useradd "' . $username . '"';
             $output .= shell_exec($command);
+        } else {
+            throw new \Exception('Unsupported OS');
         }
 
         if ($distro === OS::DEBIAN || $distro === OS::UBUNTU) {

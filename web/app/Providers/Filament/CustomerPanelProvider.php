@@ -46,7 +46,7 @@ class CustomerPanelProvider extends PanelProvider
             ->font('Nunito Sans')
             ->brandLogo(asset('images/logo/omega.svg'))
             ->darkModeBrandLogo(asset('images/logo/omega-dark.svg'))
-            ->brandLogoHeight('5rem')
+            ->brandLogoHeight('3.5rem')
           //  ->plugin(new OmegaTheme())
           ->viteTheme('resources/css/filament/admin/theme.css')
             //->colors(OmegaTheme::getColors())

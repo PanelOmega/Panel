@@ -36,8 +36,8 @@ class FtpAccountResource extends Resource
 
     public static function form(Form $form): Form
     {
-        $system_username = HostingSubscription::all()->pluck('system_username', 'id')->toArray();
-        $path_username = array_values($system_username)[0];
+        $systemUsername = HostingSubscription::all()->pluck('system_username', 'id')->toArray();
+        $pathUsername = array_values($systemUsername)[0];
 
         $domains = Domain::all()->pluck('domain', 'domain')->toArray();
 
@@ -64,7 +64,7 @@ class FtpAccountResource extends Resource
                                     ->afterStateUpdated(function (Forms\Set $set, Forms\Get $get, $state) {
                                         $selectDomain = $state;
                                         $ftpUsername = $get('ftp_username');
-                                        $set('ftp_path', 'public/' . $selectDomain . '/' . $ftpUsername);
+                                        $set('ftp_path', 'public_html/' . $selectDomain . '/' . $ftpUsername);
                                     }),
 
                                 TextInput::make('ftp_password')
@@ -82,7 +82,7 @@ class FtpAccountResource extends Resource
 
                                 TextInput::make('ftp_path')
                                     ->label('Directory')
-                                    ->prefix('/home/' . $path_username . '/'),
+                                    ->prefix('/home/' . $pathUsername . '/'),
 
                                 Radio::make('ftp_quota_type')
                                     ->options([

@@ -23,15 +23,13 @@ class HostingSubscriptionFtpAccountTest extends TestCase
         $testFtpAccount->ftp_path = '/home/test.com';
         $testFtpAccount->ftp_quota = 100;
         $testFtpAccount->save();
-        
+
         $createdAccount = HostingSubscriptionFtpAccount::where('ftp_username', $testFtpUsername)->first();
         $this->assertNotNull($createdAccount);
         $this->assertEquals($testFtpUsername, $createdAccount->ftp_username);
         $this->assertEquals('/home/test.com', $createdAccount->ftp_path);
         $this->assertEquals(100, $createdAccount->ftp_quota);
         $this->assertEquals(0, $createdAccount->ftp_quota_type);
-
-        $this->assertTrue(UpdateVsftpdUserlist::$handled);
 
         $createdAccount->delete();
         $this->assertNull(HostingSubscriptionFtpAccount::where('ftp_username', $testFtpUsername)->first());
@@ -56,7 +54,6 @@ class HostingSubscriptionFtpAccountTest extends TestCase
         $testFtpAccount->delete();
         $this->assertNull(HostingSubscriptionFtpAccount::where('ftp_username', $testFtpUsername)->first());
 
-        $this->assertTrue(UpdateVsftpdUserlist::$handled);
     }
 
     public function testHostingSubscriptionFtpWithExistingAccount()

@@ -154,7 +154,6 @@ class HostingSubscriptionFtpAccount extends Model
      */
     private function _getFtpAccountByUsername(string $username)
     {
-
         $accountData = HostingSubscriptionFtpAccount::where('ftp_username', $username)->first();
         if ($accountData) {
             return $accountData;

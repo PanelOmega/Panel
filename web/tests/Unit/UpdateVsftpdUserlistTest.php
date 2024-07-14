@@ -2,7 +2,6 @@
 
 namespace tests\Unit;
 
-use App\Jobs\UpdateVsftpdUserlist;
 use App\Models\HostingSubscriptionFtpAccount;
 use Tests\TestCase;
 
@@ -10,35 +9,45 @@ class UpdateVsftpdUserlistTest extends TestCase
 {
     public function testUpdateVsftpdUserlist()
     {
-        $subscription_data = [
-            'hosting_subscription_id' => 1,
-            'ftp_username' => 'testuser12',
-            'ftp_password' => 'testpassword',
-            'domain' => 'example.com',
-        ];
 
-        $ftpAccount = HostingSubscriptionFtpAccount::create($subscription_data);
-        
-        $filePath = '/etc/vsftpd.userlist';
+        // emptying the list to test if the job will fill it in through the view
+        $filePath = '/etc/vsftpd/user_list';
         file_put_contents($filePath, '');
 
-        $job = new UpdateVsftpdUserlist();
-        $job->handle();
-
         $this->assertFileExists($filePath);
+
+        $testFtpUsername = 'test' . rand(1000, 9999);
+        $testFtpUsernamePrefix = 'testprefix' . rand(1000, 9999) . '_';
+
+        $testFtpAccount = new HostingSubscriptionFtpAccount();
+        $testFtpAccount->hosting_subscription_id = rand(1000, 9999);
+        $testFtpAccount->ftp_username = $testFtpUsername;
+        $testFtpAccount->ftp_username_prefix = $testFtpUsernamePrefix;
+        $testFtpAccount->ftp_password = time() . rand(1000, 9999);
+        $testFtpAccount->ftp_path = '/home/test.com';
+        $testFtpAccount->ftp_quota = 100;
+        $testFtpAccount->save();
+
+        $createdAccount = HostingSubscriptionFtpAccount::where('ftp_username', $testFtpUsername)->first();
+        $this->assertNotNull($createdAccount);
+
+
         $fileContent = file_get_contents($filePath);
         $this->assertNotEmpty($fileContent);
+
 
         $lines = explode(PHP_EOL, trim($fileContent));
         $lastLine = end($lines);
 
-        $expectedViewRendered = "{$ftpAccount->ftp_username}:{$ftpAccount->domain}";
+        $expectedViewRendered = "{$testFtpAccount->ftp_username_prefix}{$testFtpAccount->ftp_username}";
 
         $this->assertEquals($expectedViewRendered, trim($lastLine));
 
-        $this->assertTrue(HostingSubscriptionFtpAccount::where('ftp_username', $ftpAccount->ftp_username)
-            ->where('domain', $ftpAccount->domain)
+        $this->assertTrue(HostingSubscriptionFtpAccount::where('ftp_username', $testFtpAccount->ftp_username)
             ->exists());
+
+        $createdAccount->delete();
+        $this->assertNull(HostingSubscriptionFtpAccount::where('ftp_username', $testFtpUsername)->first());
 
     }
 

@@ -22,8 +22,6 @@ class UpdateVsftpdUserlist implements ShouldQueue
         $filePath = '/etc/vsftpd/user_list';
         $tempFilePath = $filePath . '.tmp';
 
-//        dd($ftpAccounts);
-
         try {
             $updateVsfpdUserlist = view('server.samples.vsdftpd.vsftpd-userlist-conf', [
                 'ftpAccounts' => $ftpAccounts

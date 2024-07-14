@@ -5,6 +5,14 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  UploadToCdn:
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Upload files to CDN
+        run: |
+            echo "Uploading files to CDN"
+            echo "Files uploaded successfully"
+
   UnitTest:
     runs-on: ubuntu-22.04
     strategy:

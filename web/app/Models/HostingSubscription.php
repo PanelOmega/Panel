@@ -53,6 +53,7 @@ class HostingSubscription extends Model
             if (isset($create['system_username']) && isset($create['system_password'])) {
                 $model->system_username = $create['system_username'];
                 $model->system_password = $create['system_password'];
+                $model->system_user_id = $create['system_user_id'];
             } else {
                 return false;
             }
@@ -162,7 +163,8 @@ class HostingSubscription extends Model
 
             return [
                 'system_username' => $systemUsername,
-                'system_password' => $systemPassword
+                'system_password' => $systemPassword,
+                'system_user_id' => $createLinuxWebUserOutput['linuxUserId']
             ];
 
         }

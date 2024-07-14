@@ -13,8 +13,6 @@ class UpdateVsftpdUserlist implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    public static $handled;
-
     public function handle(): void
     {
         $ftpAccounts = HostingSubscriptionFtpAccount::all();
@@ -36,11 +34,10 @@ class UpdateVsftpdUserlist implements ShouldQueue
             }
 
             echo "vsftpd.userlist updated successfully.";
-            self::$handled = true;
 
         } catch (\Exception $e) {
             echo "Failed to update vsftpd.userlist: " . $e->getMessage();
-            self::$handled = false;
+
         }
     }
 }

@@ -50,7 +50,8 @@
                 $commands[] = 'sudo yum install vsftpd -y';
             }
 
-            $commands[] = 'sudo systemctl restart vsftpd';
+            $commands[] = 'sudo systemctl enable vsftpd';
+            $commands[] = 'sudo systemctl start vsftpd';
             $commands[] = 'omega-shell omega:update-vsftpd-config';
 
             $shellFileContent = '';

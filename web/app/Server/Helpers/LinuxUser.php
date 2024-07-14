@@ -39,7 +39,7 @@ class LinuxUser
             $command .= ' -d ' . $options['homeDir'];
         }
         if (isset($options['noLogin']) && $options['noLogin'] === true) {
-            $command .= ' -s /usr/sbin/nologin';
+            $command .= ' -s /sbin/nologin';
         }
         $output .= shell_exec($command);
 

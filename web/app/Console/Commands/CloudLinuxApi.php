@@ -152,10 +152,13 @@ class CloudLinuxApi extends Command
         )));
         $options = $input->getOptions();
 
-//        dd($options);
-
         $hostingSubscriptions = [];
-        $getHostingSubscriptions = HostingSubscription::all();
+        $queryHostingSubscriptions = HostingSubscription::query();
+        if (isset($options['username']) && !empty($options['username'])) {
+            $queryHostingSubscriptions->where('system_username', $options['username']);
+        }
+
+        $getHostingSubscriptions = $queryHostingSubscriptions->get();
         if ($getHostingSubscriptions) {
             foreach ($getHostingSubscriptions as $getHostingSubscription) {
 

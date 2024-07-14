@@ -43,7 +43,8 @@ class LinuxUser
         }
         $output .= shell_exec($command);
 
-        $command = 'echo ' . $username . ':' . $password . ' | sudo chpasswd -e';
+
+        $command = 'echo ' . $username . ':' . $password . ' | sudo /usr/sbin/chpasswd';
         $output .= shell_exec($command);
 
         $linuxUserId = LinuxUser::getLinuxUserIdByUsername($username);

@@ -118,13 +118,13 @@ class HostingSubscriptionFtpAccount extends Model
             $rootPath .= '/' . $this->ftp_path;
         }
 
-        $creteLinuxUser = LinuxUser::createUser(
+        $createLinuxUser = LinuxUser::createUser(
             $ftpUsernameWithPrefix,
             $this->ftp_password,
             $hostingSubscription->customer->email,
             [
                 'homeDir' => $rootPath,
-//                'noLogin' => true,
+                'noLogin' => true,
             ]
         );
 

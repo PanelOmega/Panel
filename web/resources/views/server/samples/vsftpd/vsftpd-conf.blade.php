@@ -98,6 +98,7 @@ xferlog_std_format=YES
 # the user does not have write access to the top level directory within the
 # chroot)
 chroot_local_user=YES
+allow_writeable_chroot=YES
 #chroot_list_enable=YES
 # (default follows)
 #chroot_list_file=/etc/vsftpd/chroot_list

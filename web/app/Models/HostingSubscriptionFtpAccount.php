@@ -124,7 +124,7 @@ class HostingSubscriptionFtpAccount extends Model
             $hostingSubscription->customer->email,
             [
                 'homeDir' => $rootPath,
-                'noLogin' => true,
+//                'noLogin' => true,
             ]
         );
 

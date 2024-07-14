@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Server\Helpers\FtpAccount;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Jobs\UpdateVsftpdUserlist;
@@ -23,16 +24,17 @@ class HostingSubscriptionFtpAccount extends Model
         'ftp_quota_type',
     ];
 
-    public function hostingSubscription()
+    protected static function booted(): void
     {
-        return $this->belongsTo(HostingSubscription::class);
+        static::addGlobalScope('customer', function (Builder $query) {
+            if (auth()->check() && auth()->guard()->name == 'customer') {
+                $query->whereHas('hostingSubscription', function ($query) {
+                    $query->where('customer_id', auth()->user()->id);
+                });
+            }
+        });
     }
-
-    public function ftpManagers()
-    {
-        return $this->hasMany(FtpFileManager::class, 'ftp_account_id');
-    }
-
+    
     public static function boot()
     {
 
@@ -85,6 +87,11 @@ class HostingSubscriptionFtpAccount extends Model
         });
 
 
+    }
+
+    public function hostingSubscription()
+    {
+        return $this->belongsTo(HostingSubscription::class);
     }
 
     /**

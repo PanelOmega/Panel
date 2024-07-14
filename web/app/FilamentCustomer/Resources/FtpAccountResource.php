@@ -25,10 +25,6 @@ class FtpAccountResource extends Resource
 
     protected static ?string $model = HostingSubscriptionFtpAccount::class;
 
-    protected static ?string $navigationGroup = 'Files';
-
-    protected static ?string $slug = 'customer-ftp-accounts';
-
     protected static ?string $navigationIcon = 'omega_customer-file-ftp';
 
     protected static ?int $navigationSort = 2;

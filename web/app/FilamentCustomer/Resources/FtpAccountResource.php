@@ -9,6 +9,8 @@ use App\Models\HostingSubscription;
 use App\Models\HostingSubscriptionFtpAccount;
 use Filament\Forms;
 use Filament\Forms\Form;
+use Filament\Infolists\Components\TextEntry;
+use Filament\Infolists\Infolist;
 use Filament\Pages\SubNavigationPosition;
 use Filament\Resources\Resource;
 use Filament\Tables;
@@ -30,8 +32,21 @@ class FtpAccountResource extends Resource
     protected static ?int $navigationSort = 2;
 
 
+    public static function infolist(Infolist $infolist): Infolist
+    {
+        return $infolist->schema([
+            TextEntry::make('ftpUsernameWithPrefix')
+                ->label('Username'),
+            TextEntry::make('ftpPathText')
+                ->label('Directory'),
+            TextEntry::make('ftpQuotaText')
+                ->label('Quota MB'),
+        ]);
+    }
+
     public static function form(Form $form): Form
     {
+
         $systemUsername = HostingSubscription::all()->pluck('system_username', 'id')->toArray();
         $pathUsername = array_values($systemUsername)[0];
 
@@ -112,12 +127,12 @@ class FtpAccountResource extends Resource
         return $table
             ->columns([
 
-                Tables\Columns\TextColumn::make('ftpNameWithPrefix')
+                Tables\Columns\TextColumn::make('ftpUsernameWithPrefix')
                     ->label('Username')
                     ->searchable()
                     ->sortable(),
 
-                Tables\Columns\TextColumn::make('ftp_path')
+                Tables\Columns\TextColumn::make('ftpPathText')
                     ->label('Directory')
                     ->searchable()
                     ->sortable(),
@@ -133,11 +148,12 @@ class FtpAccountResource extends Resource
                 //
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
+                Tables\Actions\ViewAction::make(),
+                Tables\Actions\DeleteAction::make(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+//                    Tables\Actions\DeleteBulkAction::make(),
                 ]),
             ]);
     }
@@ -154,7 +170,8 @@ class FtpAccountResource extends Resource
         return [
             'index' => Pages\ListFtpAccounts::route('/'),
             'create' => Pages\CreateFtpAccount::route('/create'),
-            'edit' => Pages\EditFtpAccount::route('/{record}/edit'),
+//            'edit' => Pages\EditFtpAccount::route('/{record}/edit'),
+         //   'view' => Pages\ViewFtpAccount::route('/{record}'),
         ];
     }
 }

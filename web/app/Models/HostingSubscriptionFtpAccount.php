@@ -203,11 +203,20 @@ class HostingSubscriptionFtpAccount extends Model
         return $this->ftp_quota ?? $this->ftp_quota_type;
     }
 
+    public function getFtpPathTextAttribute()
+    {
+        $mainPath = '/home/' . $this->hostingSubscription->system_username;
+        if (!empty($this->ftp_path)) {
+            $mainPath .= '/' . $this->ftp_path;
+        }
+        return $mainPath;
+    }
+
     /**
      * @param
      * @return string
      */
-    public function getFtpNameWithPrefixAttribute(): string
+    public function getFtpUsernameWithPrefixAttribute(): string
     {
 
         $username = $this->ftp_username_prefix . $this->ftp_username;

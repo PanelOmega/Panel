@@ -135,7 +135,7 @@ class HostingSubscriptionFtpAccountTest extends TestCase
 
     }
 
-    public function testGetFtpNameWithPrefixAttribute()
+    public function testGetFtpUSernameWithPrefixAttribute()
     {
 
         $testFtpUsername = 'test' . rand(1000, 9999);
@@ -147,11 +147,11 @@ class HostingSubscriptionFtpAccountTest extends TestCase
 
         $ftpAccount->save();
 
-        $ftpNameWithPrefix = $ftpAccount->getFtpNameWithPrefixAttribute();
+        $ftpUsernameWithPrefix = $ftpAccount->getFtpUsernameWithPrefixAttribute();
 
         $expectedUsernameWithPrefix = $testFtpUsernamePrefix . $testFtpUsername;
 
-        $this->assertEquals($expectedUsernameWithPrefix, $ftpNameWithPrefix);
+        $this->assertEquals($expectedUsernameWithPrefix, $ftpUsernameWithPrefix);
 
         $ftpAccount->delete();
         $this->assertNull(HostingSubscriptionFtpAccount::where('ftp_username', $testFtpUsername)->first());

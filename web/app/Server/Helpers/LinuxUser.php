@@ -40,9 +40,12 @@ class LinuxUser
         $command = 'echo ' . $username . ':' . $password . ' | sudo chpasswd -e';
         $output .= shell_exec($command);
 
+        $linuxUserId = LinuxUser::getLinuxUserIdByUsername($username);
+
         return [
             'success' => 'User created successfully',
             'output' => $output,
+            'linuxUserId' => $linuxUserId,
         ];
     }
 
@@ -92,9 +95,12 @@ class LinuxUser
         $command = 'sudo chmod 711 /home/' . $username;
         $output .= shell_exec($command);
 
+        $linuxUserId = LinuxUser::getLinuxUserIdByUsername($username);
+
         return [
             'success' => 'User created successfully',
             'output' => $output,
+            'linuxUserId' => $linuxUserId,
         ];
     }
 

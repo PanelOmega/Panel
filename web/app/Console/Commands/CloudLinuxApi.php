@@ -157,15 +157,16 @@ class CloudLinuxApi extends Command
         if (isset($options['username']) && !empty($options['username'])) {
             $queryHostingSubscriptions->where('system_username', $options['username']);
         }
+        if (isset($options['unix-id']) && !empty($options['unix-id'])) {
+            $queryHostingSubscriptions->where('system_user_id', $options['unix-id']);
+        }
 
         $getHostingSubscriptions = $queryHostingSubscriptions->get();
         if ($getHostingSubscriptions) {
             foreach ($getHostingSubscriptions as $getHostingSubscription) {
 
-                $linuxUserId = LinuxUser::getLinuxUserIdByUsername($getHostingSubscription->system_username);
-
                 $hostingSubscription = [
-                    'id' => $linuxUserId,
+                    'id' => $getHostingSubscription->system_user_id,
                     'username' => $getHostingSubscription->system_username,
                     'owner' => 'root',
                     'domain' => $getHostingSubscription->domain,

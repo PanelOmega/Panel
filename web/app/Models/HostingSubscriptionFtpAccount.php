@@ -127,6 +127,12 @@ class HostingSubscriptionFtpAccount extends Model
 //                'noLogin' => true,
             ]
         );
+        if (!isset($createLinuxUser['success'])) {
+            return [
+                'error' => true,
+                'message' => 'Failed to create user on the system.',
+            ];
+        }
 
         $commands = [
             "sudo usermod -d $rootPath $ftpUsernameWithPrefix",

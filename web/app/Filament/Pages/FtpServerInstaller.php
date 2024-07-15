@@ -21,7 +21,7 @@ class FtpServerInstaller extends Installer
 
     protected static ?string $slug = 'ftp-server-installer';
 
-//    protected static bool $shouldRegisterNavigation = false;
+    protected static bool $shouldRegisterNavigation = false;
 
     public function form(Form $form): Form
     {

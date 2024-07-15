@@ -7,6 +7,7 @@ use App\FilamentCustomer\Resources\FtpAccountResource\RelationManagers;
 use App\Models\Domain;
 use App\Models\HostingSubscription;
 use App\Models\HostingSubscriptionFtpAccount;
+use Filament\Actions\Action;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Infolists\Components\TextEntry;
@@ -50,7 +51,6 @@ class FtpAccountResource extends Resource
 
     public static function form(Form $form): Form
     {
-
         $systemUsername = HostingSubscription::all()->pluck('system_username', 'id')->toArray();
         $pathUsername = array_values($systemUsername)[0];
 
@@ -89,7 +89,16 @@ class FtpAccountResource extends Resource
                                     ->confirmed()
                                     ->password()
                                     ->revealable()
-                                    ->required(),
+                                    ->hintAction(
+                                        Forms\Components\Actions\Action::make('generate_password')
+                                            ->icon('heroicon-m-key')
+                                            ->action(function (Forms\Set $set) {
+                                                $randomPassword = substr(str_shuffle('abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()_+'), 0, 24);
+                                                $set('ftp_password', $randomPassword);
+                                                $set('ftp_password_confirmation', $randomPassword);
+                                            })
+                                    )
+                                   ->required(),
 
                                 TextInput::make('ftp_password_confirmation')
                                     ->label('Confirm Password')

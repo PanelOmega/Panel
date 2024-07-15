@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Livewire\Components;
+namespace App\Livewire\Components\Admin;
 
 use Exception;
 use Filament\Actions\Action;

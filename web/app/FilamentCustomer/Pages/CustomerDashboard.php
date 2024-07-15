@@ -2,8 +2,11 @@
 
 namespace App\FilamentCustomer\Pages;
 
+use App\Models\HostingSubscription;
 use App\ModulesManager;
 use Filament\Pages\Page;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Session;
 
 class CustomerDashboard extends Page
 {
@@ -16,6 +19,13 @@ class CustomerDashboard extends Page
 
     protected function getViewData(): array
     {
+
+        $hostingSubscriptionId = Session::get('hosting_subscription_id');
+        $customerId = Auth::guard('customer')->user()->id;
+        $findHostingSubscription = HostingSubscription::where('customer_id', $customerId)
+            ->where('id', $hostingSubscriptionId)
+            ->first();
+
         return [
             'menu' => [
 
@@ -526,6 +536,24 @@ class CustomerDashboard extends Page
 
 
             ],
+            'currentUserName'=> Auth::guard('customer')->user()->name,
+            'primaryDomain'=> $findHostingSubscription->domain ?? '',
+            'sharedIpAddress'=> $_SERVER['SERVER_ADDR'] ?? '',
+            'homeDirectory'=> '/home/' . $findHostingSubscription->system_username ?? '',
+            'lastLoginIpAddress'=>request()->ip(),
+            'diskUsage'=>'0.00 MB',
+            'databaseDiskUsage'=>'0.00 MB',
+            'bandwidth'=>'0.00 MB',
+            'addonDomains'=>'0',
+            'subdomains'=>'0',
+            'aliasDomains'=>'0',
+            'emailAccounts'=>'0',
+            'mailingLists'=>'0',
+            'autoresponders'=>'0',
+            'forwarders'=>'0',
+            'emailFilters'=>'0',
+            'ftpAccounts'=>'0',
+            'databases'=>'0'
         ];
 
     }

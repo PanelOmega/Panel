@@ -102,10 +102,12 @@
 
             <div class="sm:mt-0 mt-[2rem]">
                 <div class="p-[1rem] bg-white/10 ml-[2rem] shadow-md rounded-xl">
-                    <h1 class="font-bold mt-[1.5rem]">General Information</h1>
+                    <h1 class="font-bold">General Information</h1>
 
                     <p class="mt-[2rem] dark:text-white/80 text-black/50">Current User</p>
-                    <p class="">iskata</p>
+                    <p class="">
+                        {{$currentUserName}}
+                    </p>
                     <div class="border-b dark:border-white/10 border-black/5 pt-[1rem]"></div>
 
                     <p class="pt-[1rem] dark:text-white/80 text-black/50">Primary Domain</p>
@@ -113,23 +115,31 @@
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 1 0-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H6.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z" />
                         </svg>
-                        <p class="dark:text-primary-400 text-primary-500"> 10iskata.yourdomain.com </p>
+                        <p class="dark:text-primary-400 text-primary-500">
+                            {{$primaryDomain}}
+                        </p>
                     </div>
                     <div class="border-b dark:border-white/10 border-black/5 pt-[1rem]"></div>
 
                     <p class="pt-[1rem] dark:text-white/80 text-black/50">Shared IP Address</p>
-                    <p class="">88.99.25.96</p>
+                    <p class="">
+                        {{$sharedIpAddress}}
+                    </p>
                     <div class="border-b dark:border-white/10 border-black/5 pt-[1rem]"></div>
 
                     <p class="pt-[1rem] dark:text-white/80 text-black/50">Home Directory</p>
-                    <p class="">/home/iskatami </p>
+                    <p class="">
+                        {{$homeDirectory}}
+                    </p>
                     <div class="border-b dark:border-white/10 border-black/5 pt-[1rem]"></div>
 
                     <p class="pt-[1rem] dark:text-white/80 text-black/50">Last Login IP Address</p>
-                    <p class="">46.55.227.119</p>
-                    <div class="border-b dark:border-white/10 border-black/5 pt-[1rem]"></div>
+                    <p class="">
+                        {{$lastLoginIpAddress}}
+                    </p>
+                   {{-- <div class="border-b dark:border-white/10 border-black/5 pt-[1rem]"></div>--}}
 
-                    <p class="pt-[1rem] dark:text-white/80 text-black/50">Primary Domain</p>
+                  {{--  <p class="pt-[1rem] dark:text-white/80 text-black/50">Primary Domain</p>
                     <div class="flex gap-2">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
                              class="size-6 cursor-pointer hover:text-blue-500">
@@ -137,27 +147,16 @@
                         </svg>
                         <p class="dark:text-primary-400 text-primary-500">3d4e7dd6-251c-4c8d..</p>
                     </div>
-                    <div class="border-b dark:border-white/10 border-black/5 pt-[1rem]"></div>
+                    <div class="border-b dark:border-white/10 border-black/5 pt-[1rem]"></div>--}}
 
 
-                    <p class="pt-[1rem] dark:text-white/80 text-black/50">Theme</p>
-                    <div>
-                        <div class="mt-1">
-                            <input type="email" name="email" id="email" placeholder="your theme"
-                            class="bg-white/10 shadow-sm focus:ring-none focus:border-none
-                            block w-full sm:text-sm border-none rounded-md
-                             dark:focus-ring dark:focus:ring-yellow-300">
-                        </div>
-                    </div>
-                    <div class="border-b dark:border-white/10 border-black/5 pt-[1rem]"></div>
 
-
-                    <div class="flex justify-between pt-[1rem]">
+                   {{-- <div class="flex justify-between pt-[1rem]">
                         <p class="dark:text-primary-400 text-primary-500 mb-2">Server Information</p>
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
                             <path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
                         </svg>
-                    </div>
+                    </div>--}}
                 </div>
 
 
@@ -165,55 +164,78 @@
                     <h1 class="font-bold mt-[1.5rem]">Statistic</h1>
 
                     <p class="mt-[2rem] dark:text-white/80 text-black/50">Disk Usage</p>
-                    <p class="">718.43 MB / ∞ </p>
+                    <p class="">
+                        {{$diskUsage}} / ∞ </p>
                     <div class="border-b dark:border-white/10 border-black/5 pt-[1rem]"></div>
 
                     <p class="pt-[1rem] dark:text-white/80 text-black/50">Database Disk Usage</p>
-                    <p class="">2.36 MB / ∞ </p>
+                    <p class="">
+                        {{$databaseDiskUsage}} / ∞
+                    </p>
                     <div class="border-b dark:border-white/10 border-black/5 pt-[1rem]"></div>
 
                     <p class="pt-[1rem] dark:text-white/80 text-black/50">Bandwidth</p>
-                    <p class="">3.97 MB / ∞ </p>
+                    <p class="">
+                        {{$bandwidth}} / ∞ </p>
                     <div class="border-b dark:border-white/10 border-black/5 pt-[1rem]"></div>
 
                     <p class="pt-[1rem] dark:text-white/80 text-black/50">Addon Domains</p>
-                    <p class="">0 / ∞ </p>
+                    <p class="">
+                        {{$addonDomains}} / ∞ </p>
                     <div class="border-b dark:border-white/10 border-black/5 pt-[1rem]"></div>
 
                     <p class="pt-[1rem] dark:text-white/80 text-black/50">Subdomains</p>
-                    <p class="">0 / ∞ </p>
+                    <p class="">
+                        {{$subdomains}}
+                        / ∞ </p>
                     <div class="border-b dark:border-white/10 border-black/5 pt-[1rem]"></div>
 
                     <p class="pt-[1rem] dark:text-white/80 text-black/50">Alias Domains</p>
-                    <p class="">1 / ∞  </p>
+                    <p class="">
+                        {{$aliasDomains}}
+                        / ∞  </p>
                     <div class="border-b dark:border-white/10 border-black/5 pt-[1rem]"></div>
 
                     <p class="pt-[1rem] dark:text-white/80 text-black/50">Email Accounts</p>
-                    <p class="">0 / ∞ </p>
+                    <p class="">
+                        {{$emailAccounts}}
+                        / ∞ </p>
                     <div class="border-b dark:border-white/10 border-black/5 pt-[1rem]"></div>
 
                     <p class="pt-[1rem] dark:text-white/80 text-black/50">Mailing Lists</p>
-                    <p class="">0 / ∞ </p>
+                    <p class="">
+                        {{$mailingLists}}
+                        / ∞ </p>
                     <div class="border-b dark:border-white/10 border-black/5 pt-[1rem]"></div>
 
                     <p class="pt-[1rem] dark:text-white/80 text-black/50">Autoresponders</p>
-                    <p class="">0 / ∞ </p>
+                    <p class="">
+                        {{$autoresponders}}
+                        / ∞ </p>
                     <div class="border-b dark:border-white/10 border-black/5 pt-[1rem]"></div>
 
                     <p class="pt-[1rem] dark:text-white/80 text-black/50">Forwarders</p>
-                    <p class="">0 / ∞ </p>
+                    <p class="">
+                        {{$forwarders}}
+                        / ∞ </p>
                     <div class="border-b dark:border-white/10 border-black/5 pt-[1rem]"></div>
 
                     <p class="pt-[1rem] dark:text-white/80 text-black/50">Email Filters</p>
-                    <p class="">0 / ∞ </p>
+                    <p class="">
+                        {{$emailFilters}}
+                        / ∞ </p>
                     <div class="border-b dark:border-white/10 border-black/5 pt-[1rem]"></div>
 
                     <p class="pt-[1rem] dark:text-white/80 text-black/50">FTP Accounts</p>
-                    <p class="">0 / ∞ </p>
+                    <p class="">
+                        {{$ftpAccounts}}
+                        / ∞ </p>
                     <div class="border-b dark:border-white/10 border-black/5 pt-[1rem]"></div>
 
                     <p class="pt-[1rem] dark:text-white/80 text-black/50">Databases</p>
-                    <p class="">1 / ∞ </p>
+                    <p class="">
+                        {{$databases}}
+                        / ∞ </p>
                 </div>
             </div>
         </div>

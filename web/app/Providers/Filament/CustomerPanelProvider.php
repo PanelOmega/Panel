@@ -95,6 +95,11 @@ class CustomerPanelProvider extends PanelProvider
 
         }
 
+        $panelInstance->renderHook(
+            name: PanelsRenderHook::TOPBAR_START,
+            hook: fn (): string => Blade::render('@livewire(\'hosting-subscription-switch\')')
+        );
+
         return $panelInstance;
     }
 }

@@ -12,6 +12,17 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.2/font/bootstrap-icons.min.css">
     <script type="module" crossorigin src="{{asset('file-manager/app.js')}}"></script>
     <link rel="stylesheet" href="{{asset('file-manager/app.css')}}">
+
+    <link rel="preconnect" href="https://fonts.bunny.net">
+    <link href="https://fonts.bunny.net/css?family=nunito-sans:400,500,600,700&display=swap" rel="stylesheet" />
+
+
+    <style>
+        body {
+            font-family: 'Nunito Sans';
+        }
+    </style>
+
 </head>
 <body>
 <noscript>
@@ -20,7 +31,7 @@
     </strong>
 </noscript>
 
-<div class="container">
+<div class="fm-wrapper">
     <div id="fm" style="height: 700px"></div>
 </div>
 

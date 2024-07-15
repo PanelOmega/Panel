@@ -51,6 +51,7 @@ export default {
                     900: 'rgba(var(--gray-900), <alpha-value>)',
                     950: 'rgba(var(--gray-950), <alpha-value>)',
                 },
+
                 info: {
                     50: 'rgba(var(--info-50), <alpha-value>)',
                     100: 'rgba(var(--info-100), <alpha-value>)',

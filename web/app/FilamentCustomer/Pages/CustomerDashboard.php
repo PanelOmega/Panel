@@ -25,6 +25,11 @@ class CustomerDashboard extends Page
         $findHostingSubscription = HostingSubscription::where('customer_id', $customerId)
             ->where('id', $hostingSubscriptionId)
             ->first();
+        if (!$findHostingSubscription) {
+            $findHostingSubscription = HostingSubscription::where('customer_id', $customerId)
+                ->first();
+            Session::put('hosting_subscription_id', $findHostingSubscription->id);
+        }
 
         return [
             'menu' => [

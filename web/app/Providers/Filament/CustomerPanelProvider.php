@@ -11,6 +11,7 @@ use App\OmegaConfig;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
+use Filament\Navigation\NavigationItem;
 use Filament\Pages;
 use Filament\Panel;
 use Filament\PanelProvider;
@@ -60,6 +61,13 @@ class CustomerPanelProvider extends PanelProvider
             ->plugins([
                 FilamentTourPlugin::make(),
                 FilamentApexChartsPlugin::make(),
+            ])
+            ->navigationItems([
+                NavigationItem::make('File Manager')
+                    ->icon('heroicon-o-folder')
+                    ->url('/customer/file-manager')
+                    ->openUrlInNewTab()
+                    ->sort(1),
             ])
             ->middleware([
                 EncryptCookies::class,

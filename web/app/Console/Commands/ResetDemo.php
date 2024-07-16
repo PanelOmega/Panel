@@ -132,13 +132,16 @@ class ResetDemo extends Command
 
     public function installWordpress($hostingSubscription)
     {
+        $wpCli = '/home/'.$hostingSubscription->system_username.'/wp-cli.phar';
 
-        $wpCli = shell_exec('curl -O https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar');
-        $wpCli = shell_exec('chmod +x wp-cli.phar');
-        $wpCli = shell_exec('mv wp-cli.phar /usr/local/bin/wp');
-        $wpCli = shell_exec('wp core download --path=/home/'.$hostingSubscription->system_username.'/public_html');
+        $log = '';
+        if (!is_file($wpCli)) {
+            $log .= shell_exec('sudo -u '.$hostingSubscription->system_username.' -i -- curl -O https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar');
+            $log .= shell_exec('sudo -u '.$hostingSubscription->system_username.' -i -- chmod +x wp-cli.phar');
+        }
 
-        $phpVersions = CloudLinuxPHPHelper::getSupportedPHPVersions();
+        $log .= shell_exec('sudo -u '.$hostingSubscription->system_username.' -i -- '.$wpCli.' core download --path=/home/'.$hostingSubscription->system_username.'/public_html');
 
+        return $log;
     }
 }

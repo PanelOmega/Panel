@@ -48,33 +48,33 @@ class Domain extends Model
 
         static::created(function ($model) {
 //
-//            $findHostingSubscription = HostingSubscription::where('id', $model->hosting_subscription_id)->first();
-//            if (!$findHostingSubscription) {
-//                throw new \Exception('Hosting Subscription not found');
-//            }
-//
-//            $findHostingPlan = HostingPlan::where('id', $findHostingSubscription->hosting_plan_id)->first();
-//            if (!$findHostingPlan) {
-//                throw new \Exception('Hosting Plan not found');
-//            }
-//
-//            $model->server_application_type = $findHostingPlan->default_server_application_type;
-//            $model->server_application_settings = $findHostingPlan->default_server_application_settings;
-//
-//            if ($model->is_main == 1) {
-//                //  $allDomainsRoot = '/home/'.$this->user.'/public_html';
-//                $model->domain_root = '/home/'.$findHostingSubscription->system_username;
-//                $model->domain_public = '/home/'.$findHostingSubscription->system_username.'/public_html';
-//                $model->home_root = '/home/'.$findHostingSubscription->system_username;
-//            } else {
-//                //   $allDomainsRoot = '/home/'.$model->user.'/domains';
-//                $model->domain_root = '/home/'.$findHostingSubscription->system_username.'/domains/'.$model->domain;
-//                $model->domain_public = $model->domain_root.'/public_html';
-//                $model->home_root = '/home/'.$findHostingSubscription->user;
-//            }
-//            $model->saveQuietly();
-//
-//            $model->configureVirtualHost(true, true);
+            $findHostingSubscription = HostingSubscription::where('id', $model->hosting_subscription_id)->first();
+            if (!$findHostingSubscription) {
+                throw new \Exception('Hosting Subscription not found');
+            }
+
+            $findHostingPlan = HostingPlan::where('id', $findHostingSubscription->hosting_plan_id)->first();
+            if (!$findHostingPlan) {
+                throw new \Exception('Hosting Plan not found');
+            }
+
+            $model->server_application_type = $findHostingPlan->default_server_application_type;
+            $model->server_application_settings = $findHostingPlan->default_server_application_settings;
+
+            if ($model->is_main == 1) {
+                //  $allDomainsRoot = '/home/'.$this->user.'/public_html';
+                $model->domain_root = '/home/'.$findHostingSubscription->system_username;
+                $model->domain_public = '/home/'.$findHostingSubscription->system_username.'/public_html';
+                $model->home_root = '/home/'.$findHostingSubscription->system_username;
+            } else {
+                //   $allDomainsRoot = '/home/'.$model->user.'/domains';
+                $model->domain_root = '/home/'.$findHostingSubscription->system_username.'/domains/'.$model->domain;
+                $model->domain_public = $model->domain_root.'/public_html';
+                $model->home_root = '/home/'.$findHostingSubscription->user;
+            }
+            $model->saveQuietly();
+
+            $model->configureVirtualHost(true, true);
 //
 //            if ($model->server_application_type == 'apache_php') {
 //                $model->createDockerContainer();
@@ -83,6 +83,13 @@ class Domain extends Model
 //            // This must be in background
 //            $apacheBuild = new ApacheBuild();
 //            $apacheBuild->handle();
+
+        });
+
+        static::updating(function ($model) {
+
+            $apacheBuild = new ApacheBuild();
+            $apacheBuild->handle();
 
         });
 

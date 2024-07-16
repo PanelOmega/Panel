@@ -1,6 +1,6 @@
 @if($os == \App\Server\Helpers\OS::UBUNTU || $os == \App\Server\Helpers\OS::DEBIAN)
 @include('server.samples.configs.ubuntu.apache2-top-conf')
-@elseif($os == \App\Server\Helpers\OS::ALMA_LINUX || $os == \App\Server\Helpers\OS::CENTOS)
+@elseif($os == \App\Server\Helpers\OS::CLOUD_LINUX || $os == \App\Server\Helpers\OS::ALMA_LINUX || $os == \App\Server\Helpers\OS::CENTOS)
     @include('server.samples.configs.almalinux.apache2-top-conf')
 @endif
 

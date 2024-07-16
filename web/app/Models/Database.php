@@ -7,6 +7,7 @@ use App\Services\RemoteDatabaseService;
 use App\UniversalDatabaseExecutor;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Str;
 use Illuminate\Database\Eloquent\Builder;
 
@@ -23,29 +24,16 @@ class Database extends Model
         'description',
     ];
 
-//    protected static function booted(): void
-//    {
-//        static::addGlobalScope('customer', function (Builder $query) {
-//            if (auth()->check() && auth()->guard()->name == 'customer') {
-//                $query->whereHas('hostingSubscription', function ($query) {
-//                    $query->where('customer_id', auth()->user()->id);
-//                });
-//            }
-//        });
-//    }
-
     public static function boot()
     {
         parent::boot();
 
         static::creating(function ($model) {
 
-            $findHostingSubscription = HostingSubscription::where('id', $model->hosting_subscription_id)->first();
-            if (!$findHostingSubscription) {
-                return false;
-            }
+            $hostingSubscription = Customer::getHostingSubscriptionSession();
 
-            $model->database_name_prefix = $findHostingSubscription->system_username . '_';
+            $model->hosting_subscription_id = $hostingSubscription->id;
+            $model->database_name_prefix = $hostingSubscription->system_username . '_';
 
             $databaseName = Str::slug($model->database_name, '_');
             $databaseName = $model->database_name_prefix . $databaseName;

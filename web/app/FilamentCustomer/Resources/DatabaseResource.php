@@ -33,12 +33,6 @@ class DatabaseResource extends Resource
         return $form
             ->schema([
 
-                Forms\Components\TextInput::make('hosting_subscription_id')
-                    ->hidden()
-                    ->default(function () use ($hostingSubscription) {
-                        return $hostingSubscription->id;
-                    }),
-
 //                Forms\Components\ToggleButtons::make('is_remote_database_server')
 //                    ->default(0)
 //                    ->disabled(function ($record) {

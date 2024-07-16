@@ -8,9 +8,21 @@ class CloudLinuxInstaller
 {
     public string $logPath = '/var/log/omega/cloudlinux-installer.log';
 
-    public function run($activationKey)
+    public string $activationKey;
+
+    public function setLogPath($path)
     {
-        if (empty($activationKey)) {
+        $this->logPath = $path;
+    }
+
+    public function setActivationKey($activationKey)
+    {
+        $this->activationKey = $activationKey;
+    }
+
+    public function run()
+    {
+        if (empty($this->activationKey)) {
             return [
                 'status' => 'error',
                 'message' => 'Activation key is required.',
@@ -24,11 +36,14 @@ class CloudLinuxInstaller
         if ($os == OS::ALMA_LINUX) {
             $commands[] = 'yum install wget -y';
             $commands[] = 'wget https://repo.cloudlinux.com/cloudlinux/sources/cln/cldeploy';
-            $commands[] = 'bash cldeploy -k '.$activationKey;
+            $commands[] = 'bash cldeploy -k '.$this->activationKey;
         }
 
-        $commands[] = 'mkdir -p /usr/local/omega/web/public/thirdparty/cloudlinux';
-        $commands[] = 'ln -s /usr/share/l.v.e-manager/commons/spa-resources/ /usr/local/omega/web/public/thirdparty/cloudlinux';
+        $commands = array_merge($commands, $this->installPHPSelector());
+        $commands = array_merge($commands, $this->installNodeJSSelector());
+
+        $commands[] = 'mkdir -p /usr/local/omega/web/public/3rdparty/cloudlinux';
+        $commands[] = 'ln -s /usr/share/l.v.e-manager/commons/spa-resources/ /usr/local/omega/web/public/3rdparty/cloudlinux';
 
         $shellFileContent = '';
         foreach ($commands as $command) {
@@ -61,6 +76,8 @@ class CloudLinuxInstaller
         $commands[] = 'yum groupinstall alt-php -y';
         $commands[] = 'yum install lvemanager lve-utils-y';
         $commands[] = 'cloudlinux-selector set --json --interpreter php --selector-status enabled';
+
+        return $commands;
     }
 
     public function installNodeJSSelector()
@@ -70,6 +87,8 @@ class CloudLinuxInstaller
         $commands[] = 'yum groupinstall alt-nodejs -y';
         $commands[] = 'yum install lvemanager lve-utils-y';
         $commands[] = 'cloudlinux-selector set --json --interpreter nodejs --selector-status enabled';
+
+        return $commands;
     }
 
     public static function isCloudLinuxInstalled(): array

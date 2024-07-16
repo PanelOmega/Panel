@@ -122,7 +122,7 @@ class ResetDemo extends Command
 
     public function installWordpress($hostingSubscription)
     {
-     
+
         $wpCli = shell_exec('curl -O https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar');
         $wpCli = shell_exec('chmod +x wp-cli.phar');
         $wpCli = shell_exec('mv wp-cli.phar /usr/local/bin/wp');

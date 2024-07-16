@@ -6,6 +6,8 @@ Route::get('/', function () {
     return view('welcome');
 });
 
+Route::get('/customer/phpMyAdmin/login', [\App\Http\Controllers\Customer\PHPMyAdminController::class, 'login'])
+->name('customer.phpmyadmin.login');
 
 Route::get('/customer/file-manager', function () {
     return view('customer.pages.file-manager');

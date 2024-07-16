@@ -71,7 +71,7 @@ class CustomerPanelProvider extends PanelProvider
                     ->sort(1),
                 NavigationItem::make('phpMyAdmin')
                     ->icon('omega_customer-database-php')
-                    ->url('/customer/3rdparty/phpMyAdmin/')
+                    ->url('/customer/phpMyAdmin/login')
                     ->openUrlInNewTab()
                     ->sort(2),
             ])

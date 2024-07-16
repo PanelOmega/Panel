@@ -56,9 +56,12 @@ class Database extends Model
                 );
 
                 // Check main database user exists
-                $mainDatabaseUser = $universalDatabaseExecutor->getUserByUsername($hostingSubscription->system_username.'@localhost');
+                $mainDatabaseUser = $universalDatabaseExecutor->getUserByUsername($hostingSubscription->system_username);
                 if (!$mainDatabaseUser) {
-                    $createMainDatabaseUser = $universalDatabaseExecutor->createUser($hostingSubscription->system_username.'@localhost', $hostingSubscription->system_password);
+                    $createMainDatabaseUser = $universalDatabaseExecutor->createUser($hostingSubscription->system_username, $hostingSubscription->system_password);
+                    if (!isset($createMainDatabaseUser['success'])) {
+                        throw new \Exception($createMainDatabaseUser['message']);
+                    }
                 }
 
                 $createDatabase = $universalDatabaseExecutor->createDatabase($databaseName);
@@ -66,7 +69,7 @@ class Database extends Model
                     throw new \Exception($createDatabase['message']);
                 }
 
-                $universalDatabaseExecutor->userGrantPrivilegesToDatabase($hostingSubscription->system_username.'@localhost', [$databaseName]);
+                $universalDatabaseExecutor->userGrantPrivilegesToDatabase($hostingSubscription->system_username, [$databaseName]);
             }
 
             return $model;

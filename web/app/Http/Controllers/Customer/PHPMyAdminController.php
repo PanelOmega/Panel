@@ -62,7 +62,7 @@ class PHPMyAdminController extends Controller
             'success' => true,
             'databaseLoginDetails'=>[
                 'host' => '127.0.0.1',
-                'username' => $hostingSubscription->system_username.'@localhost',
+                'username' => $hostingSubscription->system_username,
                 'password' => $hostingSubscription->system_password,
             ]
         ]);

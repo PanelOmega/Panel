@@ -86,6 +86,16 @@ class ResetDemo extends Command
         $hostingPlan->description = 'Basic hosting plan';
         $hostingPlan->save();
 
+        $hostingPlan = new HostingPlan();
+        $hostingPlan->name = 'Pro Plan';
+        $hostingPlan->description = 'Pro hosting plan';
+        $hostingPlan->save();
+
+        $hostingPlan = new HostingPlan();
+        $hostingPlan->name = 'Premium Plan';
+        $hostingPlan->description = 'Premium hosting plan';
+        $hostingPlan->save();
+
         $hostingSubscription = new HostingSubscription();
         $hostingSubscription->domain = 'vasil-levski.demo.panelomega.com';
         $hostingSubscription->customer_id = $customer->id;

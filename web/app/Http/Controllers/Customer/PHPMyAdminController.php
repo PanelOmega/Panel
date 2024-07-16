@@ -25,7 +25,7 @@ class PHPMyAdminController extends Controller
         $ssoToken->customer_id = $hostingSubscription->customer_id;
         $ssoToken->hosting_subscription_id = $hostingSubscription->id;
         $ssoToken->token = md5(uniqid() . time() . $hostingSubscription->customer_id . $hostingSubscription->id);
-        $ssoToken->expires_at = now()->addMinutes(5);
+        $ssoToken->expires_at = now()->addMinutes(1);
         $ssoToken->ip_address = request()->ip();
         $ssoToken->user_agent = request()->userAgent();
         $ssoToken->save();
@@ -35,6 +35,24 @@ class PHPMyAdminController extends Controller
 
         return redirect($currentUrl . '/omega-sso.php?server=1&token=' . $ssoToken->token);
 
+    }
+
+    public function validateToken()
+    {
+        $token = request()->input('token');
+        $ssoToken = PHPMyAdminSSOToken::where('token', $token)->first();
+        if (!$ssoToken) {
+            return response()->json(['error' => 'Invalid token'], 400);
+        }
+
+        if ($ssoToken->expires_at < now()) {
+            return response()->json(['error' => 'Token expired'], 400);
+        }
+
+        // Delete token after validation
+        $ssoToken->delete();
+
+        return response()->json(['success' => true]);
     }
 
 }

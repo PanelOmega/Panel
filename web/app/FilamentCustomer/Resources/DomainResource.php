@@ -51,9 +51,9 @@ class DomainResource extends Resource
                 Tables\Columns\TextColumn::make('domain')
                     ->searchable()
                     ->sortable(),
-//                Tables\Columns\TextColumn::make('hostingSubscription.hostingPlan.name')
-//                    ->searchable()
-//                    ->sortable(),
+                Tables\Columns\TextColumn::make('documentRoot')
+                    ->searchable()
+                    ->sortable(),
             ])
             ->defaultSort('id', 'desc')
             ->filters([

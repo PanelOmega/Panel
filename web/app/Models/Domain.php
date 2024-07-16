@@ -111,6 +111,11 @@ class Domain extends Model
         return $this->belongsTo(HostingSubscription::class);
     }
 
+    public function getDocumentRootAttribute()
+    {
+        return '/public_html';
+    }
+
     public function createDockerContainer()
     {
         $dockerClient = new DockerClient();

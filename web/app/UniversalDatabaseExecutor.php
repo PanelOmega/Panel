@@ -87,6 +87,35 @@ class UniversalDatabaseExecutor
 
     }
 
+    public function getUserByUsername($username)
+    {
+
+        $connection = $this->_getDatabaseConnection();
+
+        $resultSet = $connection->executeQuery('SELECT * FROM mysql.user WHERE User = ?', [
+            $username
+        ]);
+
+        return $resultSet->fetchAssociative();
+
+    }
+
+    public function userGrantPrivilegesToDatabase($username, $databases = [])
+    {
+
+        $connection = $this->_getDatabaseConnection();
+
+        if (!empty($databases)) {
+            foreach ($databases as $database) {
+                $connection->executeStatement('GRANT ALL PRIVILEGES ON '.$database.'.* TO ?', [
+                    $username
+                ]);
+            }
+        }
+
+        $connection->executeQuery('FLUSH PRIVILEGES');
+
+    }
     public function createUser($username, $password)
     {
         try {
@@ -96,12 +125,6 @@ class UniversalDatabaseExecutor
                 $username,
                 $password
             ]);
-
-            $connection->executeStatement('GRANT ALL PRIVILEGES ON '.$this->database.'.* TO ?', [
-                $username
-            ]);
-
-            $connection->executeQuery('FLUSH PRIVILEGES');
 
             return [
                 'success' => true,

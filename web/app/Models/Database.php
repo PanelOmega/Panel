@@ -55,10 +55,18 @@ class Database extends Model
                     OmegaConfig::get('MYSQL_ROOT_PASSWORD'),
                 );
 
+                // Check main database user exists
+                $mainDatabaseUser = $universalDatabaseExecutor->getUserByUsername($hostingSubscription->system_username.'@localhost');
+                if (!$mainDatabaseUser) {
+                    $createMainDatabaseUser = $universalDatabaseExecutor->createUser($hostingSubscription->system_username.'@localhost', $hostingSubscription->system_password);
+                }
+
                 $createDatabase = $universalDatabaseExecutor->createDatabase($databaseName);
                 if (isset($createDatabase['error'])) {
                     throw new \Exception($createDatabase['message']);
                 }
+
+                $universalDatabaseExecutor->userGrantPrivilegesToDatabase($hostingSubscription->system_username.'@localhost', [$databaseName]);
             }
 
             return $model;

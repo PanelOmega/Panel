@@ -50,9 +50,13 @@ class PHPMyAdminController extends Controller
         }
 
         // Delete token after validation
-        $ssoToken->delete();
+    //    $ssoToken->delete();
 
-        return response()->json(['success' => true]);
+
+
+        return response()->json([
+            'success' => true
+        ]);
     }
 
 }

@@ -67,31 +67,33 @@ class DatabaseResource extends Resource
                     ->label('Database Name')
                     ->required(),
 
-                Forms\Components\Repeater::make('databaseUsers')
-                    ->relationship('databaseUsers')
-                    ->schema([
-                        Forms\Components\TextInput::make('username')
-                            ->disabled(function ($record) {
-                                return $record;
-                            })
-                            ->prefix(function ($record) use($systemUsername) {
-                                if ($record) {
-                                    return $record->username_prefix;
-                                }
-                                if (!$systemUsername) {
-                                    return false;
-                                }
-                                return $systemUsername.'_';
-                            })
-                            ->required(),
-                        Forms\Components\TextInput::make('password')
-                            ->disabled(function ($record) {
-                                return $record;
-                            })
-                            //->password()
-                            ->required(),
-                    ])
-                    ->columns(2)
+//                Forms\Components\Repeater::make('databaseUsers')
+//                    ->relationship('databaseUsers')
+//                    ->schema([
+//                        Forms\Components\TextInput::make('username')
+//                            ->disabled(function ($record) {
+//                                return $record;
+//                            })
+//                            ->prefix(function ($record) use($systemUsername) {
+//                                if ($record) {
+//                                    return $record->username_prefix;
+//                                }
+//                                if (!$systemUsername) {
+//                                    return false;
+//                                }
+//                                return $systemUsername.'_';
+//                            })
+////                            ->required()
+//                        ,
+//                        Forms\Components\TextInput::make('password')
+//                            ->disabled(function ($record) {
+//                                return $record;
+//                            })
+//                            //->password()
+////                            ->required()
+//                        ,
+//                    ])
+//                    ->columns(2)
 
             ])->columns(1);
     }

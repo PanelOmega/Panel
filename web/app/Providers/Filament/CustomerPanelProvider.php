@@ -69,6 +69,11 @@ class CustomerPanelProvider extends PanelProvider
                     ->url('/customer/file-manager')
                     ->openUrlInNewTab()
                     ->sort(1),
+                NavigationItem::make('phpMyAdmin')
+                    ->icon('omega_customer-database-php')
+                    ->url('/customer/3rdparty/phpMyAdmin/')
+                    ->openUrlInNewTab()
+                    ->sort(2),
             ])
             ->middleware([
                 EncryptCookies::class,

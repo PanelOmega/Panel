@@ -69,12 +69,21 @@ class CloudLinuxInstaller
         ];
     }
 
+    public function installCageFs()
+    {
+        $commands = [];
+        $commands[] = 'yum install cagefs -y';
+        $commands[] = '/usr/sbin/cagefsctl --init';
+
+        return $commands;
+
+    }
     public function installPHPSelector()
     {
         $commands = [];
-        $commands[] = 'yum install php php-gd php-mbstring php-pdo php-xml';
+        $commands[] = 'yum install php php-gd php-mbstring php-pdo php-xml -y';
         $commands[] = 'yum groupinstall alt-php -y';
-        $commands[] = 'yum install lvemanager lve-utils-y';
+        $commands[] = 'yum install lvemanager lve-utils -y';
         $commands[] = 'cloudlinux-selector set --json --interpreter php --selector-status enabled';
 
         return $commands;
@@ -83,7 +92,7 @@ class CloudLinuxInstaller
     public function installNodeJSSelector()
     {
         $commands = [];
-        $commands[] = 'yum install nodejs';
+        $commands[] = 'yum install nodejs -y';
         $commands[] = 'yum groupinstall alt-nodejs -y';
         $commands[] = 'yum install lvemanager lve-utils-y';
         $commands[] = 'cloudlinux-selector set --json --interpreter nodejs --selector-status enabled';

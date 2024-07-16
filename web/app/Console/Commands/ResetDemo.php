@@ -10,6 +10,7 @@ use App\Models\HostingSubscription;
 use App\Models\HostingSubscriptionFtpAccount;
 use App\Models\User;
 use App\OmegaConfig;
+use App\Server\Helpers\CloudLinux\CloudLinuxPHPHelper;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Hash;
 
@@ -97,6 +98,9 @@ class ResetDemo extends Command
         $hostingSubscription->hosting_plan_id = $hostingPlan->id;
         $hostingSubscription->save();
 
+        $this->installWordpress($hostingSubscription);
+
+
         $hostingSubscription = new HostingSubscription();
         $hostingSubscription->domain = 'opencart.demo.panelomega.com';
         $hostingSubscription->customer_id = $customer->id;
@@ -113,6 +117,18 @@ class ResetDemo extends Command
 //        }
 
         $this->info('Demo reset successfully');
+
+    }
+
+    public function installWordpress($hostingSubscription)
+    {
+     
+        $wpCli = shell_exec('curl -O https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar');
+        $wpCli = shell_exec('chmod +x wp-cli.phar');
+        $wpCli = shell_exec('mv wp-cli.phar /usr/local/bin/wp');
+        $wpCli = shell_exec('wp core download --path=/home/'.$hostingSubscription->system_username.'/public_html');
+
+        $phpVersions = CloudLinuxPHPHelper::getSupportedPHPVersions();
 
     }
 }

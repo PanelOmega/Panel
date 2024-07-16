@@ -2,9 +2,9 @@
 
 namespace App\Server\Helpers\CloudLinux;
 
-class PHPHelper
+class CloudLinuxPHPHelper
 {
-    public function getSupportedPHPVersions()
+    public static function getSupportedPHPVersions()
     {
         $output = shell_exec('selectorctl --list --json');
         $decoded = json_decode($output, true);

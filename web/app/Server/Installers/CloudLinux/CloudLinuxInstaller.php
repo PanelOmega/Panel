@@ -50,6 +50,9 @@ class CloudLinuxInstaller
             $shellFileContent .= $command.PHP_EOL;
         }
 
+        $commands[] = 'mkdir -p /opt/cpvendor/etc';
+        $commands[] = 'cp /usr/local/omega/web/server/cloudlinux/integration.ini /opt/cpvendor/etc/integration.ini';
+
         $shellFileContent .= 'echo "CloudLinux is installed successfully!"'.PHP_EOL;
         $shellFileContent .= 'echo "DONE!"'.PHP_EOL;
         $shellFileContent .= 'rm -f /tmp/cloudlinux-installer.sh';

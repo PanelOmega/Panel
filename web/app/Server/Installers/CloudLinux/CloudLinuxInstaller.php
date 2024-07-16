@@ -42,7 +42,7 @@ class CloudLinuxInstaller
         $commands = array_merge($commands, $this->installPHPSelector());
         $commands = array_merge($commands, $this->installNodeJSSelector());
 
-        $commands[] = 'mkdir -p /usr/local/omega/web/public/3rdparty/cloudlinux';
+        $commands[] = 'mkdir -p /usr/local/omega/web/public/3rdparty';
         $commands[] = 'ln -s /usr/share/l.v.e-manager/commons/spa-resources/ /usr/local/omega/web/public/3rdparty/cloudlinux';
 
         $shellFileContent = '';

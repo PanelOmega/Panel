@@ -26,9 +26,11 @@ class PHPMyAdminInstaller
 
     public function run()
     {
+
+        // https://wiki.crowncloud.net/?How_to_Install_phpMyAdmin_on_AlmaLinux_9
+
         $os = OS::getDistro();
         $commands = [];
-
 
         if ($os == OS::DEBIAN || $os == OS::UBUNTU) {
             $commands[] = 'apt-get update';
@@ -36,6 +38,8 @@ class PHPMyAdminInstaller
         } elseif ($os == OS::CLOUD_LINUX || $os == OS::CENTOS || $os == OS::ALMA_LINUX) {
             $commands[] = 'dnf install phpmyadmin -y';
         }
+
+        // ln -s /usr/share/phpMyAdmin/ /var/www/html/phpmyadmin
 
 
         $shellFileContent = '';

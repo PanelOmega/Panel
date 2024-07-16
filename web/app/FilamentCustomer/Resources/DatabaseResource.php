@@ -139,7 +139,6 @@ class DatabaseResource extends Resource
             ]);
     }
 
-    /** @return Builder<Order> */
     public static function getEloquentQuery(): Builder
     {
         return parent::getEloquentQuery()->withGlobalScope('customer', new CustomerScope());

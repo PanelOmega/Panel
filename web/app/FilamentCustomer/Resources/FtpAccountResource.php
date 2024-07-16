@@ -4,9 +4,11 @@ namespace App\FilamentCustomer\Resources;
 
 use App\FilamentCustomer\Resources\FtpAccountResource\Pages;
 use App\FilamentCustomer\Resources\FtpAccountResource\RelationManagers;
+use App\Models\Customer;
 use App\Models\Domain;
 use App\Models\HostingSubscription;
 use App\Models\HostingSubscriptionFtpAccount;
+use App\Models\Scopes\CustomerScope;
 use Filament\Actions\Action;
 use Filament\Forms;
 use Filament\Forms\Form;
@@ -19,6 +21,7 @@ use Filament\Tables\Table;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Radio;
+use Illuminate\Database\Eloquent\Builder;
 
 class FtpAccountResource extends Resource
 {
@@ -51,10 +54,13 @@ class FtpAccountResource extends Resource
 
     public static function form(Form $form): Form
     {
-        $systemUsername = HostingSubscription::all()->pluck('system_username', 'id')->toArray();
-        $pathUsername = array_values($systemUsername)[0];
+        $hostingSubscription = Customer::getHostingSubscriptionSession();
+        $systemUsername = $hostingSubscription->system_username;
 
-        $domains = Domain::all()->pluck('domain', 'domain')->toArray();
+        $domains = Domain::where('hosting_subscription_id', $hostingSubscription->id)
+            ->get()
+            ->pluck('domain', 'domain')
+            ->toArray();
 
         return $form
             ->schema([
@@ -67,8 +73,8 @@ class FtpAccountResource extends Resource
 
                                 TextInput::make('ftp_username')
                                     ->label('Log In')
-                                    ->prefix(function (Forms\Get $get) use($pathUsername) {
-                                        return $pathUsername . '_';
+                                    ->prefix(function (Forms\Get $get) use($systemUsername) {
+                                        return $systemUsername . '_';
                                     })
                                     ->required(),
 
@@ -76,6 +82,9 @@ class FtpAccountResource extends Resource
                                     ->searchable('domain')
                                     ->options($domains)
                                     ->label('Domain')
+                                    ->default(function (Forms\Get $get) use($domains) {
+                                        return array_key_first($domains);
+                                    })
                                     ->required()
                                     ->reactive()
                                     ->afterStateUpdated(function (Forms\Set $set, Forms\Get $get, $state) {
@@ -108,7 +117,7 @@ class FtpAccountResource extends Resource
 
                                 TextInput::make('ftp_path')
                                     ->label('Directory')
-                                    ->prefix('/home/' . $pathUsername . '/'),
+                                    ->prefix('/home/' . $systemUsername . '/'),
 
                                 Radio::make('ftp_quota_type')
                                     ->options([
@@ -169,6 +178,11 @@ class FtpAccountResource extends Resource
 //                    Tables\Actions\DeleteBulkAction::make(),
                 ]),
             ]);
+    }
+
+    public static function getEloquentQuery(): Builder
+    {
+        return parent::getEloquentQuery()->withGlobalScope('customer', new CustomerScope());
     }
 
     public static function getRelations(): array

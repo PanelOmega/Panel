@@ -25,17 +25,6 @@ class HostingSubscriptionFtpAccount extends Model
         'ftp_quota_type',
     ];
 
-    protected static function booted(): void
-    {
-        static::addGlobalScope('customer', function (Builder $query) {
-            if (auth()->check() && auth()->guard()->name == 'customer') {
-                $query->whereHas('hostingSubscription', function ($query) {
-                    $query->where('customer_id', auth()->user()->id);
-                });
-            }
-        });
-    }
-
     public static function boot()
     {
 
@@ -92,7 +81,7 @@ class HostingSubscriptionFtpAccount extends Model
      */
     private function _createFtpAccount(): array
     {
-        $hostingSubscription = HostingSubscription::where('domain', $this->domain)->first();
+        $hostingSubscription = Customer::getHostingSubscriptionSession();
         if (empty($hostingSubscription)) {
             return [
                 'error' => true,

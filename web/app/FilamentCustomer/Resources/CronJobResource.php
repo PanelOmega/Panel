@@ -6,6 +6,7 @@ use App\Models\CronJob;
 use App\Models\HostingSubscription;
 use App\FilamentCustomer\Resources\CronJobResource\Pages;
 use App\FilamentCustomer\Resources\CronJobResource\RelationManagers;
+use App\Models\Scopes\CustomerScope;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -26,19 +27,6 @@ class CronJobResource extends Resource
     {
         return $form
             ->schema([
-
-                Forms\Components\Select::make('hosting_subscription_id')
-                    ->label('Hosting Subscription')
-                    ->options(
-                        HostingSubscription::all()->pluck('domain', 'id')
-                    )
-                    ->live()
-                    ->disabled(function ($record) {
-                        return $record;
-                    })
-                    ->columnSpanFull()
-                    ->required(),
-
                 Forms\Components\TextInput::make('schedule')
                     ->autofocus()
                     ->required()
@@ -63,12 +51,6 @@ class CronJobResource extends Resource
                 Tables\Columns\TextColumn::make('command')
                     ->searchable()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('user')
-                    ->searchable()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('hostingSubscription.domain')
-                    ->searchable()
-                    ->sortable(),
             ])
             ->filters([
                 //
@@ -81,6 +63,11 @@ class CronJobResource extends Resource
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
             ]);
+    }
+
+    public static function getEloquentQuery(): Builder
+    {
+        return parent::getEloquentQuery()->withGlobalScope('customer', new CustomerScope());
     }
 
     public static function getRelations(): array

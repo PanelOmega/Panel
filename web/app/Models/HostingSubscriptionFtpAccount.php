@@ -237,5 +237,5 @@ class HostingSubscriptionFtpAccount extends Model
         $username = $this->ftp_username_prefix . $this->ftp_username;
         return $username;
     }
-    
+
 }

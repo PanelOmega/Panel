@@ -66,9 +66,11 @@ class Customer extends Authenticatable
     {
         $hostingSubscriptionId = Session::get('hosting_subscription_id');
         $customerId = Auth::guard('customer')->user()->id;
+
         $findHostingSubscription = HostingSubscription::where('customer_id', $customerId)
             ->where('id', $hostingSubscriptionId)
             ->first();
+
         if (!$findHostingSubscription) {
             $findHostingSubscription = HostingSubscription::where('customer_id', $customerId)
                 ->first();

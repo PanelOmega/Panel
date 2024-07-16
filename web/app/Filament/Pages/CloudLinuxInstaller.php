@@ -20,6 +20,8 @@ class CloudLinuxInstaller  extends Installer
 
     protected static string $view = 'filament.admin.pages.cloudlinux-installer';
 
+    protected static bool $shouldRegisterNavigation = false;
+
     public string $activation_key;
     public bool $install_php_selector = true;
     public bool $install_nodejs_selector = true;

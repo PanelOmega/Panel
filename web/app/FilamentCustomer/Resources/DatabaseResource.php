@@ -10,6 +10,7 @@ use App\Models\HostingSubscription;
 use App\Models\RemoteDatabaseServer;
 use App\Models\Scopes\CustomerScope;
 use Filament\Forms;
+use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
@@ -67,33 +68,46 @@ class DatabaseResource extends Resource
                     ->label('Database Name')
                     ->required(),
 
-//                Forms\Components\Repeater::make('databaseUsers')
-//                    ->relationship('databaseUsers')
-//                    ->schema([
-//                        Forms\Components\TextInput::make('username')
-//                            ->disabled(function ($record) {
-//                                return $record;
-//                            })
-//                            ->prefix(function ($record) use($systemUsername) {
-//                                if ($record) {
-//                                    return $record->username_prefix;
-//                                }
-//                                if (!$systemUsername) {
-//                                    return false;
-//                                }
-//                                return $systemUsername.'_';
-//                            })
-////                            ->required()
-//                        ,
-//                        Forms\Components\TextInput::make('password')
-//                            ->disabled(function ($record) {
-//                                return $record;
-//                            })
-//                            //->password()
-////                            ->required()
-//                        ,
-//                    ])
-//                    ->columns(2)
+                Forms\Components\Repeater::make('databaseUsers')
+                    ->relationship('databaseUsers')
+                    ->schema([
+                        Forms\Components\TextInput::make('username')
+                            ->disabled(function ($record) {
+                                return $record;
+                            })
+                            ->prefix(function ($record) use($systemUsername) {
+                                if ($record) {
+                                    return $record->username_prefix;
+                                }
+                                if (!$systemUsername) {
+                                    return false;
+                                }
+                                return $systemUsername.'_';
+                            })
+//                            ->required()
+                        ,
+
+                        TextInput::make('password')
+                            ->label('Password')
+                            ->password()
+                            ->revealable()
+                            ->disabled(function ($record) {
+                                return $record;
+                            })
+                            ->hintAction(function ($record) {
+                                if ($record) {
+                                    return null;
+                                }
+                                return Forms\Components\Actions\Action::make('generate_password')
+                                    ->icon('heroicon-m-key')
+                                    ->action(function (Forms\Set $set) {
+                                        $randomPassword = substr(str_shuffle('abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()_+'), 0, 24);
+                                        $set('password', $randomPassword);
+                                    });
+                            }),
+
+                    ])
+                    ->columns(2)
 
             ])->columns(1);
     }
@@ -111,11 +125,11 @@ class DatabaseResource extends Resource
                     ->searchable()
                     ->sortable(),
 
-                Tables\Columns\TextColumn::make('databaseUsers.username')
-                    ->label('Database Users')
-                    ->listWithLineBreaks()
-                    ->limitList(2)
-                    ->expandableLimitedList(),
+//                Tables\Columns\TextColumn::make('databaseUsers.username')
+//                    ->label('Database Users')
+//                    ->listWithLineBreaks()
+//                    ->limitList(2)
+//                    ->expandableLimitedList(),
 
 //                Tables\Columns\TextColumn::make('is_remote_database_server')
 //                    ->badge()

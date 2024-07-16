@@ -12,7 +12,13 @@ Route::get('/customer/file-manager', function () {
 });
 
 
-
 Route::get('/login', function () {
     return redirect('/');
 })->name('login');
+
+
+Route::get('/file-manager/initialize', [FileManagerController::class, 'initialize']);
+
+Route::get('/file-manager/tree', [FileManagerController::class, 'tree']);
+
+Route::get('/file-manager/content', [FileManagerController::class, 'content']);

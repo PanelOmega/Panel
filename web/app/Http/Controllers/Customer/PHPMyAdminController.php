@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Customer;
 
 use App\Http\Controllers\Controller;
 use App\Models\Customer;
+use App\Models\HostingSubscription;
 use App\Models\PHPMyAdminSSOToken;
 
 class PHPMyAdminController extends Controller
@@ -50,12 +51,20 @@ class PHPMyAdminController extends Controller
         }
 
         // Delete token after validation
-    //    $ssoToken->delete();
+        $ssoToken->delete();
 
-
+        $hostingSubscription = HostingSubscription::where('id', $ssoToken->hosting_subscription_id)->first();
+        if (!$hostingSubscription) {
+            return response()->json(['error' => 'Invalid hosting subscription'], 400);
+        }
 
         return response()->json([
-            'success' => true
+            'success' => true,
+            'databaseLoginDetails'=>[
+                'host' => '127.0.0.1',
+                'username' => $hostingSubscription->system_username.'@localhost',
+                'password' => $hostingSubscription->system_password,
+            ]
         ]);
     }
 

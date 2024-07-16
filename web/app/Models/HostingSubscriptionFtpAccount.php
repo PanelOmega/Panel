@@ -234,26 +234,8 @@ class HostingSubscriptionFtpAccount extends Model
      */
     public function getFtpUsernameWithPrefixAttribute(): string
     {
-
         $username = $this->ftp_username_prefix . $this->ftp_username;
         return $username;
     }
-
-    public function getDirectories($currentUser): array
-    {
-
-        $user = self::where('hosting_subscription_id', $currentUser->id)->first();
-
-        $command = 'ls /home/' . $user->ftp_username_prefix . $user->ftp_username . ' | grep \'^d\'';
-        $dirs = shell_exec($command);
-
-        foreach ($dirs as $dir) {
-
-        }
-        $directories = [];
-
-
-        return $directories;
-    }
-
+    
 }

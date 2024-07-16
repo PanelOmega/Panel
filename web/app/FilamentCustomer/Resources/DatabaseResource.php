@@ -70,6 +70,7 @@ class DatabaseResource extends Resource
 
                 Forms\Components\Repeater::make('databaseUsers')
                     ->relationship('databaseUsers')
+                    ->default([])
                     ->schema([
                         Forms\Components\TextInput::make('username')
                             ->disabled(function ($record) {

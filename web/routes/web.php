@@ -7,7 +7,7 @@ Route::get('/', function () {
 });
 
 Route::get('/customer/phpMyAdmin/login', [\App\Http\Controllers\Customer\PHPMyAdminController::class, 'login'])
-->name('customer.phpmyadmin.login');
+    ->name('customer.phpmyadmin.login');
 
 
 Route::get('/customer/file-manager', function () {
@@ -19,9 +19,24 @@ Route::get('/login', function () {
     return redirect('/');
 })->name('login');
 
-//
-//Route::get('/file-manager/initialize', [FileManagerController::class, 'initialize']);
-//
-//Route::get('/file-manager/tree', [FileManagerController::class, 'tree']);
-//
-//Route::get('/file-manager/content', [FileManagerController::class, 'content']);
+Route::prefix('/file-manager')->controller(FileManagerController::class)->group(function () {
+
+    Route::GET('/initialize', 'initialize');
+    Route::GET('/tree', 'tree');
+    Route::GET('/content', 'content');
+    Route::POST('/upload', 'upload');
+    Route::POST('/create-file', 'createFile');
+    Route::POST('/update-file', 'updateFile');
+    Route::POST('/create-directory', 'createDirectory');
+    Route::POST('/delete', 'delete');
+    Route::POST('/paste', 'paste');
+    Route::POST('/rename', 'rename');
+    Route::GET('/download', 'download');
+    Route::GET('/preview', 'preview');
+    Route::GET('/thumbnails', 'thumbnails');
+    Route::GET('/url', 'url');
+    Route::GET('/stream', 'streamFile');
+    Route::POST('zip', 'zip');
+    Route::POST('unzip', 'unzip');
+
+});

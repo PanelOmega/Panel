@@ -19,7 +19,7 @@ Route::get('/login', function () {
     return redirect('/');
 })->name('login');
 
-Route::prefix('/file-manager')->controller(FileManagerController::class)->group(function () {
+Route::prefix('/file-manager')->controller(\App\Http\Controllers\FileManager\FileManagerController::class)->group(function () {
 
     Route::GET('/initialize', 'initialize');
     Route::GET('/tree', 'tree');

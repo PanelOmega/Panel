@@ -14,7 +14,7 @@ function validateToken($token) {
 
     // Current server ip
     $server_ip = $_SERVER['SERVER_ADDR'];
-    $sso_server = "http://".$server_ip.":8443/api/customer/phpMyAdmin/validate-token?token=" . $token;
+    $sso_server = "https://".$server_ip.":8443/api/customer/phpMyAdmin/validate-token?token=" . $token;
 
     // Curl get request
     $ch = curl_init();

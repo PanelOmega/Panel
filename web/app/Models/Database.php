@@ -30,10 +30,21 @@ class Database extends Model
 
         static::creating(function ($model) {
 
-            $hostingSubscription = Customer::getHostingSubscriptionSession();
+            if (isset($model->hosting_subscription_id)) {
 
-            $model->hosting_subscription_id = $hostingSubscription->id;
-            $model->database_name_prefix = $hostingSubscription->system_username . '_';
+                $hostingSubscription = HostingSubscription::where('id', $model->hosting_subscription_id)->first();
+                if (!$hostingSubscription) {
+                    throw new \Exception('Hosting subscription not found');
+                }
+
+                $model->database_name_prefix = $hostingSubscription->system_username . '_';
+
+            } else {
+                $hostingSubscription = Customer::getHostingSubscriptionSession();
+
+                $model->hosting_subscription_id = $hostingSubscription->id;
+                $model->database_name_prefix = $hostingSubscription->system_username . '_';
+            }
 
             $databaseName = Str::slug($model->database_name, '_');
             $databaseName = $model->database_name_prefix . $databaseName;

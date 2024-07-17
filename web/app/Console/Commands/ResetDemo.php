@@ -5,6 +5,8 @@ namespace app\Console\Commands;
 use App\Models\Admin;
 use App\Models\CronJob;
 use App\Models\Customer;
+use App\Models\Database;
+use App\Models\DatabaseUser;
 use App\Models\HostingPlan;
 use App\Models\HostingSubscription;
 use App\Models\HostingSubscriptionFtpAccount;
@@ -12,7 +14,9 @@ use App\Models\User;
 use App\OmegaConfig;
 use App\Server\Helpers\CloudLinux\CloudLinuxPHPHelper;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Session;
 
 class ResetDemo extends Command
 {
@@ -132,6 +136,17 @@ class ResetDemo extends Command
 
     public function installWordpress($hostingSubscription)
     {
+        $createDatabase = new Database();
+        $createDatabase->hosting_subscription_id = $hostingSubscription->id;
+        $createDatabase->database_name = 'wordpress';
+        $createDatabase->save();
+
+        $createDatabaseUser = new DatabaseUser();
+        $createDatabaseUser->database_id = $createDatabase->id;
+        $createDatabaseUser->username = 'wordpress';
+        $createDatabaseUser->password = md5(rand(100000, 999999)) . time() . rand(100000, 999999);
+        $createDatabaseUser->save();
+
         $wpCli = '/home/'.$hostingSubscription->system_username.'/wp-cli.phar';
 
         $log = '';

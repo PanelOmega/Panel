@@ -138,9 +138,26 @@ class UniversalDatabaseExecutor
             ];
         }
     }
-    public function deleteUser($username)
+    public function deleteUserByUsername($username)
     {
+        try {
+            $connection = $this->_getDatabaseConnection();
 
+            $resultSet = $connection->executeStatement('DROP USER ?', [
+                $username
+            ]);
+
+            return [
+                'success' => true,
+                'message' => 'User deleted successfully'
+            ];
+
+        } catch (\Exception $e) {
+            return [
+                'error' => true,
+                'message' => $e->getMessage()
+            ];
+        }
     }
 
 }

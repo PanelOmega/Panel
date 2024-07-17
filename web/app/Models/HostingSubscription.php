@@ -5,8 +5,10 @@ namespace App\Models;
 use App\Actions\CreateLinuxWebUser;
 use App\Actions\GetLinuxUser;
 use App\Jobs\ApacheBuild;
+use App\OmegaConfig;
 use App\Server\Helpers\LinuxUser;
 use App\Server\Helpers\FtpAccount;
+use App\UniversalDatabaseExecutor;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -96,6 +98,37 @@ class HostingSubscription extends Model
             if ($findRelatedDomains->count() > 0) {
                 foreach ($findRelatedDomains as $domain) {
                     $domain->delete();
+                }
+            }
+
+            // Delete databases
+            $databases = Database::where('hosting_subscription_id', $model->id)->get();
+            if ($databases->count() > 0) {
+                foreach ($databases as $database) {
+                    $database->delete();
+                }
+            }
+            // Delete database users
+            $databaseUsers = DatabaseUser::where('hosting_subscription_id', $model->id)->get();
+            if ($databaseUsers->count() > 0) {
+                foreach ($databaseUsers as $databaseUser) {
+                    $databaseUser->delete();
+                }
+            }
+            // Delete main database user
+            $universalDatabaseExecutor = new UniversalDatabaseExecutor(
+                OmegaConfig::get('MYSQL_HOST', '127.0.0.1'),
+                OmegaConfig::get('MYSQL_PORT', 3306),
+                OmegaConfig::get('MYSQL_ROOT_USERNAME'),
+                OmegaConfig::get('MYSQL_ROOT_PASSWORD'),
+            );
+
+            // Check main database user exists
+            $mainDatabaseUser = $universalDatabaseExecutor->getUserByUsername($model->system_username);
+            if (!$mainDatabaseUser) {
+                $deleteMainDatabaseUser = $universalDatabaseExecutor->deleteUserByUsername($model->system_username);
+                if (!isset($deleteMainDatabaseUser['success'])) {
+                    throw new \Exception($deleteMainDatabaseUser['message']);
                 }
             }
 

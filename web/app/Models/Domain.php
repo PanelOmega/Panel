@@ -80,9 +80,9 @@ class Domain extends Model
 //                $model->createDockerContainer();
 //            }
 //
-//            // This must be in background
-//            $apacheBuild = new ApacheBuild();
-//            $apacheBuild->handle();
+            // This must be in background
+            $apacheBuild = new ApacheBuild();
+            $apacheBuild->handle();
 
         });
 

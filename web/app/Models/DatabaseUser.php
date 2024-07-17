@@ -67,6 +67,10 @@ class DatabaseUser extends Model
                 if (isset($createDatabase['error'])) {
                     throw new \Exception($createDatabase['message']);
                 }
+
+                $universalDatabaseExecutor->userGrantPrivilegesToDatabase($databaseUsername, [
+                    $findDatabase->database_name_prefix . $findDatabase->database_name
+                ]);
             }
 
         });

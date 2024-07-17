@@ -83,7 +83,6 @@ class ApacheBuild implements ShouldQueue
 
         $apache2 = preg_replace('~(*ANY)\A\s*\R|\s*(?!\r\n)\s$~mu', '', $apache2);
 
-
         if ($os == OS::UBUNTU || $os == OS::DEBIAN) {
             file_put_contents('/etc/apache2/apache2.conf', $apache2);
             shell_exec('systemctl reload apache2');

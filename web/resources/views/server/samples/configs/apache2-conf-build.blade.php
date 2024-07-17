@@ -85,7 +85,7 @@
 
         @endif
 
-        @if($virtualHost['appType'] == 'php_proxy_fcgi')
+        @if($virtualHost['appType'] == 'php_proxy_fcgi' && isset($virtualHost['fcgi']))
             <Files *.php>
                 SetHandler "proxy:fcgi://{{$virtualHost['fcgi']}}"
             </Files>

@@ -128,7 +128,7 @@ class HostingSubscription extends Model
             if (!$mainDatabaseUser) {
                 $deleteMainDatabaseUser = $universalDatabaseExecutor->deleteUserByUsername($model->system_username);
                 if (!isset($deleteMainDatabaseUser['success'])) {
-                    throw new \Exception($deleteMainDatabaseUser['message']);
+                    //throw new \Exception($deleteMainDatabaseUser['message']);
                 }
             }
 

@@ -100,8 +100,6 @@ class FileManagerController extends Controller
 
     public function download(Request $request): StreamedResponse
     {
-        event(new Download($request));
-
         return $this->fileManager->download($request);
     }
 

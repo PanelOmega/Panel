@@ -105,14 +105,14 @@ class HostingSubscription extends Model
             $databases = Database::where('hosting_subscription_id', $model->id)->get();
             if ($databases->count() > 0) {
                 foreach ($databases as $database) {
+                    // Delete database users
+                    $databaseUsers = DatabaseUser::where('database_id', $database->id)->get();
+                    if ($databaseUsers->count() > 0) {
+                        foreach ($databaseUsers as $databaseUser) {
+                            $databaseUser->delete();
+                        }
+                    }
                     $database->delete();
-                }
-            }
-            // Delete database users
-            $databaseUsers = DatabaseUser::where('hosting_subscription_id', $model->id)->get();
-            if ($databaseUsers->count() > 0) {
-                foreach ($databaseUsers as $databaseUser) {
-                    $databaseUser->delete();
                 }
             }
             // Delete main database user

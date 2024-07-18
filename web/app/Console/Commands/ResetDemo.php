@@ -177,8 +177,8 @@ class ResetDemo extends Command
         // Change owner
         shell_exec('chown -R '.$hostingSubscription->system_username.':'.$hostingSubscription->system_username.' /home/'.$hostingSubscription->system_username.'/public_html/');
         shell_exec('chmod -R 755 /home/'.$hostingSubscription->system_username.'/public_html/');
-        shell_exec('chmod -R 775 /home/'.$hostingSubscription->system_username.'/public_html/system/storage');
-        shell_exec('chmod -R 775 /home/'.$hostingSubscription->system_username.'/public_html/image');
+        shell_exec('chmod -R 777 /home/'.$hostingSubscription->system_username.'/public_html/system/storage');
+        shell_exec('chmod -R 777 /home/'.$hostingSubscription->system_username.'/public_html/image');
 
         $ocAdminUser = 'oc-admin';
         $ocAdminUserPass = substr(md5(rand(100000, 999999).time()).rand(100000, 999999), 0, 20);

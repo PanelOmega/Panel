@@ -83,9 +83,8 @@ class HostingSubscription extends Model
             }
 
             $getLinuxUserStatus = LinuxUser::getUser($model->system_username);
-
-            if (! empty($getLinuxUserStatus)) {
-                LinuxUser::deleteUser($model->system_username);
+            if (empty($getLinuxUserStatus)) {
+                throw new \Exception('System username not found');
             }
 
             $getFptUser = HostingSubscriptionFtpAccount::where('ftp_username', $model->system_username)->get();
@@ -131,6 +130,9 @@ class HostingSubscription extends Model
                     //throw new \Exception($deleteMainDatabaseUser['message']);
                 }
             }
+
+            // Delete linux user
+            LinuxUser::deleteUser($model->system_username);
 
             // This must be in background
             $apacheBuild = new ApacheBuild();

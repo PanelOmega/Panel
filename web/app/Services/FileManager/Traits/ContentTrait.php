@@ -98,6 +98,7 @@ trait ContentTrait
     public function getDirectoriesTree($storage, $path = null): array
     {
         $directories = $this->directoriesWithProperties($storage, $path);
+
         foreach ($directories as $index => $dir) {
             $directories[$index]['props'] = [
                 'hasSubdirectories' => (bool)$storage->directories($dir['path']),
@@ -172,10 +173,16 @@ trait ContentTrait
         // select only dir
         $dirsList = array_filter($content, fn($item) => $item['type'] === 'dir');
 
-        $dirs = array_map(function ($item) {
-            $pathInfo = pathinfo($item['path']);
+        $notSupported = $this->hiddenFilesList();
 
-            return [
+        $supportedDirs = [];
+        foreach ($dirsList as $item) {
+            $pathInfo = pathinfo($item['path']);
+            if (in_array($pathInfo['basename'], $notSupported)) {
+                continue;
+            }
+
+            $supportedDirs[] = [
                 'type' => $item['type'],
                 'path' => $item['path'],
                 'basename' => $pathInfo['basename'],
@@ -183,10 +190,10 @@ trait ContentTrait
                 'timestamp' => $item['lastModified'],
                 'visibility' => $item['visibility'],
             ];
-        }, $dirsList);
 
+        }
 
-        return array_values($dirs);
+        return array_values($supportedDirs);
     }
 
     /**
@@ -200,10 +207,17 @@ trait ContentTrait
     {
         $filesList = array_filter($content, fn($item) => $item['type'] === 'file');
 
-        $files = array_map(function ($item) {
-            $pathInfo = pathinfo($item['path']);
+        $notSupported = $this->hiddenFilesList();
 
-            return [
+        $supportedFiles = [];
+
+        foreach ($filesList as $item) {
+            $pathInfo = pathinfo($item['path']);
+            if (in_array($pathInfo['basename'], $notSupported)) {
+                continue;
+            }
+
+            $supportedFiles[] = [
                 'type' => $item['type'],
                 'path' => $item['path'],
                 'basename' => $pathInfo['basename'],
@@ -214,9 +228,10 @@ trait ContentTrait
                 'timestamp' => $item['lastModified'],
                 'visibility' => $item['visibility'],
             ];
-        }, $filesList);
 
-        return array_values($files);
+        }
+
+        return array_values($supportedFiles);
     }
 
     /**
@@ -246,5 +261,17 @@ trait ContentTrait
         }
 
         return $withAccess;
+    }
+
+    public function hiddenFilesList()
+    {
+        return [
+            '.bash_profile',
+            '.bashrc',
+            '.bash_logout',
+            '.cloud-locale-test.skip',
+            '.cagefs',
+            '.test'
+        ];
     }
 }

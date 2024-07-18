@@ -170,6 +170,9 @@ class ResetDemo extends Command
 
         $log .= shell_exec('sudo -u '.$hostingSubscription->system_username.' -i -- '.$wpCli.' core install --path=/home/'.$hostingSubscription->system_username.'/public_html --title=PanelOmegaWordpress --admin_user='.$wpAdminUser.' --admin_password='.$wpAdminUserPass.' --admin_email='.$wpAdminUser.'@panelomega.com --url='.$hostingSubscription->domain);
 
+        $log .= shell_exec('sudo -u '.$hostingSubscription->system_username.' -i -- '.$wpCli.' option update home http://'.$hostingSubscription->domain .' --path=/home/'.$hostingSubscription->system_username.'/public_html');
+        $log .= shell_exec('sudo -u '.$hostingSubscription->system_username.' -i -- '.$wpCli.' option update siteurl http://'.$hostingSubscription->domain .' --path=/home/'.$hostingSubscription->system_username.'/public_html');
+
         return $log;
     }
 }

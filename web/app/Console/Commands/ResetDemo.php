@@ -144,8 +144,11 @@ class ResetDemo extends Command
         $createDatabaseUser = new DatabaseUser();
         $createDatabaseUser->database_id = $createDatabase->id;
         $createDatabaseUser->username = 'wordpress';
-        $createDatabaseUser->password = md5(rand(100000, 999999)) . time() . rand(100000, 999999);
+        $createDatabaseUser->password = md5(rand(100000, 999999)) . time();
         $createDatabaseUser->save();
+
+        $databaseName = $createDatabase->database_name_prefix . $createDatabase->database_name;
+        $databaseUser = $createDatabaseUser->username_prefix . $createDatabaseUser->username;
 
         $wpCli = '/home/'.$hostingSubscription->system_username.'/wp-cli.phar';
 
@@ -159,16 +162,14 @@ class ResetDemo extends Command
         $log .= shell_exec('sudo -u '.$hostingSubscription->system_username.' -i -- '.$wpCli.' core download --path=/home/'.$hostingSubscription->system_username.'/public_html');
 
         // Create wp-config.php
-        $log .= shell_exec('sudo -u '.$hostingSubscription->system_username.' -i -- '.$wpCli.' config create --path=/home/'.$hostingSubscription->system_username.'/public_html --dbname='.$createDatabase->database_name.' --dbuser='.$createDatabaseUser->username.' --dbpass='.$createDatabaseUser->password);
+        $log .= shell_exec('sudo -u '.$hostingSubscription->system_username.' -i -- '.$wpCli.' config create --path=/home/'.$hostingSubscription->system_username.'/public_html --dbname='.$databaseName.' --dbuser='.$databaseUser.' --dbpass='.$createDatabaseUser->password);
 
 
         $wpAdminUser = 'admin';
         $wpAdminUserPass = md5(rand(100000, 999999).time()).rand(100000, 999999);
+        $wpSiteUrl = 'https://'.$hostingSubscription->domain;
 
-        $log .= shell_exec('sudo -u '.$hostingSubscription->system_username.' -i -- '.$wpCli.' core install --path=/home/'.$hostingSubscription->system_username.'/public_html --title=PanelOmegaWordpress --admin_user='.$wpAdminUser.' --admin_password='.$wpAdminUserPass.' --admin_email='.$wpAdminUser.'@panelomega.com');
-
-        dd($log);
-
+        $log .= shell_exec('sudo -u '.$hostingSubscription->system_username.' -i -- '.$wpCli.' core install --path=/home/'.$hostingSubscription->system_username.'/public_html --title=PanelOmegaWordpress --admin_user='.$wpAdminUser.' --admin_password='.$wpAdminUserPass.' --admin_email='.$wpAdminUser.'@panelomega.com --url='.$wpSiteUrl);
 
         return $log;
     }

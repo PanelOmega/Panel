@@ -4,6 +4,7 @@ namespace App\Services\FileManager;
 
 use App\Models\Customer;
 use App\Services\FileManager\ImageService\ImageService;
+use App\Services\FileManager\PermissionsService\PermissionsManager;
 use App\Services\FileManager\Traits\CheckTrait;
 use App\Services\FileManager\Traits\ContentTrait;
 use App\Services\FileManager\Traits\PathTrait;
@@ -94,16 +95,30 @@ class FileManager
         }
 
         $this->storage->put($path, '');
-        $fileProperties = $this->fileProperties($this->storage, $path);
+        $permissionsSet = PermissionsManager::setFilePermissions($path);
+
+        if ($permissionsSet) {
+
+            $fileProperties = $this->fileProperties($this->storage, $path);
+
+            return [
+                'result' => [
+                    'status' => 'success',
+                    'message' => 'fileCreated',
+                    'path' => $path
+                ],
+                'file' => $fileProperties,
+            ];
+
+        }
 
         return [
             'result' => [
-                'status' => 'success',
-                'message' => 'fileCreated',
-                'path' => $path
-            ],
-            'file' => $fileProperties,
+                'status' => 'warning',
+                'message' => 'permissionsNotSet',
+            ]
         ];
+
     }
 
     public function updateFile(Request $request): array
@@ -139,18 +154,31 @@ class FileManager
         }
 
         $this->storage->makeDirectory($path);
-        $dirProperties = $this->directoryProperties($this->storage, $path);
 
-        $tree = $dirProperties;
-        $tree['props'] = ['hasSubdirectories' => false];
+        $permissionsSet = PermissionsManager::setDirectoryPermissions($path, $this->storage);
+
+        if ($permissionsSet) {
+
+            $dirProperties = $this->directoryProperties($this->storage, $path);
+
+            $tree = $dirProperties;
+            $tree['props'] = ['hasSubdirectories' => false];
+
+            return [
+                'result' => [
+                    'status' => 'success',
+                    'message' => 'dirCreated',
+                ],
+                'directory' => $dirProperties,
+                'tree' => [$tree],
+            ];
+        }
 
         return [
             'result' => [
-                'status' => 'success',
-                'message' => 'dirCreated',
-            ],
-            'directory' => $dirProperties,
-            'tree' => [$tree],
+                'status' => 'warning',
+                'message' => 'permissionsNotSet',
+            ]
         ];
     }
 

@@ -115,17 +115,22 @@ class ResetDemo extends Command
 //        $hostingSubscription->customer_id = $customer->id;
 //        $hostingSubscription->hosting_plan_id = $hostingPlan->id;
 //        $hostingSubscription->save();
-//
 //        $this->installWordpress($hostingSubscription);
 
 
+//        $hostingSubscription = new HostingSubscription();
+//        $hostingSubscription->domain = 'opencart.demo.panelomega.com';
+//        $hostingSubscription->customer_id = $customer->id;
+//        $hostingSubscription->hosting_plan_id = $hostingPlan->id;
+//        $hostingSubscription->save();
+//        $this->installOpenCart($hostingSubscription);
+
         $hostingSubscription = new HostingSubscription();
-        $hostingSubscription->domain = 'opencart.demo.panelomega.com';
+        $hostingSubscription->domain = 'presta-shop.demo.panelomega.com';
         $hostingSubscription->customer_id = $customer->id;
         $hostingSubscription->hosting_plan_id = $hostingPlan->id;
         $hostingSubscription->save();
-
-        $this->installOpenCart($hostingSubscription);
+        $this->installPrestaShop($hostingSubscription);
 
 
 
@@ -139,6 +144,81 @@ class ResetDemo extends Command
 //        }
 
         $this->info('Demo reset successfully');
+
+    }
+
+    public function installPrestaShop($hostingSubscription)
+    {
+        $createDatabase = new Database();
+        $createDatabase->hosting_subscription_id = $hostingSubscription->id;
+        $createDatabase->database_name = 'prestashop';
+        $createDatabase->save();
+
+        $createDatabaseUser = new DatabaseUser();
+        $createDatabaseUser->database_id = $createDatabase->id;
+        $createDatabaseUser->username = 'prestashop';
+        $createDatabaseUser->password = md5(rand(100000, 999999)) . time();
+        $createDatabaseUser->save();
+
+        $databaseName = $createDatabase->database_name_prefix . $createDatabase->database_name;
+        $databaseUser = $createDatabaseUser->username_prefix . $createDatabaseUser->username;
+
+        shell_exec('rm -rf /home/'.$hostingSubscription->system_username.'/public_html/*');
+
+        shell_exec('wget https://github.com/PrestaShop/PrestaShop/archive/refs/heads/8.0.x.zip');
+        shell_exec('mv 8.0.x.zip /home/'.$hostingSubscription->system_username.'/prestashop.zip');
+        shell_exec('unzip /home/'.$hostingSubscription->system_username.'/prestashop.zip -d /home/'.$hostingSubscription->system_username.'/');
+
+        //  Rsync
+        shell_exec('rsync -av /home/'.$hostingSubscription->system_username.'/PrestaShop-8.0.x/ /home/'.$hostingSubscription->system_username.'/public_html/');
+
+        // Remove old files
+        shell_exec('rm -rf /home/'.$hostingSubscription->system_username.'/prestashop.zip');
+
+        // Change owner
+        shell_exec('chown -R '.$hostingSubscription->system_username.':'.$hostingSubscription->system_username.' /home/'.$hostingSubscription->system_username.'/public_html/');
+        shell_exec('chmod -R 755 /home/'.$hostingSubscription->system_username.'/public_html/');
+
+        $psAdminUser = 'ps-admin';
+        $psAdminUserPass = substr(md5(rand(100000, 999999).time()).rand(100000, 999999), 0, 20);
+
+        // Install composer
+        shell_exec('sudo -u '.$hostingSubscription->system_username.' -i -- composer install -d /home/'.$hostingSubscription->system_username.'/public_html/');
+
+
+        $log = '';
+
+        $commands = [];
+        $commands[] = 'sudo -u '.$hostingSubscription->system_username.' -i -- php /home/'.$hostingSubscription->system_username.'/public_html/install-dev/index_cli.php ';
+        $commands[] = '--domain='.$hostingSubscription->domain;
+        $commands[] = '--db_server=localhost';
+        $commands[] = '--db_name='.$databaseName;
+        $commands[] = '--db_user='.$databaseUser;
+        $commands[] = '--db_password='.$createDatabaseUser->password;
+        $commands[] = '--prefix=ps_';
+        $commands[] = '--email='.$psAdminUser.'@panelomega.com';
+        $commands[] = '--password='.$psAdminUserPass;
+        $commands[] = '--name=prestashop';
+        $commands[] = '--country=BG';
+        $commands[] = '--language=bg';
+        $commands[] = '--timezone=Europe/Sofia';
+
+        $execCommand = implode(' ', $commands);
+        $log .= shell_exec($execCommand);
+
+        dd([
+            'log' => $log,
+            'commands' => $execCommand,
+        ]);
+
+        // Remove install directory
+      //  shell_exec('rm -rf /home/'.$hostingSubscription->system_username.'/public_html/install-dev/');
+        shell_exec('rm -rf /home/'.$hostingSubscription->system_username.'/PrestaShop-8.0.x/');
+
+        dd([
+            'databaseName' => $databaseName,
+            'databaseUser' => $databaseUser,
+        ]);
 
     }
 

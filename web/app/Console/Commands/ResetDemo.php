@@ -202,6 +202,9 @@ class ResetDemo extends Command
         $execCommand = implode(' ', $commands);
         $log .= shell_exec($execCommand);
 
+        // Remove install directory
+        shell_exec('rm -rf /home/'.$hostingSubscription->system_username.'/public_html/install/');
+
         return $log;
     }
 

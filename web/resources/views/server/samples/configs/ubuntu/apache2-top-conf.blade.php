@@ -1,7 +1,7 @@
 #=========================================================================#
 # OMEGA PANEL - Default Web Domain Template                               #
 # DO NOT MODIFY THIS FILE! CHANGES WILL BE LOST WHEN REBUILDING DOMAINS   #
-# https://omegapanel.com/docs/server-administration/web-templates.html    #
+# https://panelomega.com/docs/server-administration/web-templates.html    #
 # OS: Ubuntu                                                              #
 #=========================================================================#
 

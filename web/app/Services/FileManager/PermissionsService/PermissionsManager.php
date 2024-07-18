@@ -3,7 +3,6 @@
 namespace App\Services\FileManager\PermissionsService;
 
 use App\Models\Customer;
-use Illuminate\Support\Facades\Storage;
 
 class PermissionsManager
 {
@@ -69,22 +68,20 @@ class PermissionsManager
         $username = $hostingSubscription->system_username;
         $groupname = $hostingSubscription->system_username;
 
-        if ($path !== 'public_html/') {
 
-            $currentPermissions = substr(sprintf("%o", fileperms('/home/' . $username . '/' . $path)), -4);
+        $currentPermissions = substr(sprintf("%o", fileperms('/home/' . $username . '/' . $path)), -4);
 
-            if (decoct($currentPermissions) !== $permissions) {
+        if (decoct($currentPermissions) !== $permissions) {
 
-                $commands = [
-                    "sudo chmod {$permissions} /home/{$username}/{$path}",
-                    "sudo chown {$username}:{$groupname} /home/{$username}/{$path}"
-                ];
+            $commands = [
+                "sudo chmod {$permissions} /home/{$username}/{$path}",
+                "sudo chown {$username}:{$groupname} /home/{$username}/{$path}"
+            ];
 
-                foreach ($commands as $command) {
-                    $output = shell_exec($command);
-                    if ($output !== null) {
-                        return false;
-                    }
+            foreach ($commands as $command) {
+                $output = shell_exec($command);
+                if ($output !== null) {
+                    return false;
                 }
             }
         }

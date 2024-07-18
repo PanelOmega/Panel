@@ -25,7 +25,7 @@ class PermissionsManager
 
     }
 
-    public static function setDirectoryPermissions(string $path, Storage $storage)
+    public static function setDirectoryPermissions(string $path)
     {
         $permissions = self::USER_DIRECTORY_PERMISSION;
 

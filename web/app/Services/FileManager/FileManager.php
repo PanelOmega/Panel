@@ -155,7 +155,7 @@ class FileManager
 
         $this->storage->makeDirectory($path);
 
-        $permissionsSet = PermissionsManager::setDirectoryPermissions($path, $this->storage);
+        $permissionsSet = PermissionsManager::setDirectoryPermissions($path);
 
         if ($permissionsSet) {
 

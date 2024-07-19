@@ -16,14 +16,7 @@ User apache
 Group apache
 
 ServerAdmin root@localhost
-
-<Directory />
-AllowOverride none
-Require all denied
-</Directory>
-
 DocumentRoot "/var/www/html"
-
 
 <Directory "/var/www">
 AllowOverride None

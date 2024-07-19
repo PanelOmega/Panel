@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Jobs\ApacheBuild;
+use App\Server\Helpers\PHP;
 use App\Server\VirtualHosts\DTO\ApacheVirtualHostSettings;
 use App\Virtualization\Docker\DockerClient;
 use Illuminate\Database\Eloquent\Builder;
@@ -88,6 +89,8 @@ class Domain extends Model
 
         static::updating(function ($model) {
 
+            $model->configureHtaccess();
+
             $apacheBuild = new ApacheBuild();
             $apacheBuild->handle();
 
@@ -112,7 +115,6 @@ class Domain extends Model
         });
     }
 
-
     public function hostingSubscription()
     {
         return $this->belongsTo(HostingSubscription::class);
@@ -133,6 +135,29 @@ class Domain extends Model
     public function getDocumentRootAttribute()
     {
         return '/public_html';
+    }
+
+    public function configureHtaccess()
+    {
+
+        if ($this->server_application_type !== 'apache_php') {
+            return;
+        }
+        if (!isset($this->server_application_settings['php_version'])) {
+            return;
+        }
+
+        $phpVersion = PHP::getPHPVersion($this->server_application_settings['php_version']);
+        if (!$phpVersion) {
+            return;
+        }
+
+      $htaccessContent = view('server.samples.apache.php.htaccess',[
+          'phpVersion' => $phpVersion
+      ])->render();
+
+      file_put_contents($this->domain_public . '/.htaccess', $htaccessContent);
+
     }
 
     public function createDockerContainer()

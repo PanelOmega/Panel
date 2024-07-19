@@ -5,6 +5,7 @@ namespace App\Jobs;
 use App\MasterDomain;
 use App\Models\Domain;
 use App\Server\Helpers\OS;
+use App\Server\Helpers\PHP;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -77,6 +78,7 @@ class ApacheBuild implements ShouldQueue
         $os = OS::getDistro();
 
         $apache2 = view('server.samples.configs.apache2-conf-build', [
+            'installedPHPVersions' => PHP::getInstalledPHPVersions(),
             'virtualHosts' => $virtualHosts,
             'os' => $os,
         ])->render();

@@ -4,6 +4,15 @@
     @include('server.samples.configs.almalinux.apache2-top-conf')
 @endif
 
+@if(isset($installedPHPVersions))
+@foreach($installedPHPVersions as $phpVersion)
+ScriptAlias {{$phpVersion['scriptAlias']}}
+@endforeach
+@foreach($installedPHPVersions as $phpVersion)
+Action {{$phpVersion['action']}}
+@endforeach
+@endif
+
 @foreach($virtualHosts as $virtualHost)
 
 <VirtualHost *:{{$virtualHost['port']}}>

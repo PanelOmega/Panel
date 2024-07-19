@@ -103,4 +103,4 @@ AddDefaultCharset UTF-8
 
 EnableSendfile on
 
-IncludeOptional conf.d/*.conf
+#IncludeOptional conf.d/*.conf

@@ -33,6 +33,9 @@ class PHPInstaller
         $commands = [];
         $commands[] = 'echo "Starting PHP Installation..."';
 
+
+        // mod_suphp
+
         if ($os == OS::UBUNTU) {
             $commands[] = 'export DEBIAN_FRONTEND=noninteractive';
             $commands[] = 'apt-get install -yq sudo';

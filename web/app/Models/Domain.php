@@ -118,6 +118,18 @@ class Domain extends Model
         return $this->belongsTo(HostingSubscription::class);
     }
 
+    public function getPHPVersionAttribute()
+    {
+        if (isset($this->server_application_settings['php_version'])) {
+            return 'PHP ' . $this->server_application_settings['php_version'];
+        }
+        return 'PHP 8.3';
+    }
+    public function getPHPFpmAttribute()
+    {
+        return 'disabled';
+    }
+
     public function getDocumentRootAttribute()
     {
         return '/public_html';

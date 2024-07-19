@@ -79,6 +79,7 @@ class ApacheInstaller
 
             $commands[] = 'yum install -y mod_fcgid';
             $commands[] = 'yum install -y mod_ssl';
+            $commands[] = 'yum install -y mod_suphp';
 
             $commands[] = 'systemctl enable httpd';
             $commands[] = 'systemctl start httpd';

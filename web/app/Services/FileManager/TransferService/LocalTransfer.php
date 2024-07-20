@@ -70,14 +70,12 @@ class LocalTransfer extends Transfer
     protected function copyDirectory($directory)
     {
         // get all directories in this directory
-        $allDirectories = Storage::disk($this->disk)
-            ->allDirectories($directory);
+        $allDirectories = $this->storage->allDirectories($directory);
 
         $partsForRemove = count(explode('/', $directory)) - 1;
-
         // create this directories
         foreach ($allDirectories as $dir) {
-            Storage::disk($this->disk)->makeDirectory(
+            $this->storage->makeDirectory(
                 $this->transformPath(
                     $dir,
                     $this->path,
@@ -88,7 +86,6 @@ class LocalTransfer extends Transfer
 
         // get all files
         $allFiles = $this->storage->allFiles($directory);
-
         // copy files
         foreach ($allFiles as $file) {
             $this->storage->copy(

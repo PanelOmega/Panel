@@ -2,6 +2,7 @@
 
 namespace App\Services\FileManager\ZipService;
 
+use App\Services\FileManager\PermissionsService\PermissionsManager;
 use Illuminate\Http\Request;
 use RecursiveIteratorIterator;
 use Symfony\Component\Finder\Iterator\RecursiveDirectoryIterator;
@@ -9,7 +10,6 @@ use ZipArchive;
 
 class ZipService
 {
-
     private $zip;
     private $request;
     private $storage;
@@ -24,20 +24,31 @@ class ZipService
     {
         $this->request = $request;
 
-        if ($this->createArchive()) {
+        if (!$this->createArchive()) {
             return [
                 'result' => [
-                    'status' => 'success',
-                    'message' => null
-                ]
+                    'status' => 'warning',
+                    'message' => 'zipError'
+                ],
+            ];
+        }
+
+        $path = $this->request->get('path') ?? '' . $this->request->input('name');
+
+        if (!PermissionsManager::setPermissions($path)) {
+            return [
+                'result' => [
+                    'status' => 'warning',
+                    'message' => 'permissionsNotSet'
+                ],
             ];
         }
 
         return [
             'result' => [
-                'status' => 'warning',
-                'message' => 'zipError'
-            ],
+                'status' => 'success',
+                'message' => null
+            ]
         ];
     }
 
@@ -45,19 +56,32 @@ class ZipService
     {
         $this->request = $request;
 
-        if ($this->extractArchive()) {
+        if (!$this->extractArchive()) {
             return [
                 'result' => [
-                    'status' => 'success',
-                    'message' => null
+                    'status' => 'warning',
+                    'message' => 'zipError'
                 ]
+            ];
+        }
+
+        $directory = dirname($this->request->get('path')) ?? '';
+        $folder = $this->request->input('folder');
+        $path = $directory . '/' . $folder;
+
+        if (!PermissionsManager::setUnzipPermissions($path)) {
+            return [
+                'result' => [
+                    'status' => 'warning',
+                    'message' => 'permissionsNotSet'
+                ],
             ];
         }
 
         return [
             'result' => [
-                'status' => 'warning',
-                'message' => 'zipError'
+                'status' => 'success',
+                'message' => null
             ]
         ];
     }
@@ -70,64 +94,65 @@ class ZipService
     public function createArchive(): bool
     {
         $elements = $this->request->input('elements');
+        $archiveName = $this->createName();
 
-        $zipCreate = $this->zip->open($this->createName(), ZIPARCHIVE::OVERWRITE | ZIPARCHIVE::CREATE);
+        $zipCreate = $this->zip->open($archiveName, ZIPARCHIVE::OVERWRITE | ZIPARCHIVE::CREATE);
 
-        if ($zipCreate) {
-            if ($elements['files']) {
-                foreach ($elements['files'] as $file) {
-                    $this->zip->addFile($this->prefixer($file), basename($file));
-                }
-            }
-
-            if ($elements['directories']) {
-                $this->addDirs($elements['directories']);
-            }
-
-            $this->zip->close();
-
-            return true;
+        if (!$zipCreate) {
+            return false;
         }
 
-        return false;
+        if (!empty($elements['files'])) {
+            foreach ($elements['files'] as $file) {
+                $this->zip->addFile($this->prefixer($file), basename($file));
+            }
+        }
 
+        if (!empty($elements['directories'])) {
+            $this->addDirs($elements['directories']);
+        }
+
+        $this->zip->close();
+        return true;
     }
 
     protected function extractArchive(): bool
     {
         $zipPath = $this->prefixer($this->request->get('path', '/'));
 
-        $rootPath = dirname($zipPath);
-        $folder = $this->request->input('folder');
-
-        if ($this->zip->open($zipPath)) {
-            $this->zip->extractTo($folder ? $rootPath . '/' . $folder : $rootPath);
-            $this->zip->close();
-
-            return true;
+        if (!$this->zip->open($zipPath)) {
+            return false;
         }
 
-        return false;
+        $rootPath = dirname($zipPath);
+        $folder = $this->request->input('folder');
+        $extractPath = $folder ? $rootPath . '/' . $folder : $rootPath;
+
+        $this->zip->extractTo($extractPath);
+        $this->zip->close();
+
+        return true;
     }
 
     protected function addDirs(array $directories): void
     {
         foreach ($directories as $directory) {
             $files = new RecursiveIteratorIterator(
-                new RecursiveDirectoryIterator($this->prefixer($directory)),
-                RecursiveIteratorIterator::LEAVES_ONLY
-            );
+                new RecursiveDirectoryIterator($this->prefixer($directory),
+                    RecursiveIteratorIterator::LEAVES_ONLY
+                ));
 
             foreach ($files as $name => $file) {
                 $filePath = $file->getRealPath();
-                $relativePath = substr($filePath, strlen($this->fullPath($this->request->get('path', '/'))));
-            }
+                $path = $this->request->get('path') ?? '';
+                $relativePath = substr($filePath, strlen($this->fullPath($path)));
 
-            if (!$file->isDir()) {
-                $this->zip->addFile($filePath, $relativePath);
-            } else {
-                if (!glob($filePath . '/*')) {
-                    $this->zip->addEmptyDir($relativePath);
+                if (!$file->isDir()) {
+                    $this->zip->addFile($filePath, $relativePath);
+                } else {
+                    if (!glob($filePath . '/*')) {
+                        $this->zip->addEmptyDir($relativePath);
+                    }
                 }
             }
         }
@@ -136,7 +161,7 @@ class ZipService
     protected function createName(): string
     {
         $path = $this->request->input('path') === null ? '' : $this->request->input('path');
-        return $this->fullPath($path) . $this->request->get('name');
+        return $this->fullPath($path) . preg_replace('/\\\\/', '/', $this->request->input('name'));
     }
 
     protected function fullPath(string $path): string

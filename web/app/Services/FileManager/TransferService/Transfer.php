@@ -30,7 +30,6 @@ abstract class Transfer
     public function filesTransfer(): array
     {
         try {
-            // determine the type of operation
             if ($this->clipboard['type'] === 'copy') {
                 $this->copy();
             } elseif ($this->clipboard['type'] === 'cut') {

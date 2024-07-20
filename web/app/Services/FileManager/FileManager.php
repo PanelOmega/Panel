@@ -18,7 +18,6 @@ use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class FileManager
 {
-
     use PathTrait, ContentTrait, CheckTrait;
 
     private $storage;
@@ -30,9 +29,13 @@ class FileManager
         $this->zipService = new ZipService($zip, $this->storage);
     }
 
-    public function initialize()
+    /**
+     *
+     * @param
+     * @return array
+     */
+    public function initialize(): array
     {
-
         if (!config()->has('file-manager')) {
             return [
                 'result' => [
@@ -53,7 +56,12 @@ class FileManager
         ];
     }
 
-    public function tree($path)
+    /**
+     *
+     * @param $path
+     * @return array
+     */
+    public function tree($path): array
     {
         $directories = $this->getDirectoriesTree($this->storage, $path);
 
@@ -66,9 +74,13 @@ class FileManager
         ];
     }
 
-    public function content($path)
+    /**
+     *
+     * @param $path
+     * @return array
+     */
+    public function content($path): array
     {
-
         $content = $this->getContent($this->storage, $path);
 
         return [
@@ -81,6 +93,11 @@ class FileManager
         ];
     }
 
+    /**
+     *
+     * @param Request $request
+     * @return array
+     */
     public function createFile(Request $request): array
     {
         $path = $this->newPath($request->get('path', '/'), $request->input('name'));
@@ -95,7 +112,7 @@ class FileManager
         }
 
         $this->storage->put($path, '');
-        $permissionsSet = PermissionsManager::setFilePermissions($path);
+        $permissionsSet = PermissionsManager::setPermissions($path);
 
         if ($permissionsSet) {
 
@@ -121,6 +138,11 @@ class FileManager
 
     }
 
+    /**
+     *
+     * @param Request $request
+     * @return array
+     */
     public function updateFile(Request $request): array
     {
         $file = $request->file('file');
@@ -139,9 +161,13 @@ class FileManager
         ];
     }
 
+    /**
+     *
+     * @param Request $request
+     * @return array
+     */
     public function createDirectory(Request $request): array
     {
-
         $path = $this->newPath($request->get('path', '/'), $request->get('name'));
 
         if ($this->storage->exists($path)) {
@@ -154,8 +180,7 @@ class FileManager
         }
 
         $this->storage->makeDirectory($path);
-
-        $permissionsSet = PermissionsManager::setDirectoryPermissions($path);
+        $permissionsSet = PermissionsManager::setPermissions($path);
 
         if ($permissionsSet) {
 
@@ -182,14 +207,19 @@ class FileManager
         ];
     }
 
+    /**
+     *
+     * @param Request $request
+     * @return array
+     */
     public function upload(Request $request): array
     {
-
         $path = $request->get('path', '/');
         $files = $request->file('files');
         $overwrite = $request->input('overwrite');
 
         $fileNotUploaded = false;
+        $filePermissionsNotSet = false;
         $maxUploadSize = config('file-manager.get_max_upload_file_size');
         $allowedFileTypes = config('file-manager.get_allowed_file_types');
         $slugifyNames = config('file-manager.file-manager.slugify_names');
@@ -228,6 +258,12 @@ class FileManager
                 $file,
                 $name
             );
+
+            $fileFullPath = $path . '/' . $name;
+
+            if (!PermissionsManager::setPermissions($fileFullPath)) {
+                $filePermissionsNotSet = true;
+            };
         }
 
         if ($fileNotUploaded) {
@@ -235,6 +271,15 @@ class FileManager
                 'result' => [
                     'status' => 'warning',
                     'message' => 'notAllUploaded',
+                ],
+            ];
+        }
+
+        if ($filePermissionsNotSet) {
+            return [
+                'result' => [
+                    'status' => 'warning',
+                    'message' => 'permissionsNotSet',
                 ],
             ];
         }
@@ -247,10 +292,13 @@ class FileManager
         ];
     }
 
+    /**
+     *
+     * @param $items
+     * @return array
+     */
     public function delete($items): array
     {
-        $deletedItems = [];
-
         foreach ($items as $item) {
             if (!$this->storage->exists($item['path'])) {
                 continue;
@@ -261,8 +309,6 @@ class FileManager
                     $this->storage->delete($item['path']);
                 }
             }
-
-            $deletedItems[] = $item;
         }
 
         return [
@@ -273,17 +319,27 @@ class FileManager
         ];
     }
 
+    /**
+     *
+     * @param Request $request
+     * @return array
+     */
     public function paste(Request $request): array
     {
+        $path = $request->get('path', '/');
+        $clipboard = $request->input('clipboard');
 
-        $transferService = TransferFactory::build($this->storage, $request->get('path', '/'), $request->input('clipboard'));
-
+        $transferService = TransferFactory::build($this->storage, $path, $clipboard);
         return $transferService->filesTransfer();
     }
 
+    /**
+     *
+     * @param Request $request
+     * @return array
+     */
     public function rename(Request $request): array
     {
-
         $oldName = $request->input('oldName');
         $newName = $request->input('newName');
 
@@ -300,9 +356,13 @@ class FileManager
         ];
     }
 
+    /**
+     *
+     * @param Request $request
+     * @return Symfony\Component\HttpFoundation\StreamedResponse
+     */
     public function download(Request $request): StreamedResponse
     {
-
         $path = $request->get('path', '/');
         $filename = basename($path);
 
@@ -313,9 +373,13 @@ class FileManager
         return $this->storage->download($path, $filename);
     }
 
-    public function preview(Request $request)
+    /**
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\Response
+     */
+    public function preview(Request $request): \Illuminate\Http\Response
     {
-
         $path = $request->get('path', '/');
 
         $imageContent = $this->storage->get($path);
@@ -326,6 +390,11 @@ class FileManager
         ]);
     }
 
+    /**
+     *
+     * @param Request $request
+     * @return mixed
+     */
     public function thumbnails(Request $request): mixed
     {
         $path = $request->get('path', '/');
@@ -340,6 +409,11 @@ class FileManager
         );
     }
 
+    /**
+     *
+     * @param Request $request
+     * @return array
+     */
     public function url(Request $request): array
     {
         $path = $request->get('path', '/');
@@ -353,6 +427,11 @@ class FileManager
         ];
     }
 
+    /**
+     *
+     * @param Request $request
+     * @return Symfony\Component\HttpFoundation\StreamedResponse
+     */
     public function streamFile(Request $request): StreamedResponse
     {
         $path = $request->get('path', '/');
@@ -368,17 +447,32 @@ class FileManager
         ]);
     }
 
+    /**
+     *
+     * @param Request $request
+     * @return
+     */
     public function zip(Request $request)
     {
         return $this->zipService->create($request);
     }
 
+    /**
+     *
+     * @param Request $request
+     * @return
+     */
     public function unzip(Request $request)
     {
         return $this->zipService->extract($request);
+
     }
 
-
+    /**
+     *
+     * @param
+     * @return
+     */
     public function storageInstance()
     {
         $hostingSubscription = Customer::getHostingSubscriptionSession();

@@ -2,7 +2,7 @@
 
 return [
 
-    'get_max_upload_file_size' => '250M',
+    'get_max_upload_file_size' => '250',
 
     'get_allowed_file_types' => [
         'gif', 'jpg', 'png',

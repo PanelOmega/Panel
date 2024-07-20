@@ -45,13 +45,14 @@ class CloudLinuxInstaller
         $commands[] = 'mkdir -p /usr/local/omega/web/public/3rdparty';
         $commands[] = 'ln -s /usr/share/l.v.e-manager/commons/spa-resources/ /usr/local/omega/web/public/3rdparty/cloudlinux';
 
+        $commands[] = 'mkdir -p /opt/cpvendor/etc';
+        $commands[] = 'cp /usr/local/omega/web/server/cloudlinux/integration.ini /opt/cpvendor/etc/integration.ini';
+
+
         $shellFileContent = '';
         foreach ($commands as $command) {
             $shellFileContent .= $command.PHP_EOL;
         }
-
-        $commands[] = 'mkdir -p /opt/cpvendor/etc';
-        $commands[] = 'cp /usr/local/omega/web/server/cloudlinux/integration.ini /opt/cpvendor/etc/integration.ini';
 
         $shellFileContent .= 'echo "CloudLinux is installed successfully!"'.PHP_EOL;
         $shellFileContent .= 'echo "DONE!"'.PHP_EOL;

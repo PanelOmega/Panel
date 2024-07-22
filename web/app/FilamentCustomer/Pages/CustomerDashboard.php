@@ -34,39 +34,39 @@ class CustomerDashboard extends Page
         return [
             'menu' => [
 
-                'email'=>[
-                    'title'=>'Email',
-                    'icon'=>'omega_customer-email',
-                    'menu'=>[
+                'email' => [
+                    'title' => 'Email',
+                    'icon' => 'omega_customer-email',
+                    'menu' => [
                         [
-                            'title'=>'Email Accounts',
-                            'icon'=>'omega_customer-email-account',
-                            'link'=>'#'
+                            'title' => 'Email Accounts',
+                            'icon' => 'omega_customer-email-account',
+                            'link' => '#'
                         ],
                         [
-                            'title'=>'Forwarders',
-                            'icon'=>'omega_customer-email-forwarders',
-                            'link'=>'#'
+                            'title' => 'Forwarders',
+                            'icon' => 'omega_customer-email-forwarders',
+                            'link' => '#'
                         ],
                         [
-                            'title'=>'Email Routing',
-                            'icon'=>'omega_customer-email-routing',
-                            'link'=>'#'
+                            'title' => 'Email Routing',
+                            'icon' => 'omega_customer-email-routing',
+                            'link' => '#'
                         ],
                         [
-                            'title'=>'Autoresponders',
-                            'icon'=>'omega_customer-email-autoresponders',
-                            'link'=>'#'
+                            'title' => 'Autoresponders',
+                            'icon' => 'omega_customer-email-autoresponders',
+                            'link' => '#'
                         ],
                         [
-                            'title'=>'Default Address',
-                            'icon'=>'omega_customer-email-default',
-                            'link'=>'#'
+                            'title' => 'Default Address',
+                            'icon' => 'omega_customer-email-default',
+                            'link' => '#'
                         ],
                         [
-                            'title'=>'Mailing Lists',
-                            'icon'=>'omega_customer-email-list',
-                            'link'=>'#'
+                            'title' => 'Mailing Lists',
+                            'icon' => 'omega_customer-email-list',
+                            'link' => '#'
                         ],
 //                        [
 //                            'title'=>'Track Delivery',
@@ -74,14 +74,14 @@ class CustomerDashboard extends Page
 //                            'link'=>'#'
 //                        ],
                         [
-                            'title'=>'Global Email Filters',
-                            'icon'=>'omega_customer-email-global-filter',
-                            'link'=>'#'
+                            'title' => 'Global Email Filters',
+                            'icon' => 'omega_customer-email-global-filter',
+                            'link' => '#'
                         ],
                         [
-                            'title'=>'Email Filters',
-                            'icon'=>'omega_customer-email-filter',
-                            'link'=>'#'
+                            'title' => 'Email Filters',
+                            'icon' => 'omega_customer-email-filter',
+                            'link' => '#'
                         ],
 //                        [
 //                            'title'=>'Email Deliverability',
@@ -94,9 +94,9 @@ class CustomerDashboard extends Page
 //                            'link'=>'#'
 //                        ],
                         [
-                            'title'=>'Spam Filters',
-                            'icon'=>'omega_customer-email-spam-filters',
-                            'link'=>'#'
+                            'title' => 'Spam Filters',
+                            'icon' => 'omega_customer-email-spam-filters',
+                            'link' => '#'
                         ],
 //                        [
 //                            'title'=>'Encryption',
@@ -124,17 +124,17 @@ class CustomerDashboard extends Page
 //                            'link'=>'#'
 //                        ],
                         [
-                            'title'=>'Email Disk Usage',
-                            'icon'=>'omega_customer-email-disk',
-                            'link'=>'#'
+                            'title' => 'Email Disk Usage',
+                            'icon' => 'omega_customer-email-disk',
+                            'link' => '#'
                         ]
                     ]
                 ],
 
-                'billing_and_support'=>[
-                    'title'=>'Billing & Support',
-                    'icon'=>'omega_customer-billing',
-                    'menu'=>[
+                'billing_and_support' => [
+                    'title' => 'Billing & Support',
+                    'icon' => 'omega_customer-billing',
+                    'menu' => [
 //                        [
 //                            'title'=>'News & Announcemnets',
 //                            'icon'=>'omega_customer-billing-news-announcement',
@@ -176,9 +176,9 @@ class CustomerDashboard extends Page
 //                            'link'=>'#'
 //                        ],
                         [
-                            'title'=>'Manage Profile',
-                            'icon'=>'omega_customer-billing-manage-profile',
-                            'link'=>'#'
+                            'title' => 'Manage Profile',
+                            'icon' => 'omega_customer-billing-manage-profile',
+                            'link' => '#'
                         ],
 //                        [
 //                            'title'=>'Register New Domain',
@@ -208,14 +208,14 @@ class CustomerDashboard extends Page
                     ]
                 ],
 
-                'files'=>[
-                    'title'=>'Files',
-                    'icon'=>'omega_customer-files',
-                    'menu'=>[
+                'files' => [
+                    'title' => 'Files',
+                    'icon' => 'omega_customer-files',
+                    'menu' => [
                         [
-                            'title'=>'File Manager',
-                            'icon'=>'omega_customer-file-manager',
-                            'link'=>'#'
+                            'title' => 'File Manager',
+                            'icon' => 'omega_customer-file-manager',
+                            'link' => '#'
                         ],
 //                        [
 //                            'title'=>'Images',
@@ -228,9 +228,9 @@ class CustomerDashboard extends Page
 //                            'link'=>'#'
 //                        ],
                         [
-                            'title'=>'Disk Usage',
-                            'icon'=>'omega_customer-file-disk',
-                            'link'=>'#'
+                            'title' => 'Disk Usage',
+                            'icon' => 'omega_customer-file-disk',
+                            'link' => '#'
                         ],
 //                        [
 //                            'title'=>'Web Disk',
@@ -238,29 +238,29 @@ class CustomerDashboard extends Page
 //                            'link'=>'#'
 //                        ],
                         [
-                            'title'=>'FTP Accounts',
-                            'icon'=>'omega_customer-file-ftp',
-                            'link'=>'#'
-                        ],
-//                        [
-//                            'title'=>'FTP Connections',
-//                            'icon'=>'omega_customer-file-connection',
-//                            'link'=>'#'
-//                        ],
-                        [
-                            'title'=>'Backups',
-                            'icon'=>'omega_customer-file-backup',
-                            'link'=>'#'
+                            'title' => 'FTP Accounts',
+                            'icon' => 'omega_customer-file-ftp',
+                            'link' => '#'
                         ],
                         [
-                            'title'=>'Backup Wizard',
-                            'icon'=>'omega_customer-file-backup-wizard',
-                            'link'=>'#'
+                            'title' => 'FTP Connections',
+                            'icon' => 'omega_customer-file-connection',
+                            'link' => route('filament.customer.pages.ftp-connections'),
                         ],
                         [
-                            'title'=>'Git Version Control',
-                            'icon'=>'omega_customer-file-git',
-                            'link'=>'#'
+                            'title' => 'Backups',
+                            'icon' => 'omega_customer-file-backup',
+                            'link' => '#'
+                        ],
+                        [
+                            'title' => 'Backup Wizard',
+                            'icon' => 'omega_customer-file-backup-wizard',
+                            'link' => '#'
+                        ],
+                        [
+                            'title' => 'Git Version Control',
+                            'icon' => 'omega_customer-file-git',
+                            'link' => '#'
                         ],
 //                        [
 //                            'title'=>'File and Directory Restoration',
@@ -270,24 +270,24 @@ class CustomerDashboard extends Page
                     ]
                 ],
 
-                'database'=>[
-                    'title'=>'Database',
-                    'icon'=>'omega_customer-database',
-                    'menu'=>[
+                'database' => [
+                    'title' => 'Database',
+                    'icon' => 'omega_customer-database',
+                    'menu' => [
                         [
-                            'title'=>'phpMyAdmin',
-                            'icon'=>'omega_customer-database-php',
-                            'link'=>'#'
+                            'title' => 'phpMyAdmin',
+                            'icon' => 'omega_customer-database-php',
+                            'link' => '#'
                         ],
                         [
-                            'title'=>'Manage My Database',
-                            'icon'=>'omega_customer-database-manage',
-                            'link'=>'#'
+                            'title' => 'Manage My Database',
+                            'icon' => 'omega_customer-database-manage',
+                            'link' => '#'
                         ],
                         [
-                            'title'=>'Database Wizard',
-                            'icon'=>'omega_customer-database-wizard',
-                            'link'=>'#'
+                            'title' => 'Database Wizard',
+                            'icon' => 'omega_customer-database-wizard',
+                            'link' => '#'
                         ],
 //                        [
 //                            'title'=>'Remote Database Access',
@@ -297,10 +297,10 @@ class CustomerDashboard extends Page
                     ]
                 ],
 
-                'domains'=>[
-                    'title'=>'Domains',
-                    'icon'=>'omega_customer-domains',
-                    'menu'=>[
+                'domains' => [
+                    'title' => 'Domains',
+                    'icon' => 'omega_customer-domains',
+                    'menu' => [
 //                        [
 //                            'title'=>'WP Toolkit',
 //                            'icon'=>'omega_customer-domains-wp',
@@ -317,9 +317,9 @@ class CustomerDashboard extends Page
 //                            'link'=>'#'
 //                        ],
                         [
-                            'title'=>'Domains',
-                            'icon'=>'omega_customer-domains-domain',
-                            'link'=>'#'
+                            'title' => 'Domains',
+                            'icon' => 'omega_customer-domains-domain',
+                            'link' => '#'
                         ],
 //                        [
 //                            'title'=>'Redirects',
@@ -339,14 +339,14 @@ class CustomerDashboard extends Page
                     ]
                 ],
 
-                'metrics'=>[
-                    'title'=>'Metrics',
-                    'icon'=>'omega_customer-metrics',
-                    'menu'=>[
+                'metrics' => [
+                    'title' => 'Metrics',
+                    'icon' => 'omega_customer-metrics',
+                    'menu' => [
                         [
-                            'title'=>'Visitors',
-                            'icon'=>'omega_customer-metrics-visitors',
-                            'link'=>'#'
+                            'title' => 'Visitors',
+                            'icon' => 'omega_customer-metrics-visitors',
+                            'link' => '#'
                         ],
 //                        [
 //                            'title'=>'Site Quality Monitoring',
@@ -354,9 +354,9 @@ class CustomerDashboard extends Page
 //                            'link'=>'#'
 //                        ],
                         [
-                            'title'=>'Errors',
-                            'icon'=>'omega_customer-metrics-errors',
-                            'link'=>'#'
+                            'title' => 'Errors',
+                            'icon' => 'omega_customer-metrics-errors',
+                            'link' => '#'
                         ],
 //                        [
 //                            'title'=>'Bandwidth',
@@ -364,9 +364,9 @@ class CustomerDashboard extends Page
 //                            'link'=>'#'
 //                        ],
                         [
-                            'title'=>'Raw Access',
-                            'icon'=>'omega_customer-metrics-raw',
-                            'link'=>'#'
+                            'title' => 'Raw Access',
+                            'icon' => 'omega_customer-metrics-raw',
+                            'link' => '#'
                         ],
 //                        [
 //                            'title'=>'Awstats',
@@ -396,10 +396,10 @@ class CustomerDashboard extends Page
                     ]
                 ],
 
-                'security'=>[
-                    'title'=>'Security',
-                    'icon'=>'omega_customer-security',
-                    'menu'=>[
+                'security' => [
+                    'title' => 'Security',
+                    'icon' => 'omega_customer-security',
+                    'menu' => [
 //                        [
 //                            'title'=>'SSH Access',
 //                            'icon'=>'omega_customer-security-ssh',
@@ -411,14 +411,14 @@ class CustomerDashboard extends Page
 //                            'link'=>'#'
 //                        ],
                         [
-                            'title'=>'SSL/TLS',
-                            'icon'=>'omega_customer-security-ssl-tls',
-                            'link'=>'#'
+                            'title' => 'SSL/TLS',
+                            'icon' => 'omega_customer-security-ssl-tls',
+                            'link' => '#'
                         ],
                         [
-                            'title'=>'Manage API Tokens',
-                            'icon'=>'omega_customer-security-api',
-                            'link'=>'#'
+                            'title' => 'Manage API Tokens',
+                            'icon' => 'omega_customer-security-api',
+                            'link' => '#'
                         ],
 //                        [
 //                            'title'=>'Hotlink Protection',
@@ -431,17 +431,17 @@ class CustomerDashboard extends Page
 //                            'link'=>'#'
 //                        ],
                         [
-                            'title'=>'SSL/TSL Status',
-                            'icon'=>'omega_customer-security-status',
-                            'link'=>'#'
+                            'title' => 'SSL/TSL Status',
+                            'icon' => 'omega_customer-security-status',
+                            'link' => '#'
                         ]
                     ]
                 ],
 
-                'software'=>[
-                    'title'=>'Software',
-                    'icon'=>'omega_customer-software',
-                    'menu'=>[
+                'software' => [
+                    'title' => 'Software',
+                    'icon' => 'omega_customer-software',
+                    'menu' => [
 //                        [
 //                            'title'=>'PHP PEAR Packages',
 //                            'icon'=>'omega_customer-software-packages',
@@ -463,9 +463,9 @@ class CustomerDashboard extends Page
 //                            'link'=>'#'
 //                        ],
                         [
-                            'title'=>'MultiPHP Manager',
-                            'icon'=>'omega_customer-software-manager',
-                            'link'=>'#'
+                            'title' => 'MultiPHP Manager',
+                            'icon' => 'omega_customer-software-manager',
+                            'link' => '#'
                         ],
 //                        [
 //                            'title'=>'MultiPHP INI Editor',
@@ -475,14 +475,14 @@ class CustomerDashboard extends Page
                     ]
                 ],
 
-                'advanced'=>[
-                    'title'=>'Advanced',
-                    'icon'=>'omega_customer-advanced',
-                    'menu'=>[
+                'advanced' => [
+                    'title' => 'Advanced',
+                    'icon' => 'omega_customer-advanced',
+                    'menu' => [
                         [
-                            'title'=>'Cron Jobs',
-                            'icon'=>'omega_customer-advanced-cron',
-                            'link'=>'#'
+                            'title' => 'Cron Jobs',
+                            'icon' => 'omega_customer-advanced-cron',
+                            'link' => '#'
                         ],
 //                        [
 //                            'title'=>'Track DNS',
@@ -495,9 +495,9 @@ class CustomerDashboard extends Page
 //                            'link'=>'#'
 //                        ],
                         [
-                            'title'=>'Error Pages',
-                            'icon'=>'omega_customer-advanced-error',
-                            'link'=>'#'
+                            'title' => 'Error Pages',
+                            'icon' => 'omega_customer-advanced-error',
+                            'link' => '#'
                         ],
 //                        [
 //                            'title'=>'Apache Handlers',
@@ -512,14 +512,14 @@ class CustomerDashboard extends Page
                     ]
                 ],
 
-                'preferences'=>[
-                    'title'=>'Preferences',
-                    'icon'=>'omega_customer-preferences',
-                    'menu'=>[
+                'preferences' => [
+                    'title' => 'Preferences',
+                    'icon' => 'omega_customer-preferences',
+                    'menu' => [
                         [
-                            'title'=>'Password & Security',
-                            'icon'=>'omega_customer-preferences-pass',
-                            'link'=>'#'
+                            'title' => 'Password & Security',
+                            'icon' => 'omega_customer-preferences-pass',
+                            'link' => '#'
                         ],
 //                        [
 //                            'title'=>'Change Language',
@@ -541,24 +541,24 @@ class CustomerDashboard extends Page
 
 
             ],
-            'currentUserName'=> Auth::guard('customer')->user()->name,
-            'primaryDomain'=> $findHostingSubscription->domain ?? '',
-            'sharedIpAddress'=> $_SERVER['SERVER_ADDR'] ?? '',
-            'homeDirectory'=> '/home/' . $findHostingSubscription->system_username ?? '',
-            'lastLoginIpAddress'=>request()->ip(),
-            'diskUsage'=>'0.00 MB',
-            'databaseDiskUsage'=>'0.00 MB',
-            'bandwidth'=>'0.00 MB',
-            'addonDomains'=>'0',
-            'subdomains'=>'0',
-            'aliasDomains'=>'0',
-            'emailAccounts'=>'0',
-            'mailingLists'=>'0',
-            'autoresponders'=>'0',
-            'forwarders'=>'0',
-            'emailFilters'=>'0',
-            'ftpAccounts'=>'0',
-            'databases'=>'0'
+            'currentUserName' => Auth::guard('customer')->user()->name,
+            'primaryDomain' => $findHostingSubscription->domain ?? '',
+            'sharedIpAddress' => $_SERVER['SERVER_ADDR'] ?? '',
+            'homeDirectory' => '/home/' . $findHostingSubscription->system_username ?? '',
+            'lastLoginIpAddress' => request()->ip(),
+            'diskUsage' => '0.00 MB',
+            'databaseDiskUsage' => '0.00 MB',
+            'bandwidth' => '0.00 MB',
+            'addonDomains' => '0',
+            'subdomains' => '0',
+            'aliasDomains' => '0',
+            'emailAccounts' => '0',
+            'mailingLists' => '0',
+            'autoresponders' => '0',
+            'forwarders' => '0',
+            'emailFilters' => '0',
+            'ftpAccounts' => '0',
+            'databases' => '0'
         ];
 
     }

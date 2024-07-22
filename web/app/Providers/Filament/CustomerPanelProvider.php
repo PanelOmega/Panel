@@ -2,17 +2,13 @@
 
 namespace app\Providers\Filament;
 
-use App\Filament\OmegaTheme;
-use app\Filament\Pages\DemoAdminLogin;
 use App\FilamentCustomer\Pages\CustomerDashboard;
 use App\FilamentCustomer\Pages\DemoCustomerLogin;
 use App\Http\Middleware\CustomerAuthenticate;
 use App\OmegaConfig;
-use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
 use Filament\Navigation\NavigationItem;
-use Filament\Pages;
 use Filament\Panel;
 use Filament\PanelProvider;
 use Filament\View\PanelsRenderHook;
@@ -23,10 +19,10 @@ use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\AuthenticateSession;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\Support\Facades\Blade;
+use Illuminate\Support\Facades\View;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
 use JibayMcs\FilamentTour\FilamentTourPlugin;
 use Leandrocfe\FilamentApexCharts\FilamentApexChartsPlugin;
-use Illuminate\Support\Facades\View;
 
 class CustomerPanelProvider extends PanelProvider
 {
@@ -42,19 +38,19 @@ class CustomerPanelProvider extends PanelProvider
                 'primary' => '#e16449',
                 'gray' => '#25242E',
             ])
-          //  ->darkMode(false)
+            //  ->darkMode(false)
             ->sidebarWidth('14rem')
             ->brandName('Panel Omega')
             ->font('Nunito Sans')
             ->brandLogo(asset('images/logo/omega.svg'))
             ->darkModeBrandLogo(asset('images/logo/omega-dark.svg'))
             ->brandLogoHeight('3.5rem')
-          //  ->plugin(new OmegaTheme())
-          ->viteTheme('resources/css/filament/admin/theme.css')
+            //  ->plugin(new OmegaTheme())
+            ->viteTheme('resources/css/filament/admin/theme.css')
             //->colors(OmegaTheme::getColors())
-          //  ->icons(OmegaTheme::getIcons())
+            //  ->icons(OmegaTheme::getIcons())
             ->discoverResources(in: app_path('FilamentCustomer/Resources'), for: 'App\\FilamentCustomer\\Resources')
-//            ->discoverPages(in: app_path('Filament/Pages'), for: 'App\\Filament\\Pages')
+            ->discoverPages(in: app_path('FilamentCustomer/Pages'), for: 'App\\FilamentCustomer\\Pages')
             ->pages([
                 CustomerDashboard::class,
             ])
@@ -103,7 +99,7 @@ class CustomerPanelProvider extends PanelProvider
 
         $panelInstance->renderHook(
             name: PanelsRenderHook::TOPBAR_START,
-            hook: fn (): string => Blade::render('@livewire(\'hosting-subscription-switch\')')
+            hook: fn(): string => Blade::render('@livewire(\'hosting-subscription-switch\')')
         );
 
         return $panelInstance;

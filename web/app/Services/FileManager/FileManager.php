@@ -3,7 +3,6 @@
 namespace App\Services\FileManager;
 
 use App\Models\Customer;
-use App\Services\FileManager\ImageService\ImageService;
 use App\Services\FileManager\PermissionsService\PermissionsManager;
 use App\Services\FileManager\Traits\CheckTrait;
 use App\Services\FileManager\Traits\ContentTrait;

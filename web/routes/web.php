@@ -40,3 +40,5 @@ Route::prefix('/file-manager')->controller(\App\Http\Controllers\FileManager\Fil
     Route::POST('unzip', 'unzip');
 
 });
+
+Route::get('/customers/ftp-connections', [\App\Http\Controllers\Customer\FtpConnections\FtpConnectionsController::class, 'index'])->name('ftp-connections.index');

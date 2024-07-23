@@ -97,8 +97,12 @@ xferlog_std_format=NO
 # (Warning! chroot'ing can be very dangerous. If using chroot, make sure that
 # the user does not have write access to the top level directory within the
 # chroot)
+
+# restricting the user to exit their working directory #
+# do not change unless highly required #
 chroot_local_user=YES
 allow_writeable_chroot=YES
+
 #chroot_list_enable=YES
 # (default follows)
 #chroot_list_file=/etc/vsftpd/chroot_list

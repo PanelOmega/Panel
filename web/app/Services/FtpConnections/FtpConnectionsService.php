@@ -23,6 +23,7 @@ class FtpConnectionsService
         foreach ($pids as $pid) {
 
             $command = "ps -eo pid,stat | grep '$pid ' | awk '{print $2}'; ";
+
             $command .= "grep '$pid' $logFile | grep '230 Login successful' | awk -F'[][]' '{print \$1, \$4, \$5}'";
 
             $output = shell_exec($command);
@@ -31,7 +32,7 @@ class FtpConnectionsService
             if (count($lines) >= 2) {
 
                 $status = trim($lines[0]);
-                $isActive = (trim($status) == 'S' || trim($status) == 'D') ? 'IDLE' : 'ACTIVE';
+                $isActive = (trim($status) !== 'R' && trim($status) !== 'R+') ? 'IDLE' : 'ACTIVE';
 
 
                 $ftpData = $lines[1];
@@ -39,14 +40,13 @@ class FtpConnectionsService
 
                 $ftpConnections[] = [
                     'user' => $matches[2],
-                    'logged_in_from' => trim(str_replace('"', '', $matches[1]), ", \t\n\r\0\x0B"),
-                    'login_time' => $matches[3],
+                    'login_time' => trim(str_replace('"', '', $matches[1]), ", \t\n\r\0\x0B"),
+                    'logged_in_from' => $matches[3],
                     'status' => $isActive,
                     'process_id' => $pid
                 ];
             }
         }
-
         return $ftpConnections;
     }
 

@@ -240,12 +240,12 @@ class CustomerDashboard extends Page
                         [
                             'title' => 'FTP Accounts',
                             'icon' => 'omega_customer-file-ftp',
-                            'link' => '#'
+                            'link' => route('filament.customer.resources.ftp-accounts.index')
                         ],
                         [
                             'title' => 'FTP Connections',
                             'icon' => 'omega_customer-file-connection',
-                            'link' => route('filament.customer.pages.ftp-connections'),
+                            'link' => route('filament.customer.resources.ftp-connections.index'),
                         ],
                         [
                             'title' => 'Backups',

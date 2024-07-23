@@ -6,27 +6,25 @@ use App\FilamentCustomer\Resources\FtpAccountResource\Pages;
 use App\FilamentCustomer\Resources\FtpAccountResource\RelationManagers;
 use App\Models\Customer;
 use App\Models\Domain;
-use App\Models\HostingSubscription;
 use App\Models\HostingSubscriptionFtpAccount;
 use App\Models\Scopes\CustomerScope;
-use Filament\Actions\Action;
 use Filament\Forms;
+use Filament\Forms\Components\Radio;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Infolists\Infolist;
-use Filament\Pages\SubNavigationPosition;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
-use Filament\Forms\Components\TextInput;
-use Filament\Forms\Components\Select;
-use Filament\Forms\Components\Radio;
 use Illuminate\Database\Eloquent\Builder;
 
 class FtpAccountResource extends Resource
 {
 
     protected static ?string $label = 'FTP Account';
+
     protected static ?string $navigationLabel = 'FTP Accounts';
 
     protected static ?string $model = HostingSubscriptionFtpAccount::class;
@@ -34,7 +32,6 @@ class FtpAccountResource extends Resource
     protected static ?string $navigationIcon = 'omega_customer-file-ftp';
 
     protected static ?int $navigationSort = 2;
-
 
     public static function infolist(Infolist $infolist): Infolist
     {
@@ -73,7 +70,7 @@ class FtpAccountResource extends Resource
 
                                 TextInput::make('ftp_username')
                                     ->label('Log In')
-                                    ->prefix(function (Forms\Get $get) use($systemUsername) {
+                                    ->prefix(function (Forms\Get $get) use ($systemUsername) {
                                         return $systemUsername . '_';
                                     })
                                     ->required(),
@@ -82,7 +79,7 @@ class FtpAccountResource extends Resource
                                     ->searchable('domain')
                                     ->options($domains)
                                     ->label('Domain')
-                                    ->default(function (Forms\Get $get) use($domains) {
+                                    ->default(function (Forms\Get $get) use ($domains) {
                                         return array_key_first($domains);
                                     })
                                     ->required()
@@ -107,7 +104,7 @@ class FtpAccountResource extends Resource
                                                 $set('ftp_password_confirmation', $randomPassword);
                                             })
                                     )
-                                   ->required(),
+                                    ->required(),
 
                                 TextInput::make('ftp_password_confirmation')
                                     ->label('Confirm Password')
@@ -198,7 +195,7 @@ class FtpAccountResource extends Resource
             'index' => Pages\ListFtpAccounts::route('/'),
             'create' => Pages\CreateFtpAccount::route('/create'),
 //            'edit' => Pages\EditFtpAccount::route('/{record}/edit'),
-         //   'view' => Pages\ViewFtpAccount::route('/{record}'),
+            //   'view' => Pages\ViewFtpAccount::route('/{record}'),
         ];
     }
 }

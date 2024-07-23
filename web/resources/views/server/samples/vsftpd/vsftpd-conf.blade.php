@@ -130,3 +130,4 @@ userlist_enable=YES
 userlist_file=/etc/vsftpd/user_list
 log_ftp_protocol=YES
 dual_log_enable=YES
+max_per_ip=5

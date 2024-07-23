@@ -49,11 +49,11 @@ connect_from_port_20=YES
 #
 # You may override where the log file goes if you like. The default is shown
 # below.
-#xferlog_file=/var/log/xferlog
+xferlog_file=/var/log/vsftod.log
 #
 # If you want, you can have your log file in standard ftpd xferlog format.
 # Note that the default log file location is /var/log/xferlog in this case.
-xferlog_std_format=YES
+xferlog_std_format=NO
 #
 # You may change the default value for timing out an idle session.
 #idle_session_timeout=600
@@ -124,6 +124,9 @@ listen=YES
 #listen_ipv6=YES
 
 pam_service_name=vsftpd
+
 userlist_deny=NO
 userlist_enable=YES
 userlist_file=/etc/vsftpd/user_list
+log_ftp_protocol=YES
+dual_log_enable=YES

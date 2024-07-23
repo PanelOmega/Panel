@@ -34,16 +34,17 @@ class UpdateVsftpdConfig extends Command
             if [ ! -d '/etc/vsftpd/' ]; then
                 sudo mkdir -p /etc/vsftpd/
             fi
-            echo \"{$vsftpd}\" | sudo tee /etc/vsftpd/vsftpd.conf
         ";
-
         $result = shell_exec($command);
+        $save = file_put_contents('/etc/vsftpd/vsftpd.conf', $vsftpd);
 
-        if ($result !== null) {
+        if ($save) {
             $this->info('The vsftpd configuration is updated.');
         } else {
             $this->info('Not updated.');
         }
+
+        shell_exec('systemctl restart vsftpd');
 
     }
 

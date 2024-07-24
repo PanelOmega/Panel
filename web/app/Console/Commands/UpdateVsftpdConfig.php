@@ -36,15 +36,20 @@ class UpdateVsftpdConfig extends Command
             fi
         ";
         $result = shell_exec($command);
+
+        if ($result !== null) {
+            $this->info('Unable to create vasftpd directory!');
+        }
+
         $save = file_put_contents('/etc/vsftpd/vsftpd.conf', $vsftpd);
 
         if ($save) {
             $this->info('The vsftpd configuration is updated.');
         } else {
-            $this->info('Not updated.');
+            $this->info('The vsftpd configuration is not updated.');
         }
 
-        shell_exec('systemctl restart vsftpd');
+        shell_exec('sudo systemctl restart vsftpd');
 
     }
 

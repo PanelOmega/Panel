@@ -72,7 +72,7 @@ class FtpServerInstaller
             shell_exec('mkdir -p ' . dirname($this->logPath));
         }
 
-        shell_exec('bash /tmp/ftp-server-installer.sh >> ' . $this->logPath . ' 2>&1 &');
+        shell_exec("bash /tmp/ftp-server-installer.sh >> {$this->logPath} 2>&1 &");
 
         return [
             'status' => 'Install job is running in the background.',

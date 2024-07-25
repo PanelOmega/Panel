@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Filament\Widgets;
+namespace App\FilamentCustomer\Widgets;
 
 use Filament\Widgets\Widget;
 use Illuminate\Contracts\View\View;

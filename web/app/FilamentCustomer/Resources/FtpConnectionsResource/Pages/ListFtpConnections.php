@@ -2,7 +2,7 @@
 
 namespace App\FilamentCustomer\Resources\FtpConnectionsResource\Pages;
 
-use App\Filament\Widgets\FtpConnectionsHeaderWidget;
+use App\FilamentCustomer\Widgets\FtpConnectionsHeaderWidget;
 use App\FilamentCustomer\Resources\FtpConnectionsResource;
 use Filament\Resources\Pages\ListRecords;
 

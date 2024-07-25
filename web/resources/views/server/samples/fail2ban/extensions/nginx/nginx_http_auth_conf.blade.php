@@ -1,7 +1,7 @@
-[apache - badbots]
+[nginx - http - auth]
 enabled  = true
-port = http,https
-filter = apache-badbots
+port     = http,https
+filter   = nginx-http-auth
 logpath = /var/log/fail2ban.log
 maxretry = 3
 findtime = 600

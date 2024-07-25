@@ -11,6 +11,10 @@ class Fail2BanInstaller
     public $fail2banServers = [];
     public $apacheExtensions = [];
 
+    public $nginxExtensions = [];
+
+    public $wpExtensions = [];
+
     public function setLogFilePath($path)
     {
         $this->logPath = $path;
@@ -96,45 +100,92 @@ class Fail2BanInstaller
         $this->apacheExtensions = $extensions;
     }
 
+    public function setNginxExtensions(array $extensions): void
+    {
+        $this->nginxExtensions = $extensions;
+    }
+
+    public function setWordpressExtensions(array $extensions): void
+    {
+        $this->wpExtensions = $extensions;
+    }
+
     public function appendToJailConf(): void
     {
         $jailConfPath = resource_path('views/server/samples/fail2ban/fail2ban_jail_conf.blade.php');
         $currentContents = file_exists($jailConfPath) ? file_get_contents($jailConfPath) : '';
-        $contentToAppend = view('server.samples.fail2ban.fail2ban_jail_conf')->render();
 
-        if (!empty($this->fail2banServers)) {
+        $filterDPath = '/etc/fail2ban/filter.d';
+        $templatesFilterDirPath = resource_path('views/server/samples/fail2ban/filters');
 
-            foreach ($this->fail2banServers as $server) {
+        $extensionsArr = [
+            $this->apacheExtensions,
+            $this->nginxExtensions,
+            $this->wpExtensions,
+        ];
 
-                $servicesConfigPath = resource_path("views/server/samples/fail2ban/servers/$server/");
-                $filePath = $servicesConfigPath . $server . '_conf.blade.php';
+        $this->handleServers($this->fail2banServers, $currentContents, $filterDPath, $templatesFilterDirPath);
+        $this->handleExtensions($extensionsArr, $currentContents, $filterDPath, $templatesFilterDirPath);
+
+        file_put_contents($jailConfPath, $currentContents);
+    }
+
+    public function handleServers(array $fail2banServers, string &$currentContents, string $filterDPath, string $templatesFilterDirPath): void
+    {
+        if (!empty($fail2banServers)) {
+            foreach ($fail2banServers as $server) {
+                $templateFile = $templatesFilterDirPath . "/$server/$server.blade.php";
+                $filterDFile = $filterDPath . "/$server.conf";
+
+                if (file_exists($templateFile) && !file_exists($filterDFile)) {
+                    $filterContents = file_get_contents($templateFile);
+                    file_put_contents($filterDFile, $filterContents);
+                }
+
+                $serversConfigPath = resource_path("views/server/samples/fail2ban/servers/$server/");
+                $filePath = $serversConfigPath . $server . '_conf.blade.php';
 
                 if (file_exists($filePath)) {
-                    $serviceContent = file_get_contents($filePath);
+                    $serverContent = file_get_contents($filePath);
 
                     if (!strpos($currentContents, '[' . $server . ']')) {
-                        $contentToAppend .= $serviceContent . "\n";
+                        $currentContents .= $serverContent . "\n";
                     }
                 }
             }
         }
+    }
 
-        if (!empty($this->apacheExtensions)) {
+    public function handleExtensions(array $extensionsArr, string &$currentContents, string $filterDPath, string $templatesFilterDirPath): void
+    {
+        foreach ($extensionsArr as $extension_element) {
+            if (!empty($extension_element)) {
+                foreach ($extension_element as $extension) {
+                    $ext = explode(' - ', $extension);
+                    $extFilter = str_replace(' - ', '_', $extension);
+                    $extFilterD = str_replace(' - ', '-', $extension);
 
-            foreach ($this->apacheExtensions as $extension) {
-                $ext = explode(' - ', $extension);
-                $extensionsConfigPath = resource_path("views/server/samples/fail2ban/extensions/$ext[0]/");
-                $filePath = $extensionsConfigPath . str_replace(' - ', '_', $extension) . '_conf.blade.php';
+                    $templateFile = $templatesFilterDirPath . "/$ext[0]/$extFilter.blade.php";
+                    $filterDFile = $filterDPath . "/$extFilterD.conf";
 
-                if (file_exists($filePath)) {
-                    $serviceContent = file_get_contents($filePath);
+                    if (file_exists($templateFile) && !file_exists($filterDFile)) {
+                        $filterContents = file_get_contents($templateFile);
+                        file_put_contents($filterDFile, $filterContents);
+                    }
 
-                    if (!strpos($currentContents, '[' . $extension . ']')) {
-                        $contentToAppend .= $serviceContent . "\n";
+                    ($ext[0] == 'php' && $ext[1] == 'url') ? $ext[0] = 'apache' : '';
+
+                    $extensionsConfigPath = resource_path("views/server/samples/fail2ban/extensions/$ext[0]/");
+                    $filePath = $extensionsConfigPath . str_replace(' - ', '_', $extension) . '_conf.blade.php';
+
+                    if (file_exists($filePath)) {
+                        $serviceContent = file_get_contents($filePath);
+                        if (!strpos($currentContents, '[' . $extension . ']')) {
+                            $currentContents .= $serviceContent . "\n";
+                        }
                     }
                 }
             }
         }
-        file_put_contents($jailConfPath, $contentToAppend);
     }
 }

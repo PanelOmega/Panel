@@ -20,8 +20,6 @@
 # [DEFAULT]
 # bantime = 1h
 #
-# [sshd]
-# enabled = true
 #
 # See jail.conf(5) man page for more information
 
@@ -283,9 +281,11 @@ action_abuseipdb = abuseipdb
 # normal (default), ddos, extra or aggressive (combines all).
 # See "tests/files/logs/sshd" or "filter.d/sshd.conf" for usage example and details.
 #mode = normal
+#enabled = true
 port = ssh
-#logpath = %(sshd_log)s
-#backend = %(sshd_backend)s
+maxretry = 3
+findtime = 300
+bantime = 3600
 
 
 [dropbear]
@@ -350,27 +350,11 @@ logpath = /opt / openhab / logs / request . log
 # normal (default), aggressive (combines all), auth or fallback
 # See "tests/files/logs/nginx-http-auth" or "filter.d/nginx-http-auth.conf" for usage example and
 #details .
-[nginx - http - auth]
-# mode = normal
-port = http,https
-#logpath = %(nginx_error_log)s
 
 # To use 'nginx-limit-req' jail you should have `ngx_http_limit_req_module`
 # and define `limit_req` and `limit_req_zone` as described in nginx documentation
 # http://nginx.org/en/docs/http/ngx_http_limit_req_module.html
 # or for example see in 'config/filter.d/nginx-limit-req.conf'
-[nginx - limit - req]
-port = http,https
-logpath = %(nginx_error_log)s
-
-[nginx - botsearch]
-
-port = http,https
-logpath = %(nginx_error_log)s
-
-[nginx - bad - request]
-port = http,https
-#logpath = %(nginx_access_log)s
 
 [suhosin]
 
@@ -936,3 +920,25 @@ banaction = %(banaction_allports)s
 [monitorix]
 port = 8080
 logpath = /var/log / monitorix - httpd
+
+
+[vsftpd]
+enabled = true
+port = ftp,ftp-data,ftps,ftps-data
+logpath = /var/log/vsftpd.log
+findtime = 1800
+bantime = 7200
+maxretry = 4
+banaction = iptables-multiport
+
+
+[apache]
+enabled  = true
+port     = http,https
+action   = iptables[name=HTTP, port=http, protocol=tcp]
+logpath = /var/log/fail2ban.log
+filter   = apache-auth
+maxretry = 3
+findtime = 600
+bantime  = 3600
+

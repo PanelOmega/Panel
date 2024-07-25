@@ -2,7 +2,6 @@
 
 namespace App\Providers\Filament;
 
-use App\Filament\OmegaTheme;
 use App\Filament\Pages\DemoAdminLogin;
 use App\OmegaConfig;
 use App\Server\Helpers\OS;
@@ -20,10 +19,10 @@ use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\AuthenticateSession;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\Support\Facades\Blade;
+use Illuminate\Support\Facades\View;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
 use JibayMcs\FilamentTour\FilamentTourPlugin;
 use Leandrocfe\FilamentApexCharts\FilamentApexChartsPlugin;
-use Illuminate\Support\Facades\View;
 
 class AdminPanelProvider extends PanelProvider
 {
@@ -45,11 +44,12 @@ class AdminPanelProvider extends PanelProvider
             ->brandLogo(asset('images/logo/omega.svg'))
             ->darkModeBrandLogo(asset('images/logo/omega-dark.svg'))
             ->brandLogoHeight('3.5rem')
-          //  ->plugin(new OmegaTheme())
+            //  ->plugin(new OmegaTheme())
             ->viteTheme('resources/css/filament/admin/theme.css')
             //->colors(OmegaTheme::getColors())
-          //  ->icons(OmegaTheme::getIcons())
+            //  ->icons(OmegaTheme::getIcons())
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\\Filament\\Resources')
+            ->discoverClusters(in: app_path('Filament/Clusters'), for: 'App\\Filament\\Clusters')
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\\Filament\\Pages')
             ->pages([
                 Pages\Dashboard::class,
@@ -76,7 +76,7 @@ class AdminPanelProvider extends PanelProvider
 
         $panelInstance->renderHook(
             name: PanelsRenderHook::TOPBAR_START,
-            hook: fn (): string => Blade::render('@livewire(\'quick-service-restart-menu\')')
+            hook: fn(): string => Blade::render('@livewire(\'quick-service-restart-menu\')')
         );
 
         if (OmegaConfig::get('APP_DEMO', false)) {

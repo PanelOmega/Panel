@@ -1,7 +1,7 @@
-[apache - badbots]
+[nginx - botsearch]
 enabled  = true
-port = http,https
-filter = apache-badbots
+port     = http,https
+filter   = nginx-botsearch
 logpath = /var/log/fail2ban.log
 maxretry = 3
 findtime = 600

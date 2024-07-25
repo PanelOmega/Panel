@@ -105,7 +105,6 @@ class SupportedApplicationTypes
         $fail2BanExtensions = [
             'vsftpd' => 'vsFTPD',
             'apache' => 'Apache Server',
-            'nginx' => 'Nginx',
             'wordpress' => 'Wordpress'
         ];
 
@@ -122,11 +121,11 @@ class SupportedApplicationTypes
         $extensions = [];
 
         $apacheExtensions = [
-            'apache-badbots' => 'Apache-BadBots',
-            'apache-nohome' => 'Apache-NoHome',
-            'apache-noscript' => 'Apache-NoScript',
-            'apache-overflows' => 'Apache-Overflows',
-            'php-url-fopen' => 'PHP-Url-Fopen',
+            'apache - badbots' => 'Apache-BadBots',
+            'apache - nohome' => 'Apache-NoHome',
+            'apache - noscript' => 'Apache-NoScript',
+            'apache - overflows' => 'Apache-Overflows',
+            'php - url - fopen' => 'PHP-Url-Fopen',
         ];
 
         foreach ($apacheExtensions as $extension => $name) {
@@ -140,11 +139,10 @@ class SupportedApplicationTypes
     {
         $extensions = [];
         $enginxExtensions = [
-            'nginx - 4xx' => 'Nginx 4xx',
+            'nginx - bad - request' => 'Nginx Bad Request',
+            'nginx - botsearch' => 'Nginx Botsearch',
             'nginx - http - auth' => 'Nginx Http Auth',
-            'nginx - botsearch' => 'Nginx Bootsearch',
-            'nginx - forbidden' => 'Nginx Forbidden',
-            'nginx - sslerror' => 'Nginx SSL Error'
+            'nginx - limit - req' => 'Nginx Limit Req',
         ];
 
         foreach ($enginxExtensions as $extension => $name) {
@@ -153,4 +151,22 @@ class SupportedApplicationTypes
 
         return $extensions;
     }
+
+    public static function getFail2BanWordpressExtensions()
+    {
+        $extensions = [];
+        $wordpressExtensions = [
+            'wordpress - auth' => 'Wordpress Auth',
+            'wordpress - hard' => 'Wordpress Hard',
+            'wordpress - pingback' => 'Wordpress Pingback'
+        ];
+
+        foreach ($wordpressExtensions as $extension => $name) {
+            $extensions[$extension] = $name;
+        }
+
+        return $extensions;
+    }
+
+
 }

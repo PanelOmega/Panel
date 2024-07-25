@@ -16,7 +16,7 @@ class SupportedApplicationTypes
             '20',
         ];
         foreach ($nodeJsVersions as $version) {
-            $versions[$version] = 'Node.js '.$version;
+            $versions[$version] = 'Node.js ' . $version;
         }
         return $versions;
     }
@@ -33,7 +33,7 @@ class SupportedApplicationTypes
             '3.4',
         ];
         foreach ($rubyVersions as $version) {
-            $versions[$version] = 'Ruby '.$version;
+            $versions[$version] = 'Ruby ' . $version;
         }
         return $versions;
     }
@@ -50,7 +50,7 @@ class SupportedApplicationTypes
             '3.10',
         ];
         foreach ($pythonVersions as $version) {
-            $versions[$version] = 'Python '.$version;
+            $versions[$version] = 'Python ' . $version;
         }
         return $versions;
     }
@@ -67,7 +67,7 @@ class SupportedApplicationTypes
             '8.3',
         ];
         foreach ($phpVersions as $version) {
-            $versions[$version] = 'PHP '.$version;
+            $versions[$version] = 'PHP ' . $version;
         }
         return $versions;
     }
@@ -98,4 +98,59 @@ class SupportedApplicationTypes
         return $modules;
     }
 
+    public static function getFail2BanServers()
+    {
+        $extensions = [];
+
+        $fail2BanExtensions = [
+            'vsftpd' => 'vsFTPD',
+            'apache' => 'Apache Server',
+            'nginx' => 'Nginx',
+            'wordpress' => 'Wordpress'
+        ];
+
+        foreach ($fail2BanExtensions as $extension => $name) {
+            $extensions[$extension] = $name;
+        }
+
+        return $extensions;
+
+    }
+
+    public static function getFail2BanApacheExtensions()
+    {
+        $extensions = [];
+
+        $apacheExtensions = [
+            'apache-badbots' => 'Apache-BadBots',
+            'apache-nohome' => 'Apache-NoHome',
+            'apache-noscript' => 'Apache-NoScript',
+            'apache-overflows' => 'Apache-Overflows',
+            'php-url-fopen' => 'PHP-Url-Fopen',
+        ];
+
+        foreach ($apacheExtensions as $extension => $name) {
+            $extensions[$extension] = $name;
+        }
+
+        return $extensions;
+    }
+
+    public static function getFail2BanNginxExtensions()
+    {
+        $extensions = [];
+        $enginxExtensions = [
+            'nginx - 4xx' => 'Nginx 4xx',
+            'nginx - http - auth' => 'Nginx Http Auth',
+            'nginx - botsearch' => 'Nginx Bootsearch',
+            'nginx - forbidden' => 'Nginx Forbidden',
+            'nginx - sslerror' => 'Nginx SSL Error'
+        ];
+
+        foreach ($enginxExtensions as $extension => $name) {
+            $extensions[$extension] = $name;
+        }
+
+        return $extensions;
+    }
 }

@@ -28,6 +28,8 @@ class MultiPHPManagerResource extends Resource
 
     protected static ?string $slug = 'multi-php-manager';
 
+    protected static bool $shouldRegisterNavigation = false;
+
     public static function form(Form $form): Form
     {
         $phpVersions = [];

@@ -86,7 +86,7 @@ before = paths - fedora . conf
 # "ignoreip" can be a list of IP addresses, CIDR masks or DNS hosts. Fail2ban
 # will not ban a host which matches an address in this list. Several addresses
 # can be defined using space (and/or comma) separator.
-#ignoreip = 127.0.0.1/8 ::1
+ignoreip = 127.0.0.1/8 ::1,65.109.0.229, 65.109.0.228
 
 # External command that will take an tagged arguments to ignore, e.g.
 # and return true if the IP is to be ignored. False otherwise.

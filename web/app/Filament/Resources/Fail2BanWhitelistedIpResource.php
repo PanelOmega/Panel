@@ -4,7 +4,6 @@ namespace App\Filament\Resources;
 
 use App\Filament\Clusters\Fail2Ban\Fail2Ban;
 use App\Filament\Resources\Fail2BanWhitelistedIpResource\Pages;
-use App\Filament\Resources\Fail2BanWhitelistedIpResource\RelationManagers;
 use App\Models\Fail2BanWhitelistedIp;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
@@ -19,6 +18,8 @@ class Fail2BanWhitelistedIpResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
+    protected static ?string $label = 'Whitelist Ip';
+
     protected static ?string $cluster = Fail2Ban::class;
 
     public static function form(Form $form): Form
@@ -28,10 +29,12 @@ class Fail2BanWhitelistedIpResource extends Resource
                 TextInput::make('ip')
                     ->label('Enter IP address')
                     ->required()
-                    ->autofocus(),
+                    ->autofocus()
+                    ->rules(['required', 'ip']),
 
                 Textarea::make('comment')
                     ->label('Enter comment')
+                    ->placeholder('Enter your comment here...')
                     ->rows(5),
             ])
             ->columns(1);
@@ -41,13 +44,18 @@ class Fail2BanWhitelistedIpResource extends Resource
     {
         return $table
             ->columns([
-                //
+                Tables\Columns\TextColumn::make('ip')
+                    ->label('IP address'),
+
+                Tables\Columns\TextColumn::make('comment')
+                    ->label('Comment'),
             ])
             ->filters([
                 //
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
+                Tables\Actions\DeleteAction::make(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([

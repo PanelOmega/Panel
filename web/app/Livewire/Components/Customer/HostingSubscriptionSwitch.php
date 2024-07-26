@@ -56,7 +56,7 @@ class HostingSubscriptionSwitch extends Component implements HasForms, HasAction
         $hostingSubscriptionOptions = [];
         if ($findHostingSubscriptions) {
             foreach ($findHostingSubscriptions as $hostingSubscription) {
-                $hostingSubscriptionOptions[$hostingSubscription->id] = $hostingSubscription->domain;
+                $hostingSubscriptionOptions[$hostingSubscription->id] = $hostingSubscription->system_username;
             }
         }
 

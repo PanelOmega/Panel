@@ -112,17 +112,19 @@ class FirewallRule extends Model
             self::enableSystemPorts();
             return true;
         } else {
+            $output = '';
             if ($os == OS::UBUNTU) {
-                shell_exec('sudo apt install ufw jc -y');
+                $output .= shell_exec('sudo apt install ufw jc -y');
             } else if ($os == OS::ALMA_LINUX) {
-                shell_exec('sudo dnf install ufw jc -y');
+                $output .= shell_exec('sudo dnf install ufw jc -y');
             }
-            $output = shell_exec('sudo ufw --force enable');
+            $output .= shell_exec('sudo ufw --force enable');
             if (str_contains($output, 'Firewall is active')) {
                 self::enableSystemPorts();
                 return true;
             }
         }
+
         return false;
     }
 }

@@ -103,7 +103,7 @@ class FirewallRuleResource extends Resource
 
                     } else {
                         Notification::make()
-                            ->icon('heroicon-m-shield-x')
+                          //  ->icon('heroicon-m-shield-x')
                             ->title('Failed to enable firewall')
                             ->body('An error occurred while enabling the firewall.')
                             ->send();

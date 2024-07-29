@@ -12,7 +12,6 @@ FOR STABLE:
 wget https://raw.githubusercontent.com/PanelOmega/Panel/main/installers/install.sh && chmod +x install.sh && ./install.sh
 ```
 
-
 FOR DEV:
 ```
 wget https://raw.githubusercontent.com/PanelOmega/Panel/dev/installers/install.sh && chmod +x install.sh && ./install.sh dev

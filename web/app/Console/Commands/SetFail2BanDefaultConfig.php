@@ -6,14 +6,14 @@ use App\Jobs\Fail2BanConfigReset;
 use App\Services\Fail2Ban\Fail2BanResetConfig\Fail2BanResetConfigService;
 use Illuminate\Console\Command;
 
-class SetDefaultFail2BanConfig extends Command
+class SetFail2BanDefaultConfig extends Command
 {
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'omega:set-default-fail-2-ban-config';
+    protected $signature = 'omega:set-fail-2-ban-default-config';
 
     /**
      * The console command description.
@@ -32,7 +32,7 @@ class SetDefaultFail2BanConfig extends Command
         $file2ban = view('server.samples.fail2ban.fail2ban_jail_conf', [
             'settings' => $resetConfig
         ])->render();
-        
+
         $command = "test ! -d /etc/fail2ban/ && -p /etc/fail2ban/ || echo 'Directory exists!'";
 
         $result = shell_exec($command);

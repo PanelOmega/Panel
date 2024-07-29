@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "e04a817398c3ec575fc8bf3e5f9eeaec",
+    "content-hash": "26e965f1d5e6472f1c5db8806786832e",
     "packages": [
         {
             "name": "anourvalar/eloquent-serialize",
@@ -3986,6 +3986,77 @@
                 }
             ],
             "time": "2024-07-15T18:27:32+00:00"
+        },
+        {
+            "name": "marvinosswald/filament-input-select-affix",
+            "version": "0.2.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/marvinosswald/filament-input-select-affix.git",
+                "reference": "cb28ef0699ba23d27447a9554fe5faa8acf2b740"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/marvinosswald/filament-input-select-affix/zipball/cb28ef0699ba23d27447a9554fe5faa8acf2b740",
+                "reference": "cb28ef0699ba23d27447a9554fe5faa8acf2b740",
+                "shasum": ""
+            },
+            "require": {
+                "filament/filament": "^3.0",
+                "illuminate/contracts": "^10.0|^11.0",
+                "php": "^8.1 | ^8.2",
+                "spatie/laravel-package-tools": "^1.16.1"
+            },
+            "require-dev": {
+                "nunomaduro/collision": "^v7.8.1",
+                "orchestra/testbench": "^v8.9.1",
+                "pestphp/pest": "^v2.24.3",
+                "pestphp/pest-plugin-laravel": "v2.2.0",
+                "pestphp/pest-plugin-livewire": "v2.1.0",
+                "phpunit/phpunit": "^10"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Marvinosswald\\FilamentInputSelectAffix\\FilamentInputSelectAffixServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Marvinosswald\\FilamentInputSelectAffix\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Marvin Osswald",
+                    "email": "mail@marvinosswald.de",
+                    "role": "Developer"
+                }
+            ],
+            "description": "this input enables you to render a select next to an input in a seamless fashion",
+            "homepage": "https://github.com/marvinosswald/filament-input-select-affix",
+            "keywords": [
+                "filament-input-select-affix",
+                "laravel",
+                "marvinosswald"
+            ],
+            "support": {
+                "issues": "https://github.com/marvinosswald/filament-input-select-affix/issues",
+                "source": "https://github.com/marvinosswald/filament-input-select-affix/tree/0.2.0"
+            },
+            "funding": [
+                {
+                    "url": "https://github.com/marvinosswald",
+                    "type": "github"
+                }
+            ],
+            "time": "2024-03-13T10:32:27+00:00"
         },
         {
             "name": "masterminds/html5",

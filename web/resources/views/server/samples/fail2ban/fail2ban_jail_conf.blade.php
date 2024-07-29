@@ -17,8 +17,9 @@
 # ssh-iptables jail the following (uncommented) would appear in the .local file.
 # See man 5 jail.conf for details.
 #
+
 [DEFAULT]
-bantime = @if(isset($settings['general']['bantime']) && $settings['general']['bantime'] !== '') {{ $settings['general']['bantime'] }}{{ $settings['general']['bantime_option'] }} @else 1h @endif
+bantime = @if(isset($settings['general']['bantime']) && $settings['general']['bantime'] !== '') {{ $settings['general']['bantime'] }}{{ $settings['general']['unit']['bantime'] }} @else 1h @endif
 
 #
 # See jail.conf(5) man page for more information
@@ -100,7 +101,7 @@ ignorecommand = @if(isset($setting['general']['ignorecommand']) && $settings['ge
 
 # A host is banned if it has generated "maxretry" during the last "findtime"
 # seconds.
-findtime = @if(isset($settings['general']['findtime']) && $settings['general']['findtime'] > 0) {{ $settings['general']['findtime'] }}{{ $settings['general']['findtime_option'] }} @else 10m @endif
+findtime = @if(isset($settings['general']['findtime']) && $settings['general']['findtime'] > 0) {{ $settings['general']['findtime'] }}{{ $settings['general']['unit']['findtime'] }} @else 10m @endif
 
 # "maxretry" is the number of failures before a host get banned.
 maxretry = @if(isset($settings['general']['maxretry']) && $settings['general']['maxretry'] > 0) {{ $settings['general']['maxretry'] }} @else 5 @endif
@@ -942,34 +943,34 @@ logpath = /var/log / monitorix - httpd
 # To use more aggressive sshd modes set filter parameter "mode" in jail.local:
 # normal (default), ddos, extra or aggressive (combines all).
 # See "tests/files/logs/sshd" or "filter.d/sshd.conf" for usage example and details.
-enabled = @if(isset($settings['jail']['sshd']['enabled']) && $settings['jail']['sshd']['enabled'] === true) true @else false @endif {{ PHP_EOL }}
-port = @if(isset($settings['jail']['sshd']['port'])) {{ $settings['jail']['sshd']['port'] }} @else ssh @endif {{ PHP_EOL }}
-filter = @if(isset($settings['jail']['sshd']['filter'])) {{ $settings['jail']['sshd']['filter'] }} @else sshd @endif {{ PHP_EOL }}
-findtime = @if(isset($settings['jail']['sshd']['findtime']) && $settings['jail']['sshd']['findtime'] > 0) {{ $settings['jail']['sshd']['findtime'] }} @else 1800 @endif {{ PHP_EOL }}
-bantime = @if(isset($settings['jail']['sshd']['bantime']) && $settings['jail']['sshd']['bantime'] > 0) {{ $settings['jail']['sshd']['bantime'] }} @else 7200 @endif {{ PHP_EOL }}
-maxretry = @if(isset($settings['jail']['sshd']['maxretry']) && $settings['jail']['sshd']['maxretry'] > 0) {{ $settings['jail']['sshd']['maxretry'] }} @else 4 @endif {{ PHP_EOL }}
-banaction = @if(isset($settings['jail']['sshd']['banaction'])) {{ $settings['jail']['sshd']['banaction'] }} @else iptables-multiport @endif {{ PHP_EOL }}
-logpath = @if(isset($settings['jail']['sshd']['logpath'])) {{ $settings['jail']['sshd']['logpath'] }} @else /var/log/fail2ban.log @endif
+enabled = @if(isset($settings['jails']['sshd']['enabled']) && $settings['jails']['sshd']['enabled'] === true) true @else false @endif {{ PHP_EOL }}
+port = @if(isset($settings['jails']['sshd']['port'])) {{ $settings['jails']['sshd']['port'] }} @else ssh @endif {{ PHP_EOL }}
+filter = @if(isset($settings['jails']['sshd']['filter'])) {{ $settings['jails']['sshd']['filter'] }} @else sshd @endif {{ PHP_EOL }}
+findtime = @if(isset($settings['jails']['sshd']['findtime']) && $settings['jails']['sshd']['findtime'] > 0) {{ $settings['jails']['sshd']['findtime'] }} @else 1800 @endif {{ PHP_EOL }}
+bantime = @if(isset($settings['jails']['sshd']['bantime']) && $settings['jails']['sshd']['bantime'] > 0) {{ $settings['jails']['sshd']['bantime'] }} @else 7200 @endif {{ PHP_EOL }}
+maxretry = @if(isset($settings['jails']['sshd']['maxretry']) && $settings['jails']['sshd']['maxretry'] > 0) {{ $settings['jails']['sshd']['maxretry'] }} @else 4 @endif {{ PHP_EOL }}
+banaction = @if(isset($settings['jails']['sshd']['banaction'])) {{ $settings['jails']['sshd']['banaction'] }} @else iptables-multiport @endif {{ PHP_EOL }}
+logpath = @if(isset($settings['jails']['sshd']['logpath'])) {{ $settings['jails']['sshd']['logpath'] }} @else /var/log/fail2ban.log @endif
 
 
 [apache]
-enabled = @if(isset($settings['jail']['apache']['enabled']) && $settings['jail']['apache']['enabled'] === true) true @else false @endif {{ PHP_EOL }}
-port = @if(isset($settings['jail']['apache']['port'])) {{ $settings['jail']['apache']['port'] }} @else http,https @endif {{ PHP_EOL }}
-action = @if(isset($settings['jail']['apache']['action'])) {{ $settings['jail']['apache']['action'] }} @else iptables[name=HTTP, port=http, protocol=tcp] @endif {{ PHP_EOL }}
-filter = @if(isset($settings['jail']['apache']['filter'])) {{ $settings['jail']['apache']['filter'] }} @else apache-auth @endif {{ PHP_EOL }}
-findtime = @if(isset($settings['jail']['apache']['findtime']) && $settings['jail']['apache']['findtime'] > 0) {{ $settings['jail']['apache']['findtime'] }} @else 1800 @endif {{ PHP_EOL }}
-bantime = @if(isset($settings['jail']['apache']['bantime']) && $settings['jail']['apache']['bantime'] > 0) {{ $settings['jail']['apache']['bantime'] }} @else 7200 @endif {{ PHP_EOL }}
-maxretry = @if(isset($settings['jail']['apache']['maxretry']) && $settings['jail']['apache']['maxretry'] > 0) {{ $settings['jail']['apache']['maxretry'] }} @else 4 @endif {{ PHP_EOL }}
-logpath = @if(isset($settings['jail']['apache']['logpath'])) {{ $settings['jail']['apache']['logpath'] }} @else /var/log/fail2ban.log @endif
+enabled = @if(isset($settings['jails']['apache']['enabled']) && $settings['jails']['apache']['enabled'] === true) true @else false @endif {{ PHP_EOL }}
+port = @if(isset($settings['jails']['apache']['port'])) {{ $settings['jails']['apache']['port'] }} @else http,https @endif {{ PHP_EOL }}
+action = @if(isset($settings['jails']['apache']['action'])) {{ $settings['jails']['apache']['action'] }} @else iptables[name=HTTP, port=http, protocol=tcp] @endif {{ PHP_EOL }}
+filter = @if(isset($settings['jails']['apache']['filter'])) {{ $settings['jails']['apache']['filter'] }} @else apache-auth @endif {{ PHP_EOL }}
+findtime = @if(isset($settings['jails']['apache']['findtime']) && $settings['jails']['apache']['findtime'] > 0) {{ $settings['jails']['apache']['findtime'] }} @else 1800 @endif {{ PHP_EOL }}
+bantime = @if(isset($settings['jails']['apache']['bantime']) && $settings['jails']['apache']['bantime'] > 0) {{ $settings['jails']['apache']['bantime'] }} @else 7200 @endif {{ PHP_EOL }}
+maxretry = @if(isset($settings['jails']['apache']['maxretry']) && $settings['jails']['apache']['maxretry'] > 0) {{ $settings['jails']['apache']['maxretry'] }} @else 4 @endif {{ PHP_EOL }}
+logpath = @if(isset($settings['jails']['apache']['logpath'])) {{ $settings['jails']['apache']['logpath'] }} @else /var/log/fail2ban.log @endif
 
 
 [vsftpd]
-enabled = @if(isset($settings['jail']['vsftpd']['enabled']) && $settings['jail']['vsftpd']['enabled'] === true) true @else false @endif {{ PHP_EOL }}
-port = @if(isset($settings['jail']['vsftpd']['port'])) {{$settings['jail']['vsftpd']['port'] }} @else ftp,ftp-data,ftps,ftps-data @endif {{ PHP_EOL }}
-filter = @if(isset($settings['jail']['vsftpd']['filter'])) {{ $settings['jail']['vsftpd']['filter'] }} @else vsftpd @endif {{ PHP_EOL }}
-findtime = @if(isset($settings['jail']['vsftpd']['findtime']) && $settings['jail']['vsftpd']['findtime'] > 0) {{ $settings['jail']['vsftpd']['findtime'] }} @else 1800 @endif {{ PHP_EOL }}
-bantime= @if(isset($settings['jail']['vsftpd']['bantime']) && $settings['jail']['vsftpd']['bantime'] > 0) {{ $settings['jail']['vsftpd']['bantime'] }} @else 7200 @endif {{ PHP_EOL }}
-maxretry = @if(isset($settings['jail']['vsftpd']['maxretry']) && $settings['jail']['vsftpd']['maxretry'] > 0) {{ $settings['jail']['vsftpd']['maxretry'] }} @else 4 @endif {{ PHP_EOL }}
-banaction = @if(isset($settings['jail']['vsftpd']['banaction'])) {{ $settings['jail']['vsftpd']['banaction'] }} @else iptables-multiport @endif {{ PHP_EOL }}
-logpath = @if(isset($settings['jail']['vsftpd']['logpath'])) {{ $settings['jail']['vsftpd']['logpath'] }} @else /var/log/fail2ban.log @endif
+enabled = @if(isset($settings['jails']['vsftpd']['enabled']) && $settings['jails']['vsftpd']['enabled'] === true) true @else false @endif {{ PHP_EOL }}
+port = @if(isset($settings['jails']['vsftpd']['port'])) {{$settings['jails']['vsftpd']['port'] }} @else ftp,ftp-data,ftps,ftps-data @endif {{ PHP_EOL }}
+filter = @if(isset($settings['jails']['vsftpd']['filter'])) {{ $settings['jails']['vsftpd']['filter'] }} @else vsftpd @endif {{ PHP_EOL }}
+findtime = @if(isset($settings['jails']['vsftpd']['findtime']) && $settings['jails']['vsftpd']['findtime'] > 0) {{ $settings['jails']['vsftpd']['findtime'] }} @else 1800 @endif {{ PHP_EOL }}
+bantime= @if(isset($settings['jails']['vsftpd']['bantime']) && $settings['jails']['vsftpd']['bantime'] > 0) {{ $settings['jails']['vsftpd']['bantime'] }} @else 7200 @endif {{ PHP_EOL }}
+maxretry = @if(isset($settings['jails']['vsftpd']['maxretry']) && $settings['jails']['vsftpd']['maxretry'] > 0) {{ $settings['jails']['vsftpd']['maxretry'] }} @else 4 @endif {{ PHP_EOL }}
+banaction = @if(isset($settings['jails']['vsftpd']['banaction'])) {{ $settings['jails']['vsftpd']['banaction'] }} @else iptables-multiport @endif {{ PHP_EOL }}
+logpath = @if(isset($settings['jails']['vsftpd']['logpath'])) {{ $settings['jails']['vsftpd']['logpath'] }} @else /var/log/fail2ban.log @endif
 

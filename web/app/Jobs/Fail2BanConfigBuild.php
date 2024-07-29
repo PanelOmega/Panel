@@ -26,7 +26,6 @@ class Fail2BanConfigBuild implements ShouldQueue
         $os = OS::getDistro();
 
         $settings = setting('fail2ban');
-        $settingsArr = $this->getSettingsArr($settings);
 
         $whitelistedIps = [];
         if (Fail2BanWhitelistedIp::all()) {
@@ -35,7 +34,7 @@ class Fail2BanConfigBuild implements ShouldQueue
 
         $fail2BanConf = view('server.samples.fail2ban.fail2ban_jail_conf', [
             'whitelistedIps' => $whitelistedIps,
-            'settings' => $settingsArr
+            'settings' => $settings['config'] ?? null
         ])->render();
 
         if ($os == OS::UBUNTU || $os == OS::DEBIAN) {
@@ -47,71 +46,5 @@ class Fail2BanConfigBuild implements ShouldQueue
             throw new \Exception('Unsupported OS');
         }
 
-    }
-
-    public function getSettingsArr($settings): array {
-        $settingsArr = [];
-        foreach ($settings['config'] as $key => $fail2banSetting) {
-            if ($key === 'general') {
-                $settingsArr[$key] = [
-                    'bantime' => $fail2banSetting['bantime'],
-                    'bantime_option' => $fail2banSetting['unit']['bantime'],
-                    'ignorecommand' => $fail2banSetting['ignorecommand'],
-                    'findtime' => $fail2banSetting['findtime'],
-                    'findtime_option' => $fail2banSetting['unit']['findtime'],
-                    'maxretry' => $fail2banSetting['maxretry'],
-                    'backend' => $fail2banSetting['backend'],
-                    'usedns' => $fail2banSetting['usedns'],
-                    'logencoding' => $fail2banSetting['logencoding'],
-                    'enabled' => $fail2banSetting['enabled']
-                ];
-            } elseif ($key === 'action') {
-                $settingsArr[$key] = [
-                    'destemail' => $fail2banSetting['destemail'],
-                    'sender' => $fail2banSetting['sender'],
-                    'mta' => $fail2banSetting['mta'],
-                    'protocol' => $fail2banSetting['protocol'],
-                    'port' => $fail2banSetting['port'],
-                    'banaction' => $fail2banSetting['banaction'],
-                ];
-            } elseif ($key === 'jails') {
-                foreach ($fail2banSetting as $key => $jail) {
-                    if ($key === 'sshd') {
-                        $settingsArr['jail'][$key] = [
-                            'enabled' => $jail['enabled'],
-                            'port' => $jail['port'],
-                            'filter' => $jail['filter'],
-                            'findtime' => $jail['findtime'],
-                            'bantime' => $jail['bantime'],
-                            'banaction' => $jail['banaction'],
-                            'maxretry' => $jail['maxretry'],
-                            'logpath' => $jail['logpath']
-                        ];
-                    } elseif ($key === 'apache') {
-                        $settingsArr['jail'][$key] = [
-                            'enabled' => $jail['enabled'],
-                            'port' => $jail['port'],
-                            'filter' => $jail['filter'],
-                            'findtime' => $jail['findtime'],
-                            'bantime' => $jail['bantime'],
-                            'maxretry' => $jail['maxretry'],
-                            'logpath' => $jail['logpath']
-                        ];
-                    } elseif ($key === 'vsftpd') {
-                        $settingsArr['jail'][$key] = [
-                            'enabled' => $jail['enabled'],
-                            'port' => $jail['port'],
-                            'filter' => $jail['filter'],
-                            'findtime' => $jail['findtime'],
-                            'bantime' => $jail['bantime'],
-                            'banaction' => $jail['banaction'],
-                            'maxretry' => $jail['maxretry'],
-                            'logpath' => $jail['logpath']
-                        ];
-                    }
-                }
-            }
-        }
-        return $settingsArr;
     }
 }

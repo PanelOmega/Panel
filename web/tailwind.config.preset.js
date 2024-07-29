@@ -7,6 +7,7 @@ export default {
         './vendor/filament/**/*.blade.php',
         './resources/**/*.blade.php',
         './vendor/jaocero/radio-deck/resources/views/**/*.blade.php',
+        './vendor/codewithdennis/filament-simple-alert/resources/*/.blade.php',
     ],
     theme: {
         extend: {

@@ -5,7 +5,6 @@ namespace App\Models;
 use App\Jobs\UpdateVsftpdUserlist;
 use App\Server\Helpers\FtpAccount;
 use App\Server\Helpers\LinuxUser;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
@@ -88,6 +87,7 @@ class HostingSubscriptionFtpAccount extends Model
                 'message' => 'Hosting subscription not found.'
             ];
         }
+
         $checkFtpUser = $this->_getFtpAccountByUsername($this->ftp_username);
         if (!empty($checkFtpUser)) {
             return [
@@ -95,8 +95,7 @@ class HostingSubscriptionFtpAccount extends Model
                 'message' => 'Ftp account already exists.'
             ];
         }
-
-
+        
         $hostingSubscriptionId = $hostingSubscription->id;
         $ftpUsername = Str::slug($this->ftp_username, '_');
         $ftpUsernamePrefix = $hostingSubscription->system_username . '_';

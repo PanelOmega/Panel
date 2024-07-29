@@ -11,7 +11,7 @@ class FtpConnectionsService
     {
         $logFile = '/var/log/vsftpd.log';
 
-        $userName = substr(self::getConnectonName(), 0, 7);
+        $userName = substr(self::getConnectionName(), 0, 7);
 
         $command = "ps aux | grep 'ftp' | grep '{$userName}' | awk '{print $2}' | head -n -1";
         $output = shell_exec($command);
@@ -61,7 +61,7 @@ class FtpConnectionsService
         return true;
     }
 
-    public static function getConnectonName()
+    public static function getConnectionName()
     {
         $hostingSubscription = Customer::getHostingSubscriptionSession();
         return $hostingSubscription->system_username;

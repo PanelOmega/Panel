@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Services\Fail2Ban\Fail2BanResetTable\Fail2BanResetTableService;
 use App\Services\Fail2Ban\Fail2BanWhitelistIp\Fail2BanWhitelistIpService;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -18,13 +19,16 @@ class Fail2BanWhitelistedIp extends Model
     protected static function boot()
     {
         parent::boot();
+        static::fail2BanCallbacks();
+    }
 
-        static::creating(function ($model) {
-            Fail2BanWhitelistIpService::addWhitelistedIpToJailConf($model->ip);
-        });
+    protected static function fail2BanCallbacks() {
+        $callback = function($model) {
+            Fail2BanWhitelistIpService::updateWhitelistedIps();
+        };
 
-        static::deleting(function ($model) {
-            Fail2BanWhitelistIpService::removeWhiteListedIpFromJailConf($model->ip);
-        });
+        static::created($callback);
+        static::updated($callback);
+        static::deleted($callback);
     }
 }

@@ -57,7 +57,7 @@ class FtpConnectionsResource extends Resource
                 //
             ])
             ->actions([
-                Tables\Actions\EditAction::make('disconnect')
+                Tables\Actions\Action::make('disconnect')
                     ->label('Disconnect')
                     ->icon('heroicon-o-trash')
                     ->action(function (HostingSubscriptionFtpConnection $record) {

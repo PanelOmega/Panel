@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Filament\Resources\Fail2BanWhitelistedIpResource\Pages;
+namespace App\Filament\Clusters\Fail2Ban\Resources\Fail2BanWhitelistedIpResource\Pages;
 
-use App\Filament\Resources\Fail2BanWhitelistedIpResource;
+use App\Filament\Clusters\Fail2Ban\Resources\Fail2BanWhitelistedIpResource;
 use Filament\Actions;
 use Filament\Resources\Pages\ListRecords;
 

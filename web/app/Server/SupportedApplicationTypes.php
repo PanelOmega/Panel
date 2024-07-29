@@ -141,7 +141,6 @@ class SupportedApplicationTypes
         $enginxExtensions = [
             'nginx - bad - request' => 'Nginx Bad Request',
             'nginx - botsearch' => 'Nginx Botsearch',
-            'nginx - http - auth' => 'Nginx Http Auth',
             'nginx - limit - req' => 'Nginx Limit Req',
         ];
 

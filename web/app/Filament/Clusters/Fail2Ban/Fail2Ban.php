@@ -6,5 +6,5 @@ use Filament\Clusters\Cluster;
 
 class Fail2Ban extends Cluster
 {
-    protected static ?string $navigationIcon = 'heroicon-o-squares-2x2';
+    protected static ?string $navigationIcon = 'heroicon-o-shield-check';
 }

@@ -3,7 +3,6 @@
 namespace App\Jobs;
 
 use App\Models\Fail2BanWhitelistedIp;
-use App\Server\Helpers\OS;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -23,8 +22,6 @@ class Fail2BanConfigBuild implements ShouldQueue
 
     public function handle(): void
     {
-        $os = OS::getDistro();
-
         $settings = setting('fail2ban');
 
         $whitelistedIps = [];
@@ -37,14 +34,7 @@ class Fail2BanConfigBuild implements ShouldQueue
             'settings' => $settings['config'] ?? null
         ])->render();
 
-        if ($os == OS::UBUNTU || $os == OS::DEBIAN) {
-
-        } elseif ($os == OS::CLOUD_LINUX || $os == OS::CENTOS || $os == OS::ALMA_LINUX) {
-            file_put_contents('/etc/fail2ban/jail.local', $fail2BanConf);
-            shell_exec('systemctl restart fail2ban');
-        } else {
-            throw new \Exception('Unsupported OS');
-        }
-
+        file_put_contents('/etc/fail2ban/jail.local', $fail2BanConf);
+        shell_exec('systemctl restart fail2ban');
     }
 }

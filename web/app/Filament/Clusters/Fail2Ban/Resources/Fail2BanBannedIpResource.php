@@ -32,7 +32,7 @@ class Fail2BanBannedIpResource extends Resource
         return $form
             ->schema([
                 TextInput::make('ip')
-                    ->label('Whitelist IP')
+                    ->label('Banned IP')
                     ->required()
                     ->autofocus()
                     ->rules(['ip']),
@@ -63,29 +63,6 @@ class Fail2BanBannedIpResource extends Resource
             ])
             ->filters([
                 //
-            ])
-            ->actions([
-                Tables\Actions\Action::make('unban')
-                    ->label('Unban')
-                    ->icon('heroicon-o-trash')
-                    ->action(function (Fail2BanBannedIp $record) {
-                        $result = Fail2BanBannedIpService::unBanIP($record->ip, $record->service);
-                        if ($result) {
-                            Notification::make()
-                                ->title("IP address \"$record->ip\" unbanned successfully!")
-                                ->success()
-                                ->send();
-                        } else {
-                            Notification::make()
-                                ->title("Failed to unban IP address \"$record->ip\"!")
-                                ->danger()
-                                ->send();
-                        }
-
-                    })
-                    ->requiresConfirmation()
-                    ->modalHeading('Unban IP')
-                    ->modalSubmitActionLabel('Unban'),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([

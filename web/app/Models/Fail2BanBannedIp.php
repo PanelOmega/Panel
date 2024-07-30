@@ -8,7 +8,6 @@ use Sushi\Sushi;
 
 class Fail2BanBannedIp extends Model
 {
-
     use Sushi;
 
     protected $fillable = [
@@ -24,6 +23,26 @@ class Fail2BanBannedIp extends Model
         'service' => 'string',
         'ban_date' => 'string'
     ];
+
+    public static function boot()
+    {
+        parent::boot();
+
+        static::deleting(function ($model) {
+            $result = Fail2BanBannedIpService::unBanIP($model->ip, $model->service);
+            if (!$result) {
+                throw new \Exception('Failed to unban IP');
+            }
+        });
+
+        static::creating(function ($model) {
+            $model->service = 'sshd';
+            $result = Fail2BanBannedIpService::banIP($model->ip, $model->service);
+            if (!$result) {
+                throw new \Exception('Failed to ban IP');
+            }
+        });
+    }
 
     public function getRows()
     {

@@ -85,4 +85,13 @@ class Fail2BanBannedIpService
 
         return trim($result) === '1';
     }
+
+    public static function banIP(string $ip, string $service): bool
+    {
+        $command = 'fail2ban-client set ' . $service . ' banip ' . $ip;
+        $result = shell_exec($command);
+
+        return trim($result) === '1';
+    }
+
 }

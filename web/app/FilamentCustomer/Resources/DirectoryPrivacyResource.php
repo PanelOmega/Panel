@@ -5,8 +5,13 @@ namespace App\FilamentCustomer\Resources;
 use App\FilamentCustomer\Resources\DirectoryPrivacyResource\Pages;
 use App\FilamentCustomer\Resources\DirectoryPrivacyResource\RelationManagers;
 use App\Models\DirectoryPrivacy;
+use App\Services\DirectoryPrivacy\DirectoryPrivacyService;
+use Filament\Forms\Components\Checkbox;
+use Filament\Forms\Components\Section;
+use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
+use Filament\Forms\Set;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
@@ -17,12 +22,57 @@ class DirectoryPrivacyResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
+    protected static ?string $label = 'Directory Privacy';
+
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
-                TextInput::make(''),
-            ]);
+
+                Select::make('directory')
+                    ->label('Directory')
+                    ->options(function () {
+                        $directories = DirectoryPrivacy::scanUserDirectories();
+                        return array_combine($directories, $directories);
+                    })
+                    ->required(),
+
+                Checkbox::make('protected')
+                    ->label('Password protect this directory')
+                    ->required()
+                    ->default(false),
+
+                TextInput::make('label')
+                    ->label('Enter a name for the protected directory'),
+
+                Section::make('Create user')
+                    ->label('Create User')
+                    ->schema([
+                        TextInput::make('username')
+                            ->label('Username')
+                            ->required()
+                            ->rules([
+                                'unique:directory_privacies,username'
+                            ]),
+
+                        TextInput::make('password')
+                            ->label('Password')
+                            ->password()
+                            ->revealable()
+                            ->hintAction(
+                                \Filament\Forms\Components\Actions\Action::make('generate_password')
+                                    ->icon('heroicon-m-key')
+                                    ->action(function (Set $set) {
+                                        $randomPassword = substr(str_shuffle('abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()_+'), 0, 24);
+                                        $set('password', $randomPassword);
+                                        $set('password_confirmation', $randomPassword);
+                                    })
+                            )
+                            ->required(),
+                    ])
+                    ->columns(2),
+            ])
+            ->columns(1);
     }
 
     public static function table(Table $table): Table
@@ -52,6 +102,7 @@ class DirectoryPrivacyResource extends Resource
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
+                Tables\Actions\DeleteAction::make(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([

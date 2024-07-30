@@ -222,11 +222,11 @@ class CustomerDashboard extends Page
 //                            'icon'=>'omega_customer-file-images',
 //                            'link'=>'#'
 //                        ],
-//                        [
-//                            'title'=>'Directory Privacy',
-//                            'icon'=>'omega_customer-file-directory-privacy',
-//                            'link'=>'#'
-//                        ],
+                        [
+                            'title'=>'Directory Privacy',
+                            'icon'=>'omega_customer-file-directory-privacy',
+                            'link'=>route('filament.customer.resources.directory-privacies.index')
+                        ],
                         [
                             'title' => 'Disk Usage',
                             'icon' => 'omega_customer-file-disk',

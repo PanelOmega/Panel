@@ -13,10 +13,10 @@ return new class extends Migration
     {
         Schema::create('directory_privacies', function (Blueprint $table) {
             $table->id();
-            $table->string('user')->nullable();
+            $table->unsignedBigInteger('hosting_subscription_id')->nullable();
             $table->string('directory')->nullable();
-            $table->string('allowed_username')->nullable();
-            $table->string('allowed_password')->nullable();
+            $table->string('username')->nullable();
+            $table->string('password')->nullable();
             $table->string('protected')->nullable();
             $table->string('label')->nullable();
             $table->timestamps();

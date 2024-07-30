@@ -2,9 +2,10 @@
 
 namespace App\Filament\Clusters\Fail2Ban\Pages\Settings;
 
+use CodeWithDennis\SimpleAlert\Components\Forms\SimpleAlert;
+
 use App\Filament\Clusters\Fail2Ban\Fail2Ban;
 use App\Jobs\Fail2BanConfigBuild;
-use CodeWithDennis\SimpleAlert\Components\Forms\SimpleAlert;
 use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
@@ -12,6 +13,7 @@ use Filament\Forms\Components\Tabs;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Resources\Components\Tab;
+use Illuminate\Support\HtmlString;
 use Outerweb\FilamentSettings\Filament\Pages\Settings as BaseSettings;
 
 
@@ -47,6 +49,19 @@ class Fail2BanSettings extends BaseSettings
     public function schema(): array|\Closure
     {
         return [
+
+            SimpleAlert::make('msg')
+                ->info()
+                ->title('Fail2Ban Settings')
+                ->description('Configure Fail2Ban settings'),
+
+            SimpleAlert::make('msg2')
+                ->success()
+                ->title(new HtmlString('<strong>Hoorraayy! Your request has been approved! 🎉</strong>'))
+                ->description('Lorem ipsum dolor sit amet consectetur adipisicing elit.')
+                ->link('https://filamentphp.com')
+                ->linkLabel('Read more!'),
+
             Tabs::make('Settings')
                 ->schema([
 

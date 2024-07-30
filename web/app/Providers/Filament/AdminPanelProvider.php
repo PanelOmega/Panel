@@ -46,7 +46,6 @@ class AdminPanelProvider extends PanelProvider
             ->brandLogoHeight('3.5rem')
             //  ->plugin(new OmegaTheme())
             ->viteTheme('resources/css/filament/admin/theme.css')
-            //->colors(OmegaTheme::getColors())
             //  ->icons(OmegaTheme::getIcons())
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\\Filament\\Resources')
             ->discoverClusters(in: app_path('Filament/Clusters'), for: 'App\\Filament\\Clusters')

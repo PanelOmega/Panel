@@ -13,18 +13,17 @@ export default {
         extend: {
             colors: {
                 custom: {
-
-                    '50': '#fdf5f3',
-                    '100': '#fce8e4',
-                    '200': '#fad6ce',
-                    '300': '#f6b8ab',
-                    '400': '#ee8f7b',
-                    '500': '#e16449',
-                    '600': '#ce4f34',
-                    '700': '#ad4028',
-                    '800': '#903724',
-                    '900': '#783324',
-                    '950': '#41170e',
+                    50: 'rgba(var(--c-50), <alpha-value>)',
+                    100: 'rgba(var(--c-100), <alpha-value>)',
+                    200: 'rgba(var(--c-200), <alpha-value>)',
+                    300: 'rgba(var(--c-300), <alpha-value>)',
+                    400: 'rgba(var(--c-400), <alpha-value>)',
+                    500: 'rgba(var(--c-500), <alpha-value>)',
+                    600: 'rgba(var(--c-600), <alpha-value>)',
+                    700: 'rgba(var(--c-700), <alpha-value>)',
+                    800: 'rgba(var(--c-800), <alpha-value>)',
+                    900: 'rgba(var(--c-900), <alpha-value>)',
+                    950: 'rgba(var(--c-950), <alpha-value>)',
                 },
                 danger: {
                     50: 'rgba(var(--danger-50), <alpha-value>)',
@@ -52,7 +51,6 @@ export default {
                     900: 'rgba(var(--gray-900), <alpha-value>)',
                     950: 'rgba(var(--gray-950), <alpha-value>)',
                 },
-
                 info: {
                     50: 'rgba(var(--info-50), <alpha-value>)',
                     100: 'rgba(var(--info-100), <alpha-value>)',
@@ -67,18 +65,17 @@ export default {
                     950: 'rgba(var(--info-950), <alpha-value>)',
                 },
                 primary: {
-
-                    '50': '#fdf5f3',
-                    '100': '#fce8e4',
-                    '200': '#fad6ce',
-                    '300': '#f6b8ab',
-                    '400': '#ee8f7b',
-                    '500': '#e16449',
-                    '600': '#ce4f34',
-                    '700': '#ad4028',
-                    '800': '#903724',
-                    '900': '#783324',
-                    '950': '#41170e',
+                    50: 'rgba(var(--primary-50), <alpha-value>)',
+                    100: 'rgba(var(--primary-100), <alpha-value>)',
+                    200: 'rgba(var(--primary-200), <alpha-value>)',
+                    300: 'rgba(var(--primary-300), <alpha-value>)',
+                    400: 'rgba(var(--primary-400), <alpha-value>)',
+                    500: 'rgba(var(--primary-500), <alpha-value>)',
+                    600: 'rgba(var(--primary-600), <alpha-value>)',
+                    700: 'rgba(var(--primary-700), <alpha-value>)',
+                    800: 'rgba(var(--primary-800), <alpha-value>)',
+                    900: 'rgba(var(--primary-900), <alpha-value>)',
+                    950: 'rgba(var(--primary-950), <alpha-value>)',
                 },
                 success: {
                     50: 'rgba(var(--success-50), <alpha-value>)',

@@ -57,9 +57,9 @@ class Domain extends Model
             $findHostingSubscription = Customer::getHostingSubscriptionSession();
             $model->hosting_subscription_id = $findHostingSubscription->id;
 
-            if ($findHostingSubscription->domain !== $model->domain) {
-                $model->is_main = 0;
-            }
+//            if ($findHostingSubscription->domain !== $model->domain) {
+//                $model->is_main = 0;
+//            }
 
             $findHostingPlan = HostingPlan::where('id', $findHostingSubscription->hosting_plan_id)->first();
             if (!$findHostingPlan) {

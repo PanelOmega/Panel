@@ -89,6 +89,9 @@ class ResetDemo extends Command
         $customer->password = Hash::make('customer');
         $customer->save();
 
+        Auth::guard('customer')->login($customer);
+
+
         $hostingPlan = new HostingPlan();
         $hostingPlan->name = 'Basic Plan';
         $hostingPlan->description = 'Basic hosting plan';
@@ -110,8 +113,10 @@ class ResetDemo extends Command
 //        $hostingSubscription->hosting_plan_id = $hostingPlan->id;
 //        $hostingSubscription->save();
 
+        $wildCardDomain = '.omega.vanesa.ai';
+
         $hostingSubscription = new HostingSubscription();
-        $hostingSubscription->domain = 'wordpress.demo.panelomega.com';
+        $hostingSubscription->domain = 'wordpress'.$wildCardDomain;
         $hostingSubscription->customer_id = $customer->id;
         $hostingSubscription->hosting_plan_id = $hostingPlan->id;
         $hostingSubscription->save();
@@ -119,7 +124,7 @@ class ResetDemo extends Command
 
 
         $hostingSubscription = new HostingSubscription();
-        $hostingSubscription->domain = 'opencart.demo.panelomega.com';
+        $hostingSubscription->domain = 'opencart'.$wildCardDomain;
         $hostingSubscription->customer_id = $customer->id;
         $hostingSubscription->hosting_plan_id = $hostingPlan->id;
         $hostingSubscription->save();

@@ -48,18 +48,20 @@ class Domain extends Model
         parent::boot();
 
         static::created(function ($model) {
-//
-//            $findHostingSubscription = HostingSubscription::where('id', $model->hosting_subscription_id)->first();
-//            if (!$findHostingSubscription) {
-//                throw new \Exception('Hosting Subscription not found');
-//            }
 
-            $findHostingSubscription = Customer::getHostingSubscriptionSession();
-            $model->hosting_subscription_id = $findHostingSubscription->id;
+            if ($model->hosting_subscription_id !== null) {
+                $findHostingSubscription = HostingSubscription::where('id', $model->hosting_subscription_id)->first();
+                if (!$findHostingSubscription) {
+                    throw new \Exception('Hosting Subscription not found');
+                }
+            } else {
+                $findHostingSubscription = Customer::getHostingSubscriptionSession();
+                $model->hosting_subscription_id = $findHostingSubscription->id;
+            }
 
-//            if ($findHostingSubscription->domain !== $model->domain) {
-//                $model->is_main = 0;
-//            }
+            if ($findHostingSubscription->domain !== $model->domain) {
+                $model->is_main = 0;
+            }
 
             $findHostingPlan = HostingPlan::where('id', $findHostingSubscription->hosting_plan_id)->first();
             if (!$findHostingPlan) {

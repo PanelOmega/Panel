@@ -45,6 +45,7 @@ class HostingSubscription extends Model
         parent::boot();
 
         static::creating(function ($model) {
+
             $findDomain = Domain::where('domain', $model->domain)->first();
             if ($findDomain) {
                 throw new \Exception('Domain already exists');

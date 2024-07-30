@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Jobs\Fail2BanConfigBuild;
 use App\Services\Fail2Ban\Fail2BanResetTable\Fail2BanResetTableService;
 use App\Services\Fail2Ban\Fail2BanWhitelistIp\Fail2BanWhitelistIpService;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -23,8 +24,10 @@ class Fail2BanWhitelistedIp extends Model
     }
 
     protected static function fail2BanCallbacks() {
+
         $callback = function($model) {
-            Fail2BanWhitelistIpService::updateWhitelistedIps();
+            $fail2banConfig = new Fail2BanConfigBuild();
+            $fail2banConfig->handle();
         };
 
         static::created($callback);

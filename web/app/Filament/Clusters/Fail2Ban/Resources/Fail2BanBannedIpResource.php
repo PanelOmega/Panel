@@ -7,6 +7,8 @@ use App\Filament\Clusters\Fail2Ban\Fail2Ban\Resources\Fail2BanBannedIpResource\P
 use App\Filament\Clusters\Fail2Ban\Fail2Ban\Resources\Fail2BanBannedIpResource\RelationManagers;
 use App\Models\Fail2BanBannedIp;
 use App\Services\Fail2Ban\Fail2BanBannedIp\Fail2BanBannedIpService;
+use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
@@ -29,7 +31,16 @@ class Fail2BanBannedIpResource extends Resource
     {
         return $form
             ->schema([
-                //
+                TextInput::make('ip')
+                    ->label('Whitelist IP')
+                    ->required()
+                    ->autofocus()
+                    ->rules(['ip']),
+
+//                Textarea::make('comment')
+//                    ->label('Add comment')
+//                    ->placeholder('Add your comment here...')
+//                    ->rows(5)
             ]);
     }
 

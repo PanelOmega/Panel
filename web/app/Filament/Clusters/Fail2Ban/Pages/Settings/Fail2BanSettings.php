@@ -2,19 +2,22 @@
 
 namespace App\Filament\Clusters\Fail2Ban\Pages\Settings;
 
+use App\Filament\Pages\Base\BaseSettings;
 use CodeWithDennis\SimpleAlert\Components\Forms\SimpleAlert;
 
 use App\Filament\Clusters\Fail2Ban\Fail2Ban;
 use App\Jobs\Fail2BanConfigBuild;
 use Filament\Forms\Components\Grid;
+use Filament\Forms\Components\Group;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Tabs;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
+use Filament\Forms\Get;
 use Filament\Resources\Components\Tab;
 use Illuminate\Support\HtmlString;
-use Outerweb\FilamentSettings\Filament\Pages\Settings as BaseSettings;
+use Marvinosswald\FilamentInputSelectAffix\TextInputSelectAffix;
 
 
 class Fail2BanSettings extends BaseSettings
@@ -43,9 +46,11 @@ class Fail2BanSettings extends BaseSettings
     public function save(): void
     {
         parent::save();
+
         $fail2banConfigBuild = new Fail2BanConfigBuild();
         $fail2banConfigBuild->handle();
     }
+
     public function schema(): array|\Closure
     {
         return [
@@ -68,135 +73,106 @@ class Fail2BanSettings extends BaseSettings
                     Tabs\Tab::make('General')
                         ->schema([
 
-                            Section::make('Enable Jails')
+                            Section::make('Jails')
                                 ->schema([
+
                                     Toggle::make('fail2ban.config.general.enabled')
-                                        ->label('')
-                                        ->default(false)
-                                ]),
-//
-//                            "enabled" enables the jails. By default all jails are disabled, and it should stay this way.
-//                              Enable only relevant to your setup jails in your .local or jail.d/*.conf
+                                        ->label('Enable Jails')
+                                        ->live()
+                                        ->default(false),
 
-                            Grid::make()
-                                ->schema([
+                            Group::make([
 
-                                    TextInput::make('fail2ban.config.general.bantime')
-                                        ->label('Ban Time')
-                                        ->placeholder('Default: 1 hour/s'),
+                                Grid::make()
+                                    ->schema([
 
-                                    Select::make('fail2ban.config.general.unit.bantime')
-                                        ->label('Ban Time options')
-                                        ->options([
-                                            's' => 'second/s',
-                                            'm' => 'minute/s',
-                                            'h' => 'hour/s'
-                                        ])
-                                        ->default(function ($get) {
-                                            $bantime = $get('fail2ban.config.general.bantime');
-                                            return $bantime ? null : 'Select an option';
-                                        })
-                                        ->reactive()
-                                        ->afterStateUpdated(function ($state, $get, $set) {
-                                            $bantime = $get('fail2ban.config.general.bantime');
-                                            if ($state && $state !== 'Select an option') {
-                                                $bantime = $get('fail2ban.config.general.bantime');
-                                                if ($bantime !== null && $bantime !== '') {
-                                                    $set('fail2ban.config.general.bantime', $bantime);
-                                                }
-                                            } else {
-                                                $set('fail2ban.config.general.bantime', '');
-                                            }
-                                        }),
-                                ])
-                                ->columns(2),
-//                                            Provide customizations in a jail.local file or a jail.d/customisation.local.
-//                                            For example to change the default bantime for all jails and to enable the ssh-iptables
-//                                            jail the following (uncommented) would appear in the .local file.
+                                        TextInputSelectAffix::make('fail2ban.config.general.bantime')
+                                            ->placeholder('Default: 1 hour/s')
+                                            ->select(function () {
+                                                return Select::make('fail2ban.config.general.bantime_unit')
+                                                    ->options([
+                                                        's' => 'second/s',
+                                                        'm' => 'minute/s',
+                                                        'h' => 'hour/s'
+                                                    ])
+                                                    ->default('h');
+                                            }),
 
+                                        TextInputSelectAffix::make('fail2ban.config.general.findtime')
+                                            ->placeholder('Default: 10 minute/s')
 
-                            TextInput::make('fail2ban.config.general.ignorecommand')
-                                ->label('Ignore command')
-                                ->placeholder('Default: null'),
+                                            ->select(function () {
+                                                return Select::make('fail2ban.config.general.findtime_unit')
+                                                    ->options([
+                                                        's' => 'second/s',
+                                                        'm' => 'minute/s',
+                                                        'h' => 'hour/s'
+                                                    ])
+                                                    ->default('h');
+                                            }),
 
-//                            External command that will take an tagged arguments to ignore, e.g.
-//                              and return true if the IP is to be ignored. False otherwise.
+                                    ])
+                                    ->columns(2),
 
-                            Grid::make()
-                                ->schema([
-                                    TextInput::make('fail2ban.config.general.findtime')
-                                        ->label('Find Time')
-                                        ->placeholder('Default: 10 minute/s'),
+                                TextInput::make('fail2ban.config.general.ignorecommand')
+                                    ->label('Ignore command')
+                                    ->helperText('External command that will take an tagged arguments to ignore, e.g.
+                              and return true if the IP is to be ignored. False otherwise.')
+                                    ->placeholder('Default: null'),
+                                Grid::make()
+                                    ->schema([
+                                        TextInput::make('fail2ban.config.general.maxretry')
+                                            ->label('Max retry')
+                                            ->helperText('A host is banned if it has generated "maxretry" during the last "findtime"
+//                              seconds.')
+                                            ->placeholder('Default: 5'),
 
-                                    Select::make('fail2ban.config.general.unit.findtime')
-                                        ->label('Find Time options')
-                                        ->options([
-                                            's' => 'second/s',
-                                            'm' => 'minute/s',
-                                            'h' => 'hour/s'
-                                        ])
-                                        ->default(function ($get) {
-                                            $findtime = $get('fail2ban.config.general.findtime');
-                                            return $findtime ? null : 'Select an option';
-                                        })
-                                        ->reactive()
-                                        ->afterStateUpdated(function ($state, $get, $set) {
-                                            $findtime = $get('fail2ban.config.general.findtime');
-                                            if (!$findtime) {
-                                                $set('fail2ban.config.general.unit.findtime', 'Select an option');
-                                            }
-                                        }),
-                                ])
-                                ->columns(2),
-//                              A host is banned if it has generated "maxretry" during the last "findtime"
-//                              seconds.
-
-                            Grid::make()
-                                ->schema([
-                                    TextInput::make('fail2ban.config.general.maxretry')
-                                        ->label('Max retry')
-                                        ->placeholder('Default: 5'),
-
-                                    Select::make('fail2ban.config.general.backend')
-                                        ->label('Backend')
-                                        ->options([
-                                            'auto' => 'auto'
-                                        ])
-                                        ->default('auto'),
-                                ])
-                                ->columns(2),
-
-                            Grid::make()
-                                ->schema([
-                                    Select::make('fail2ban.config.general.usedns')
-                                        ->label('Usedns')
-                                        ->options([
-                                            'warn' => 'warn',
-                                            'yes' => 'yes',
-                                            'but' => 'but',
-                                            'no' => 'no',
-                                            'raw' => 'raw'
-                                        ])
-                                        ->default('warn'),
+                                        Select::make('fail2ban.config.general.backend')
+                                            ->label('Backend')
+                                            ->options([
+                                                'auto' => 'auto'
+                                            ])
+                                            ->default('auto'),
+                                    ])
+                                    ->columns(2),
+                                Grid::make()
+                                    ->schema([
+                                        Select::make('fail2ban.config.general.usedns')
+                                            ->label('Usedns')
+                                            ->options([
+                                                'warn' => 'warn',
+                                                'yes' => 'yes',
+                                                'but' => 'but',
+                                                'no' => 'no',
+                                                'raw' => 'raw'
+                                            ])
+                                            ->default('warn'),
 
 //                            "usedns" specifies if jails should trust hostnames in logs,
 //                              warn when DNS lookups are performed, or ignore all hostnames in logs
 
 
-                                    Select::make('fail2ban.config.general.logencoding')
-                                        ->label('Log Encoding')
-                                        ->options([
-                                            'auto' => 'auto',
-                                            'ascii' => 'ascii',
-                                            'utf8' => 'utf-8',
-                                        ])
-                                        ->default('auto'),
+                                        Select::make('fail2ban.config.general.logencoding')
+                                            ->label('Log Encoding')
+                                            ->options([
+                                                'auto' => 'auto',
+                                                'ascii' => 'ascii',
+                                                'utf8' => 'utf-8',
+                                            ])
+                                            ->default('auto'),
 //                                    "logencoding" specifies the encoding of the log files handled by the jail
 //                                      This is used to decode the lines from the log file.
-                                ])
-                                ->columns(2),
+                                    ])
+                                    ->columns(2),
+
+                            ])->hidden(function (Get $get) {
+                                return !$get('fail2ban.config.general.enabled');
+                            }),
+
 
                         ]),
+                  ]),
+
                     Tabs\Tab::make('Actions')
                         ->schema([
                             Grid::make()

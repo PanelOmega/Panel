@@ -33,17 +33,17 @@ class Fail2BanBannedIp extends Model
 
         static::deleting(function ($model) {
             $result = Fail2BanBannedIpService::unBanIP($model->ip, $model->service);
-            if (!$result) {
-                throw new \Exception('Failed to unban IP');
-            }
+//            if (!$result) {
+//                throw new \Exception('Failed to unban IP');
+//            }
         });
 
         static::creating(function ($model) {
             $model->service = 'sshd';
             $result = Fail2BanBannedIpService::banIP($model->ip, $model->service);
-            if (!$result) {
-                throw new \Exception('Failed to ban IP');
-            }
+//            if (!$result) {
+//                throw new \Exception('Failed to ban IP');
+//            }
         });
     }
 

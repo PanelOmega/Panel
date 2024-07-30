@@ -36,7 +36,6 @@ class AdminPanelProvider extends PanelProvider
             ->login()
             ->colors([
                 'primary' => '#e16449',
-                'gray' => '#25242E',
             ])
             ->brandName('Panel Omega')
             ->sidebarWidth('16rem')

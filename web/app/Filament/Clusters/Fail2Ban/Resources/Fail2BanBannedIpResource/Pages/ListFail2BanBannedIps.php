@@ -23,7 +23,7 @@ class ListFail2BanBannedIps extends ListRecords
     public function getHeaderWidgets(): array
     {
         return [
-            Fail2BanBannedIpResource\Widgets\Fail2BanBannedIpReloadHeaderPage::class,
+
         ];
     }
 }

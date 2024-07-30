@@ -31,11 +31,11 @@ class Fail2BanBannedIpService
         return $bannedIps;
     }
 
-    public static function getJailStatus(string $jail): string
-    {
-        $command = 'fail2ban-client status ' . $jail;
-        return shell_exec($command);
-    }
+//    public static function getJailStatus(string $jail): string
+//    {
+//        $command = 'fail2ban-client status ' . $jail;
+//        return shell_exec($command);
+//    }
 
     public static function unBanIP(string $ip, string $service): bool
     {

@@ -60,6 +60,8 @@ class Fail2BanBannedIpResource extends Resource
                     ->label('Service'),
                 Tables\Columns\TextColumn::make('ban_date')
                     ->label('Banned Since'),
+                Tables\Columns\TextColumn::make('ban_time')
+                    ->label('Ban Time'),
             ])
             ->filters([
                 //

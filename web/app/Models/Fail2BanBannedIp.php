@@ -3,6 +3,8 @@
 namespace App\Models;
 
 use App\Services\Fail2Ban\Fail2BanBannedIp\Fail2BanBannedIpService;
+use Carbon\Carbon;
+use Carbon\CarbonInterval;
 use Illuminate\Database\Eloquent\Model;
 use Sushi\Sushi;
 
@@ -13,7 +15,7 @@ class Fail2BanBannedIp extends Model
     protected $fillable = [
         'ip',
         'status',
-        'banned_date'
+        'banned_date',
     ];
 
     protected $schema = [
@@ -21,7 +23,8 @@ class Fail2BanBannedIp extends Model
         'ip' => 'string',
         'status' => 'string',
         'service' => 'string',
-        'ban_date' => 'string'
+        'ban_date' => 'string',
+        'ban_time' => 'string',
     ];
 
     public static function boot()
@@ -55,9 +58,14 @@ class Fail2BanBannedIp extends Model
                 'status' => $bannedIps['status'],
                 'service' => $bannedIps['service'],
                 'ban_date' => $bannedIps['ban_date'],
+                'ban_time' => $this->secondsToHumanReadable($bannedIps['ban_time'])
             ];
         }, $bannedIps, array_keys($bannedIps));
 
+    }
 
+    public function secondsToHumanReadable($seconds)
+    {
+        return CarbonInterval::seconds($seconds)->cascade()->forHumans();
     }
 }

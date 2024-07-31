@@ -2,11 +2,10 @@
 
 namespace App\Filament\Clusters\Fail2Ban\Pages\Settings;
 
-use App\Filament\Pages\Base\BaseSettings;
-use CodeWithDennis\SimpleAlert\Components\Forms\SimpleAlert;
-
 use App\Filament\Clusters\Fail2Ban\Fail2Ban;
+use App\Filament\Pages\Base\BaseSettings;
 use App\Jobs\Fail2BanConfigBuild;
+use CodeWithDennis\SimpleAlert\Components\Forms\SimpleAlert;
 use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\Group;
 use Filament\Forms\Components\Section;
@@ -173,7 +172,7 @@ class Fail2BanSettings extends BaseSettings
                         ]),
                   ]),
 
-                    Tabs\Tab::make('Actions')
+                    Tabs\Tab::make('Report Actions')
                         ->schema([
                             Grid::make()
                                 ->schema([
@@ -241,107 +240,115 @@ class Fail2BanSettings extends BaseSettings
                                         ->schema([
                                             Toggle::make('fail2ban.config.jails.sshd.enabled')
                                                 ->label('')
+                                                ->live()
                                                 ->default(false),
 
-                                        ]),
-
-//                                    "enabled" enables the SSHD jail.
+ //                                    "enabled" enables the SSHD jail.
 //                                     By default the jail is disabled, and it should stay this way.
 
-                                    Grid::make()
-                                        ->schema([
-                                            TextInput::make('fail2ban.config.jails.sshd.port')
-                                                ->label('Port')
-                                                ->placeholder('Default: ssh')
-                                                ->reactive(),
+
+                                            Group::make([
+                                                Grid::make()
+                                                    ->schema([
+                                                        TextInput::make('fail2ban.config.jails.sshd.port')
+                                                            ->label('Port')
+                                                            ->placeholder('Default: ssh')
+                                                            ->reactive(),
 
 
-                                            Select::make('fail2ban.config.jails.sshd.unit.port')
-                                                ->label('Port options')
-                                                ->options([
-                                                    'ssh' => 'ssh',
-                                                    '22' => '22',
-                                                    '2222' => '2222',
-                                                    '2200' => '2200',
-                                                    '2202' => '2202',
-                                                    '443' => '443',
-                                                    '80' => '80'
-                                                ])
-                                                ->live()
-                                                ->afterStateUpdated(function ($state, $get, $set) {
-                                                    $ports = $get('fail2ban.config.jails.sshd.port');
+                                                        Select::make('fail2ban.config.jails.sshd.unit.port')
+                                                            ->label('Port options')
+                                                            ->options([
+                                                                'ssh' => 'ssh',
+                                                                '22' => '22',
+                                                                '2222' => '2222',
+                                                                '2200' => '2200',
+                                                                '2202' => '2202',
+                                                                '443' => '443',
+                                                                '80' => '80'
+                                                            ])
+                                                            ->live()
+                                                            ->afterStateUpdated(function ($state, $get, $set) {
+                                                                $ports = $get('fail2ban.config.jails.sshd.port');
 
-                                                    if($state) {
+                                                                if($state) {
 
 
-                                                        if ($ports !== null && $ports !== '') {
-                                                            $portsArr = explode(',', $ports);
+                                                                    if ($ports !== null && $ports !== '') {
+                                                                        $portsArr = explode(',', $ports);
 
-                                                            if (!in_array($state, $portsArr)) {
-                                                                $portsArr[] = $state;
-                                                            }
-                                                            $set('fail2ban.config.jails.sshd.port', implode(',', $portsArr));
-                                                        } else {
-                                                            $set('fail2ban.config.jails.sshd.port', $state);
-                                                        }
-                                                    } else {
-                                                        $set('fail2ban.config.jails.sshd.port', null);
-                                                    }
-                                                })
+                                                                        if (!in_array($state, $portsArr)) {
+                                                                            $portsArr[] = $state;
+                                                                        }
+                                                                        $set('fail2ban.config.jails.sshd.port', implode(',', $portsArr));
+                                                                    } else {
+                                                                        $set('fail2ban.config.jails.sshd.port', $state);
+                                                                    }
+                                                                } else {
+                                                                    $set('fail2ban.config.jails.sshd.port', null);
+                                                                }
+                                                            })
 
-                                            //       Ports to be banned
-                                        ])
-                                        ->columns(2),
+                                                        //       Ports to be banned
+                                                    ])
+                                                    ->columns(2),
 
-                                    Select::make('fail2ban.config.jails.sshd.filter')
-                                        ->label('Filter')
-                                        ->options([
-                                            'sshd' => 'sshd',
-                                        ])
-                                        ->default('sshd'),
+                                                Select::make('fail2ban.config.jails.sshd.filter')
+                                                    ->label('Filter')
+                                                    ->options([
+                                                        'sshd' => 'sshd',
+                                                    ])
+                                                    ->default('sshd'),
 
 //                                    "filter" defines the filter to use by the SSHD jail.
 //                                      By default jails have names matching their filter name
 
-                                    TextInput::make('fail2ban.config.jails.sshd.findtime')
-                                        ->label('Find Time')
-                                        ->placeholder('Default: 1800')
-                                        ->suffix('m'),
+                                                TextInput::make('fail2ban.config.jails.sshd.findtime')
+                                                    ->label('Find Time')
+                                                    ->placeholder('Default: 1800')
+                                                    ->suffix('m'),
 
 //                                    A host is banned if it has generated "maxretry" during the last "findtime"
 //                                      seconds.
 
-                                    TextInput::make('fail2ban.config.jails.sshd.bantime')
-                                        ->label('Ban Time')
-                                        ->placeholder('Default: 7200')
-                                        ->suffix('m'),
+                                                TextInput::make('fail2ban.config.jails.sshd.bantime')
+                                                    ->label('Ban Time')
+                                                    ->placeholder('Default: 7200')
+                                                    ->suffix('m'),
 
 //                                    "bantime" is the number of seconds that a host is banned
 
-                                    Select::make('fail2ban.config.jails.sshd.banaction')
-                                        ->label('Ban Action')
-                                        ->options([
-                                            'iptables' => 'iptables',
-                                            'iptables-new' => 'iptables-new',
-                                            'iptables-multipot' => 'iptables-multipot',
-                                            'shorewall' => 'shorewall'
-                                        ])
-                                        ->default('iptables'),
+                                                Select::make('fail2ban.config.jails.sshd.banaction')
+                                                    ->label('Ban Action')
+                                                    ->options([
+                                                        'iptables' => 'iptables',
+                                                        'iptables-new' => 'iptables-new',
+                                                        'iptables-multipot' => 'iptables-multipot',
+                                                        'shorewall' => 'shorewall'
+                                                    ])
+                                                    ->default('iptables'),
 
 //                                    Default banning action (e.g. iptables, iptables-new,
 //                                      iptables-multiport, shorewall, etc) It is used to define
 //                                      action_* variables. Can be overridden globally or per
 //                                      section within jail.local file
 
-                                    TextInput::make('fail2ban.config.jails.sshd.maxretry')
-                                        ->label('Max Retry')
-                                        ->placeholder('Default: 4'),
+                                                TextInput::make('fail2ban.config.jails.sshd.maxretry')
+                                                    ->label('Max Retry')
+                                                    ->placeholder('Default: 4'),
 
-                                    TextInput::make('fail2ban.config.jails.sshd.logpath')
-                                        ->label('Log Path')
-                                        ->placeholder('Default: /var/log/fail2ban.log'),
+                                                TextInput::make('fail2ban.config.jails.sshd.logpath')
+                                                    ->label('Log Path')
+                                                    ->placeholder('Default: /var/log/fail2ban.log'),
+                                            ])
+                                                ->hidden(function (Get $get) {
+                                                    return !$get('fail2ban.config.jails.sshd.enabled');
+                                                }),
 
 //                                    identifies the jail`s default logpath for the SSHD Jail
+
+                                        ]),
+
                                 ])
                                 ->columns(2),
 
@@ -352,124 +359,132 @@ class Fail2BanSettings extends BaseSettings
                                         ->schema([
                                             Toggle::make('fail2ban.config.jails.apache.enabled')
                                                 ->label('')
+                                                ->live()
                                                 ->default(false),
-                                        ]),
-                                    //                                    "enabled" enables the Apache jail.
+
+//                                    "enabled" enables the Apache jail.
 //                                     By default the jail is disabled, and it should stay this way.
 
-                                    Grid::make()
-                                        ->schema([
-                                            TextInput::make('fail2ban.config.jails.apache.port')
-                                                ->label('Port')
-                                                ->placeholder('Default: http,https')
-                                                ->reactive(),
+                                            Group::make([
+                                                Grid::make()
+                                                    ->schema([
+                                                        TextInput::make('fail2ban.config.jails.apache.port')
+                                                            ->label('Port')
+                                                            ->placeholder('Default: http,https')
+                                                            ->reactive(),
 
 
-                                            Select::make('fail2ban.config.jails.apache.unit.port')
-                                                ->label('Port options')
-                                                ->options([
-                                                    'http' => 'http',
-                                                    'https' => 'https',
-                                                ])
-                                                ->live()
-                                                ->afterStateUpdated(function ($state, $get, $set) {
-                                                    $ports = $get('fail2ban.config.jails.apache.port');
+                                                        Select::make('fail2ban.config.jails.apache.unit.port')
+                                                            ->label('Port options')
+                                                            ->options([
+                                                                'http' => 'http',
+                                                                'https' => 'https',
+                                                            ])
+                                                            ->live()
+                                                            ->afterStateUpdated(function ($state, $get, $set) {
+                                                                $ports = $get('fail2ban.config.jails.apache.port');
 
-                                                    if($state) {
+                                                                if($state) {
 
 
-                                                        if ($ports !== null && $ports !== '') {
-                                                            $portsArr = explode(',', $ports);
+                                                                    if ($ports !== null && $ports !== '') {
+                                                                        $portsArr = explode(',', $ports);
 
-                                                            if (!in_array($state, $portsArr)) {
-                                                                $portsArr[] = $state;
-                                                            }
-                                                            $set('fail2ban.config.jails.apache.port', implode(',', $portsArr));
-                                                        } else {
-                                                            $set('fail2ban.config.jails.apache.port', $state);
-                                                        }
-                                                    } else {
-                                                        $set('fail2ban.config.jails.apache.port', null);
-                                                    }
-                                                })
+                                                                        if (!in_array($state, $portsArr)) {
+                                                                            $portsArr[] = $state;
+                                                                        }
+                                                                        $set('fail2ban.config.jails.apache.port', implode(',', $portsArr));
+                                                                    } else {
+                                                                        $set('fail2ban.config.jails.apache.port', $state);
+                                                                    }
+                                                                } else {
+                                                                    $set('fail2ban.config.jails.apache.port', null);
+                                                                }
+                                                            })
 
-                                            //       Ports to be banned
-                                        ])
-                                        ->columns(2),
+                                                        //       Ports to be banned
+                                                    ])
+                                                    ->columns(2),
 
-                                    Grid::make()
-                                        ->schema([
-                                            TextInput::make('fail2ban.config.jails.apache.action')
-                                                ->label('Action')
-                                                ->placeholder('Default: iptables[name=HTTP, port=http, protocol=tcp]')
-                                                ->reactive(),
+                                                Grid::make()
+                                                    ->schema([
+                                                        TextInput::make('fail2ban.config.jails.apache.action')
+                                                            ->label('Action')
+                                                            ->placeholder('Default: iptables[name=HTTP, port=http, protocol=tcp]')
+                                                            ->reactive(),
 
-                                            Select::make('fail2ban.config.jails.apache.unit.action')
-                                                ->label('Action options')
-                                                ->options([
-                                                    'iptables' => 'iptables',
-                                                    'iptables-new' => 'iptables-new',
-                                                    'iptables-multiport' => 'iptables-multiport'
-                                                ])
-                                                ->live()
-                                                ->afterStateUpdated(function ($state, $set) {
+                                                        Select::make('fail2ban.config.jails.apache.unit.action')
+                                                            ->label('Action options')
+                                                            ->options([
+                                                                'iptables' => 'iptables',
+                                                                'iptables-new' => 'iptables-new',
+                                                                'iptables-multiport' => 'iptables-multiport'
+                                                            ])
+                                                            ->live()
+                                                            ->afterStateUpdated(function ($state, $set) {
 
-                                                    if($state) {
-                                                        $action = $state . '[name= , port= , protocol= ]';
-                                                    } else {
-                                                        $action = null;
-                                                    }
-                                                    $set('fail2ban.config.jails.apache.action', $action);
-                                                }),
+                                                                if($state) {
+                                                                    $action = $state . '[name= , port= , protocol= ]';
+                                                                } else {
+                                                                    $action = null;
+                                                                }
+                                                                $set('fail2ban.config.jails.apache.action', $action);
+                                                            }),
 
 //                                            See action.d/abuseipdb.conf for usage example and details
-                                        ])
-                                        ->columns(2),
+                                                    ])
+                                                    ->columns(2),
 
-                                    Select::make('fail2ban.config.jails.apache.filter')
-                                        ->label('Filter')
-                                        ->options([
-                                            'apache-auth' => 'apache-auth',
-                                            'apache-badbots' => 'apache-badbots',
-                                            'apache-botsearch' => 'apache-botsearch',
-                                            'apache-common' => 'apache-common',
-                                            'apache-fakegooglebot' => 'apache-fakegooglebot',
-                                            'apache-modsecurity' => 'apache-modsecurity',
-                                            'apache-nohome' => 'apache-nohome',
-                                            'apache-noscripti' => 'apache-noscripti',
-                                            'apache-overflows' => 'apache-overflows',
-                                            'apache-pass' => 'apache-pass',
-                                            'apache-shellshock' => 'apache-shellshock',
-                                        ])
-                                        ->default('apache-auth'),
+                                                Select::make('fail2ban.config.jails.apache.filter')
+                                                    ->label('Filter')
+                                                    ->options([
+                                                        'apache-auth' => 'apache-auth',
+                                                        'apache-badbots' => 'apache-badbots',
+                                                        'apache-botsearch' => 'apache-botsearch',
+                                                        'apache-common' => 'apache-common',
+                                                        'apache-fakegooglebot' => 'apache-fakegooglebot',
+                                                        'apache-modsecurity' => 'apache-modsecurity',
+                                                        'apache-nohome' => 'apache-nohome',
+                                                        'apache-noscripti' => 'apache-noscripti',
+                                                        'apache-overflows' => 'apache-overflows',
+                                                        'apache-pass' => 'apache-pass',
+                                                        'apache-shellshock' => 'apache-shellshock',
+                                                    ])
+                                                    ->default('apache-auth'),
 
 //                                    "filter" defines the filter to use by the Apache jail.
 //                                      By default jails have names matching their filter name
 
-                                    TextInput::make('fail2ban.config.jails.apache.findtime')
-                                        ->label('Find Time')
-                                        ->placeholder('Default: 1800')
-                                        ->suffix('m'),
+                                                TextInput::make('fail2ban.config.jails.apache.findtime')
+                                                    ->label('Find Time')
+                                                    ->placeholder('Default: 1800')
+                                                    ->suffix('m'),
 
 //                                    A host is banned if it has generated "maxretry" during the last "findtime"
 //                                      seconds.
 
-                                    TextInput::make('fail2ban.config.jails.apache.bantime')
-                                        ->label('Ban Time')
-                                        ->placeholder('Default: 7200')
-                                        ->suffix('m'),
+                                                TextInput::make('fail2ban.config.jails.apache.bantime')
+                                                    ->label('Ban Time')
+                                                    ->placeholder('Default: 7200')
+                                                    ->suffix('m'),
 
 //                                    "bantime" is the number of seconds that a host is banned
 
-                                    TextInput::make('fail2ban.config.jails.apache.maxretry')
-                                        ->label('Max retry')
-                                        ->placeholder('Default: 4'),
+                                                TextInput::make('fail2ban.config.jails.apache.maxretry')
+                                                    ->label('Max retry')
+                                                    ->placeholder('Default: 4'),
 
-                                    TextInput::make('fail2ban.config.jails.apache.logpath')
-                                        ->label('Log Path')
-                                        ->placeholder('Default: /var/log/fail2ban.log'),
+                                                TextInput::make('fail2ban.config.jails.apache.logpath')
+                                                    ->label('Log Path')
+                                                    ->placeholder('Default: /var/log/fail2ban.log'),
 
 //                                    identifies the jail`s default logpath for the Apache Jail
+                                            ])
+                                                ->hidden(function (Get $get) {
+                                                    return !$get('fail2ban.config.jails.apache.enabled');
+                                                }),
+
+                                        ]),
                                 ])
                                 ->columns(2),
 
@@ -481,82 +496,84 @@ class Fail2BanSettings extends BaseSettings
                                         ->schema([
                                             Toggle::make('fail2ban.config.jails.vsftpd.enabled')
                                                 ->label('')
+                                                ->live()
                                                 ->default(false),
-                                        ]),
 
-                                    //                                    "enabled" enables the vsFTPD jail.
+                                            //                                    "enabled" enables the vsFTPD jail.
 //                                     By default the jail is disabled, and it should stay this way.
 
-                                    Grid::make()
-                                        ->schema([
-                                            TextInput::make('fail2ban.config.jails.vsftpd.port')
-                                                ->label('Port')
-                                                ->placeholder('Default: ftp,ftp-data,ftps,ftps-data')
-                                                ->reactive(),
+                                            Group::make([
 
-                                            Select::make('fail2ban.config.jails.vsftpd.unit.port')
-                                                ->label('Port options')
-                                                ->options([
-                                                    'ftp' => 'ftp',
-                                                    'ftp-data' => 'ftp-data',
-                                                    'ftps' => 'ftps',
-                                                    'ftps-data' => 'ftps-data',
-                                                ])
-                                                ->live()
-                                                ->afterStateUpdated(function ($state, $get, $set) {
-                                                    $ports = $get('fail2ban.config.jails.vsftpd.port');
+                                                Grid::make()
+                                                    ->schema([
+                                                        TextInput::make('fail2ban.config.jails.vsftpd.port')
+                                                            ->label('Port')
+                                                            ->placeholder('Default: ftp,ftp-data,ftps,ftps-data')
+                                                            ->reactive(),
 
-                                                    if($state) {
-                                                        if ($ports !== null && $ports !== '') {
-                                                            $portsArr = explode(',', $ports);
+                                                        Select::make('fail2ban.config.jails.vsftpd.unit.port')
+                                                            ->label('Port options')
+                                                            ->options([
+                                                                'ftp' => 'ftp',
+                                                                'ftp-data' => 'ftp-data',
+                                                                'ftps' => 'ftps',
+                                                                'ftps-data' => 'ftps-data',
+                                                            ])
+                                                            ->live()
+                                                            ->afterStateUpdated(function ($state, $get, $set) {
+                                                                $ports = $get('fail2ban.config.jails.vsftpd.port');
 
-                                                            if (!in_array($state, $portsArr)) {
-                                                                $portsArr[] = $state;
-                                                            }
-                                                            $set('fail2ban.config.jails.vsftpd.port', implode(',', $portsArr));
-                                                        } else {
-                                                            $set('fail2ban.config.jails.vsftpd.port', $state);
-                                                        }
-                                                    } else {
-                                                        $set('fail2ban.config.jails.vsftpd.port', null);
-                                                    }
-                                                })
-                                        ])
-                                        ->columns(2),
-                                    //       Ports to be banned
+                                                                if($state) {
+                                                                    if ($ports !== null && $ports !== '') {
+                                                                        $portsArr = explode(',', $ports);
 
-                                    Select::make('fail2ban.config.jails.vsftpd.filter')
-                                        ->label('Filter')
-                                        ->options([
-                                            'vsftpd' => 'vsftpd',
-                                        ])
-                                        ->default('vsftpd'),
+                                                                        if (!in_array($state, $portsArr)) {
+                                                                            $portsArr[] = $state;
+                                                                        }
+                                                                        $set('fail2ban.config.jails.vsftpd.port', implode(',', $portsArr));
+                                                                    } else {
+                                                                        $set('fail2ban.config.jails.vsftpd.port', $state);
+                                                                    }
+                                                                } else {
+                                                                    $set('fail2ban.config.jails.vsftpd.port', null);
+                                                                }
+                                                            })
+                                                    ])
+                                                    ->columns(2),
+                                                //       Ports to be banned
+
+                                                Select::make('fail2ban.config.jails.vsftpd.filter')
+                                                    ->label('Filter')
+                                                    ->options([
+                                                        'vsftpd' => 'vsftpd',
+                                                    ])
+                                                    ->default('vsftpd'),
 
 //                                    "filter" defines the filter to use by the vsFTPD jail.
 //                                      By default jails have names matching their filter name
 
-                                    TextInput::make('fail2ban.config.jails.vsftpd.findtime')
-                                        ->label('Find Time')
-                                        ->placeholder('Default: 1800')
-                                        ->suffix('m'),
+                                                TextInput::make('fail2ban.config.jails.vsftpd.findtime')
+                                                    ->label('Find Time')
+                                                    ->placeholder('Default: 1800')
+                                                    ->suffix('m'),
 
 //                                    A host is banned if it has generated "maxretry" during the last "findtime"
 //                                      seconds.
 
-                                    TextInput::make('fail2ban.config.jails.vsftpd.bantime')
-                                        ->label('Ban Time')
-                                        ->placeholder('Default: 7200')
-                                        ->suffix('m'),
+                                                TextInput::make('fail2ban.config.jails.vsftpd.bantime')
+                                                    ->label('Ban Time')
+                                                    ->placeholder('Default: 7200')
+                                                    ->suffix('m'),
 
-                                    Select::make('fail2ban.config.jails.vsftpd.banaction')
-                                        ->label('Ban Action options')
-                                        ->options([
-                                            'iptables' => 'iptables',
-                                            'iptables-new' => 'iptables-new',
-                                            'iptables-multipot' => 'iptables-multipot',
-                                            'shorewall' => 'shorewall'
-                                        ])
-                                        ->default('iptables'),
+                                                Select::make('fail2ban.config.jails.vsftpd.banaction')
+                                                    ->label('Ban Action options')
+                                                    ->options([
+                                                        'iptables' => 'iptables',
+                                                        'iptables-new' => 'iptables-new',
+                                                        'iptables-multipot' => 'iptables-multipot',
+                                                        'shorewall' => 'shorewall'
+                                                    ])
+                                                    ->default('iptables'),
 
 //                                     Default banning action (e.g. iptables, iptables-new,
 //                                      iptables-multiport, shorewall, etc) It is used to define
@@ -564,15 +581,22 @@ class Fail2BanSettings extends BaseSettings
 //                                      section within jail.local file
 
 
-                                    TextInput::make('fail2ban.config.jails.vsftpd.maxretry')
-                                        ->label('Max Retry')
-                                        ->placeholder('Default: 4'),
+                                                TextInput::make('fail2ban.config.jails.vsftpd.maxretry')
+                                                    ->label('Max Retry')
+                                                    ->placeholder('Default: 4'),
 
-                                    TextInput::make('fail2ban.config.jails.vsftpd.logpath')
-                                        ->label('Log Path')
-                                        ->placeholder('Default: /var/log/fail2ban.log'),
+                                                TextInput::make('fail2ban.config.jails.vsftpd.logpath')
+                                                    ->label('Log Path')
+                                                    ->placeholder('Default: /var/log/fail2ban.log'),
 
 //                                    identifies the jail`s default logpath for the vsFTPD Jail
+
+                                            ])
+                                                ->hidden(function (Get $get) {
+                                                    return !$get('fail2ban.config.jails.vsftpd.enabled');
+                                                }),
+                                        ]),
+
                                 ])
                                 ->columns(2),
                         ])

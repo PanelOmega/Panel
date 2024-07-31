@@ -23,6 +23,7 @@ class Fail2BanConfigBuild implements ShouldQueue
     public function handle(): void
     {
         $settings = setting('fail2ban');
+        $pathToConfig = '/etc/fail2ban/jail.local';
 
         $whitelistedIps = [];
         if (Fail2BanWhitelistedIp::all()) {
@@ -34,7 +35,7 @@ class Fail2BanConfigBuild implements ShouldQueue
             'settings' => $settings['config'] ?? null
         ])->render();
 
-        file_put_contents('/etc/fail2ban/jail.local', $fail2BanConf);
+        file_put_contents($pathToConfig, $fail2BanConf);
         shell_exec('systemctl restart fail2ban');
     }
 }

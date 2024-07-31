@@ -3,7 +3,6 @@
 namespace App\Models;
 
 use App\Services\Fail2Ban\Fail2BanBannedIp\Fail2BanBannedIpService;
-use Carbon\Carbon;
 use Carbon\CarbonInterval;
 use Illuminate\Database\Eloquent\Model;
 use Sushi\Sushi;
@@ -15,7 +14,9 @@ class Fail2BanBannedIp extends Model
     protected $fillable = [
         'ip',
         'status',
+        'service',
         'banned_date',
+        'banned_time',
     ];
 
     protected $schema = [
@@ -31,18 +32,17 @@ class Fail2BanBannedIp extends Model
     {
         parent::boot();
 
+        static::creating(function ($model) {
+            $result = Fail2BanBannedIpService::banIP($model->ip, $model->service);
+//            if (!$result) {
+//                throw new \Exception('Failed to ban IP');
+//            }
+        });
+
         static::deleting(function ($model) {
             $result = Fail2BanBannedIpService::unBanIP($model->ip, $model->service);
 //            if (!$result) {
 //                throw new \Exception('Failed to unban IP');
-//            }
-        });
-
-        static::creating(function ($model) {
-            $model->service = 'sshd';
-            $result = Fail2BanBannedIpService::banIP($model->ip, $model->service);
-//            if (!$result) {
-//                throw new \Exception('Failed to ban IP');
 //            }
         });
     }

@@ -9,6 +9,7 @@ use App\Models\Fail2BanWhitelistedIp;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
+use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
@@ -23,7 +24,7 @@ class Fail2BanWhitelistedIpResource extends Resource
 
     protected static ?string $cluster = Fail2Ban::class;
 
-//    protected static ?int $navigationSort = 1;
+    protected static ?int $navigationSort = 1;
 
     public static function form(Form $form): Form
     {
@@ -38,10 +39,9 @@ class Fail2BanWhitelistedIpResource extends Resource
                 Textarea::make('comment')
                     ->label('Add comment')
                     ->placeholder('Add your comment here...')
-                    ->rows(5)
-
+                    ->rows(1)
             ])
-            ->columns(1);
+            ->columns(2);
     }
 
     public static function table(Table $table): Table
@@ -60,6 +60,16 @@ class Fail2BanWhitelistedIpResource extends Resource
             ->actions([
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\DeleteAction::make()
+                    ->requiresConfirmation()
+                    ->modalHeading('UnWhitelist IP Address')
+                    ->modalSubmitActionLabel('UnWhitelist IP')
+                    ->action(function ($record) {
+                        Notification::make()
+                            ->title('IP Address UnWhitelisted')
+                            ->body('IP address: ' . $record->ip . ' has been unwhitelisted successfully!')
+                            ->success()
+                            ->send();
+                    }),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
@@ -79,8 +89,8 @@ class Fail2BanWhitelistedIpResource extends Resource
     {
         return [
             'index' => \App\Filament\Clusters\Fail2Ban\Resources\Fail2BanWhitelistedIpResource\Pages\ListFail2BanWhitelistedIps::route('/'),
-            'create' => \App\Filament\Clusters\Fail2Ban\Resources\Fail2BanWhitelistedIpResource\Pages\CreateFail2BanWhitelistedIp::route('/create'),
-            'edit' => \App\Filament\Clusters\Fail2Ban\Resources\Fail2BanWhitelistedIpResource\Pages\EditFail2BanWhitelistedIp::route('/{record}/edit'),
+//            'create' => \App\Filament\Clusters\Fail2Ban\Resources\Fail2BanWhitelistedIpResource\Pages\CreateFail2BanWhitelistedIp::route('/create'),
+//            'edit' => \App\Filament\Clusters\Fail2Ban\Resources\Fail2BanWhitelistedIpResource\Pages\EditFail2BanWhitelistedIp::route('/{record}/edit'),
         ];
     }
 }

@@ -6,8 +6,8 @@ use App\Filament\Clusters\Fail2Ban\Fail2Ban;
 use App\Filament\Clusters\Fail2Ban\Fail2Ban\Resources\Fail2BanBannedIpResource\Pages;
 use App\Filament\Clusters\Fail2Ban\Fail2Ban\Resources\Fail2BanBannedIpResource\RelationManagers;
 use App\Models\Fail2BanBannedIp;
-use App\Services\Fail2Ban\Fail2BanBannedIp\Fail2BanBannedIpService;
-use Filament\Forms\Components\Textarea;
+use App\Server\SupportedApplicationTypes;
+use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Notifications\Notification;
@@ -37,10 +37,11 @@ class Fail2BanBannedIpResource extends Resource
                     ->autofocus()
                     ->rules(['ip']),
 
-//                Textarea::make('comment')
-//                    ->label('Add comment')
-//                    ->placeholder('Add your comment here...')
-//                    ->rows(5)
+                Select::make('service')
+                    ->label('Service')
+                    ->options(
+                        SupportedApplicationTypes::getAvailableJails()
+                    )
             ]);
     }
 
@@ -65,6 +66,21 @@ class Fail2BanBannedIpResource extends Resource
             ])
             ->filters([
                 //
+            ])
+            ->actions([
+                Tables\Actions\EditAction::make(),
+                Tables\Actions\DeleteAction::make()
+                    ->label('Unban')
+                    ->requiresConfirmation()
+                    ->modalHeading('Unabn IP Address')
+                    ->modalSubmitActionLabel('Unabn IP')
+                    ->action(function ($record) {
+                        Notification::make()
+                            ->title('IP Address Unbanned')
+                            ->body('IP address: ' . $record->ip . ' has been unbanned successfully!')
+                            ->success()
+                            ->send();
+                    }),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([

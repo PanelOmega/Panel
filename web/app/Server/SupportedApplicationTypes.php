@@ -98,74 +98,25 @@ class SupportedApplicationTypes
         return $modules;
     }
 
-    public static function getFail2BanServers()
-    {
-        $extensions = [];
+    public static function getAvailableJails() {
 
-        $fail2BanExtensions = [
-            'vsftpd' => 'vsFTPD',
-            'apache' => 'Apache Server',
-            'wordpress' => 'Wordpress'
-        ];
+        $activeServices = [];
+        $command = "fail2ban-client status | grep 'Jail list'";
+        $fail2BanJails = shell_exec($command);
 
-        foreach ($fail2BanExtensions as $extension => $name) {
-            $extensions[$extension] = $name;
+        if($fail2BanJails !== null) {
+            $jails = trim($fail2BanJails);
+
+            if (preg_match('/Jail list:\s*(.*)/', $jails, $matches)) {
+                $jailList = $matches[1];
+                $activeJails = explode(', ', $jailList);
+
+                foreach($activeJails as $service) {
+                    $activeServices[$service] = $service;
+                }
+            }
         }
 
-        return $extensions;
-
+        return $activeServices;
     }
-
-    public static function getFail2BanApacheExtensions()
-    {
-        $extensions = [];
-
-        $apacheExtensions = [
-            'apache - badbots' => 'Apache-BadBots',
-            'apache - nohome' => 'Apache-NoHome',
-            'apache - noscript' => 'Apache-NoScript',
-            'apache - overflows' => 'Apache-Overflows',
-            'php - url - fopen' => 'PHP-Url-Fopen',
-        ];
-
-        foreach ($apacheExtensions as $extension => $name) {
-            $extensions[$extension] = $name;
-        }
-
-        return $extensions;
-    }
-
-    public static function getFail2BanNginxExtensions()
-    {
-        $extensions = [];
-        $enginxExtensions = [
-            'nginx - bad - request' => 'Nginx Bad Request',
-            'nginx - botsearch' => 'Nginx Botsearch',
-            'nginx - limit - req' => 'Nginx Limit Req',
-        ];
-
-        foreach ($enginxExtensions as $extension => $name) {
-            $extensions[$extension] = $name;
-        }
-
-        return $extensions;
-    }
-
-    public static function getFail2BanWordpressExtensions()
-    {
-        $extensions = [];
-        $wordpressExtensions = [
-            'wordpress - auth' => 'Wordpress Auth',
-            'wordpress - hard' => 'Wordpress Hard',
-            'wordpress - pingback' => 'Wordpress Pingback'
-        ];
-
-        foreach ($wordpressExtensions as $extension => $name) {
-            $extensions[$extension] = $name;
-        }
-
-        return $extensions;
-    }
-
-
 }

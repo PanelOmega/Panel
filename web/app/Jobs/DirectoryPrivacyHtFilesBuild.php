@@ -4,6 +4,7 @@ namespace App\Jobs;
 
 use App\Models\DirectoryPrivacy;
 use App\Models\Domain;
+use App\Models\HostingSubscription;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -15,57 +16,58 @@ class DirectoryPrivacyHtFilesBuild implements ShouldQueue
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     public $fixPermissions = false;
+    public $hostingSubscriptionId;
 
-    public function __construct($fixPermissions = false) {
+    public function __construct($fixPermissions = false, $hostingSubscriptionId) {
         $this->fixPermissions = $fixPermissions;
+        $this->hostingSubscriptionId = $hostingSubscriptionId;
     }
 
-    public function handle($hostingSubscriptionId, $model = null)
+    public function handle($model = null)
     {
         $password = $model->password ?? '';
-        $records = DirectoryPrivacy::where('hosting_subscription_id', $hostingSubscriptionId)
+        $records = DirectoryPrivacy::where('hosting_subscription_id', $this->hostingSubscriptionId)
             ->whereNotIn('password', [$password])
             ->get()
             ->groupBy('directory');
-        
-        $domain = Domain::where('hosting_subscription_id', $hostingSubscriptionId)->first();
+
+        $domain = Domain::where('hosting_subscription_id', $this->hostingSubscriptionId)->first();
+        $systemUsername = HostingSubscription::where('id', $this->hostingSubscriptionId)->value('system_username');
+
         $phpVersion = $domain->server_application_settings['php_version'] ?? null;
         $phpVersion = $phpVersion ? PHP::getPHPVersion($phpVersion) : [];
 
-        if ($records->isEmpty()) {
-            $this->handleDeletingEvent($model, $phpVersion);
-            return;
-        }
+        $directories = $records->isEmpty() ? [$model->directory] : $records->keys();
 
-        foreach ($records as $directory => $directoryRecord) {
-            $htPasswdRecords = $directoryRecord->map(fn($record) => "{$record->username}:{$record->password}")->toArray();
-            $this->updateHtFiles($directory, $directoryRecord->first()->label, $phpVersion, $htPasswdRecords);
+        foreach ($directories as $directory) {
+            $htPasswdRecords = $records->get($directory, collect())->map(fn($record) => "{$record->username}:{$record->password}")->toArray();
+
+            $htAccessFilePath = "{$directory}/.htaccess";
+            $htPasswdFilePath = "{$directory}/.htpasswd";
+
+            $label = $records->isEmpty() ? '' : $records->get($directory)->first()->label;
+            $htViews = $this->getHtFileConfig($label, $phpVersion, $htPasswdFilePath, $htPasswdRecords);
+
+            $htAccessFileRealPath = '/home/' . $systemUsername . $htAccessFilePath;
+            $htPasswdFileRealPath = '/home/' . $systemUsername . $htPasswdFilePath;
+
+            $this->updateSystemFile($htAccessFileRealPath, $htViews['htaccessContent']);
+            $this->updateSystemFile($htPasswdFileRealPath, $htViews['htpasswdContent']);
         }
     }
 
-    private function updateHtFiles($directory, $label, $phpVersion, $htPasswdRecords)
+    private function updateSystemFile($filePath, $newContent)
+    {
+        $existingContent = file_exists($filePath) ? file_get_contents($filePath) : '';
+        $updatedContent = $this->replaceContentBetweenComments($existingContent, $newContent);
+        file_put_contents($filePath, $updatedContent);
+    }
+
+    private function replaceContentBetweenComments($existingContent, $newContent)
     {
         $startComment = "# BEGIN PanelOmega-generated handler, do not edit";
         $endComment = "# END PanelOmega-generated handler, do not edit";
 
-        $htAccessFilePath = "$directory/.htaccess";
-        $htPasswdFilePath = "$directory/.htpasswd";
-
-        $htViews = $this->setHtFileConfig($label, $phpVersion, $htPasswdFilePath, $htPasswdRecords);
-
-        $this->updateFile($htAccessFilePath, $htViews['htaccessContent'], $startComment, $endComment);
-        $this->updateFile($htPasswdFilePath, $htViews['htpasswdContent'], $startComment, $endComment);
-    }
-
-    private function updateFile($filePath, $newContent, $startComment, $endComment)
-    {
-        $existingContent = file_exists($filePath) ? file_get_contents($filePath) : '';
-        $updatedContent = $this->replaceContentBetweenComments($existingContent, $newContent, $startComment, $endComment);
-        file_put_contents($filePath, $updatedContent);
-    }
-
-    private function replaceContentBetweenComments($existingContent, $newContent, $startComment, $endComment)
-    {
         $pattern = '/(' . preg_quote($startComment, '/') . ')(.*?)(?=' . preg_quote($endComment, '/') . ')/s';
         $contentToAdd = '';
 
@@ -82,12 +84,7 @@ class DirectoryPrivacyHtFilesBuild implements ShouldQueue
         return preg_replace('/(\n\s*\n)+/', "\n", $existingContent);
     }
 
-    public function handleDeletingEvent($model, $phpVersion)
-    {
-        $this->updateHtFiles($model->directory, '', $phpVersion, []);
-    }
-
-    public function setHtFileConfig($label, $phpVersion, $htPasswdFilePath, $htPasswdRecords)
+    public function getHtFileConfig($label, $phpVersion, $htPasswdFilePath, $htPasswdRecords)
     {
         $htaccessContent = view('server.samples.apache.php.htaccess', [
             'phpVersion' => $phpVersion,

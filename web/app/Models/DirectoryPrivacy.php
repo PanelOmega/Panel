@@ -24,27 +24,27 @@ class DirectoryPrivacy extends Model
     public static function boot()
     {
         parent::boot();
+        static::DirectoryPrivacyBoot();
+    }
 
+    public static function DirectoryPrivacyBoot()
+    {
         $hostingSubscriptionId = Session::get('hosting_subscription_id');
+        $fixPermissions = false;
 
         static::saving(function ($model) use ($hostingSubscriptionId) {
             $model->hosting_subscription_id = $hostingSubscriptionId;
             $model->password = Crypt::encrypt($model->password);
         });
 
-        static::deleting(function ($model) use ($hostingSubscriptionId) {
-            $directoryPrivacy = new DirectoryPrivacyHtFilesBuild();
-            $directoryPrivacy->handle($hostingSubscriptionId, $model);
+        static::deleting(function ($model) use ($fixPermissions, $hostingSubscriptionId) {
+            $directoryPrivacy = new DirectoryPrivacyHtFilesBuild($fixPermissions, $hostingSubscriptionId);
+            $directoryPrivacy->handle($model);
         });
 
-        static::DirectoryPrivacyBoot($hostingSubscriptionId);
-    }
-
-    public static function DirectoryPrivacyBoot($hostingSubscriptionId)
-    {
         $callback = function ($model) use ($hostingSubscriptionId) {
-            $directoryPrivacy = new DirectoryPrivacyHtFilesBuild();
-            $directoryPrivacy->handle($hostingSubscriptionId);
+            $directoryPrivacy = new DirectoryPrivacyHtFilesBuild(false, $hostingSubscriptionId);
+            $directoryPrivacy->handle();
         };
 
         static::created($callback);
@@ -62,7 +62,17 @@ class DirectoryPrivacy extends Model
         $baseDir = '/home/' . $username;
         $command = "find $baseDir -type d";
         $userDirs = shell_exec($command);
+        $userDirsArray = array_filter(explode(PHP_EOL, trim($userDirs)));
 
-        return array_filter(explode(PHP_EOL, trim($userDirs)));
+        $filteredDirs = array_map(function ($dir) use ($baseDir) {
+            $relativeDir = str_replace($baseDir, '', $dir);
+
+            return $relativeDir === '' ? '/' : $relativeDir;
+        }, $userDirsArray);
+
+        if (count($filteredDirs) === 1 && $filteredDirs[0] === '/') {
+            $filteredDirs = ['/'];
+        }
+        return $filteredDirs;
     }
 }

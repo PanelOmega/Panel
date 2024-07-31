@@ -24,29 +24,24 @@ class DirectoryPrivacy extends Model
     public static function boot()
     {
         parent::boot();
+        static::directoryPrivacyBoot();
+    }
 
+    public static function directoryPrivacyBoot()
+    {
         $hostingSubscriptionId = Session::get('hosting_subscription_id');
 
         static::saving(function ($model) use ($hostingSubscriptionId) {
             $model->hosting_subscription_id = $hostingSubscriptionId;
             $model->password = Crypt::encrypt($model->password);
         });
-
-        static::deleting(function ($model) use ($hostingSubscriptionId) {
-            $directoryPrivacy = new DirectoryPrivacyHtFilesBuild();
-            $directoryPrivacy->handle($hostingSubscriptionId, $model);
-        });
-
-        static::DirectoryPrivacyBoot($hostingSubscriptionId);
-    }
-
-    public static function DirectoryPrivacyBoot($hostingSubscriptionId)
-    {
+        
         $callback = function ($model) use ($hostingSubscriptionId) {
             $directoryPrivacy = new DirectoryPrivacyHtFilesBuild();
-            $directoryPrivacy->handle($hostingSubscriptionId);
+            $directoryPrivacy->handle($hostingSubscriptionId, $model);
         };
 
+        static::deleting($callback);
         static::created($callback);
         static::updated($callback);
     }

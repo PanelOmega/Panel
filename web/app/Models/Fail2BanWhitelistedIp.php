@@ -20,10 +20,10 @@ class Fail2BanWhitelistedIp extends Model
     protected static function boot()
     {
         parent::boot();
-        static::fail2BanCallbacks();
+        static::fail2BanBoot();
     }
 
-    protected static function fail2BanCallbacks() {
+    protected static function fail2BanBoot() {
 
         $callback = function($model) {
             $fail2banConfig = new Fail2BanConfigBuild();

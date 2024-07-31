@@ -50,20 +50,23 @@ class DirectoryPrivacyResource extends Resource
                     ->schema([
                         TextInput::make('username')
                             ->label('Username')
-                            ->required()
-                            ->rules([
-                                'unique:directory_privacies,username'
-                            ]),
+                            ->required(),
 
+                        // the password to be decrypted
                         TextInput::make('password')
                             ->label('Password')
                             ->password()
                             ->revealable()
+                            ->afterStateHydrated(function ($set, $state, $record) {
+                                if ($record) {
+                                    $set('password', DirectoryPrivacy::decryptPassword($record->password));
+                                }
+                            })
                             ->hintAction(
                                 \Filament\Forms\Components\Actions\Action::make('generate_password')
                                     ->icon('heroicon-m-key')
                                     ->action(function (Set $set) {
-                                        $randomPassword = substr(str_shuffle('abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()_+'), 0, 24);
+                                        $randomPassword = substr(str_shuffle('abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()_+'), 0, 20);
                                         $set('password', $randomPassword);
                                         $set('password_confirmation', $randomPassword);
                                     })

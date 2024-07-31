@@ -2,11 +2,11 @@
 
 namespace App\Models;
 
-use App\Services\HtDocBuild\HtDocBuildService;
+use App\Jobs\DirectoryPrivacyHtFilesBuild;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-
-//use Symfony\Component\Finder\Iterator\RecursiveDirectoryIterator;
+use Illuminate\Support\Facades\Crypt;
+use Illuminate\Support\Facades\Session;
 
 class DirectoryPrivacy extends Model
 {
@@ -21,43 +21,38 @@ class DirectoryPrivacy extends Model
         'label'
     ];
 
-    public static function boot() {
+    public static function boot()
+    {
         parent::boot();
 
-        static::creating(function ($model) {
+        $hostingSubscriptionId = Session::get('hosting_subscription_id');
 
-            $domain = Domain::where('status', Domain::STATUS_ACTIVE)->first();
-            if($domain) {
-                $model->hosting_subscription_id = $domain->hosting_subscription_id;
-                $directory = str_replace($domain->domain_root, '', $model->directory);
-                $directory == '' ? $model->directory = '/' : $model->directory = $directory;
-
-                self::setDirectory($model, $domain);
-
-
-            } else {
-                throw new \Exception("Domain not found");
-            }
+        static::saving(function ($model) use ($hostingSubscriptionId) {
+            $model->hosting_subscription_id = $hostingSubscriptionId;
+            $model->password = Crypt::encrypt($model->password);
         });
 
-        static::updating(function ($model) {
-            $domain = Domain::where('status', Domain::STATUS_ACTIVE)->first();
-            if($domain) {
-                self::setDirectory($model, $domain);
-
-            } else {
-                throw new \Exception("Domain not found");
-            }
+        static::deleting(function ($model) use ($hostingSubscriptionId) {
+            $directoryPrivacy = new DirectoryPrivacyHtFilesBuild();
+            $directoryPrivacy->handle($hostingSubscriptionId, $model);
         });
 
-        static::deleting(function ($model) {
-            $domain = Domain::where('status', Domain::STATUS_ACTIVE)->first();
-            if($domain) {
-                self::deleteFromDirectory($model->username, $domain);
-            } else {
-                throw new \Exception("Domain not found");
-            }
-        });
+        static::DirectoryPrivacyBoot($hostingSubscriptionId);
+    }
+
+    public static function DirectoryPrivacyBoot($hostingSubscriptionId)
+    {
+        $callback = function ($model) use ($hostingSubscriptionId) {
+            $directoryPrivacy = new DirectoryPrivacyHtFilesBuild();
+            $directoryPrivacy->handle($hostingSubscriptionId);
+        };
+
+        static::created($callback);
+        static::updated($callback);
+    }
+
+    public static function decryptPassword($password) {
+        return $password ? Crypt::decrypt($password) : null;
     }
 
     public static function scanUserDirectories()
@@ -69,39 +64,5 @@ class DirectoryPrivacy extends Model
         $userDirs = shell_exec($command);
 
         return array_filter(explode(PHP_EOL, trim($userDirs)));
-    }
-
-    public static function setDirectory(DirectoryPrivacy $model, Domain $domain): void
-    {
-        $username = $model->username;
-        $pasword = $model->password;
-        $label = $model->label ?? 'Restricted Directory';
-        $hashedPasword = password_hash($pasword, PASSWORD_DEFAULT);
-
-        $htPasswdContent = [
-            'username' => $username,
-            'password' => $hashedPasword,
-        ];
-
-        HtDocBuildService::buildHtpasswdByDomain($domain, $htPasswdContent);
-
-        $htAccessContent = [
-            'auth_type' => 'Basic',
-            'auth_name' => $label,
-            'auth_user_file' => $domain->domain_public,
-            'require' => 'valid_user'
-        ];
-
-        HtDocBuildService::buildHtaccessByDomain($domain, $htAccessContent);
-    }
-
-    public static function deleteFromDirectory(string $username, Domain $domain): void
-    {
-        $dPrivacyContent = [
-            'username' => $username,
-        ];
-
-        HtDocBuildService::deleteFromHtpasswdByDomain($domain, $dPrivacyContent);
-
     }
 }

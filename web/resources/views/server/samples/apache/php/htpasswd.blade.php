@@ -6,4 +6,4 @@
     @endforeach
 @endif
 
-# php -- END PanelOmega-generated handler, do not edit
+# END PanelOmega-generated handler, do not edit

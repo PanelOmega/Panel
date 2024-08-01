@@ -34,12 +34,14 @@ class Fail2BanWhitelistedIpResource extends Resource
                     ->label('Whitelist IP')
                     ->required()
                     ->autofocus()
+                    ->columnSpanFull()
                     ->rules(['ip']),
 
                 Textarea::make('comment')
                     ->label('Add comment')
                     ->placeholder('Add your comment here...')
-                    ->rows(1)
+                    ->columnSpanFull()
+                    ->rows(2)
             ])
             ->columns(2);
     }

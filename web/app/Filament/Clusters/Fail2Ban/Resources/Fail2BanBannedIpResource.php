@@ -35,10 +35,12 @@ class Fail2BanBannedIpResource extends Resource
                     ->label('Banned IP')
                     ->required()
                     ->autofocus()
+                    ->columnSpanFull()
                     ->rules(['ip']),
 
                 Select::make('service')
                     ->label('Service')
+                    ->columnSpanFull()
                     ->options(
                         SupportedApplicationTypes::getFail2BanAvailableJails()
                     )

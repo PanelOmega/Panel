@@ -5,6 +5,7 @@ namespace App\Filament\Clusters\Fail2Ban\Resources\Fail2BanBannedIpResource\Page
 use App\Filament\Clusters\Fail2Ban\Resources\Fail2BanBannedIpResource;
 use Filament\Actions;
 use Filament\Resources\Pages\ListRecords;
+use Filament\Support\Enums\MaxWidth;
 
 class ListFail2BanBannedIps extends ListRecords
 {
@@ -16,7 +17,8 @@ class ListFail2BanBannedIps extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
-            Actions\CreateAction::make(),
+            Actions\CreateAction::make()
+            ->modalWidth(MaxWidth::Small)
         ];
     }
 

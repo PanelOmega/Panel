@@ -40,7 +40,7 @@ class Fail2BanBannedIpResource extends Resource
                 Select::make('service')
                     ->label('Service')
                     ->options(
-                        SupportedApplicationTypes::getAvailableJails()
+                        SupportedApplicationTypes::getFail2BanAvailableJails()
                     )
             ]);
     }

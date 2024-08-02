@@ -37,8 +37,8 @@ class DirectoryPrivacy extends Model
             $model->password = Crypt::encrypt($model->password);
         });
 
-        static::deleting(function ($model) use ($fixPermissions, $hostingSubscriptionId) {
-            $directoryPrivacy = new DirectoryPrivacyHtFilesBuild($fixPermissions, $hostingSubscriptionId);
+        static::deleting(function ($model) use ($hostingSubscriptionId) {
+            $directoryPrivacy = new DirectoryPrivacyHtFilesBuild(false, $hostingSubscriptionId);
             $directoryPrivacy->handle($model);
         });
 

@@ -519,7 +519,7 @@ class CustomerDashboard extends Page
                         [
                             'title' => 'Password & Security',
                             'icon' => 'omega_customer-preferences-pass',
-                            'link' => '#'
+                            'link' => route('filament.customer.pages.password-and-security')
                         ],
 //                        [
 //                            'title'=>'Change Language',

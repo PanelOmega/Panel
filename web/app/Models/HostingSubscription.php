@@ -6,8 +6,8 @@ use App\Actions\CreateLinuxWebUser;
 use App\Actions\GetLinuxUser;
 use App\Jobs\ApacheBuild;
 use App\OmegaConfig;
-use App\Server\Helpers\LinuxUser;
 use App\Server\Helpers\FtpAccount;
+use App\Server\Helpers\LinuxUser;
 use App\UniversalDatabaseExecutor;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -30,15 +30,6 @@ class HostingSubscription extends Model
         'expiry_date',
         'renewal_date',
     ];
-
-    protected static function booted(): void
-    {
-        static::addGlobalScope('customer', function (Builder $query) {
-            if (auth()->check() && auth()->guard()->name == 'web_customer') {
-                $query->where('customer_id', auth()->user()->id);
-            }
-        });
-    }
 
     public static function boot()
     {
@@ -90,7 +81,7 @@ class HostingSubscription extends Model
 
             $getFptUser = HostingSubscriptionFtpAccount::where('ftp_username', $model->system_username)->get();
 
-            if (! $getFptUser->isEmpty()) {
+            if (!$getFptUser->isEmpty()) {
                 $getFptUser->delete();
             }
 
@@ -143,40 +134,10 @@ class HostingSubscription extends Model
 
     }
 
-    public function customer()
-    {
-        return $this->belongsTo(Customer::class);
-    }
-
-    public function hostingPlan()
-    {
-        return $this->belongsTo(HostingPlan::class);
-    }
-
-//    public function databases()
-//    {
-//        return $this->hasMany(Database::class);
-//    }
-
-    public function backups()
-    {
-        return $this->hasMany(HostingSubscriptionBackup::class);
-    }
-
-    public function domain()
-    {
-        return $this->hasMany(Domain::class);
-    }
-
-    public function ftpAccounts()
-    {
-        return $this->hasMany(HostingSubscriptionFtpAccount::class);
-    }
-
     private function _createLinuxWebUser($model): array
     {
         $findCustomer = Customer::where('id', $model->customer_id)->first();
-        if (! $findCustomer) {
+        if (!$findCustomer) {
             return [];
         }
 
@@ -223,6 +184,7 @@ class HostingSubscription extends Model
         return [];
 
     }
+
     private static function _generateUsername($string)
     {
         $removedMultispace = preg_replace('/\s+/', ' ', $string);
@@ -234,13 +196,59 @@ class HostingSubscription extends Model
             $lowercased = substr($lowercased, 0, 4);
         }
 
-        $username = $lowercased.rand(1111, 9999).Str::random(4);
+        $username = $lowercased . rand(1111, 9999) . Str::random(4);
         $username = strtolower($username);
 
         return $username;
     }
-    private function _startsWithNumber($string) {
+
+    private function _startsWithNumber($string)
+    {
         return strlen($string) > 0 && ctype_digit(substr($string, 0, 1));
+    }
+
+//    public function databases()
+//    {
+//        return $this->hasMany(Database::class);
+//    }
+
+    protected static function booted(): void
+    {
+        static::addGlobalScope('customer', function (Builder $query) {
+            if (auth()->check() && auth()->guard()->name == 'web_customer') {
+                $query->where('customer_id', auth()->user()->id);
+            }
+        });
+    }
+
+    public function customer()
+    {
+        return $this->belongsTo(Customer::class);
+    }
+
+    public function hostingPlan()
+    {
+        return $this->belongsTo(HostingPlan::class);
+    }
+
+    public function backups()
+    {
+        return $this->hasMany(HostingSubscriptionBackup::class);
+    }
+
+    public function domain()
+    {
+        return $this->hasMany(Domain::class);
+    }
+
+    public function ftpAccounts()
+    {
+        return $this->hasMany(HostingSubscriptionFtpAccount::class);
+    }
+
+    public function hotlinkProtection()
+    {
+        return $this->hasOne(HotlinkProtection::class);
     }
 
 }

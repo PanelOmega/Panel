@@ -5,20 +5,22 @@ namespace App\Jobs;
 use App\Models\DirectoryPrivacy;
 use App\Models\Domain;
 use App\Models\HostingSubscription;
+use App\Server\Helpers\PHP;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 
-class DirectoryPrivacyHtFilesBuild implements ShouldQueue
+class ApacheHtFilesBuild implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     public $fixPermissions = false;
     public $hostingSubscriptionId;
 
-    public function __construct($fixPermissions = false, $hostingSubscriptionId) {
+    public function __construct($fixPermissions = false, $hostingSubscriptionId)
+    {
         $this->fixPermissions = $fixPermissions;
         $this->hostingSubscriptionId = $hostingSubscriptionId;
     }
@@ -31,29 +33,66 @@ class DirectoryPrivacyHtFilesBuild implements ShouldQueue
             ->get()
             ->groupBy('directory');
 
+        $directories = $records->isEmpty() ? [$model->directory] : $records->keys();
+
         $domain = Domain::where('hosting_subscription_id', $this->hostingSubscriptionId)->first();
-        $systemUsername = HostingSubscription::where('id', $this->hostingSubscriptionId)->value('system_username');
+        $hostingSubscription = HostingSubscription::where('id', $this->hostingSubscriptionId)->first();
 
         $phpVersion = $domain->server_application_settings['php_version'] ?? null;
         $phpVersion = $phpVersion ? PHP::getPHPVersion($phpVersion) : [];
 
-        $directories = $records->isEmpty() ? [$model->directory] : $records->keys();
 
         foreach ($directories as $directory) {
             $htPasswdRecords = $records->get($directory, collect())->map(fn($record) => "{$record->username}:{$record->password}")->toArray();
 
-            $htAccessFilePath = "{$directory}/.htaccess";
-            $htPasswdFilePath = "{$directory}/.htpasswd";
+            $htAccessFilePath = str_replace('//', '/', "{$directory}/.htaccess");
+            $htPasswdFilePath = str_replace('//', '/', "{$directory}/.htpasswd");
 
             $label = $records->isEmpty() ? '' : $records->get($directory)->first()->label;
-            $htViews = $this->getHtFileConfig($label, $phpVersion, $htPasswdFilePath, $htPasswdRecords);
 
-            $htAccessFileRealPath = '/home/' . $systemUsername . $htAccessFilePath;
-            $htPasswdFileRealPath = '/home/' . $systemUsername . $htPasswdFilePath;
-
+            $hotlinkData = $this->getHotlinkData($directory, $hostingSubscription->hotlinkProtection);
+            $htViews = $this->getHtFileConfig($label, $phpVersion, $htPasswdFilePath, $htPasswdRecords, $hotlinkData);
+            $htAccessFileRealPath = '/home/' . $hostingSubscription->system_username . $htAccessFilePath;
+            $htPasswdFileRealPath = '/home/' . $hostingSubscription->system_username . $htPasswdFilePath;
             $this->updateSystemFile($htAccessFileRealPath, $htViews['htaccessContent']);
             $this->updateSystemFile($htPasswdFileRealPath, $htViews['htpasswdContent']);
         }
+    }
+
+    public function getHotlinkData($directory, $hotlinkProtectionData)
+    {
+        if ($hotlinkProtectionData && $directory === '/') {
+            return [
+                'url_allow_access' => explode(',', $hotlinkProtectionData->url_allow_access),
+                'block_extensions' => preg_replace('/\s+/', '', $hotlinkProtectionData->block_extensions),
+                'allow_direct_requests' => $hotlinkProtectionData->allow_direct_requests,
+                'redirect_to' => $hotlinkProtectionData->redirect_to,
+                'enabled' => $hotlinkProtectionData->enabled,
+                'env' => 'locally_linked'
+            ];
+        }
+        return [];
+    }
+
+    public function getHtFileConfig($label, $phpVersion, $htPasswdFilePath, $htPasswdRecords, $hotlinkData)
+    {
+        $htaccessContent = view('server.samples.apache.php.htaccess', [
+            'phpVersion' => $phpVersion,
+            'dPrivacyContent' => [
+                'auth_name' => $label,
+                'auth_user_file' => $htPasswdFilePath,
+                'hotlinkData' => $hotlinkData
+            ],
+        ])->render();
+
+        $htpasswdContent = view('server.samples.apache.php.htpasswd', [
+            'dPrivacyContent' => $htPasswdRecords
+        ])->render();
+
+        return [
+            'htaccessContent' => $htaccessContent,
+            'htpasswdContent' => $htpasswdContent,
+        ];
     }
 
     private function updateSystemFile($filePath, $newContent)
@@ -82,25 +121,5 @@ class DirectoryPrivacyHtFilesBuild implements ShouldQueue
         }
 
         return preg_replace('/(\n\s*\n)+/', "\n", $existingContent);
-    }
-
-    public function getHtFileConfig($label, $phpVersion, $htPasswdFilePath, $htPasswdRecords)
-    {
-        $htaccessContent = view('server.samples.apache.php.htaccess', [
-            'phpVersion' => $phpVersion,
-            'dPrivacyContent' => [
-                'auth_name' => $label,
-                'auth_user_file' => $htPasswdFilePath,
-            ],
-        ])->render();
-
-        $htpasswdContent = view('server.samples.apache.php.htpasswd', [
-            'dPrivacyContent' => $htPasswdRecords
-        ])->render();
-
-        return [
-            'htaccessContent' => $htaccessContent,
-            'htpasswdContent' => $htpasswdContent,
-        ];
     }
 }

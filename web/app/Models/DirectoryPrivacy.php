@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-use App\Jobs\DirectoryPrivacyHtFilesBuild;
+use App\Jobs\ApacheHtFilesBuild;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Crypt;
@@ -38,12 +38,12 @@ class DirectoryPrivacy extends Model
         });
 
         static::deleting(function ($model) use ($hostingSubscriptionId) {
-            $directoryPrivacy = new DirectoryPrivacyHtFilesBuild(false, $hostingSubscriptionId);
+            $directoryPrivacy = new ApacheHtFilesBuild(false, $hostingSubscriptionId);
             $directoryPrivacy->handle($model);
         });
 
         $callback = function ($model) use ($hostingSubscriptionId) {
-            $directoryPrivacy = new DirectoryPrivacyHtFilesBuild(false, $hostingSubscriptionId);
+            $directoryPrivacy = new ApacheHtFilesBuild(false, $hostingSubscriptionId);
             $directoryPrivacy->handle();
         };
 
@@ -51,7 +51,8 @@ class DirectoryPrivacy extends Model
         static::updated($callback);
     }
 
-    public static function decryptPassword($password) {
+    public static function decryptPassword($password)
+    {
         return $password ? Crypt::decrypt($password) : null;
     }
 

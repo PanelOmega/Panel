@@ -223,9 +223,9 @@ class CustomerDashboard extends Page
 //                            'link'=>'#'
 //                        ],
                         [
-                            'title'=>'Directory Privacy',
-                            'icon'=>'omega_customer-file-directory-privacy',
-                            'link'=>route('filament.customer.resources.directory-privacies.index')
+                            'title' => 'Directory Privacy',
+                            'icon' => 'omega_customer-file-directory-privacy',
+                            'link' => route('filament.customer.resources.directory-privacies.index')
                         ],
                         [
                             'title' => 'Disk Usage',
@@ -420,11 +420,11 @@ class CustomerDashboard extends Page
                             'icon' => 'omega_customer-security-api',
                             'link' => '#'
                         ],
-//                        [
-//                            'title'=>'Hotlink Protection',
-//                            'icon'=>'omega_customer-security-hotlink',
-//                            'link'=>'#'
-//                        ],
+                        [
+                            'title' => 'Hotlink Protection',
+                            'icon' => 'omega_customer-security-hotlink',
+                            'link' => route('filament.customer.pages.hotlink-protection')
+                        ],
 //                        [
 //                            'title'=>'Leech Protection',
 //                            'icon'=>'omega_customer-security-leech',

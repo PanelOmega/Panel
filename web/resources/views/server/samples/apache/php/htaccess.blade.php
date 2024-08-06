@@ -11,7 +11,6 @@
     AuthUserFile {{ $dPrivacyContent['auth_user_file'] }}{{ PHP_EOL }}
     Require valid-user
 @endif
-
 @if(!empty($dPrivacyContent['hotlinkData']) && $dPrivacyContent['hotlinkData']['enabled'] === 'enabled')
     @if(!empty($dPrivacyContent['hotlinkData']['url_allow_access']))
         @foreach($dPrivacyContent['hotlinkData']['url_allow_access'] as $hotlink)

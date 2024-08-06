@@ -3,49 +3,56 @@
 namespace App\Livewire;
 
 use App\Models\Customer;
+use Filament\Actions\Concerns\InteractsWithActions;
+use Filament\Actions\Contracts\HasActions;
 use Filament\Forms\Components\Checkbox;
+use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Section;
-use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Concerns\InteractsWithForms;
 use Filament\Forms\Contracts\HasForms;
 use Filament\Forms\Form;
+use Filament\Notifications\Notification;
 use Livewire\Component;
 
-class HotlinkProtection extends Component implements HasForms
+class HotlinkProtection extends Component implements HasForms, HasActions
 {
     use InteractsWithForms;
+    use InteractsWithActions;
 
     public ?string $mainTitle = null;
     public ?array $sections = null;
-    public ?string $url_allow_access = null;
-    public ?string $allow_direct_requests = null;
-    public ?string $redirect_to = null;
-    public ?string $block_extensions = null;
-    public $hotlinkProtection;
-    public $subscriptionAccount;
-    public $enabled;
+    public ?array $urls_allow_access = [];
+
+    public ?array $state = [];
+    private $hotlinkProtection;
 
     public function mount(string $mainTitle, array $sections): void
     {
-        $this->subscriptionAccount = Customer::getHostingSubscriptionSession();
-        $this->hotlinkProtection = \App\Models\HotlinkProtection::where('hosting_subscription_id', $this->subscriptionAccount->id)->first() ?? null;
+        $subscriptionAccount = Customer::getHostingSubscriptionSession();
+        $this->hotlinkProtection = \App\Models\HotlinkProtection::where('hosting_subscription_id', $subscriptionAccount->id)->first() ?? null;
+
         if (!$this->hotlinkProtection) {
             $this->hotlinkProtection = new \App\Models\HotlinkProtection();
-            $this->hotlinkProtection->hosting_subscription_id = $this->subscriptionAccount->id;
+            $this->hotlinkProtection->hosting_subscription_id = $subscriptionAccount->id;
             $this->hotlinkProtection->enabled = 'disabled';
             $this->hotlinkProtection->save();
         }
 
+        $this->state = $this->hotlinkProtection->toArray();
+        if(!empty($this->state['url_allow_access'])) {
+            $urls = explode(',', $this->state['url_allow_access']);
+            $this->state['urls_allow_access'] = [];
+
+            foreach ($urls as $url) {
+                $this->state['urls_allow_access'][\Illuminate\Support\Str::uuid()->toString()] = ['url' => $url];
+            }
+        } else {
+            $this->state['urls_allow_access'] = [];
+        }
+
         $this->mainTitle = $mainTitle;
         $this->sections = $sections;
-
-        $this->url_allow_access = str_replace(',', "\n", $this->hotlinkProtection->url_allow_access) ?? '';
-
-        $this->allow_direct_requests = $this->hotlinkProtection->allow_direct_requests ? true : false;
-        $this->block_extensions = $this->hotlinkProtection->block_extensions ?? '';
-        $this->redirect_to = $this->hotlinkProtection->redirect_to ?? '';
-        $this->enabled = $this->hotlinkProtection->enabled;
     }
 
     public function render()
@@ -53,64 +60,75 @@ class HotlinkProtection extends Component implements HasForms
         return view('livewire.hotlink-protection');
     }
 
-    public function form(Form $form)
-    {
-
-        return $form
-            ->schema([
-                Section::make()
-                    ->schema([
-                        Textarea::make('url_allow_access')
-                            ->label('URLs to allow access:')
-                            ->default($this->hotlinkProtection->url_allow_access ?? '')
-                            ->rows(5),
-
-                        TextInput::make('block_extensions')
-                            ->label('Block direct access for the following extensions (comma-separated):')
-                            ->default($this->hotlinkProtection->block_extensions ?? ''),
-
-                        Checkbox::make('allow_direct_requests')
-                            ->label('Allow direct requests')
-                            ->default($this->hotlinkProtection->allow_direct_requests)
-                            ->helperText('NOTE: You must select the “Allow direct requests” checkbox when you use hotlink protection for files that you want visitors to view in QuickTime (for example, Mac Users).'),
-
-                        TextInput::make('redirect_to')
-                            ->label('Redirect the request to the following URL:')
-                            ->default($this->hotlinkProtection->redirect_to ?? '')
-                    ])
-                    ->maxWidth('lg')
-            ])
-            ->model($this->hotlinkProtection);
-    }
-
     public function enableHotlinkProtection()
     {
-        $this->enabled = 'enabled';
+        $this->state['enabled'] = 'enabled';
     }
 
     public function disableHotlinkProtection()
     {
-        $this->enabled = 'disabled';
+        $this->state['enabled'] = 'disabled';
     }
 
     public function update()
     {
-
-        $data = $this->form->getState();
-        if (isset($data['url_allow_access'])) {
-            $data['url_allow_access'] = str_replace("\n", ",", $data['url_allow_access']);
+        if(isset($this->state['urls_allow_access'])) {
+            $this->state['url_allow_access'] = collect($this->state['urls_allow_access'])
+                                               ->pluck('url')
+                                               ->implode(',');
+        } else {
+            $this->state['url_allow_access'] = '';
         }
 
-        if ($this->hotlinkProtection) {
-            $this->hotlinkProtection->update([
-                'hosting_subscription_id' => $this->subscriptionAccount->id,
-                'url_allow_access' => $data['url_allow_access'],
-                'block_extensions' => $data['block_extensions'],
-                'allow_direct_requests' => $data['allow_direct_requests'],
-                'redirect_to' => $data['redirect_to'],
-                'enabled' => $this->enabled
+        if(isset($this->state['block_extensions'])) {
+            $this->state['block_extensions'] = preg_replace('/\s*,\s*/', ',', $this->state['block_extensions']);
+        }
+
+        $model = \App\Models\HotlinkProtection::where('hosting_subscription_id', $this->state['hosting_subscription_id'])->first();
+        $model->update($this->state);
+
+        if($model->save()) {
+            Notification::make()
+                ->title('Hotlink Protection settings configured.')
+                ->success()
+                ->send();
+        } else {
+            Notification::make()
+                ->title('Hotlink Protection settings weren`t configured.')
+                ->danger()
+                ->send();
+        }
+    }
+
+    public function form(Form $form)
+    {
+        return $form
+            ->statePath('state')
+            ->schema([
+                Section::make()
+                    ->schema([
+                        Repeater::make('urls_allow_access')
+                            ->label('URLs to allow access:')
+                            ->schema([
+                                TextInput::make('url')
+                                    ->label('Add URL')
+                                    ->columnSpanFull()
+                                    ->required()
+                                    ->rule('url'),
+                            ])
+                            ->columns(2),
+
+                        TextInput::make('block_extensions')
+                            ->label('Block direct access for the following extensions (comma-separated):'),
+
+                        Checkbox::make('allow_direct_requests')
+                            ->label('Allow direct requests')
+                            ->helperText('NOTE: You must select the “Allow direct requests” checkbox when you use hotlink protection for files that you want visitors to view in QuickTime (for example, Mac Users).'),
+
+                        TextInput::make('redirect_to')
+                            ->label('Redirect the request to the following URL:')
+                    ])
+                    ->maxWidth('lg')
             ]);
-        }
-        session()->flash('message', 'Hotlink Protection settings updated successfully.');
     }
 }

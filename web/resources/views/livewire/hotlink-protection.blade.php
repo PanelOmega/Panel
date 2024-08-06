@@ -11,9 +11,9 @@
 
     <div>
         <p class="text-base text-gray-400 mb-5">
-            Hotlink is currently {{ $enabled }}.
+            Hotlink is currently {{ $this->state['enabled'] }}.
         </p>
-        @if($enabled == 'enabled')
+        @if($this->state['enabled'] == 'enabled')
 
             <button wire:click="disableHotlinkProtection"
                     class="text-white font-bold py-2 px-4 rounded">
@@ -24,22 +24,11 @@
                 Enable Hotlink Protection
             </button>
         @endif
-    </div>
+        <div>
 
     <div class="mb-10 mt-6 mx-4">
         <h1 class="text-xl text-gray-400 mb-5">{{ $sections[1]['title'] }}</h1>
     </div>
-
-    @if (session()->has('message'))
-        <div class="alert alert-success">
-            {{ session('message') }}
-        </div>
-    @elseif (session()->has('error'))
-        <div class="alert alert-danger">
-            {{ session('error') }}
-        </div>
-    @endif
-
     <form wire:submit.prevent="update">
         {{ $this->form }}
 
@@ -48,6 +37,6 @@
         </button>
     </form>
 
-    <x-filament-actions::modals/>
+    <x-filament-actions::modals />
 
 </div>

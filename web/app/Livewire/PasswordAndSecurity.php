@@ -11,8 +11,8 @@ use Filament\Forms\Concerns\InteractsWithForms;
 use Filament\Forms\Contracts\HasForms;
 use Filament\Forms\Form;
 use Filament\Forms\Set;
+use Filament\Notifications\Notification;
 use Illuminate\Support\Facades\Crypt;
-use Illuminate\Support\Facades\Hash;
 use Livewire\Component;
 
 class PasswordAndSecurity extends Component implements HasForms
@@ -87,14 +87,18 @@ class PasswordAndSecurity extends Component implements HasForms
         $credentials = $this->form->getState();
         $subscriptionAccount = Customer::getHostingSubscriptionSession();
 
-        $isCurrentPasswordHashed = Hash::needsRehash($subscriptionAccount->system_password);
-        if($isCurrentPasswordHashed) {
-            if(Hash::check($subscriptionAccount->system_password, $credentials['old_password'])) {
-                $subscriptionAccount->system_password = Crypt::encrypt($credentials['new_password']);
-                $subscriptionAccount->save();
-                session()->flash('message', 'Password updated successfully.');
-            }
-        }
+//        $isCurrentPasswordHashed = Hash::needsRehash($subscriptionAccount->system_password);
+//        if($isCurrentPasswordHashed) {
+//            if(Hash::check($subscriptionAccount->system_password, $credentials['old_password'])) {
+//                $subscriptionAccount->system_password = Crypt::encrypt($credentials['new_password']);
+//                $subscriptionAccount->save();
+//
+//                Notification::make()
+//                    ->title('Password updated successfully.')
+//                    ->success()
+//                    ->send();
+//            }
+//        }
 
         $decryptedPassword = Crypt::decrypt($subscriptionAccount->system_password);
 
@@ -102,8 +106,16 @@ class PasswordAndSecurity extends Component implements HasForms
             $subscriptionAccount->system_password = Crypt::encrypt($credentials['new_password']);
             $subscriptionAccount->save();
 
-            session()->flash('message', 'Password updated successfully.');
+            Notification::make()
+                ->title('Password updated successfully.')
+                ->success()
+                ->send();
         }
-        session()->flash('error', 'Old password doesn\'t match.');
+
+        Notification::make()
+            ->title('Old password doesn\'t match.')
+            ->danger()
+            ->send();
+
     }
 }

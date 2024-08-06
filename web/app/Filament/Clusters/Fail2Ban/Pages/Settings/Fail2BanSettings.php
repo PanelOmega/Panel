@@ -29,12 +29,6 @@ class Fail2BanSettings extends BaseSettings
     protected static ?string $navigationIcon = 'heroicon-o-cog';
 
     protected static ?int $navigationSort = 3;
-
-    public static function getNavigationLabel(): string
-    {
-        return 'Fail2Ban Settings';
-    }
-
     public array $apache_server_extensions = [];
     public array $nginx_server_extensions = [];
     public array $wordpress_server_extensions = [];
@@ -43,6 +37,11 @@ class Fail2BanSettings extends BaseSettings
         'apache' => false,
         'vsftpd' => false,
     ];
+
+    public static function getNavigationLabel(): string
+    {
+        return 'Fail2Ban Settings';
+    }
 
     public function save(): void
     {
@@ -208,17 +207,16 @@ class Fail2BanSettings extends BaseSettings
                                         ->default(false),
 
                                     Group::make([
+//                                        TextInput::make('fail2ban.config.jails.sshd.port')
+//                                            ->label('Port')
+//                                            ->helperText('Specify the range of ports that should be banned. By default, it is configured to protect the standard SSH port.')
+//                                            ->placeholder('Default: ssh'),
 
-                                        TextInput::make('fail2ban.config.jails.sshd.port')
-                                            ->label('Port')
-                                            ->helperText('Specify the range of ports that should be banned. By default, it is configured to protect the standard SSH port.')
-                                            ->placeholder('Default: ssh'),
-
-                                        Select::make('fail2ban.config.jails.sshd.filter')
-                                            ->label('Filter')
-                                            ->helperText('The \'filter\' sets the criteria used by the jail to identify malicious activity.')
-                                            ->options(SupportedApplicationTypes::getFail2BanJailFilters('sshd'))
-                                            ->default('sshd'),
+//                                        Select::make('fail2ban.config.jails.sshd.filter')
+//                                            ->label('Filter')
+//                                            ->helperText('The \'filter\' sets the criteria used by the jail to identify malicious activity.')
+//                                            ->options(SupportedApplicationTypes::getFail2BanJailFilters('sshd'))
+//                                            ->default('sshd'),
 
                                         TextInputSelectAffix::make('fail2ban.config.jails.sshd.findtime')
                                             ->label('Find Time')
@@ -240,11 +238,11 @@ class Fail2BanSettings extends BaseSettings
                                                     ->default('m');
                                             }),
 
-                                        Select::make('fail2ban.config.jails.sshd.banaction')
-                                            ->label('Ban Action')
-                                            ->helperText('Set the default method for blocking an IP address when a ban is triggered.')
-                                            ->options(SupportedApplicationTypes::getFail2BanBanactions())
-                                            ->default('iptables'),
+//                                        Select::make('fail2ban.config.jails.sshd.banaction')
+//                                            ->label('Ban Action')
+//                                            ->helperText('Set the default method for blocking an IP address when a ban is triggered.')
+//                                            ->options(SupportedApplicationTypes::getFail2BanBanactions())
+//                                            ->default('iptables'),
 
                                         TextInput::make('fail2ban.config.jails.sshd.maxretry')
                                             ->label('Max Retry')
@@ -272,17 +270,17 @@ class Fail2BanSettings extends BaseSettings
                                         ->default(false),
 
                                     Group::make([
-                                        TextInput::make('fail2ban.config.jails.apache.port')
-                                            ->label('Port')
-                                            ->helperText('Specify the range of ports that should be banned. By default, it is configured to protect the standard HTTP and HTTPS ports.')
-                                            ->placeholder('Default: http,https')
-                                            ->reactive(),
+//                                        TextInput::make('fail2ban.config.jails.apache.port')
+//                                            ->label('Port')
+//                                            ->helperText('Specify the range of ports that should be banned. By default, it is configured to protect the standard HTTP and HTTPS ports.')
+//                                            ->placeholder('Default: http,https')
+//                                            ->reactive(),
 
-                                        Select::make('fail2ban.config.jails.apache.filter')
-                                            ->label('Filter')
-                                            ->helperText('The \'filter\' sets the criteria used by the jail to identify malicious activity.')
-                                            ->options(SupportedApplicationTypes::getFail2BanJailFilters('apache'))
-                                            ->default('apache-auth'),
+//                                        Select::make('fail2ban.config.jails.apache.filter')
+//                                            ->label('Filter')
+//                                            ->helperText('The \'filter\' sets the criteria used by the jail to identify malicious activity.')
+//                                            ->options(SupportedApplicationTypes::getFail2BanJailFilters('apache'))
+//                                            ->default('apache-auth'),
 
                                         TextInputSelectAffix::make('fail2ban.config.jails.apache.findtime')
                                             ->label('Find Time')
@@ -304,11 +302,11 @@ class Fail2BanSettings extends BaseSettings
                                                     ->default('m');
                                             }),
 
-                                        Select::make('fail2ban.config.jails.apache.banaction')
-                                            ->label('Ban Action')
-                                            ->helperText('Set the default method for blocking an IP address when a ban is triggered.')
-                                            ->options(SupportedApplicationTypes::getFail2BanBanactions())
-                                            ->default('iptables'),
+//                                        Select::make('fail2ban.config.jails.apache.banaction')
+//                                            ->label('Ban Action')
+//                                            ->helperText('Set the default method for blocking an IP address when a ban is triggered.')
+//                                            ->options(SupportedApplicationTypes::getFail2BanBanactions())
+//                                            ->default('iptables'),
 
                                         TextInput::make('fail2ban.config.jails.apache.maxretry')
                                             ->label('Max retry')
@@ -337,17 +335,17 @@ class Fail2BanSettings extends BaseSettings
                                         ->default(false),
 
                                     Group::make([
-                                        TextInput::make('fail2ban.config.jails.vsftpd.port')
-                                            ->label('Port')
-                                            ->helperText('Specify the range of ports that should be banned. By default, it is configured to protect the standard FTP, FTP-DATA, FTPS, FTPS-DATA ports.')
-                                            ->placeholder('Default: ftp,ftp-data,ftps,ftps-data')
-                                            ->reactive(),
+//                                        TextInput::make('fail2ban.config.jails.vsftpd.port')
+//                                            ->label('Port')
+//                                            ->helperText('Specify the range of ports that should be banned. By default, it is configured to protect the standard FTP, FTP-DATA, FTPS, FTPS-DATA ports.')
+//                                            ->placeholder('Default: ftp,ftp-data,ftps,ftps-data')
+//                                            ->reactive(),
 
-                                        Select::make('fail2ban.config.jails.vsftpd.filter')
-                                            ->label('Filter')
-                                            ->helperText('The \'filter\' sets the criteria used by the jail to identify malicious activity.')
-                                            ->options(SupportedApplicationTypes::getFail2BanJailFilters('vsftpd'))
-                                            ->default('vsftpd'),
+//                                        Select::make('fail2ban.config.jails.vsftpd.filter')
+//                                            ->label('Filter')
+//                                            ->helperText('The \'filter\' sets the criteria used by the jail to identify malicious activity.')
+//                                            ->options(SupportedApplicationTypes::getFail2BanJailFilters('vsftpd'))
+//                                            ->default('vsftpd'),
 
                                         TextInputSelectAffix::make('fail2ban.config.jails.vsftpd.findtime')
                                             ->label('Find Time')
@@ -369,11 +367,11 @@ class Fail2BanSettings extends BaseSettings
                                                     ->default('m');
                                             }),
 
-                                        Select::make('fail2ban.config.jails.vsftpd.banaction')
-                                            ->label('Ban Action options')
-                                            ->helperText('Set the default method for blocking an IP address when a ban is triggered.')
-                                            ->options(SupportedApplicationTypes::getFail2BanBanactions())
-                                            ->default('iptables'),
+//                                        Select::make('fail2ban.config.jails.vsftpd.banaction')
+//                                            ->label('Ban Action options')
+//                                            ->helperText('Set the default method for blocking an IP address when a ban is triggered.')
+//                                            ->options(SupportedApplicationTypes::getFail2BanBanactions())
+//                                            ->default('iptables'),
 
                                         TextInput::make('fail2ban.config.jails.vsftpd.maxretry')
                                             ->label('Max Retry')

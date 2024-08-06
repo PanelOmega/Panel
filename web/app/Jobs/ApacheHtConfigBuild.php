@@ -12,7 +12,7 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 
-class ApacheHtFilesBuild implements ShouldQueue
+class ApacheHtConfigBuild implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
@@ -61,7 +61,9 @@ class ApacheHtFilesBuild implements ShouldQueue
 
     public function getHotlinkData($directory, $hotlinkProtectionData)
     {
-        if ($hotlinkProtectionData && $directory === '/') {
+        $currentDirectory = !$directory ? '/' : $directory;
+
+        if ($hotlinkProtectionData && $currentDirectory === '/') {
             return [
                 'url_allow_access' => explode(',', $hotlinkProtectionData->url_allow_access),
                 'block_extensions' => preg_replace('/\s+/', '', $hotlinkProtectionData->block_extensions),

@@ -35,7 +35,7 @@ class Fail2BanWhitelistedIpResource extends Resource
                     ->required()
                     ->autofocus()
                     ->columnSpanFull()
-                    ->rules(['ip']),
+                    ->rules(['ip', 'unique:fail2_ban_whitelisted_ips,ip']),
 
                 Textarea::make('comment')
                     ->label('Add comment')
@@ -66,11 +66,13 @@ class Fail2BanWhitelistedIpResource extends Resource
                     ->modalHeading('UnWhitelist IP Address')
                     ->modalSubmitActionLabel('UnWhitelist IP')
                     ->action(function ($record) {
-                        Notification::make()
-                            ->title('IP Address UnWhitelisted')
-                            ->body('IP address: ' . $record->ip . ' has been unwhitelisted successfully!')
-                            ->success()
-                            ->send();
+                        if($record->delete()) {
+                            Notification::make()
+                                ->title('IP Address UnWhitelisted')
+                                ->body('IP address: ' . $record->ip . ' has been unwhitelisted successfully!')
+                                ->success()
+                                ->send();
+                        }
                     }),
             ])
             ->bulkActions([
@@ -91,8 +93,6 @@ class Fail2BanWhitelistedIpResource extends Resource
     {
         return [
             'index' => \App\Filament\Clusters\Fail2Ban\Resources\Fail2BanWhitelistedIpResource\Pages\ListFail2BanWhitelistedIps::route('/'),
-//            'create' => \App\Filament\Clusters\Fail2Ban\Resources\Fail2BanWhitelistedIpResource\Pages\CreateFail2BanWhitelistedIp::route('/create'),
-//            'edit' => \App\Filament\Clusters\Fail2Ban\Resources\Fail2BanWhitelistedIpResource\Pages\EditFail2BanWhitelistedIp::route('/{record}/edit'),
         ];
     }
 }

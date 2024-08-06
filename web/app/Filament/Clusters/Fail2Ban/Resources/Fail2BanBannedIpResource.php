@@ -40,6 +40,7 @@ class Fail2BanBannedIpResource extends Resource
 
                 Select::make('service')
                     ->label('Service')
+                    ->required()
                     ->columnSpanFull()
                     ->options(
                         SupportedApplicationTypes::getFail2BanAvailableJails()
@@ -77,11 +78,13 @@ class Fail2BanBannedIpResource extends Resource
                     ->modalHeading('Unabn IP Address')
                     ->modalSubmitActionLabel('Unabn IP')
                     ->action(function ($record) {
-                        Notification::make()
-                            ->title('IP Address Unbanned')
-                            ->body('IP address: ' . $record->ip . ' has been unbanned successfully!')
-                            ->success()
-                            ->send();
+                        if($record->delete()) {
+                            Notification::make()
+                                ->title('IP Address Unbanned')
+                                ->body('IP address: ' . $record->ip . ' has been unbanned successfully!')
+                                ->success()
+                                ->send();
+                        }
                     }),
             ])
             ->bulkActions([

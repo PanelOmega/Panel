@@ -11,27 +11,22 @@
     AuthUserFile {{ $dPrivacyContent['auth_user_file'] }}{{ PHP_EOL }}
     Require valid-user
 @endif
+
 @if(!empty($dPrivacyContent['hotlinkData']) && $dPrivacyContent['hotlinkData']['enabled'] === 'enabled')
+    RewriteEngine on
+    @if(!empty($dPrivacyContent['hotlinkData']['allow_direct_requests']) && $dPrivacyContent['hotlinkData']['allow_direct_requests'] === true)
+        RewriteCond %{HTTP_REFERER} !^$
+    @endif
     @if(!empty($dPrivacyContent['hotlinkData']['url_allow_access']))
         @foreach($dPrivacyContent['hotlinkData']['url_allow_access'] as $hotlink)
-            SetEnvIfNoCase Referer "^{{ $hotlink }}" locally_linked=1
+            RewriteCond %{HTTP_REFERER} !^{{ $hotlink['protocol'] }}://({{ $hotlink['subdomain'] ?? 'www' }}\.)?{{ $hotlink['domain'] }}/.*$ [NC]
         @endforeach
     @endif
-    @if(isset($dPrivacyContent['hotlinkData']['allow_direct_requests']) && $dPrivacyContent['hotlinkData']['allow_direct_requests']!== null)
-        RewriteEngine On
-        RewriteCond %{ENV:{{$dPrivacyContent['hotlinkData']['env']}}} !1
-        RewriteRule ^ - [F]
-    @endif
     @if(!empty($dPrivacyContent['hotlinkData']['block_extensions']))
-        <FilesMatch ".({{str_replace(',', '|', $dPrivacyContent['hotlinkData']['block_extensions'])}})$">
-        Order Allow,Deny
-        Allow from env={{$dPrivacyContent['hotlinkData']['env']}}
-        </FilesMatch>
+        RewriteRule .*\.({{ str_replace(',', '|', trim($dPrivacyContent['hotlinkData']['block_extensions'], ',')) }})$ - [NC,R,L]
     @endif
-    @if(isset($dPrivacyContent['hotlinkData']['redirect_to']))
-        RewriteEngine On
-        RewriteCond %{ENV:{{$dPrivacyContent['hotlinkData']['env']}}} !1
-        RewriteRule ^ {{ $dPrivacyContent['hotlinkData']['redirect_to'] }} [R=301,L]
+    @if(!empty($dPrivacyContent['hotlinkData']['redirect_to']))
+        RewriteRule ^$ {{ $dPrivacyContent['hotlinkData']['redirect_to'] }} [R,L]
     @endif
 @endif
 

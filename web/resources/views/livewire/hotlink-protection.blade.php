@@ -9,22 +9,12 @@
         </p>
     </div>
 
-    <div>
+    <div class="mb-6 bg-gray-100 dark:bg-gray-800 p-4 mb-5">
         <p class="text-base text-gray-400 mb-5">
             Hotlink is currently {{ $this->state['enabled'] }}.
         </p>
-        @if($this->state['enabled'] == 'enabled')
-
-            <button wire:click="disableHotlinkProtection"
-                    class="text-white font-bold py-2 px-4 rounded">
-                Disable Hotlink Protection
-            </button>
-        @else
-            <button wire:click="enableHotlinkProtection" class="text-white font-bold py-2 px-4 rounded">
-                Enable Hotlink Protection
-            </button>
-        @endif
-        <div>
+        {{ $this->updateEnabled }}
+    </div>
 
     <div class="mb-10 mt-6 mx-4">
         <h1 class="text-xl text-gray-400 mb-5">{{ $sections[1]['title'] }}</h1>

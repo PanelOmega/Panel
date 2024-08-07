@@ -31,6 +31,6 @@ class HotlinkProtection extends Model
             $hotlinkProtection = new ApacheHtConfigBuild(false, $model->hosting_subscription_id);
             $hotlinkProtection->handle($model);
         };
-        static::saving($callback);
+        static::saved($callback);
     }
 }

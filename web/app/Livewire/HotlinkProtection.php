@@ -3,6 +3,7 @@
 namespace App\Livewire;
 
 use App\Models\Customer;
+use Filament\Actions\Action;
 use Filament\Actions\Concerns\InteractsWithActions;
 use Filament\Actions\Contracts\HasActions;
 use Filament\Forms\Components\Checkbox;
@@ -25,21 +26,21 @@ class HotlinkProtection extends Component implements HasForms, HasActions
     public ?array $urls_allow_access = [];
 
     public ?array $state = [];
-    private $hotlinkProtection;
+//    private $hotlinkProtection;
 
     public function mount(string $mainTitle, array $sections): void
     {
         $subscriptionAccount = Customer::getHostingSubscriptionSession();
-        $this->hotlinkProtection = \App\Models\HotlinkProtection::where('hosting_subscription_id', $subscriptionAccount->id)->first() ?? null;
+        $hotlinkProtection = \App\Models\HotlinkProtection::where('hosting_subscription_id', $subscriptionAccount->id)->first() ?? null;
 
-        if (!$this->hotlinkProtection) {
-            $this->hotlinkProtection = new \App\Models\HotlinkProtection();
-            $this->hotlinkProtection->hosting_subscription_id = $subscriptionAccount->id;
-            $this->hotlinkProtection->enabled = 'disabled';
-            $this->hotlinkProtection->save();
+        if (!$hotlinkProtection) {
+            $hotlinkProtection = new \App\Models\HotlinkProtection();
+            $hotlinkProtection->hosting_subscription_id = $subscriptionAccount->id;
+            $hotlinkProtection->enabled = 'disabled';
+            $hotlinkProtection->save();
         }
 
-        $this->state = $this->hotlinkProtection->toArray();
+        $this->state = $hotlinkProtection->toArray();
         if(!empty($this->state['url_allow_access'])) {
             $urls = explode(',', $this->state['url_allow_access']);
             $this->state['urls_allow_access'] = [];
@@ -55,24 +56,37 @@ class HotlinkProtection extends Component implements HasForms, HasActions
         $this->sections = $sections;
     }
 
+    public function updateEnabledAction(): Action {
+        return Action::make('updateEnabled')
+            ->requiresConfirmation()
+            ->label($this->state['enabled'] === 'enabled' ? 'Disable' : 'Enable')
+            ->action(function() {
+                $hotlinkProtectionModel = \App\Models\HotlinkProtection::where('hosting_subscription_id', $this->state['hosting_subscription_id'])->first();
+                $hotlinkProtectionModel->enabled = $this->state['enabled'] === 'enabled' ? 'disabled' : 'enabled';
+                $hotlinkProtectionModel->save();
+                $this->state['enabled'] = $this->state['enabled'] === 'enabled' ? 'disabled' : 'enabled';
+
+                Notification::make()
+                    ->title(ucfirst($hotlinkProtectionModel->enabled))
+                    ->body('Hotlink Protection is ' . $hotlinkProtectionModel->enabled . '!')
+                    ->success()
+                    ->send();
+            });
+    }
+
     public function render()
     {
         return view('livewire.hotlink-protection');
     }
 
-    public function enableHotlinkProtection()
-    {
-        $this->state['enabled'] = 'enabled';
-    }
-
-    public function disableHotlinkProtection()
-    {
-        $this->state['enabled'] = 'disabled';
-    }
-
     public function update()
     {
         if(isset($this->state['urls_allow_access'])) {
+            $duplicates = $this->hasDublicateUrls($this->state['urls_allow_access']);
+            if($duplicates) {
+                return;
+            }
+
             $this->state['url_allow_access'] = collect($this->state['urls_allow_access'])
                                                ->pluck('url')
                                                ->implode(',');
@@ -84,10 +98,15 @@ class HotlinkProtection extends Component implements HasForms, HasActions
             $this->state['block_extensions'] = preg_replace('/\s*,\s*/', ',', $this->state['block_extensions']);
         }
 
-        $model = \App\Models\HotlinkProtection::where('hosting_subscription_id', $this->state['hosting_subscription_id'])->first();
-        $model->update($this->state);
+        $hotlinkProtectionModel = \App\Models\HotlinkProtection::where('hosting_subscription_id', $this->state['hosting_subscription_id'])->first();
+        $hotlinkProtectionModel->update([
+            'url_allow_access' => $this->state['url_allow_access'],
+            'block_extensions' => $this->state['block_extensions'],
+            'allow_direct_requests' => $this->state['allow_direct_requests'],
+            'redirect_to' => $this->state['redirect_to'],
+        ]);
 
-        if($model->save()) {
+        if($hotlinkProtectionModel->save()) {
             Notification::make()
                 ->title('Hotlink Protection settings configured.')
                 ->success()
@@ -98,6 +117,30 @@ class HotlinkProtection extends Component implements HasForms, HasActions
                 ->danger()
                 ->send();
         }
+    }
+
+    public function hasDublicateUrls(array $stateUrls): bool {
+        $urls = collect($stateUrls)
+            ->pluck('url')
+            ->filter()
+            ->values();
+
+        $duplicates = $urls->duplicates();
+
+        if ($duplicates->isNotEmpty()) {
+            $uniqueUrls = $urls->unique();
+            $newState = $uniqueUrls->map(fn($url) => ['url' => $url])->toArray();
+            $this->state['urls_allow_access'] = $newState;
+
+            Notification::make()
+                ->title('Duplicate URL')
+                ->body('Duplicate URLs. Please enter only unique URLs.')
+                ->danger()
+                ->send();
+
+            return true;
+        }
+        return false;
     }
 
     public function form(Form $form)
@@ -116,7 +159,8 @@ class HotlinkProtection extends Component implements HasForms, HasActions
                                     ->required()
                                     ->rule('url'),
                             ])
-                            ->columns(2),
+                            ->collapsible()
+                            ->columns(1),
 
                         TextInput::make('block_extensions')
                             ->label('Block direct access for the following extensions (comma-separated):'),

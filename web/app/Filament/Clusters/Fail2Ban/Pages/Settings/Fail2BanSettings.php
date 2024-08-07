@@ -184,7 +184,7 @@ class Fail2BanSettings extends BaseSettings
                                             TextInput::make('fail2ban.config.action.port')
                                                 ->label('Port')
                                                 ->helperText('Specify the range of ports to be banned, which is generally set individually for each specific jail. By default, it covers all ports from 0 to 65535.')
-                                                ->placeholder('Default: 0:65535'),
+                                                ->placeholder('Default: 0-65535'),
 
                                             Select::make('fail2ban.config.action.banaction')
                                                 ->label('Ban Action')

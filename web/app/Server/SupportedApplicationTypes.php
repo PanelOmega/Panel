@@ -214,7 +214,6 @@ class SupportedApplicationTypes
         $f2bProtocols = [
             'tcp' => 'tcp',
             'udp' => 'udp',
-            'tls' => 'tls',
             'icmp' => 'icmp'
         ];
 

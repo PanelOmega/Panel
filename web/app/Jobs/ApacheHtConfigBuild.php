@@ -64,13 +64,29 @@ class ApacheHtConfigBuild implements ShouldQueue
         $currentDirectory = !$directory ? '/' : $directory;
 
         if ($hotlinkProtectionData && $currentDirectory === '/') {
+
+            $urlAllowAccessArray = explode(',', $hotlinkProtectionData->url_allow_access);
+            $urls = array_map(function ($url) {
+                $url = trim($url);
+                $parsedUrl = parse_url($url);
+
+                return [
+                    'protocol' => $parsedUrl['scheme'] ?? 'http',
+                    'subdomain' => isset($parsedUrl['host']) ? explode('.', $parsedUrl['host'])[0] : '',
+                    'domain' => isset($parsedUrl['host']) ? implode('.', array_slice(explode('.', $parsedUrl['host']), -2)) : '',
+                    'full_url' => $url,
+                ];
+            }, $urlAllowAccessArray);
+
+            $blockedExtensions = rtrim(preg_replace('/\s+/', '', $hotlinkProtectionData->block_extensions), ',');
+            $redirectTo = $hotlinkProtectionData->redirect_to;
+
             return [
-                'url_allow_access' => explode(',', $hotlinkProtectionData->url_allow_access),
-                'block_extensions' => preg_replace('/\s+/', '', $hotlinkProtectionData->block_extensions),
-                'allow_direct_requests' => $hotlinkProtectionData->allow_direct_requests,
-                'redirect_to' => $hotlinkProtectionData->redirect_to,
                 'enabled' => $hotlinkProtectionData->enabled,
-                'env' => 'locally_linked'
+                'allow_direct_requests' => $hotlinkProtectionData->allow_direct_requests ? true : false,
+                'url_allow_access' => $urls,
+                'block_extensions' => $blockedExtensions,
+                'redirect_to' => $redirectTo
             ];
         }
         return [];
@@ -90,6 +106,27 @@ class ApacheHtConfigBuild implements ShouldQueue
         $htpasswdContent = view('server.samples.apache.php.htpasswd', [
             'dPrivacyContent' => $htPasswdRecords
         ])->render();
+
+
+        $htaccessContent = preg_replace_callback(
+            '/(^\s*)(Rewrite.*|$)/m',
+            function ($matches) {
+                return str_repeat(' ', 4) . trim($matches[0]);
+            },
+            $htaccessContent
+        );
+
+        $htpasswdContent = view('server.samples.apache.php.htpasswd', [
+            'dPrivacyContent' => $htPasswdRecords
+        ])->render();
+
+        $htpasswdContent = preg_replace_callback(
+            '/(^\s*)(Rewrite.*|$)/m',
+            function ($matches) {
+                return str_repeat(' ', 4) . trim($matches[0]);
+            },
+            $htpasswdContent
+        );
 
         return [
             'htaccessContent' => $htaccessContent,

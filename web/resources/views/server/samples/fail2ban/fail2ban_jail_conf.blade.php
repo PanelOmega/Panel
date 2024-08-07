@@ -175,30 +175,30 @@ enabled = @if(isset($settings['general']['enabled']) && $settings['general']['en
 
 # Destination email address used solely for the interpolations in
 # jail.{conf,local,d/*} configuration files.
-destemail = @if(isset($settings['action']['destemail'])) {{ $settings['action']['destemail'] }} @else @endif
+#destemail = @if(isset($settings['action']['destemail'])) {{ $settings['action']['destemail'] }} @else @endif
 
 
 # Sender email address used solely for some actions
 #sender = root@
 
-sender = @if(isset($settings['action']['sender'])) {{ $settings['action']['sender'] }} @else @endif
+#sender = @if(isset($settings['action']['sender'])) {{ $settings['action']['sender'] }} @else @endif
 
 
 # E-mail action. Since 0.8.1 Fail2Ban uses sendmail MTA for the
 # mailing. Change mta configuration parameter to mail if you want to
 # revert to conventional 'mail'.
 
-mta = @if(isset($settings['action']['mta']) && $settings['action']['mta'] !== 'sendmail') {{ $settings['action']['mta'] }} @else sendmail @endif
+#mta = @if(isset($settings['action']['mta']) && $settings['action']['mta'] !== 'sendmail') {{ $settings['action']['mta'] }} @else sendmail @endif
 
 # Default protocol
-protocol = @if(isset($settings['action']['protocol']) && $settings['action']['protocol'] !== 'tcp') {{ $settings['action']['protocol'] }} @else tcp @endif
+#protocol = @if(isset($settings['action']['protocol']) && $settings['action']['protocol'] !== 'tcp') {{ $settings['action']['protocol'] }} @else tcp @endif
 
 # Specify chain where jumps would need to be added in ban-actions expecting parameter chain
-chain = <known/chain>
+#chain = <known/chain>
 
 # Ports to be banned
 # Usually should be overridden in a particular jail
-port = @if(isset($settings['action']['port']) && $settings['action']['port'] !== '0:65535') {{ $settings['action']['port'] }} @else 0:65535 @endif
+port = @if(isset($settings['action']['port']) && $settings['action']['port'] !== '0-65535') {{ $settings['action']['port'] }} @else 0-65535 @endif
 
 # Format of user-agent https://tools.ietf.org/html/rfc7231#section-5.5.3
 fail2ban_agent = Fail2Ban /%(fail2ban_version)s
@@ -211,7 +211,7 @@ fail2ban_agent = Fail2Ban /%(fail2ban_version)s
 # action_* variables. Can be overridden globally or per
 # section within jail.local file
 
-banaction = @if(isset($settings['action']['banaction']) && $settings['action']['banaction'] !== 'iptables-multiport') {{ $settings['action']['banaction'] }} @else iptables-multiport @endif
+#banaction = @if(isset($settings['action']['banaction']) && $settings['action']['banaction'] !== 'iptables-multiport') {{ $settings['action']['banaction'] }} @else iptables-multiport @endif
 
 #banaction_allports = iptables - allports
 
@@ -233,8 +233,8 @@ banaction = @if(isset($settings['action']['banaction']) && $settings['action']['
 #
 # ban & send a xarf e-mail to abuse contact of IP address and include relevant log lines
 # to the destemail.
-action_xarf = %(action_)s
-xarf - login - attack[service =%(__name__)s, sender = "%(sender)s", logpath = "%(logpath)s", port =
+#action_xarf = %(action_)s
+#xarf - login - attack[service =%(__name__)s, sender = "%(sender)s", logpath = "%(logpath)s", port =
 #"%(port)s"]
 
 # ban & send a notification to one or more of the 50+ services supported by Apprise.
@@ -384,7 +384,7 @@ logpath  = /var/log/fail2ban.log
 
 
 [squid]
-port     =  80,443,3128,8080
+port    =  3128,8080
 logpath = /var/log/fail2ban.log
 
 
@@ -507,7 +507,6 @@ logpath  = /var/log/fail2ban.log
 # [mysqld]
 # log-error=/var/log/mysqld.log
 [mysqld-auth]
-
 port     = 3306
 logpath  = /var/log/fail2ban.log
 backend  = %(mysql_backend)s

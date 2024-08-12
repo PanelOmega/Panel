@@ -14,6 +14,7 @@ dnf install -y  httpd-filesystem-2.4.62-3.el9.noarch.rpm httpd-tools-2.4.62-3.el
 chown root:nobody /usr/sbin/suexec
 chmod 6750 /usr/sbin/suexec
 
+touch /etc/httpd/logs/suexec_log
 chown root:nobody /etc/httpd/logs/suexec_log
 chmod 644 /etc/httpd/logs/suexec_log
 

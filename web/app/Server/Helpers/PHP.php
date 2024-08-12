@@ -75,7 +75,7 @@ class PHP
                 $fileType = 'application/x-httpd-php' . $shortWithoutDot;
                 $fileExtensions = '.php .php' . substr($shortWithoutDot,0,1) . ' .phtml';
 
-                $checkCopiedFile = '/usr/local/omega/cgi-sys/cl-php' . $shortWithoutDot;
+                $checkCopiedFile = '/usr/local/omega/cgi-sys/remi-php' . $shortWithoutDot;
                 if (!is_file($checkCopiedFile)) {
                     shell_exec('mkdir -p /usr/local/omega/cgi-sys');
                     shell_exec('cp ' . $phpBinPath . ' ' . $checkCopiedFile);
@@ -91,6 +91,7 @@ class PHP
                     'fileType' => $fileType,
                     'fileExtensions' => $fileExtensions,
                     'full' => $checkPHPVersionFull,
+                    'action' => $fileType . ' /cgi-sys/remi-php' . $shortWithoutDot,
                 ];
             }
         }

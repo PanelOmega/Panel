@@ -95,7 +95,16 @@ class PHPInstaller
             $commands[] = 'systemctl restart apache2';
 
         }
-
+        if ($os == OS::ALMA_LINUX || $os == OS::CLOUD_LINUX) {
+            $commands[] = 'dnf update -y';
+            $commands[] = 'dnf install https://dl.fedoraproject.org/pub/epel/epel-release-latest-9.noarch.rpm -y';
+            $commands[] = 'dnf install https://rpms.remirepo.net/enterprise/remi-release-9.rpm -y';
+            foreach ($this->phpVersions as $phpVersion) {
+                $phpVersionWithoutDot = str_replace('.', '', $phpVersion);
+                $commands[] = 'dnf module enable php:remi-' . $phpVersion . ' -y';
+                $commands[] = 'dnf install php' . $phpVersionWithoutDot . ' php' . $phpVersionWithoutDot . '-php-fpm -y';
+            }
+        }
 
         $shellFileContent = '';
         foreach ($commands as $command) {

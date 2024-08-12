@@ -8,7 +8,6 @@
 
 ScriptAlias /cgi-sys /usr/local/omega/cgi-sys/
 
-@dd($installedPHPVersions)
 @foreach($installedPHPVersions as $phpVersion)
 Action {{$phpVersion['action']}}
 @endforeach

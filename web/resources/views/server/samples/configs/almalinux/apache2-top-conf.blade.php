@@ -12,8 +12,8 @@ Listen 80
 
 Include conf.modules.d/*.conf
 
-User apache
-Group apache
+User nobody
+Group nobody
 
 ServerAdmin root@localhost
 DocumentRoot "/var/www/html"

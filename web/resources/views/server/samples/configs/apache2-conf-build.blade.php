@@ -5,9 +5,9 @@
 @endif
 
 @if(isset($installedPHPVersions))
-@foreach($installedPHPVersions as $phpVersion)
-ScriptAlias {{$phpVersion['scriptAlias']}}
-@endforeach
+
+ScriptAlias /cgi-sys /usr/local/omega/cgi-sys/
+
 @foreach($installedPHPVersions as $phpVersion)
 Action {{$phpVersion['action']}}
 @endforeach

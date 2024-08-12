@@ -33,16 +33,23 @@ class PHP
                     $shortWithoutDot = str_replace('.', '', $version['short']);
                     $fileType = 'application/x-httpd-php' . $shortWithoutDot;
                     $fileExtensions = '.php .php' . substr($shortWithoutDot,0,1) . ' .phtml';
+
+                    $checkCopiedFile = '/usr/local/omega/cgi-sys/cl-php' . $shortWithoutDot;
+                    if (!is_file($checkCopiedFile)) {
+                        shell_exec('mkdir -p /usr/local/omega/cgi-sys');
+                        shell_exec('cp ' . $version['path'] . ' ' . $checkCopiedFile);
+                        shell_exec('chmod +x ' . $checkCopiedFile);
+                        shell_exec('chown root:wheel ' . $checkCopiedFile);
+                    }
+
                     $phpVersions[] = [
                         'short' => $version['short'],
                         'shortWithoutDot' => $shortWithoutDot,
                         'full' => $version['full'],
-                        'path' => $version['path'],
+                        'path' => $checkCopiedFile,
                         'friendlyName' => 'PHP ' . $version['short'],
                         'vendor' => 'CloudLinux',
-                        'binPath'=>$binPath,
-                        'scriptAlias' => '/cgi-php-' . $shortWithoutDot . ' ' . $binPath,
-                        'action' => $fileType . ' /cgi-php-' . $shortWithoutDot . '/php-cgi',
+                        'action' => $fileType . ' /cgi-sys/cl-php' . $shortWithoutDot,
                         'fileType' => $fileType,
                         'fileExtensions' => $fileExtensions,
                     ];

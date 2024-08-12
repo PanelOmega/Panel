@@ -8,11 +8,12 @@
 
 ScriptAlias /cgi-sys /usr/local/omega/cgi-sys/
 
+@dd($installedPHPVersions)
 @foreach($installedPHPVersions as $phpVersion)
 Action {{$phpVersion['action']}}
 @endforeach
 
-Action {{$installedPHPVersions[0]['action']}}
+AddHandler {{$installedPHPVersions[0]['fileType']}} {{$installedPHPVersions[0]['fileExtensions']}}
 
 @endif
 

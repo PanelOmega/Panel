@@ -12,7 +12,7 @@ ScriptAlias /cgi-sys /usr/local/omega/cgi-sys/
 Action {{$phpVersion['action']}}
 @endforeach
 
-AddHandler {{$installedPHPVersions[0]['fileType']}} {{$installedPHPVersions[0]['fileExtensions']}}
+AddHandler {{$installedPHPVersions[end($installedPHPVersions)]['fileType']}} {{$installedPHPVersions[0]['fileExtensions']}}
 
 @endif
 

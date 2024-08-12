@@ -33,11 +33,11 @@ Action {{$phpVersion['action']}}
 
     DocumentRoot {{$virtualHost['domainPublic']}}
     SetEnv APP_DOMAIN {{$virtualHost['domain']}}
+    SuexecUserGroup {{$virtualHost['user']}} {{$virtualHost['group']}}
 
     @if(isset($virtualHost['enableRuid2']) && $virtualHost['enableRuid2'] && !empty($virtualHost['user']) && !empty($virtualHost['group']))
 
         #RDocumentChRoot {{$virtualHost['domainPublic']}}
-        #SuexecUserGroup {{$virtualHost['user']}} {{$virtualHost['group']}}
         #RUidGid {{$virtualHost['user']}} {{$virtualHost['group']}}
 
     @endif
@@ -49,12 +49,6 @@ Action {{$phpVersion['action']}}
         CustomLog {{$virtualHost['domainRoot']}}/logs/apache2/bytes.log bytes
         CustomLog {{$virtualHost['domainRoot']}}/logs/apache2/access.log common
         ErrorLog {{$virtualHost['domainRoot']}}/logs/apache2/error.log
-
-    @endif
-
-    @if($virtualHost['appType'] == 'php')
-
-        ScriptAlias /cgi-bin/ {{$virtualHost['domainPublic']}}/cgi-bin/
 
     @endif
 
@@ -75,13 +69,6 @@ Action {{$phpVersion['action']}}
         AllowOverride All
         Require all granted
 
-        @if(isset($virtualHost['enableRuid2']) && $virtualHost['enableRuid2'] && !empty($virtualHost['user']) && !empty($virtualHost['group']))
-
-            RMode config
-            RUidGid {{$virtualHost['user']}} {{$virtualHost['group']}}
-
-        @endif
-
         @if($virtualHost['passengerAppRoot'] !== null)
 
             PassengerAppRoot {{$virtualHost['passengerAppRoot']}}
@@ -101,11 +88,6 @@ Action {{$phpVersion['action']}}
         @endif
 
         @if($virtualHost['appType'] == 'php')
-
-            Action phpcgi-script /cgi-bin/php
-            <Files *.php>
-                SetHandler phpcgi-script
-            </Files>
 
             @php
                 $appendOpenBaseDirs = $virtualHost['homeRoot'];

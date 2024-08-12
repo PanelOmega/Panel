@@ -214,7 +214,6 @@ class SupportedApplicationTypes
         $f2bProtocols = [
             'tcp' => 'tcp',
             'udp' => 'udp',
-            'icmp' => 'icmp'
         ];
 
         foreach ($f2bProtocols as $name => $protocol) {
@@ -231,7 +230,11 @@ class SupportedApplicationTypes
             'iptables' => 'iptables',
             'iptables-new' => 'iptables-new',
             'iptables-multipot' => 'iptables-multiport',
-            'shorewall' => 'shorewall'
+            'shorewall' => 'shorewall',
+            'firewalld-allports' => 'firewalld-allports',
+            'firewallcmd-rich-rules' => 'firewalld-rich-rules',
+            'firewalld-ipset' => 'firewalld-ipset',
+            'firewalld-multiport' => 'firewalld-multiport',
         ];
 
         foreach ($f2bBanactions as $name => $banaction) {
@@ -255,5 +258,19 @@ class SupportedApplicationTypes
             }
         }
         return $filters;
+    }
+
+    public function getFail2BanProtocols() {
+
+        $protocols = [];
+        $fail2BanProtocols = [
+            'tcp' => 'tcp'
+        ];
+
+        foreach($fail2BanProtocols as $name => $protocol) {
+            $protocols[$name] = $protocol;
+        }
+
+        return $protocols;
     }
 }

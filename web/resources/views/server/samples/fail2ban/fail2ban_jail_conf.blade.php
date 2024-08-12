@@ -17,18 +17,22 @@
 # ssh-iptables jail the following (uncommented) would appear in the .local file.
 # See man 5 jail.conf for details.
 #
-[DEFAULT]
+# [DEFAULT]
+# bantime = 1h
+#
+# [sshd]
+# enabled = true
 #
 # See jail.conf(5) man page for more information
 
 
-# Comments: use '#' for comment lines and ';' (following a space) for inline comments
 
+# Comments: use '#' for comment lines and ';' (following a space) for inline comments
 
 [INCLUDES]
 
 #before = paths-distro.conf
-before = paths - fedora . conf
+before = paths-fedora.conf
 
 # The DEFAULT allows a global definition of the options. They can be overridden
 # in each jail afterwards.
@@ -87,10 +91,10 @@ before = paths - fedora . conf
 
 ignoreip = @if(isset($whitelistedIps)) {{ implode(',', $whitelistedIps) }} @endif
 
-# External command that will take an tagged arguments to ignore, e.g.
+# External command that will take an tagged arguments to ignore, e.g. {{'<ip>'}},
 # and return true if the IP is to be ignored. False otherwise.
 #
-# ignorecommand = /path/to/command
+# ignorecommand = /path/to/command {{'<ip>'}}
 ignorecommand = @if(isset($setting['general']['ignorecommand']) && $settings['general']['ignorecommand'] !== '') {{ $settings['general']['ignorecommand'] }} @else @endif
 
 # "bantime" is the number of seconds that a host is banned.
@@ -100,72 +104,70 @@ bantime = @if(isset($settings['general']['bantime']) && $settings['general']['ba
 # A host is banned if it has generated "maxretry" during the last "findtime"
 # seconds.
 
-findtime = @if(isset($settings['general']['findtime']) && $settings['general']['findtime'] > 0 && isset($settings['general']['fail2ban']['config']['general']['findtime_unit'])) {{ $settings['general']['findtime'] }}{{ $settings['general']['fail2ban']['config']['general']['findtime_unit'] }} @else 10m @endif
+findtime = @if(isset($settings['general']['findtime']) && $settings['general']['findtime'] > 0 && isset($settings['general']['fail2ban']['config']['general']['findtime_unit'])){{ $settings['general']['findtime'] }}{{ $settings['general']['fail2ban']['config']['general']['findtime_unit'] }}@else 10m @endif
 
 # "maxretry" is the number of failures before a host get banned.
 maxretry = @if(isset($settings['general']['maxretry']) && $settings['general']['maxretry'] > 0) {{ $settings['general']['maxretry'] }} @else 5 @endif
 
 # "maxmatches" is the number of matches stored in ticket (resolvable via tag
 #< matches> in actions).
-#maxmatches = %(maxretry)s
+maxmatches = %(maxretry)s
 
 # "backend" specifies the backend used to get files modification.
 # Available options are "pyinotify", "gamin", "polling", "systemd" and "auto".
 # This option can be overridden in each jail as well.
 #
 # pyinotify: requires pyinotify (a file alteration monitor) to be installed.
-# If pyinotify is not installed, Fail2ban will use auto.
-# gamin: requires Gamin (a file alteration monitor) to be installed.
-# If Gamin is not installed, Fail2ban will use auto.
-# polling: uses a polling algorithm which does not require external libraries.
-# systemd: uses systemd python library to access the systemd journal.
-# Specifying "logpath" is not valid for this backend.
-# See "journalmatch" in the jails associated filter config
-# auto: will try to use the following backends, in order:
-# pyinotify, gamin, polling.
+#              If pyinotify is not installed, Fail2ban will use auto.
+# gamin:     requires Gamin (a file alteration monitor) to be installed.
+#              If Gamin is not installed, Fail2ban will use auto.
+# polling:   uses a polling algorithm which does not require external libraries.
+# systemd:   uses systemd python library to access the systemd journal.
+#              Specifying "logpath" is not valid for this backend.
+#              See "journalmatch" in the jails associated filter config
+# auto:      will try to use the following backends, in order:
+#              pyinotify, gamin, polling.
 #
 # Note: if systemd backend is chosen as the default but you enable a jail
-# for which logs are present only in its own log files, specify some other
-# backend for that jail (e.g. polling) and provide empty value for
-# journalmatch. See https://github.com/fail2ban/fail2ban/issues/959#issuecomment-74901200
+#       for which logs are present only in its own log files, specify some other
+#       backend for that jail (e.g. polling) and provide empty value for
+#       journalmatch. See https://github.com/fail2ban/fail2ban/issues/959#issuecomment-74901200
 backend = @if(isset($settings['general']['backend']) && ($settings['general']['backend'] !== 'auto' && $settings['general']['backend'] !== '')) {{ $settings['general']['backend'] }} @else auto @endif
 
 # "usedns" specifies if jails should trust hostnames in logs,
-# warn when DNS lookups are performed, or ignore all hostnames in logs
+#   warn when DNS lookups are performed, or ignore all hostnames in logs
 #
-# yes: if a hostname is encountered, a DNS lookup will be performed.
-# warn: if a hostname is encountered, a DNS lookup will be performed,
-# but it will be logged as a warning.
-# no: if a hostname is encountered, will not be used for banning,
-# but it will be logged as info.
-# raw: use raw value (no hostname), allow use it for no-host filters/actions (example user)
+# yes:   if a hostname is encountered, a DNS lookup will be performed.
+# warn:  if a hostname is encountered, a DNS lookup will be performed,
+#        but it will be logged as a warning.
+# no:    if a hostname is encountered, will not be used for banning,
+#        but it will be logged as info.
+# raw:   use raw value (no hostname), allow use it for no-host filters/actions (example user)
 usedns = @if(isset($settings['general']['usedns']) && ($settings['general']['usedns'] !== 'warn' && $settings['general']['usedns'] !== '')) {{ $settings['general']['usedns'] }} @else warn @endif
 
 # "logencoding" specifies the encoding of the log files handled by the jail
-# This is used to decode the lines from the log file.
-# Typical examples: "ascii", "utf-8"
+#   This is used to decode the lines from the log file.
+#   Typical examples:  "ascii", "utf-8"
 #
-# auto: will use the system locale setting
-
-logencoding = @if(isset($settings['general']['logencoding']) && ($settings['general']['logencoding'] !== 'auto' && $settings['general']['logencoding'] !== '')) {{ $settings['general']['logencoding'] }} @else auto @endif
+#   auto:   will use the system locale setting
+logencoding = @if(isset($settings['general']['logencoding']) && ($settings['general']['logencoding'] !== 'auto' && $settings['general']['logencoding'] !== '')){{ $settings['general']['logencoding'] }}@else auto @endif
 
 # "enabled" enables the jails.
-# By default all jails are disabled, and it should stay this way.
-# Enable only relevant to your setup jails in your .local or jail.d/*.conf
+#  By default all jails are disabled, and it should stay this way.
+#  Enable only relevant to your setup jails in your .local or jail.d/*.conf
 #
-# true: jail will be enabled and log files will get monitored for changes
+# true:  jail will be enabled and log files will get monitored for changes
 # false: jail is not enabled
 enabled = @if(isset($settings['general']['enabled']) && $settings['general']['enabled'] === true) true @else false @endif
 
 
 # "mode" defines the mode of the filter (see corresponding filter implementation for more info).
-#mode = normal
+mode = normal
 
 # "filter" defines the filter to use by the jail.
-# By default jails have names matching their filter name
+#  By default jails have names matching their filter name
 #
-#filter = %(__name__)s[mode =%(mode)s]
-
+filter = %(__name__)s[mode=%(mode)s]
 
 #
 # ACTIONS
@@ -175,26 +177,24 @@ enabled = @if(isset($settings['general']['enabled']) && $settings['general']['en
 
 # Destination email address used solely for the interpolations in
 # jail.{conf,local,d/*} configuration files.
-#destemail = @if(isset($settings['action']['destemail'])) {{ $settings['action']['destemail'] }} @else @endif
-
+destemail = @if(isset($settings['action']['destemail'])) {{ $settings['action']['destemail'] }} @else @endif
 
 # Sender email address used solely for some actions
-#sender = root@
 
-#sender = @if(isset($settings['action']['sender'])) {{ $settings['action']['sender'] }} @else @endif
+sender = @if(isset($settings['action']['sender'])) {{ $settings['action']['sender'] }} @else @endif
 
 
 # E-mail action. Since 0.8.1 Fail2Ban uses sendmail MTA for the
 # mailing. Change mta configuration parameter to mail if you want to
 # revert to conventional 'mail'.
 
-#mta = @if(isset($settings['action']['mta']) && $settings['action']['mta'] !== 'sendmail') {{ $settings['action']['mta'] }} @else sendmail @endif
+mta = @if(isset($settings['action']['mta']) && $settings['action']['mta'] !== 'sendmail') {{ $settings['action']['mta'] }} @else sendmail @endif
 
 # Default protocol
-#protocol = @if(isset($settings['action']['protocol']) && $settings['action']['protocol'] !== 'tcp') {{ $settings['action']['protocol'] }} @else tcp @endif
+protocol = @if(isset($settings['action']['protocol']) && $settings['action']['protocol'] !== 'tcp') {{ $settings['action']['protocol'] }} @else tcp @endif
 
 # Specify chain where jumps would need to be added in ban-actions expecting parameter chain
-#chain = <known/chain>
+#chain =
 
 # Ports to be banned
 # Usually should be overridden in a particular jail
@@ -211,9 +211,8 @@ fail2ban_agent = Fail2Ban /%(fail2ban_version)s
 # action_* variables. Can be overridden globally or per
 # section within jail.local file
 
-#banaction = @if(isset($settings['action']['banaction']) && $settings['action']['banaction'] !== 'iptables-multiport') {{ $settings['action']['banaction'] }} @else iptables-multiport @endif
-
-#banaction_allports = iptables - allports
+banaction = @if(isset($settings['action']['banaction']) && $settings['action']['banaction'] !== 'iptables-multiport') {{ $settings['action']['banaction'] }} @else iptables-multiport @endif {{ PHP_EOL }}
+#banaction_allports = iptables-allports
 
 # The simplest action to take: ban only
 #action_ = %(banaction)s[port = "%(port)s", protocol = "%(protocol)s", chain = "%(chain)s"]
@@ -248,7 +247,7 @@ fail2ban_agent = Fail2Ban /%(fail2ban_version)s
 
 # ban IP on CloudFlare & send an e-mail with whois report and relevant log lines
 # to the destemail.
-№action_cf_mwl = cloudflare[cfuser = "%(cfemail)s", cftoken = "%(cfapikey)s"]
+# action_cf_mwl = cloudflare[cfuser = "%(cfemail)s", cftoken = "%(cfapikey)s"]
 #%(mta)s - whois - lines[sender = "%(sender)s", dest = "%(destemail)s", logpath = "%(logpath)s", chain =
 #"%(chain)s"]
 
@@ -271,36 +270,106 @@ apikey = "%(blocklist_de_apikey)s", agent = "%(fail2ban_agent)s"]
 # Choose default action. To change, just override value of 'action' with the
 # interpolation to the chosen action shortcut (e.g. action_mw, action_mwl, etc) in jail.local
 # globally (section [DEFAULT]) or per specific section
-#action = %(action_)s
-
+action = %(action_)s
 
 #
 # JAILS
 #
 
-#
-# SSH servers
-#
+[dropbear]
+
+port     = ssh
+logpath  = %(dropbear_log)s
+backend  = %(dropbear_backend)s
+
+
+[selinux-ssh]
+
+port     = ssh
+logpath  = %(auditd_log)s
 
 
 #
 # HTTP servers
 #
 
+[apache-auth]
+
+port     = http,https
+logpath  = %(apache_error_log)s
+
+
+[apache-badbots]
+# Ban hosts which agent identifies spammer robots crawling the web
+# for email addresses. The mail outputs are buffered.
+port     = http,https
+logpath  = %(apache_access_log)s
+bantime  = 48h
+maxretry = 1
+
+
+[apache-noscript]
+
+port     = http,https
+logpath  = %(apache_error_log)s
+
+
+[apache-overflows]
+
+port     = http,https
+logpath  = %(apache_error_log)s
+maxretry = 2
+
+
+[apache-nohome]
+
+port     = http,https
+logpath  = %(apache_error_log)s
+maxretry = 2
+
+
+[apache-botsearch]
+
+port     = http,https
+logpath  = %(apache_error_log)s
+maxretry = 2
+
+
+[apache-fakegooglebot]
+
+port     = http,https
+logpath  = %(apache_access_log)s
+maxretry = 1
+ignorecommand = %(fail2ban_confpath)s/filter.d/ignorecommands/apache-fakegooglebot {{'<ip>'}}
+
+
+[apache-modsecurity]
+
+port     = http,https
+logpath  = %(apache_error_log)s
+maxretry = 2
+
+
+[apache-shellshock]
+
+port    = http,https
+logpath = %(apache_error_log)s
+maxretry = 1
+
+
 [openhab-auth]
 filter = openhab
 banaction = %(banaction_allports)s
 logpath = /var/log/fail2ban.log
 
+
 # To use more aggressive http-auth modes set filter parameter "mode" in jail.local:
 # normal (default), aggressive (combines all), auth or fallback
-# See "tests/files/logs/nginx-http-auth" or "filter.d/nginx-http-auth.conf" for usage example and
-#details .
+# See "tests/files/logs/nginx-http-auth" or "filter.d/nginx-http-auth.conf" for usage example and details.
 [nginx-http-auth]
 # mode = normal
 port    = http,https
 logpath = /var/log/fail2ban.log
-
 
 # To use 'nginx-limit-req' jail you should have `ngx_http_limit_req_module`
 # and define `limit_req` and `limit_req_zone` as described in nginx documentation
@@ -311,12 +380,27 @@ port    = http,https
 logpath = /var/log/fail2ban.log
 
 [nginx-botsearch]
+
 port     = http,https
 logpath  = /var/log/fail2ban.log
 
 [nginx-bad-request]
 port    = http,https
 logpath = /var/log/fail2ban.log
+
+# Ban attackers that try to use PHP's URL-fopen() functionality
+# through GET/POST variables. - Experimental, with more than a year
+# of usage in production environments.
+
+[php-url-fopen]
+
+port    = http,https
+logpath = /var/log/fail2ban.log
+
+[suhosin]
+
+port    = http,https
+logpath = %(suhosin_log)s
 
 
 [lighttpd-auth]
@@ -331,22 +415,27 @@ logpath = /var/log/fail2ban.log
 #
 
 [roundcube-auth]
+
 port     = http,https
 logpath  = /var/log/fail2ban.log
 # Use following line in your jail.local if roundcube logs to journal.
 #backend = %(syslog_backend)s
+
 
 [openwebmail]
 
 port     = http,https
 logpath  = /var/log/fail2ban.log
 
+
 [horde]
+
 port     = http,https
 logpath  = /var/log/fail2ban.log
 
 
 [groupoffice]
+
 port     = http,https
 logpath  = /var/log/fail2ban.log
 
@@ -360,35 +449,60 @@ logpath  = /var/log/fail2ban.log
 
 
 [tine20]
+
 logpath  = /var/log/fail2ban.log
 port     = http,https
+
 
 #
 # Web Applications
 #
 #
 
+[drupal-auth]
+
+port     = http,https
+logpath  = %(syslog_daemon)s
+backend  = %(syslog_backend)s
+
 [guacamole]
+
 port     = http,https
 logpath  = /var/log/fail2ban.log
-
 
 [monit]
 #Ban clients brute-forcing the monit gui login
 port = 2812
 logpath  = /var/log/fail2ban.log
+
+
+[webmin-auth]
+
+port    = 10000
+logpath = %(syslog_authpriv)s
+backend = %(syslog_backend)s
+
+
+[froxlor-auth]
+
+port    = http,https
+logpath  = %(syslog_authpriv)s
+backend  = %(syslog_backend)s
+
+
 #
 # HTTP Proxy servers
 #
 #
 
-
 [squid]
-port    =  3128,8080
+
+port     =  80,443,3128,8080
 logpath = /var/log/fail2ban.log
 
 
 [3proxy]
+
 port    = 3128
 logpath = /var/log/fail2ban.log
 
@@ -398,20 +512,112 @@ logpath = /var/log/fail2ban.log
 #
 
 
+[proftpd]
+port = ftp,ftp-data,ftps,ftps-data
+logpath  = %(proftpd_log)s
+backend  = %(proftpd_backend)s
+
+
+[pure-ftpd]
+
+port = ftp,ftp-data,ftps,ftps-data
+logpath  = %(pureftpd_log)s
+backend  = %(pureftpd_backend)s
+
+
+[gssftpd]
+
+port = ftp,ftp-data,ftps,ftps-data
+logpath  = %(syslog_daemon)s
+backend  = %(syslog_backend)s
+
+
+[wuftpd]
+
+port = ftp,ftp-data,ftps,ftps-data
+logpath  = %(wuftpd_log)s
+backend  = %(wuftpd_backend)s
+
+
 #
 # Mail servers
 #
 
 # ASSP SMTP Proxy Jail
 [assp]
+
 port     = smtp,465,submission
 logpath  = /var/log/fail2ban.log
 
 
+[courier-smtp]
+
+port     = smtp,465,submission
+logpath  = %(syslog_mail)s
+backend  = %(syslog_backend)s
+
+
+[postfix]
+# To use another modes set filter parameter "mode" in jail.local:
+mode    = more
+port    = smtp,465,submission
+logpath = %(postfix_log)s
+backend = %(postfix_backend)s
+
+
+[postfix-rbl]
+
+filter   = postfix[mode=rbl]
+port     = smtp,465,submission
+logpath  = %(postfix_log)s
+backend  = %(postfix_backend)s
+maxretry = 1
+
+
+[sendmail-auth]
+
+port    = submission,465,smtp
+logpath = %(syslog_mail)s
+backend = %(syslog_backend)s
+
+
+[sendmail-reject]
+# To use more aggressive modes set filter parameter "mode" in jail.local:
+# normal (default), extra or aggressive
+# See "tests/files/logs/sendmail-reject" or "filter.d/sendmail-reject.conf" for usage example and details.
+#mode    = normal
+port     = smtp,465,submission
+logpath  = %(syslog_mail)s
+backend  = %(syslog_backend)s
+
+
 [qmail-rbl]
+
 filter  = qmail
 port    = smtp,465,submission
 logpath = /var/log/fail2ban.log
+
+
+# dovecot defaults to logging to the mail syslog facility
+# but can be set by syslog_facility in the dovecot configuration.
+[dovecot]
+
+port    = pop3,pop3s,imap,imaps,submission,465,sieve
+logpath = %(dovecot_log)s
+backend = %(dovecot_backend)s
+
+
+[sieve]
+
+port   = smtp,465,submission
+logpath = %(dovecot_log)s
+backend = %(dovecot_backend)s
+
+
+[solid-pop3d]
+
+port    = pop3,pop3s
+logpath = %(solidpop3d_log)s
 
 
 [exim]
@@ -422,11 +628,13 @@ logpath = /var/log/fail2ban.log
 
 
 [exim-spam]
+
 port   = smtp,465,submission
 logpath = /var/log/fail2ban.log
 
 
 [kerio]
+
 port    = imap,smtp,imaps,465
 logpath = /var/log/fail2ban.log
 
@@ -436,10 +644,50 @@ logpath = /var/log/fail2ban.log
 # all relevant ports get banned
 #
 
+[courier-auth]
+
+port     = smtp,465,submission,imap,imaps,pop3,pop3s
+logpath  = %(syslog_mail)s
+backend  = %(syslog_backend)s
+
+
+[postfix-sasl]
+
+filter   = postfix[mode=auth]
+port     = smtp,465,submission,imap,imaps,pop3,pop3s
+# You might consider monitoring /var/log/mail.warn instead if you are
+# running postfix since it would provide the same log lines at the
+# "warn" level but overall at the smaller filesize.
+logpath  = %(postfix_log)s
+backend  = %(postfix_backend)s
+
+
+[perdition]
+
+port   = imap,imaps,pop3,pop3s
+logpath = %(syslog_mail)s
+backend = %(syslog_backend)s
+
 
 [squirrelmail]
+
 port = smtp,465,submission,imap,imap2,imaps,pop3,pop3s,http,https,socks
 logpath = /var/log/fail2ban.log
+
+
+[cyrus-imap]
+
+port   = imap,imaps
+logpath = %(syslog_mail)s
+backend = %(syslog_backend)s
+
+
+[uwimap-auth]
+
+port   = imap,imaps
+logpath = %(syslog_mail)s
+backend = %(syslog_backend)s
+
 
 #
 #
@@ -447,34 +695,46 @@ logpath = /var/log/fail2ban.log
 #
 
 
+# !!! WARNING !!!
+#   Since UDP is connection-less protocol, spoofing of IP and imitation
+#   of illegal actions is way too simple.  Thus enabling of this filter
+#   might provide an easy way for implementing a DoS against a chosen
+#   victim. See
+#    http://nion.modprobe.de/blog/archives/690-fail2ban-+-dns-fail.html
+#   Please DO NOT USE this jail unless you know what you are doing.
+#
+# IMPORTANT: see filter.d/named-refused for instructions to enable logging
+# This jail blocks UDP traffic for DNS requests.
+# [named-refused-udp]
+#
+# filter   = named-refused
+# port     = domain,953
+# protocol = udp
+# logpath  = /var/log/fail2ban.log
+
+# IMPORTANT: see filter.d/named-refused for instructions to enable logging
+# This jail blocks TCP traffic for DNS requests.
+
 [named-refused]
+
 port     = domain,953
 logpath  = /var/log/fail2ban.log
 
 
 [nsd]
+
 port     = 53
 action_  = %(default/action_)s[name=%(__name__)s-tcp, protocol="tcp"]
 %(default/action_)s[name=%(__name__)s-udp, protocol="udp"]
 logpath = /var/log/fail2ban.log
 
 
-# !!! WARNING !!!
-# Since UDP is connection-less protocol, spoofing of IP and imitation
-# of illegal actions is way too simple. Thus enabling of this filter
-# might provide an easy way for implementing a DoS against a chosen
-# victim. See
-# http://nion.modprobe.de/blog/archives/690-fail2ban-+-dns-fail.html
-# Please DO NOT USE this jail unless you know what you are doing.
-#
-# IMPORTANT: see filter.d/named-refused for instructions to enable logging
-# This jail blocks UDP traffic for DNS requests.
-
 #
 # Miscellaneous
 #
 
 [asterisk]
+
 port     = 5060,5061
 action_  = %(default/action_)s[name=%(__name__)s-tcp, protocol="tcp"]
 %(default/action_)s[name=%(__name__)s-udp, protocol="udp"]
@@ -483,6 +743,7 @@ maxretry = 10
 
 
 [freeswitch]
+
 port     = 5060,5061
 action_  = %(default/action_)s[name=%(__name__)s-tcp, protocol="tcp"]
 %(default/action_)s[name=%(__name__)s-udp, protocol="udp"]
@@ -492,8 +753,10 @@ maxretry = 10
 
 # enable adminlog; it will log to a file inside znc's directory by default.
 [znc-adminlog]
+
 port     = 6667
 logpath  = /var/log/fail2ban.log
+
 
 # To log wrong MySQL access attempts add to /etc/my.cnf in [mysqld] or
 # equivalent section:
@@ -507,6 +770,7 @@ logpath  = /var/log/fail2ban.log
 # [mysqld]
 # log-error=/var/log/mysqld.log
 [mysqld-auth]
+
 port     = 3306
 logpath  = /var/log/fail2ban.log
 backend  = %(mysql_backend)s
@@ -527,25 +791,51 @@ port     = 27017
 logpath  = /var/log/fail2ban.log
 
 
-
 # Jail for more extended banning of persistent abusers
 # !!! WARNINGS !!!
 # 1. Make sure that your loglevel specified in fail2ban.conf/.local
-# is not at DEBUG level -- which might then cause fail2ban to fall into
-# an infinite loop constantly feeding itself with non-informative lines
+#    is not at DEBUG level -- which might then cause fail2ban to fall into
+#    an infinite loop constantly feeding itself with non-informative lines
 # 2. Increase dbpurgeage defined in fail2ban.conf to e.g. 648000 (7.5 days)
-# to maintain entries for failed logins for sufficient amount of time
+#    to maintain entries for failed logins for sufficient amount of time
+[recidive]
+
+filter   = recidive
+logpath  = /var/log/fail2ban.log
+action   = firewallcmd-rich-rules[name=recidive, blocktype=DROP, returntype=ACCEPT, port="1-65535"]
+bantime  = 86400
+findtime = 86400
+maxretry = 5
+
+
+# Generic filter for PAM. Has to be used with action which bans all
+# ports such as iptables-allports, shorewall
+
+[pam-generic]
+# pam-generic filter can be customized to monitor specific subset of 'tty's
+banaction = %(banaction_allports)s
+logpath  = %(syslog_authpriv)s
+backend  = %(syslog_backend)s
+
+
+[xinetd-fail]
+
+banaction = iptables-multiport-log
+logpath   = %(syslog_daemon)s
+backend   = %(syslog_backend)s
+maxretry  = 2
 
 
 # stunnel - need to set port for this
 [stunnel]
+
 logpath = /var/log/fail2ban.log
 
 
 [ejabberd-auth]
+
 port    = 5222
 logpath = /var/log/fail2ban.log
-
 
 
 [counter-strike]
@@ -554,33 +844,36 @@ logpath = /var/log/fail2ban.log
 tcpport = 27030,27031,27032,27033,27034,27035,27036,27037,27038,27039
 udpport = 1200,27000,27001,27002,27003,27004,27005,27006,27007,27008,27009,27010,27011,27012,27013,27014,27015
 action_  = %(default/action_)s[name=%(__name__)s-tcp, port="%(tcpport)s", protocol="tcp"]
-
-
+%(default/action_)s[name=%(__name__)s-udp, port="%(udpport)s", protocol="udp"]
 
 [softethervpn]
 port     = 500,4500
 protocol = udp
 logpath  = /var/log/fail2ban.log
 
-
 [gitlab]
 port    = http,https
 logpath = /var/log/fail2ban.log
-
 
 [grafana]
 port    = http,https
 logpath = /var/log/fail2ban.log
 
-
 [bitwarden]
 port    = http,https
 logpath = /var/log/fail2ban.log
 
-
 [centreon]
 port    = http,https
 logpath = /var/log/fail2ban.log
+
+# consider low maxretry and a long bantime
+# nobody except your own Nagios server should ever probe nrpe
+[nagios]
+
+logpath  = %(syslog_daemon)s     ; nrpe.cfg may define a different log_facility
+backend  = %(syslog_backend)s
+maxretry = 1
 
 
 [oracleims]
@@ -588,15 +881,13 @@ logpath = /var/log/fail2ban.log
 logpath = /var/log/fail2ban.log
 banaction = %(banaction_allports)s
 
+[directadmin]
+logpath = /var/log/fail2ban.log
+port = 2222
 
 [portsentry]
 logpath  = /var/log/fail2ban.log
 maxretry = 1
-
-
-[directadmin]
-logpath = /var/log/fail2ban.log
-port = 2222
 
 
 [murmur]
@@ -612,7 +903,6 @@ logpath  = /var/log/fail2ban.log
 logpath  = /var/log/fail2ban.log
 logencoding = utf-8
 
-
 [haproxy-http-auth]
 # HAProxy by default doesn't log to file you'll need to set it up to forward
 # logs to a syslog server which would then write them to disk.
@@ -620,16 +910,24 @@ logencoding = utf-8
 # maxretry and findtime.
 logpath  = /var/log/fail2ban.log
 
-
 [slapd]
 port    = ldap,ldaps
 logpath = /var/log/fail2ban.log
-
 
 [domino-smtp]
 port    = smtp,ssmtp
 logpath = /var/log/fail2ban.log
 
+[phpmyadmin-syslog]
+port    = http,https
+logpath = %(syslog_authpriv)s
+backend = %(syslog_backend)s
+
+[zoneminder]
+# Zoneminder HTTP/HTTPS web interface auth
+# Logs auth failures to apache2 error log
+port    = http,https
+logpath = %(apache_error_log)s
 
 [traefik-auth]
 # to use 'traefik-auth' filter you have to configure your Traefik instance,
@@ -637,45 +935,59 @@ logpath = /var/log/fail2ban.log
 port    = http,https
 logpath = /var/log/fail2ban.log
 
+[scanlogd]
+logpath = %(syslog_local0)s
+#banaction = %(banaction_allports)s
+
 
 [monitorix]
 port	= 8080
 logpath = /var/log/fail2ban.log
 
-
+[pass2allow-ftp]
+@if(isset($settings['general']['bantime']) && strpos($settings['general']['bantime'], 'multiport'))
+    port = ftp,ftp-data,ftps,ftps-data
+@else
+    port = ftp
+@endif
+logpath = /var/log/proftpd/proftpd.log
+backend = %(proftpd_backend)s
 
 [sshd]
 # To use more aggressive sshd modes set filter parameter "mode" in jail.local:
 # normal (default), ddos, extra or aggressive (combines all).
 # See "tests/files/logs/sshd" or "filter.d/sshd.conf" for usage example and details.
-@if(isset($settings['jails']['sshd']['enabled']) && $settings['jails']['sshd']['enabled'] === true) enabled = true @endif {{ PHP_EOL }}
-port = ssh @if(isset($settings['jails']['sshd']['port']) && !strpos($settings['jails']['sshd']['port'], 'ssh')) {{ $settings['jails']['sshd']['port'] }} @endif {{ PHP_EOL }}
+enabled = @if(isset($settings['jails']['sshd']['enabled']) && $settings['jails']['sshd']['enabled'] === true) true @else false @endif {{ PHP_EOL }}
+port = @if(isset($settings['jails']['sshd']['port'])) {{ $settings['jails']['sshd']['port'] }} @else ssh @endif {{ PHP_EOL }}
 filter = @if(isset($settings['jails']['sshd']['filter'])) {{ $settings['jails']['sshd']['filter'] }} @else sshd @endif {{ PHP_EOL }}
 findtime = @if(isset($settings['jails']['sshd']['findtime']) && isset($settings['jails']['sshd']['fail2ban']['config']['jails']['sshd']['findtime_unit']) && $settings['jails']['sshd']['findtime'] > 0) {{ $settings['jails']['sshd']['findtime'] }}{{ $settings['jails']['sshd']['fail2ban']['config']['jails']['sshd']['findtime_unit'] }} @else 1800m @endif {{ PHP_EOL }}
 bantime = @if(isset($settings['jails']['sshd']['bantime']) && isset($settings['jails']['sshd']['fail2ban']['config']['jails']['sshd']['bantime_unit']) && $settings['jails']['sshd']['bantime'] > 0) {{ $settings['jails']['sshd']['bantime'] }}{{ $settings['jails']['sshd']['fail2ban']['config']['jails']['sshd']['bantime_unit'] }} @else 7200m @endif {{ PHP_EOL }}
 maxretry = @if(isset($settings['jails']['sshd']['maxretry']) && $settings['jails']['sshd']['maxretry'] > 0) {{ $settings['jails']['sshd']['maxretry'] }} @else 4 @endif {{ PHP_EOL }}
 banaction = @if(isset($settings['jails']['sshd']['banaction'])) {{ $settings['jails']['sshd']['banaction'] }} @else iptables-multiport @endif {{ PHP_EOL }}
-logpath = @if(isset($settings['jails']['sshd']['logpath'])) {{ $settings['jails']['sshd']['logpath'] }} @else /var/log/fail2ban.log @endif
-
+logpath = @if(isset($settings['jails']['sshd']['logpath'])) {{ $settings['jails']['sshd']['logpath'] }} @else /var/log/auth.log @endif {{ PHP_EOL }}
+protocol = @if(isset($settings['jails']['sshd']['protocol'])) {{ $settings['jails']['sshd']['protocol'] }} @else tcp @endif
 
 [apache]
-@if(isset($settings['jails']['apache']['enabled']) && $settings['jails']['apache']['enabled'] === true) enabled = true @endif {{ PHP_EOL }}
-port = http,https,@if(isset($settings['jails']['apache']['port']) && (!strpos($settings['jails']['apache']['port'], 'http') && !strpos($settings['jails']['apache']['port'], 'https'))) {{ $settings['jails']['apache']['port'] }} @endif {{ PHP_EOL }}
+
+enabled = @if(isset($settings['jails']['apache']['enabled']) && $settings['jails']['apache']['enabled'] === true) true @else false @endif {{ PHP_EOL }}
+port = @if(isset($settings['jails']['apache']['port'])) {{ $settings['jails']['apache']['port'] }} @else http @endif {{ PHP_EOL }}
 filter = @if(isset($settings['jails']['apache']['filter'])) {{ $settings['jails']['apache']['filter'] }} @else apache-common @endif {{ PHP_EOL }}
 findtime = @if(isset($settings['jails']['apache']['findtime']) && isset($settings['jails']['apache']['fail2ban']['config']['jails']['apache']['findtime_unit']) && $settings['jails']['apache']['findtime'] > 0) {{ $settings['jails']['apache']['findtime'] }}{{ $settings['jails']['apache']['fail2ban']['config']['jails']['apache']['findtime_unit'] }} @else 1800m @endif {{ PHP_EOL }}
 bantime = @if(isset($settings['jails']['apache']['bantime']) && isset($settings['jails']['apache']['fail2ban']['config']['jails']['apache']['bantime_unit']) && $settings['jails']['apache']['bantime'] > 0) {{ $settings['jails']['apache']['bantime'] }}{{ $settings['jails']['apache']['fail2ban']['config']['jails']['apache']['bantime_unit'] }} @else 7200m @endif {{ PHP_EOL }}
 maxretry = @if(isset($settings['jails']['apache']['maxretry']) && $settings['jails']['apache']['maxretry'] > 0) {{ $settings['jails']['apache']['maxretry'] }} @else 4 @endif {{ PHP_EOL }}
 banaction = @if(isset($settings['jails']['apache']['banaction'])) {{ $settings['jails']['apache']['banaction'] }} @else iptables @endif {{ PHP_EOL }}
-logpath = @if(isset($settings['jails']['apache']['logpath'])) {{ $settings['jails']['apache']['logpath'] }} @else /var/log/fail2ban.log @endif
+logpath = @if(isset($settings['jails']['apache']['logpath'])) {{ $settings['jails']['apache']['logpath'] }} @else /var/log/apache2/error_log @endif {{ PHP_EOL }}
+protocol = @if(isset($settings['jails']['apache']['protocol'])) {{ $settings['jails']['apache']['protocol'] }} @else tcp @endif
 
 
 [vsftpd]
-@if(isset($settings['jails']['vsftpd']['enabled']) && $settings['jails']['vsftpd']['enabled'] === true) enabled = true @endif {{ PHP_EOL }}
-port = ftp,ftp-data,ftps,ftps-data @if(isset($settings['jails']['vsftpd']['port'])) {{$settings['jails']['vsftpd']['port'] }} @endif {{ PHP_EOL }}
+
+enabled = @if(isset($settings['jails']['vsftpd']['enabled']) && $settings['jails']['vsftpd']['enabled'] === true) true @else false @endif {{ PHP_EOL }}
+port = @if(isset($settings['jails']['vsftpd']['port'])) {{$settings['jails']['vsftpd']['port'] }} @else ftp @endif {{ PHP_EOL }}
 filter = @if(isset($settings['jails']['vsftpd']['filter'])) {{ $settings['jails']['vsftpd']['filter'] }} @else vsftpd @endif {{ PHP_EOL }}
 findtime = @if(isset($settings['jails']['vsftpd']['findtime']) && isset($settings['jails']['vsftpd']['fail2ban']['config']['jails']['vsftpd']['findtime_unit']) && $settings['jails']['vsftpd']['findtime'] > 0) {{ $settings['jails']['vsftpd']['findtime'] }}{{ $settings['jails']['vsftpd']['fail2ban']['config']['jails']['vsftpd']['findtime_unit'] }} @else 1800m @endif {{ PHP_EOL }}
 bantime= @if(isset($settings['jails']['vsftpd']['bantime']) && isset($settings['jails']['vsftpd']['fail2ban']['config']['jails']['vsftpd']['bantime_unit']) && $settings['jails']['vsftpd']['bantime'] > 0) {{ $settings['jails']['vsftpd']['bantime'] }}{{ $settings['jails']['vsftpd']['fail2ban']['config']['jails']['vsftpd']['bantime_unit'] }} @else 7200m @endif {{ PHP_EOL }}
 maxretry = @if(isset($settings['jails']['vsftpd']['maxretry']) && $settings['jails']['vsftpd']['maxretry'] > 0) {{ $settings['jails']['vsftpd']['maxretry'] }} @else 4 @endif {{ PHP_EOL }}
-banaction = @if(isset($settings['jails']['vsftpd']['banaction'])) {{ $settings['jails']['vsftpd']['banaction'] }} @else iptables-multiport @endif {{ PHP_EOL }}
-logpath = @if(isset($settings['jails']['vsftpd']['logpath'])) {{ $settings['jails']['vsftpd']['logpath'] }} @else /var/log/fail2ban.log @endif
-
+banaction = @if(isset($settings['jails']['vsftpd']['banaction'])) {{ $settings['jails']['vsftpd']['banaction'] }} @else iptables @endif {{ PHP_EOL }}
+logpath = @if(isset($settings['jails']['vsftpd']['logpath'])) {{ $settings['jails']['vsftpd']['logpath'] }} @else /var/log/vsftpd.log @endif {{ PHP_EOL }}
+protocol = @if(isset($settings['jails']['vsftpd']['protocol'])) {{ $settings['jails']['vsftpd']['protocol'] }} @else tcp @endif

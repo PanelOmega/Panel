@@ -30,25 +30,24 @@ class DirectoryPrivacy extends Model
     public static function DirectoryPrivacyBoot()
     {
         $hostingSubscriptionId = Session::get('hosting_subscription_id');
-        $fixPermissions = false;
 
         static::saving(function ($model) use ($hostingSubscriptionId) {
             $model->hosting_subscription_id = $hostingSubscriptionId;
             $model->password = Crypt::encrypt($model->password);
         });
 
-        static::deleting(function ($model) use ($hostingSubscriptionId) {
+        static::created(function ($model) use ($hostingSubscriptionId) {
             $directoryPrivacy = new ApacheHtConfigBuild(false, $hostingSubscriptionId);
-            $directoryPrivacy->handle($model);
+            $directoryPrivacy->handle();
         });
 
         $callback = function ($model) use ($hostingSubscriptionId) {
             $directoryPrivacy = new ApacheHtConfigBuild(false, $hostingSubscriptionId);
-            $directoryPrivacy->handle();
+            $directoryPrivacy->handle($model);
         };
 
-        static::created($callback);
         static::updated($callback);
+        static::deleted($callback);
     }
 
     public static function decryptPassword($password)

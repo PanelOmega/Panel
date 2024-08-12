@@ -6,7 +6,6 @@ use Filament\Pages\Page;
 
 class PasswordAndSecurity extends Page
 {
-    protected static ?string $navigationIcon = 'heroicon-o-document-text';
     protected static bool $shouldRegisterNavigation = false;
     protected static string $view = 'filament.customer.pages.password-and-security';
 
@@ -16,12 +15,17 @@ class PasswordAndSecurity extends Page
     public function mount(): void
     {
         $this->mainTitle = 'Password & Security';
-        $this->sections = [
+        $this->sections = $this->getSections();
+    }
+
+    protected function getSections(): array
+    {
+        return [
             [
                 'title' => 'Change Password',
                 'helperTexts' => [
                     'Change your account password below. Password strength is important in web hosting; we strongly recommend using the Password Generator to create your password. Follow the tips below to keep your password safe.',
-                    'Note: If you change your password, you will end your current session.'
+                    '<strong>Note:</strong> If you change your password, you will end your current session.'
                 ]
             ],
             [
@@ -38,7 +42,15 @@ class PasswordAndSecurity extends Page
                     'Avoid simple patterns. Instead, use UPPER and lower case letters, numbers, and symbols. Make certain that your password is at least eight characters long.',
                     'When you choose a new password, make certain that it is not related to your previous passwords.'
                 ]
+            ],
+            [
+                'title' => 'Enable Digest Authentication',
+                'helperTexts' => [
+                    'Windows Vista®, 7, and 8 require Digest Authentication for accessing your Web Disk over an unencrypted connection. If the server has an SSL certificate and you can connect via port 2078, you don’t need to enable this.'
+                ]
             ]
         ];
     }
+
+
 }

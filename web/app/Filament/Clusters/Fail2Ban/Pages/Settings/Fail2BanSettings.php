@@ -238,11 +238,11 @@ class Fail2BanSettings extends BaseSettings
                                                     ->default('m');
                                             }),
 
-//                                        Select::make('fail2ban.config.jails.sshd.banaction')
-//                                            ->label('Ban Action')
-//                                            ->helperText('Set the default method for blocking an IP address when a ban is triggered.')
-//                                            ->options(SupportedApplicationTypes::getFail2BanBanactions())
-//                                            ->default('iptables'),
+                                        Select::make('fail2ban.config.jails.sshd.banaction')
+                                            ->label('Ban Action')
+                                            ->helperText('Set the default method for blocking an IP address when a ban is triggered.')
+                                            ->options(SupportedApplicationTypes::getFail2BanBanactions())
+                                            ->default('iptables'),
 
                                         TextInput::make('fail2ban.config.jails.sshd.maxretry')
                                             ->label('Max Retry')
@@ -253,6 +253,12 @@ class Fail2BanSettings extends BaseSettings
                                             ->label('Log Path')
                                             ->helperText('Specify the path to the log file where Fail2Ban should look for login attempts and other relevant events.')
                                             ->placeholder('Default: /var/log/fail2ban.log'),
+
+//                                        Select::make('fail2ban.config.jails.sshd.protocol')
+//                                            ->label('Protocol')
+//                                            ->helperText('')
+//                                            ->options(SupportedApplicationTypes::getFail2BanProtocols())
+//                                            ->default('tcp'),
                                     ])
                                         ->hidden(function (Get $get) {
                                             return !$get('fail2ban.config.jails.sshd.enabled');
@@ -273,7 +279,7 @@ class Fail2BanSettings extends BaseSettings
 //                                        TextInput::make('fail2ban.config.jails.apache.port')
 //                                            ->label('Port')
 //                                            ->helperText('Specify the range of ports that should be banned. By default, it is configured to protect the standard HTTP and HTTPS ports.')
-//                                            ->placeholder('Default: http,https')
+//                                            ->placeholder('Default: http')
 //                                            ->reactive(),
 
 //                                        Select::make('fail2ban.config.jails.apache.filter')
@@ -316,7 +322,13 @@ class Fail2BanSettings extends BaseSettings
                                         TextInput::make('fail2ban.config.jails.apache.logpath')
                                             ->label('Log Path')
                                             ->helperText('Specify the path to the log file where Fail2Ban should look for login attempts and other relevant events.')
-                                            ->placeholder('Default: /var/log/fail2ban.log'),
+                                            ->placeholder('Default: /var/log/auth.log'),
+
+//                                        Select::make('fail2ban.config.jails.apache.protocol')
+//                                            ->label('Protocol')
+//                                            ->helperText('')
+//                                            ->options(SupportedApplicationTypes::getFail2BanProtocols())
+//                                            ->default('tcp'),
 
                                     ])
                                         ->hidden(function (Get $get) {
@@ -338,7 +350,7 @@ class Fail2BanSettings extends BaseSettings
 //                                        TextInput::make('fail2ban.config.jails.vsftpd.port')
 //                                            ->label('Port')
 //                                            ->helperText('Specify the range of ports that should be banned. By default, it is configured to protect the standard FTP, FTP-DATA, FTPS, FTPS-DATA ports.')
-//                                            ->placeholder('Default: ftp,ftp-data,ftps,ftps-data')
+//                                            ->placeholder('Default: ftp')
 //                                            ->reactive(),
 
 //                                        Select::make('fail2ban.config.jails.vsftpd.filter')
@@ -382,6 +394,12 @@ class Fail2BanSettings extends BaseSettings
                                             ->label('Log Path')
                                             ->helperText('Specify the path to the log file where Fail2Ban should look for login attempts and other relevant events.')
                                             ->placeholder('Default: /var/log/fail2ban.log'),
+
+//                                        Select::make('fail2ban.config.jails.vsftpd.protocol')
+//                                            ->label('Protocol')
+//                                            ->helperText('')
+//                                            ->options(SupportedApplicationTypes::getFail2BanProtocols())
+//                                            ->default('tcp'),
 
                                     ])
                                         ->hidden(function (Get $get) {

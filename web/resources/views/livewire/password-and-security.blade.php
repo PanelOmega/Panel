@@ -10,9 +10,10 @@
           {{ $sections[0]['helperTexts'][0] }}
        </p>
        <p class="text-base text-gray-400">
-          {{ $sections[0]['helperTexts'][1] }}
+           {!! $sections[0]['helperTexts'][1] !!}
        </p>
     </div>
+
     <form wire:submit.prevent="update">
         {{ $this->form }}
 

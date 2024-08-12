@@ -103,7 +103,10 @@ class DirectoryPrivacyResource extends Resource
                     ->searchable(),
 
                 Tables\Columns\TextColumn::make('protected')
-                    ->label('Protected'),
+                    ->label('Protected')
+                    ->badge()
+                    ->color('success')
+                    ->formatStateUsing(fn ($state) => $state == 1 ? 'PROTECTED' : null),
             ])
             ->filters([
                 //

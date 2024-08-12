@@ -27,28 +27,44 @@ class ApacheHtConfigBuild implements ShouldQueue
 
     public function handle($model = null)
     {
+
         $password = $model->password ?? '';
         $records = DirectoryPrivacy::where('hosting_subscription_id', $this->hostingSubscriptionId)
-            ->whereNotIn('password', [$password])
+//            ->whereNotIn('password', [$password])
             ->get()
             ->groupBy('directory');
 
-        $directories = $records->isEmpty() ? [$model->directory] : $records->keys();
+        $directories = $records->isEmpty() ? [$model->directory] : $records->keys()->toArray();
+
+        if (!in_array('/', $directories)) {
+            $directories[] = '/';
+        }
+
+        if($model !== null) {
+            if(!in_array($model->directory, $directories)) {
+                $directories[] = $model->directory;
+            }
+
+            if(!in_array($model->getOriginal('directory'), $directories)) {
+                $directories[] = $model->getOriginal('directory');
+            }
+        }
 
         $domain = Domain::where('hosting_subscription_id', $this->hostingSubscriptionId)->first();
+
         $hostingSubscription = HostingSubscription::where('id', $this->hostingSubscriptionId)->first();
 
         $phpVersion = $domain->server_application_settings['php_version'] ?? null;
         $phpVersion = $phpVersion ? PHP::getPHPVersion($phpVersion) : [];
 
-
         foreach ($directories as $directory) {
             $htPasswdRecords = $records->get($directory, collect())->map(fn($record) => "{$record->username}:{$record->password}")->toArray();
-
             $htAccessFilePath = str_replace('//', '/', "{$directory}/.htaccess");
             $htPasswdFilePath = str_replace('//', '/', "{$directory}/.htpasswd");
 
-            $label = $records->isEmpty() ? '' : $records->get($directory)->first()->label;
+            $label = $records->isEmpty() || $records->get($directory) === null
+                ? null
+                : $records->get($directory)->first()->label;
 
             $hotlinkData = $this->getHotlinkData($directory, $hostingSubscription->hotlinkProtection);
             $htViews = $this->getHtFileConfig($label, $phpVersion, $htPasswdFilePath, $htPasswdRecords, $hotlinkData);
@@ -102,11 +118,6 @@ class ApacheHtConfigBuild implements ShouldQueue
                 'hotlinkData' => $hotlinkData
             ],
         ])->render();
-
-        $htpasswdContent = view('server.samples.apache.php.htpasswd', [
-            'dPrivacyContent' => $htPasswdRecords
-        ])->render();
-
 
         $htaccessContent = preg_replace_callback(
             '/(^\s*)(Rewrite.*|$)/m',

@@ -26,7 +26,6 @@ class HotlinkProtection extends Component implements HasForms, HasActions
     public ?array $urls_allow_access = [];
 
     public ?array $state = [];
-//    private $hotlinkProtection;
 
     public function mount(string $mainTitle, array $sections): void
     {
@@ -56,6 +55,44 @@ class HotlinkProtection extends Component implements HasForms, HasActions
         $this->sections = $sections;
     }
 
+    public function render()
+    {
+        return view('livewire.hotlink-protection');
+    }
+
+    public function form(Form $form)
+    {
+        return $form
+            ->statePath('state')
+            ->schema([
+                Section::make()
+                    ->schema([
+                        Repeater::make('urls_allow_access')
+                            ->label('URLs to allow access:')
+                            ->schema([
+                                TextInput::make('url')
+                                    ->label('Add URL')
+                                    ->columnSpanFull()
+                                    ->required()
+                                    ->rule('url'),
+                            ])
+                            ->collapsible()
+                            ->columns(1),
+
+                        TextInput::make('block_extensions')
+                            ->label('Block direct access for the following extensions (comma-separated):'),
+
+                        Checkbox::make('allow_direct_requests')
+                            ->label('Allow direct requests')
+                            ->helperText('NOTE: You must select the “Allow direct requests” checkbox when you use hotlink protection for files that you want visitors to view in QuickTime (for example, Mac Users).'),
+
+                        TextInput::make('redirect_to')
+                            ->label('Redirect the request to the following URL:')
+                    ])
+                    ->maxWidth('lg')
+            ]);
+    }
+
     public function updateEnabledAction(): Action {
         return Action::make('updateEnabled')
             ->requiresConfirmation()
@@ -72,11 +109,6 @@ class HotlinkProtection extends Component implements HasForms, HasActions
                     ->success()
                     ->send();
             });
-    }
-
-    public function render()
-    {
-        return view('livewire.hotlink-protection');
     }
 
     public function update()
@@ -141,38 +173,5 @@ class HotlinkProtection extends Component implements HasForms, HasActions
             return true;
         }
         return false;
-    }
-
-    public function form(Form $form)
-    {
-        return $form
-            ->statePath('state')
-            ->schema([
-                Section::make()
-                    ->schema([
-                        Repeater::make('urls_allow_access')
-                            ->label('URLs to allow access:')
-                            ->schema([
-                                TextInput::make('url')
-                                    ->label('Add URL')
-                                    ->columnSpanFull()
-                                    ->required()
-                                    ->rule('url'),
-                            ])
-                            ->collapsible()
-                            ->columns(1),
-
-                        TextInput::make('block_extensions')
-                            ->label('Block direct access for the following extensions (comma-separated):'),
-
-                        Checkbox::make('allow_direct_requests')
-                            ->label('Allow direct requests')
-                            ->helperText('NOTE: You must select the “Allow direct requests” checkbox when you use hotlink protection for files that you want visitors to view in QuickTime (for example, Mac Users).'),
-
-                        TextInput::make('redirect_to')
-                            ->label('Redirect the request to the following URL:')
-                    ])
-                    ->maxWidth('lg')
-            ]);
     }
 }

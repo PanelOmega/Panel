@@ -58,6 +58,43 @@ class PHP
             }
         }
 
+        $shellOutput = shell_exec('find / -name php | grep bin');
+        $shellOutput = explode("\n", $shellOutput);
+        if (!empty($shellOutput)) {
+            foreach ($shellOutput as $phpBinPath) {
+                if (!str_contains($phpBinPath, '/opt/remi/')) {
+                    continue;
+                }
+
+                $execCheckPHPVersion = shell_exec($phpBinPath . ' -v');
+                $checkPHPVersion = explode(' ', $execCheckPHPVersion);
+                $checkPHPVersionFull = $checkPHPVersion[1];
+                $checkPHPVersion = substr($checkPHPVersionFull, 0, 3);
+                $shortWithoutDot = str_replace('.', '', $checkPHPVersion);
+
+                $fileType = 'application/x-httpd-php' . $shortWithoutDot;
+                $fileExtensions = '.php .php' . substr($shortWithoutDot,0,1) . ' .phtml';
+
+                $checkCopiedFile = '/usr/local/omega/cgi-sys/cl-php' . $shortWithoutDot;
+                if (!is_file($checkCopiedFile)) {
+                    shell_exec('mkdir -p /usr/local/omega/cgi-sys');
+                    shell_exec('cp ' . $phpBinPath . ' ' . $checkCopiedFile);
+                    shell_exec('chmod +x ' . $checkCopiedFile);
+                    shell_exec('chown root:wheel ' . $checkCopiedFile);
+                }
+                $phpVersions[] = [
+                    'friendlyName' => 'PHP ' . $checkPHPVersionFull,
+                    'path' => $checkCopiedFile,
+                    'short' => $checkPHPVersion,
+                    'shortWithoutDot' => $shortWithoutDot,
+                    'details' => $execCheckPHPVersion,
+                    'fileType' => $fileType,
+                    'fileExtensions' => $fileExtensions,
+                    'full' => $checkPHPVersionFull,
+                ];
+            }
+        }
+
         return $phpVersions;
     }
 }

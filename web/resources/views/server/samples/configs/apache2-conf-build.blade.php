@@ -11,6 +11,9 @@ ScriptAlias /cgi-sys /usr/local/omega/cgi-sys/
 @foreach($installedPHPVersions as $phpVersion)
 Action {{$phpVersion['action']}}
 @endforeach
+
+Action {{$installedPHPVersions[0]['action']}}
+
 @endif
 
 @foreach($virtualHosts as $virtualHost)

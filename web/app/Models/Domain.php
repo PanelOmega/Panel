@@ -428,7 +428,7 @@ class Domain extends Model
 
                         $getSupportedPHPVersions = PHP::getInstalledPHPVersions();
                         // Scan old pool files and remove them
-                        $allPoolFiles = shell_exec('find /etc/opt/remi/*/php-fpm.d/'.$this->domain.'*.conf');
+                        $allPoolFiles = shell_exec('find /etc/opt/remi/*/php-fpm.d/'.$this->domain.'.conf');
                         $allPoolFiles = explode("\n", $allPoolFiles);
                         if (!empty($allPoolFiles)) {
                             foreach ($allPoolFiles as $poolFile) {

@@ -424,10 +424,32 @@ class Domain extends Model
                             'poolName' => $this->domain
                         ])->render();
 
+                        $restartFpmServices = [];
+
+                        $getSupportedPHPVersions = PHP::getInstalledPHPVersions();
+                        // Scan old pool files and remove them
+                        $allPoolFiles = shell_exec('find /etc/opt/remi/*/php-fpm.d/'.$this->domain.'*.conf');
+                        $allPoolFiles = explode("\n", $allPoolFiles);
+                        if (!empty($allPoolFiles)) {
+                            foreach ($allPoolFiles as $poolFile) {
+                                foreach ($getSupportedPHPVersions as $version) {
+                                    if (str_contains($poolFile, $version['fpmPoolPath'])) {
+                                        $restartFpmServices[] = $version['fpmServiceName'];
+                                         unlink($poolFile);
+                                    }
+                                }
+                            }
+                        }
+
                         file_put_contents($domainFpmPoolPath, $fpmPoolContent);
 
                         if (isset($getCurrentPHPVersion['fpmServiceName'])) {
-                            shell_exec('systemctl restart '.$getCurrentPHPVersion['fpmServiceName']);
+                            $restartFpmServices[] = $getCurrentPHPVersion['fpmServiceName'];
+                        }
+                        if (!empty($restartFpmServices)) {
+                            foreach ($restartFpmServices as $service) {
+                                shell_exec('systemctl restart '.$service);
+                            }
                         }
 
                         $apacheVirtualHostBuilder->setFCGI('127.0.0.1:' . $fcgiPort);

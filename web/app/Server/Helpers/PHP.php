@@ -72,7 +72,7 @@ class PHP
                 $checkPHPVersion = substr($checkPHPVersionFull, 0, 3);
                 $shortWithoutDot = str_replace('.', '', $checkPHPVersion);
 
-                $fileType = 'application/x-httpd-php' . $shortWithoutDot;
+                $fileType = 'application/x-httpd-remi-php' . $shortWithoutDot;
                 $fileExtensions = '.php .php' . substr($shortWithoutDot,0,1) . ' .phtml';
 
                 $checkCopiedFile = '/usr/local/omega/cgi-sys/remi-php' . $shortWithoutDot;
@@ -82,8 +82,18 @@ class PHP
                     shell_exec('chmod +x ' . $checkCopiedFile);
                     shell_exec('chown root:wheel ' . $checkCopiedFile);
                 }
+                $checkCopiedCGIFile = '/usr/local/omega/cgi-sys/remi-php' . $shortWithoutDot . '-cgi';
+                if (!is_file($checkCopiedCGIFile)) {
+                    $targetCGIFile = '/opt/remi/php'.$shortWithoutDot.'/root/bin/php-cgi';
+                    if (is_file($targetCGIFile)) {
+                        shell_exec('cp ' . $targetCGIFile . ' ' . $checkCopiedCGIFile);
+                        shell_exec('chmod +x ' . $checkCopiedCGIFile);
+                        shell_exec('chown root:wheel ' . $checkCopiedCGIFile);
+                    }
+                }
+
                 $phpVersions[] = [
-                    'friendlyName' => 'PHP ' . $checkPHPVersionFull,
+                    'friendlyName' => 'PHP ' . $checkPHPVersionFull . ' (Remi)',
                     'path' => $checkCopiedFile,
                     'short' => $checkPHPVersion,
                     'shortWithoutDot' => $shortWithoutDot,
@@ -91,7 +101,7 @@ class PHP
                     'fileType' => $fileType,
                     'fileExtensions' => $fileExtensions,
                     'full' => $checkPHPVersionFull,
-                    'action' => $fileType . ' /cgi-sys/remi-php' . $shortWithoutDot,
+                    'action' => $fileType . ' /cgi-sys/remi-php' . $shortWithoutDot . '-cgi',
                 ];
             }
         }

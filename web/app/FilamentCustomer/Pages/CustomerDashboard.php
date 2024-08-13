@@ -489,11 +489,11 @@ class CustomerDashboard extends Page
 //                            'icon'=>'omega_customer-advanced-dns',
 //                            'link'=>'#'
 //                        ],
-//                        [
-//                            'title'=>'Indexes',
-//                            'icon'=>'omega_customer-advanced-indexes',
-//                            'link'=>'#'
-//                        ],
+                        [
+                            'title'=>'Indexes',
+                            'icon'=>'omega_customer-advanced-indexes',
+                            'link'=>route('filament.customer.resources.indices.index')
+                        ],
                         [
                             'title' => 'Error Pages',
                             'icon' => 'omega_customer-advanced-error',

@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-use App\Jobs\ApacheHtConfigBuild;
+use App\Jobs\DirectoryPrivacyHtConfigBuild;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Crypt;
@@ -37,12 +37,12 @@ class DirectoryPrivacy extends Model
         });
 
         static::created(function ($model) use ($hostingSubscriptionId) {
-            $directoryPrivacy = new ApacheHtConfigBuild(false, $hostingSubscriptionId);
+            $directoryPrivacy = new DirectoryPrivacyHtConfigBuild(false, $hostingSubscriptionId);
             $directoryPrivacy->handle();
         });
 
         $callback = function ($model) use ($hostingSubscriptionId) {
-            $directoryPrivacy = new ApacheHtConfigBuild(false, $hostingSubscriptionId);
+            $directoryPrivacy = new DirectoryPrivacyHtConfigBuild(false, $hostingSubscriptionId);
             $directoryPrivacy->handle($model);
         };
 
@@ -74,5 +74,11 @@ class DirectoryPrivacy extends Model
             $filteredDirs = ['/'];
         }
         return $filteredDirs;
+    }
+
+    public function indexes()
+    {
+        return $this->hasMany(Index::class, 'directory', 'directory')
+            ->where('hosting_subscription_id', $this->hosting_subscription_id);
     }
 }

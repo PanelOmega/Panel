@@ -138,6 +138,9 @@ class Domain extends Model
     }
     public function getPHPFpmAttribute()
     {
+        if (isset($this->server_application_settings['enable_php_fpm']) && $this->server_application_settings['enable_php_fpm'] == true) {
+            return 'enabled';
+        }
         return 'disabled';
     }
 
@@ -400,6 +403,10 @@ class Domain extends Model
                 $apacheVirtualHostBuilder->setAppVersion(null);
                 if (isset($this->docker_settings['containerIp'])) {
                     $apacheVirtualHostBuilder->setFCGI($this->docker_settings['containerIp'].':9000');
+                }
+                if (isset($this->server_application_settings['enable_php_fpm'])) {
+                    $fcgiPort = $this->id + 9000;
+                    $apacheVirtualHostBuilder->setFCGI('127.0.0.1:'.$fcgiPort);
                 }
             }
 

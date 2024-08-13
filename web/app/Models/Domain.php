@@ -100,6 +100,10 @@ class Domain extends Model
 
             $model->configureHtaccess();
 
+        });
+
+        static::updated(function ($model) {
+
             $apacheBuild = new ApacheBuild();
             $apacheBuild->handle();
 

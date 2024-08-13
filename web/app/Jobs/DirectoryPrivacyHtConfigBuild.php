@@ -77,7 +77,7 @@ class DirectoryPrivacyHtConfigBuild implements ShouldQueue
                 'hotlinkData' => null,
                 'view' => $htAccessView
             ];
-            
+
             $htPasswdParams = [
                 'htPasswdRecords' => $htPasswdRecords,
                 'view' => $htPasswdView
@@ -87,7 +87,13 @@ class DirectoryPrivacyHtConfigBuild implements ShouldQueue
             $htPasswdView = $this->getHtPasswdFileConfig($htPasswdParams);
             $htAccessFileRealPath = '/home/' . $hostingSubscription->system_username . $htAccessFilePath;
             $htPasswdFileRealPath = '/home/' . $hostingSubscription->system_username . $htPasswdFilePath;
-            $this->updateSystemFile($htAccessFileRealPath, $htAccessView);
+
+            $innerComments = [
+                'start' => '# Section managed by omegaPanel: Directory Privacy, do not edit',
+                'end' => '# End section managed by omegaPanel: Directory Privacy'
+            ];
+
+            $this->updateSystemFile($htAccessFileRealPath, $htAccessView, $innerComments);
             $this->updateSystemFile($htPasswdFileRealPath, $htPasswdView);
         }
     }

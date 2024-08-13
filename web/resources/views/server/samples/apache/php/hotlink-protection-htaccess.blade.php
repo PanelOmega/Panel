@@ -1,4 +1,3 @@
-# BEGIN PanelOmega-generated handler, do not edit
 @if(!empty($dPrivacyContent['hotlinkData']) && $dPrivacyContent['hotlinkData']['enabled'] === 'enabled')
     RewriteEngine on
     @if(isset($dPrivacyContent['hotlinkData']['allow_direct_requests']) && $dPrivacyContent['hotlinkData']['allow_direct_requests'] === true)
@@ -13,4 +12,3 @@
         RewriteRule .*\.({{ str_replace(',', '|', trim($dPrivacyContent['hotlinkData']['block_extensions'], ',')) }})$ @if(isset($dPrivacyContent['hotlinkData']['redirect_to'])){{ $dPrivacyContent['hotlinkData']['redirect_to'] }}@endif - [R,NC]
     @endif
 @endif
-# END PanelOmega-generated handler, do not edit

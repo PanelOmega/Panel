@@ -26,6 +26,11 @@ class Index extends Model
 
     }
 
+//    public static function loadRirectories() {
+//        dd($this->directoryPrivacy());
+//    }
+
+
     public function directoryPrivacy()
     {
         return $this->belongsTo(DirectoryPrivacy::class, 'directory', 'directory')

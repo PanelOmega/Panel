@@ -84,31 +84,39 @@ trait HtConfigBuildTrait
         return $htpasswdContent;
     }
 
-    public function updateSystemFile($filePath, $newContent)
+    public function updateSystemFile($filePath, $newContent, array $innerComments = [])
     {
         $existingContent = file_exists($filePath) ? file_get_contents($filePath) : '';
-        $updatedContent = $this->replaceContentBetweenComments($existingContent, $newContent);
-
+        $updatedContent = $this->replaceContentBetweenComments($existingContent, $newContent, $innerComments);
         file_put_contents($filePath, $updatedContent);
     }
 
-    public function replaceContentBetweenComments($existingContent, $newContent)
+    public function replaceContentBetweenComments($existingContent, $newContent, array $innerComments)
     {
         $startComment = '# BEGIN PanelOmega-generated handler, do not edit';
         $endComment = '# END PanelOmega-generated handler, do not edit';
 
-        $pattern = '/(' . preg_quote($startComment, '/') . ')(.*?)(?=' . preg_quote($endComment, '/') . ')/s';
-        $contentToAdd = '';
+        $startInnerComment = $innerComments['start'] ?? null;
+        $endInnerComment = $innerComments['end'] ?? null;
 
-        if (preg_match($pattern, $newContent, $matches)) {
-            $contentToAdd = trim($matches[2]);
+        $pattern = '/' . preg_quote($startComment, '/') . '(.*?)' . preg_quote($endComment, '/') . '/s';
+
+        $currentContent = '';
+        if (preg_match($pattern, $existingContent, $matches)) {
+            $currentContent = trim($matches[1]);
         }
 
-        if (preg_match($pattern, $existingContent)) {
-            $existingContent = preg_replace($pattern, "$startComment\n$contentToAdd\n", $existingContent);
+        $patternInnerComments = '/(' . preg_quote($startInnerComment, '/') . ')(.*?)(?=' . preg_quote($endInnerComment, '/') . ')/s';
+
+        if (($startInnerComment && $endInnerComment) && preg_match($patternInnerComments, $currentContent, $matches)) {
+            $innerCommentsContentAdd = trim($newContent);
+            $currentContent = preg_replace($patternInnerComments, "$startInnerComment\n$innerCommentsContentAdd\n", $currentContent);
         } else {
-            $existingContent .= "\n$startComment\n$contentToAdd\n$endComment\n";
+            $innerCommentsContentAdd = trim($newContent);
+            $currentContent .= "\n$startInnerComment\n$innerCommentsContentAdd\n$endInnerComment";
         }
+
+        $existingContent = "$startComment\n$currentContent\n$endComment";
         return preg_replace('/(\n\s*\n)+/', "\n", $existingContent);
     }
 }

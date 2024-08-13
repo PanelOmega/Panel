@@ -14,7 +14,6 @@ use Filament\Tables\Table;
 class IndexResource extends Resource
 {
     protected static ?string $model = Index::class;
-    protected static string $view = 'filament.customer.pages.indexes';
 
     public static function form(Form $form): Form
     {

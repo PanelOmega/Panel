@@ -1,5 +1,3 @@
-# BEGIN PanelOmega-generated handler, do not edit
-
 @if(isset($phpVersion) && !empty($phpVersion))
     <IfModule mime_module>
         AddHandler {{$phpVersion['fileType']}} {{$phpVersion['fileExtensions']}}
@@ -13,4 +11,3 @@
     AuthUserFile {{ $dPrivacyContent['auth_user_file'] }}{{ PHP_EOL }}
     Require valid-user
 @endif
-# END PanelOmega-generated handler, do not edit

@@ -3,7 +3,6 @@
 namespace App\Jobs;
 
 use App\HtConfigBuildTrait;
-use App\Models\Domain;
 use App\Models\HostingSubscription;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -26,7 +25,6 @@ class HotlinkProtectionHtConfigBuild implements ShouldQueue
 
     public function handle()
     {
-        $domain = Domain::where('hosting_subscription_id', $this->model->hosting_subscription_id)->first();
 
         $hostingSubscription = HostingSubscription::where('id', $this->model->hosting_subscription_id)->first();
 
@@ -44,7 +42,14 @@ class HotlinkProtectionHtConfigBuild implements ShouldQueue
         ];
 
         $htAccessView = $this->getHtAccessFileConfig($params);
+
         $htAccessFileRealPath = '/home/' . $hostingSubscription->system_username . $htAccessFilePath;
-        $this->updateSystemFile($htAccessFileRealPath, $htAccessView);
+
+        $innerComments = [
+            'start' => '# Section managed by omegaPanel: Hotlink Protection, do not edit',
+            'end' => '# End section managed by omegaPanel: Hotlink Protection'
+        ];
+
+        $this->updateSystemFile($htAccessFileRealPath, $htAccessView, $innerComments);
     }
 }

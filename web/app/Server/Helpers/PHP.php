@@ -102,6 +102,8 @@ class PHP
                     'fileExtensions' => $fileExtensions,
                     'full' => $checkPHPVersionFull,
                     'action' => $fileType . ' /cgi-sys/remi-php' . $shortWithoutDot . '-cgi',
+                    'fpmPoolPath'=>'/etc/opt/remi/php' . $shortWithoutDot . '/php-fpm.d',
+                    'fpmServiceName'=>'php' . $shortWithoutDot . '-php-fpm'
                 ];
             }
         }

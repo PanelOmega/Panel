@@ -405,8 +405,33 @@ class Domain extends Model
                     $apacheVirtualHostBuilder->setFCGI($this->docker_settings['containerIp'].':9000');
                 }
                 if (isset($this->server_application_settings['enable_php_fpm'])) {
-                    $fcgiPort = $this->id + 9000;
-                    $apacheVirtualHostBuilder->setFCGI('127.0.0.1:'.$fcgiPort);
+                    $getCurrentPHPVersion = PHP::getPHPVersion($this->server_application_settings['php_version']);
+
+                    if (isset($getCurrentPHPVersion['fpmPoolPath'])) {
+
+                        $fcgiPort = $this->id + 9000;
+
+                        $fpmPoolPath = $getCurrentPHPVersion['fpmPoolPath'];
+                        if (is_file($fpmPoolPath.'/www.conf')) {
+                            unlink($fpmPoolPath.'/www.conf');
+                        }
+
+                        $domainFpmPoolPath = $fpmPoolPath.'/'.$this->domain.'.conf';
+
+                        $fpmPoolContent = view('server.samples.php-fpm.domain-pool-conf', [
+                            'username' => $findHostingSubscription->system_username,
+                            'port' => $fcgiPort,
+                            'poolName' => $this->domain
+                        ])->render();
+
+                        file_put_contents($domainFpmPoolPath, $fpmPoolContent);
+
+                        if (isset($getCurrentPHPVersion['fpmServiceName'])) {
+                            shell_exec('systemctl restart '.$getCurrentPHPVersion['fpmServiceName']);
+                        }
+
+                        $apacheVirtualHostBuilder->setFCGI('127.0.0.1:' . $fcgiPort);
+                    }
                 }
             }
 

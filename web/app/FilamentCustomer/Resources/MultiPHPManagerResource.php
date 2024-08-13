@@ -49,6 +49,11 @@ class MultiPHPManagerResource extends Resource
                     ->columnSpanFull()
                     ->options($phpVersions)
                     ->required(),
+                Forms\Components\Toggle::make('server_application_settings.enable_php_fpm')
+                    ->label('Enable PHP FPM')
+                    ->columnSpanFull()
+                    ->default(false),
+
             ]);
     }
 

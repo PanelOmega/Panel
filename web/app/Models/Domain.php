@@ -100,6 +100,10 @@ class Domain extends Model
 
             $model->configureHtaccess();
 
+        });
+
+        static::updated(function ($model) {
+
             $apacheBuild = new ApacheBuild();
             $apacheBuild->handle();
 
@@ -138,6 +142,9 @@ class Domain extends Model
     }
     public function getPHPFpmAttribute()
     {
+        if (isset($this->server_application_settings['enable_php_fpm']) && $this->server_application_settings['enable_php_fpm'] == true) {
+            return 'enabled';
+        }
         return 'disabled';
     }
 
@@ -400,6 +407,57 @@ class Domain extends Model
                 $apacheVirtualHostBuilder->setAppVersion(null);
                 if (isset($this->docker_settings['containerIp'])) {
                     $apacheVirtualHostBuilder->setFCGI($this->docker_settings['containerIp'].':9000');
+                }
+                if (isset($this->server_application_settings['enable_php_fpm'])) {
+                    $getCurrentPHPVersion = PHP::getPHPVersion($this->server_application_settings['php_version']);
+
+                    if (isset($getCurrentPHPVersion['fpmPoolPath'])) {
+
+                        $fcgiPort = $this->id + 9000;
+
+                        $fpmPoolPath = $getCurrentPHPVersion['fpmPoolPath'];
+                        if (is_file($fpmPoolPath.'/www.conf')) {
+                            unlink($fpmPoolPath.'/www.conf');
+                        }
+
+                        $domainFpmPoolPath = $fpmPoolPath.'/'.$this->domain.'.conf';
+
+                        $fpmPoolContent = view('server.samples.php-fpm.domain-pool-conf', [
+                            'username' => $findHostingSubscription->system_username,
+                            'port' => $fcgiPort,
+                            'poolName' => $this->domain
+                        ])->render();
+
+                        $restartFpmServices = [];
+
+                        $getSupportedPHPVersions = PHP::getInstalledPHPVersions();
+                        // Scan old pool files and remove them
+                        $allPoolFiles = shell_exec('find /etc/opt/remi/*/php-fpm.d/'.$this->domain.'.conf');
+                        $allPoolFiles = explode("\n", $allPoolFiles);
+                        if (!empty($allPoolFiles)) {
+                            foreach ($allPoolFiles as $poolFile) {
+                                foreach ($getSupportedPHPVersions as $version) {
+                                    if (str_contains($poolFile, $version['fpmPoolPath'])) {
+                                        $restartFpmServices[] = $version['fpmServiceName'];
+                                         unlink($poolFile);
+                                    }
+                                }
+                            }
+                        }
+
+                        file_put_contents($domainFpmPoolPath, $fpmPoolContent);
+
+                        if (isset($getCurrentPHPVersion['fpmServiceName'])) {
+                            $restartFpmServices[] = $getCurrentPHPVersion['fpmServiceName'];
+                        }
+                        if (!empty($restartFpmServices)) {
+                            foreach ($restartFpmServices as $service) {
+                                shell_exec('systemctl restart '.$service);
+                            }
+                        }
+
+                        $apacheVirtualHostBuilder->setFCGI('127.0.0.1:' . $fcgiPort);
+                    }
                 }
             }
 

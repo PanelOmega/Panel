@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Components\Admin;
 
+use App\Server\Helpers\OS;
 use Exception;
 use Filament\Actions\Action;
 use Filament\Actions\ActionGroup;
@@ -27,7 +28,13 @@ class QuickServiceRestartMenu extends Component implements HasForms, HasActions
 
     public function restartSupervisor()
     {
-        shell_exec('sudo service supervisor restart');
+        $os = OS::getDistro();
+        if ($os == OS::CLOUD_LINUX || $os == OS::ALMA_LINUX) {
+            shell_exec('sudo systemctl supervisord restart');
+            return;
+        } else {
+            shell_exec('sudo service supervisor restart');
+        }
     }
 
     public function restartMysql()

@@ -71,6 +71,14 @@
                 // [mpm_event:notice]
                 $log = preg_replace('/\[mpm_event:notice\]/', '<span class="text-blue-500">$0</span>', $log);
 
+                // [proxy:error]
+                $log = preg_replace('/\[proxy:error\]/', '<span class="text-red-500">$0</span><br />', $log);
+
+                // [proxy_fcgi:error]
+                $log = preg_replace('/\[proxy_fcgi:error\]/', '<span class="text-red-500">$0</span><br />', $log);
+
+                //[proxy:debug]
+                $log = preg_replace('/\[proxy:debug\]/', '<span class="text-blue-500">$0</span><br />', $log);
 
                 // ip address
                 $log = preg_replace('/([0-9]{1,3}\.){3}[0-9]{1,3}/', '<span class="text-blue-500">$0</span>', $log);

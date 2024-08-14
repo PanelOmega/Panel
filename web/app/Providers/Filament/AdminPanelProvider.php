@@ -69,7 +69,7 @@ class AdminPanelProvider extends PanelProvider
                     ->label('Security')
                     ->icon('heroicon-o-shield-check'),
                 NavigationGroup::make()
-                    ->label('Settings')
+                    ->label('System')
                     ->icon('heroicon-o-cog'),
             ])
             ->plugins([

@@ -2,9 +2,8 @@
 # OMEGA PANEL - Default Web Domain Template                               #
 # DO NOT MODIFY THIS FILE! CHANGES WILL BE LOST WHEN REBUILDING DOMAINS   #
 # https://panelomega.com/docs/server-administration/web-templates.html    #
-# OS: AlmaLinux                                                           #
+# OS: AlmaLinux                                                            #
 #=========================================================================#
-
 
 ServerRoot "/etc/httpd"
 
@@ -45,14 +44,13 @@ Require all denied
 
 ErrorLog "logs/error_log"
 
-LogLevel warn
+LogLevel debug
 
 
 <IfModule log_config_module>
 
     LogFormat "%h %l %u %t \"%r\" %>s %b \"%{Referer}i\" \"%{User-Agent}i\"" combined
     LogFormat "%h %l %u %t \"%r\" %>s %b" common
-
 
     <IfModule logio_module>
         # You need to enable mod_logio.c to use %I and %O
@@ -62,18 +60,6 @@ LogLevel warn
     CustomLog "logs/access_log" combined
 </IfModule>
 
-
-<IfModule alias_module>
-
-    ScriptAlias /cgi-bin/ "/var/www/cgi-bin/"
-
-</IfModule>
-
-<Directory "/var/www/cgi-bin">
-AllowOverride None
-Options None
-Require all granted
-</Directory>
 
 <IfModule mime_module>
 

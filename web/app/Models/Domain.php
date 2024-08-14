@@ -266,12 +266,18 @@ class Domain extends Model
             $apacheVirtualHostBuilder->setAppVersion($appVersion);
 
             if ($this->server_application_type == 'apache_php') {
-                $apacheVirtualHostBuilder->setAppType('php_proxy_fcgi');
-                $apacheVirtualHostBuilder->setAppVersion(null);
-                if (isset($this->docker_settings['containerIp'])) {
-                    $apacheVirtualHostBuilder->setFCGI($this->docker_settings['containerIp'].':9000');
-                }
-                if (isset($this->server_application_settings['enable_php_fpm'])) {
+
+//                if (isset($this->docker_settings['containerIp'])) {
+//                    $apacheVirtualHostBuilder->setFCGI($this->docker_settings['containerIp'].':9000');
+//                }
+
+                if (isset($this->server_application_settings['enable_php_fpm'])
+                    && $this->server_application_settings['enable_php_fpm'] == true
+                ) {
+
+                    $apacheVirtualHostBuilder->setAppType('php_proxy_fcgi');
+                    $apacheVirtualHostBuilder->setAppVersion(null);
+
                     $getCurrentPHPVersion = PHP::getPHPVersion($this->server_application_settings['php_version']);
 
                     if (isset($getCurrentPHPVersion['fpmPoolPath'])) {
@@ -359,7 +365,6 @@ class Domain extends Model
         }
 
         $virtualHostSettings = $apacheVirtualHostBuilder->getSettings();
-
 
 //        $catchMainDomain = '';
 //        $domainExp = explode('.', $this->domain);

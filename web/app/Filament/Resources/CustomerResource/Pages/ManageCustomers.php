@@ -13,7 +13,7 @@ class ManageCustomers extends ManageRecords
 {
     protected static string $resource = CustomerResource::class;
 
-    use HasTour;
+//    use HasTour;
 
     public function tours(): array {
         return [

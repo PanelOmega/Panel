@@ -12,6 +12,8 @@ class OS
 
     public const UNKNOWN = 'Unknown';
 
+    public const CLOUD_LINUX = 'CloudLinux';
+
     public static function getDistro()
     {
         $os = shell_exec('lsb_release -a');
@@ -23,6 +25,10 @@ class OS
             return self::DEBIAN;
         } elseif (strpos($os, 'Ubuntu') !== false) {
             return self::UBUNTU;
+        } elseif (strpos($os, 'CloudLinux') !== false) {
+            return self::CLOUD_LINUX;
+        } else {
+            return self::UNKNOWN;
         }
 
     }

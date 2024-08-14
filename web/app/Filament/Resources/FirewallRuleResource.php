@@ -18,9 +18,11 @@ class FirewallRuleResource extends Resource
 {
     protected static ?string $model = FirewallRule::class;
 
-    protected static ?string $navigationIcon = 'omega-firewall';
+//    protected static ?string $navigationIcon = 'omega-firewall';
 
-    protected static ?int $navigationSort = 40;
+    protected static ?int $navigationSort = 10;
+
+    protected static ?string $navigationGroup = 'Security';
 
     public static function form(Form $form): Form
     {
@@ -103,7 +105,7 @@ class FirewallRuleResource extends Resource
 
                     } else {
                         Notification::make()
-                            ->icon('heroicon-m-shield-x')
+                          //  ->icon('heroicon-m-shield-x')
                             ->title('Failed to enable firewall')
                             ->body('An error occurred while enabling the firewall.')
                             ->send();

@@ -2,6 +2,9 @@
 use Filament\Http\Middleware\Authenticate;
 use Illuminate\Support\Facades\Route;
 
+Route::get('/customer/phpMyAdmin/validate-token', [\App\Http\Controllers\Customer\PHPMyAdminController::class, 'validateToken'])
+    ->name('customer.phpmyadmin.validate-token');
+
 Route::any('cloud-linux/send-request', function () {
 
     require_once('/usr/share/l.v.e-manager/panelless-version/lvemanager/LveManager.php');

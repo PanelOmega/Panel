@@ -5,6 +5,8 @@ namespace App\Jobs;
 use App\MasterDomain;
 use App\Models\Domain;
 use App\Server\Helpers\OS;
+use App\Server\Helpers\PHP;
+use App\Services\Domain\DomainService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -30,11 +32,14 @@ class ApacheBuild implements ShouldQueue
      */
     public function handle(): void
     {
-        $getAllDomains = Domain::whereNot('status','<=>', 'broken')->get();
+
         $virtualHosts = [];
+        $domainService = new DomainService();
+        $getAllDomains = Domain::whereNot('status','<=>', 'broken')->get();
+
         foreach ($getAllDomains as $domain) {
             try {
-                $virtualHostSettings = $domain->configureVirtualHost();
+                $virtualHostSettings = $domainService->configureVirtualHost($domain->id);
                 if (isset($virtualHostSettings['virtualHostSettings'])) {
                     $virtualHosts[] = $virtualHostSettings['virtualHostSettings'];
                 }
@@ -77,6 +82,7 @@ class ApacheBuild implements ShouldQueue
         $os = OS::getDistro();
 
         $apache2 = view('server.samples.configs.apache2-conf-build', [
+            'installedPHPVersions' => PHP::getInstalledPHPVersions(),
             'virtualHosts' => $virtualHosts,
             'os' => $os,
         ])->render();
@@ -86,9 +92,11 @@ class ApacheBuild implements ShouldQueue
         if ($os == OS::UBUNTU || $os == OS::DEBIAN) {
             file_put_contents('/etc/apache2/apache2.conf', $apache2);
             shell_exec('systemctl reload apache2');
-        } if ($os == OS::CENTOS || $os == OS::ALMA_LINUX) {
+        } if ($os == OS::CLOUD_LINUX || $os == OS::CENTOS || $os == OS::ALMA_LINUX) {
             file_put_contents('/etc/httpd/conf/httpd.conf', $apache2);
             shell_exec('systemctl reload httpd');
+        } else {
+            throw new \Exception('Unsupported OS');
         }
 
     }

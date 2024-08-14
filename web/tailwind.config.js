@@ -5,9 +5,6 @@ import preset from './tailwind.config.preset'
 
 export default {
     presets: [preset],
-    theme: {
-        extend: {},
-    },
     plugins: [],
 }
 

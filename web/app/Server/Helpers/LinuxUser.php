@@ -7,7 +7,14 @@ class LinuxUser
 
     public const USER_FILE_PERMISSION = 0644;
     public const USER_DIRECTORY_PERMISSION = 0711;
-    public const USER_GROUP = 'www-data';
+
+    public static function getLinuxUserIdByUsername($username)
+    {
+        $output = shell_exec('id -u ' . $username);
+        $output = intval($output);
+
+        return $output;
+    }
 
     /**
      * @param string $username
@@ -15,7 +22,7 @@ class LinuxUser
      * @param string $email
      * @return string
      */
-    public static function createUser(string $username, string $password, string $email)
+    public static function createUser(string $username, string $password, string $email, array $options = [])
     {
         $checkUser = self::getUser($username);
         if (!empty($checkUser)) {
@@ -27,14 +34,24 @@ class LinuxUser
         $output = '';
 
         $command = '/usr/sbin/useradd "' . $username . '" -c "' . $email . '" --no-create-home';
+        if (isset($options['homeDir'])) {
+            $command .= ' -d ' . $options['homeDir'];
+        }
+        if (isset($options['noLogin']) && $options['noLogin'] === true) {
+            $command .= ' -s /sbin/nologin';
+        }
         $output .= shell_exec($command);
 
-        $command = 'echo ' . $username . ':' . $password . ' | sudo chpasswd -e';
+
+        $command = 'echo "' . $username . ':' . $password . '" | /usr/sbin/chpasswd';
         $output .= shell_exec($command);
+
+        $linuxUserId = LinuxUser::getLinuxUserIdByUsername($username);
 
         return [
             'success' => 'User created successfully',
             'output' => $output,
+            'linuxUserId' => $linuxUserId,
         ];
     }
 
@@ -62,14 +79,11 @@ class LinuxUser
         if ($distro === OS::DEBIAN || $distro === OS::UBUNTU) {
             $command = 'sudo adduser --disabled-password --gecos "" "' . $username . '"';
             $output .= shell_exec($command);
-        } else if ($distro === OS::ALMA_LINUX || $distro === OS::CENTOS) {
+        } else if ($distro === OS::CLOUD_LINUX || $distro === OS::ALMA_LINUX || $distro === OS::CENTOS) {
             $command = 'sudo useradd "' . $username . '"';
             $output .= shell_exec($command);
-        }
-
-        if ($distro === OS::DEBIAN || $distro === OS::UBUNTU) {
-            $command = 'sudo usermod -a -G www-data ' . $username;
-            $output .= shell_exec($command);
+        } else {
+            throw new \Exception('Unsupported OS');
         }
 
         $command = 'sudo echo ' . $username . ':' . $password . ' | chpasswd -e';
@@ -84,9 +98,12 @@ class LinuxUser
         $command = 'sudo chmod 711 /home/' . $username;
         $output .= shell_exec($command);
 
+        $linuxUserId = LinuxUser::getLinuxUserIdByUsername($username);
+
         return [
             'success' => 'User created successfully',
             'output' => $output,
+            'linuxUserId' => $linuxUserId,
         ];
     }
 

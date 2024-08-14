@@ -16,7 +16,7 @@ class ApacheInstaller
 
         if ($os == OS::DEBIAN || $os == OS::UBUNTU) {
             $dockerVersion = shell_exec('service apache2 status');
-        } elseif ($os == OS::CENTOS || $os == OS::ALMA_LINUX) {
+        } elseif ($os == OS::CLOUD_LINUX ||$os == OS::CENTOS || $os == OS::ALMA_LINUX) {
             $dockerVersion = shell_exec('systemctl status httpd');
         }
 
@@ -73,12 +73,13 @@ class ApacheInstaller
             // $commands[] = 'ufw allow in "Apache Full"';
             $commands[] = 'systemctl restart apache2';
 
-        } else if ($os == OS::ALMA_LINUX) {
+        } else if ($os == OS::CLOUD_LINUX || $os == OS::ALMA_LINUX) {
             $commands[] = 'yum install -y epel-release';
             $commands[] = 'yum install -y httpd';
 
             $commands[] = 'yum install -y mod_fcgid';
             $commands[] = 'yum install -y mod_ssl';
+            $commands[] = 'yum install -y mod_suphp';
 
             $commands[] = 'systemctl enable httpd';
             $commands[] = 'systemctl start httpd';

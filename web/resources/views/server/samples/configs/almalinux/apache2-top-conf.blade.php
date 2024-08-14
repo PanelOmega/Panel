@@ -1,10 +1,9 @@
 #=========================================================================#
 # OMEGA PANEL - Default Web Domain Template                               #
 # DO NOT MODIFY THIS FILE! CHANGES WILL BE LOST WHEN REBUILDING DOMAINS   #
-# https://omegapanel.com/docs/server-administration/web-templates.html    #
-# OS: AlmaLinux                                                           #
+# https://panelomega.com/docs/server-administration/web-templates.html    #
+# OS: AlmaLinux                                                            #
 #=========================================================================#
-
 
 ServerRoot "/etc/httpd"
 
@@ -12,18 +11,11 @@ Listen 80
 
 Include conf.modules.d/*.conf
 
-User apache
-Group apache
+User nobody
+Group nobody
 
 ServerAdmin root@localhost
-
-<Directory />
-AllowOverride none
-Require all denied
-</Directory>
-
 DocumentRoot "/var/www/html"
-
 
 <Directory "/var/www">
 AllowOverride None
@@ -52,14 +44,13 @@ Require all denied
 
 ErrorLog "logs/error_log"
 
-LogLevel warn
+LogLevel debug
 
 
 <IfModule log_config_module>
 
     LogFormat "%h %l %u %t \"%r\" %>s %b \"%{Referer}i\" \"%{User-Agent}i\"" combined
     LogFormat "%h %l %u %t \"%r\" %>s %b" common
-
 
     <IfModule logio_module>
         # You need to enable mod_logio.c to use %I and %O
@@ -69,18 +60,6 @@ LogLevel warn
     CustomLog "logs/access_log" combined
 </IfModule>
 
-
-<IfModule alias_module>
-
-    ScriptAlias /cgi-bin/ "/var/www/cgi-bin/"
-
-</IfModule>
-
-<Directory "/var/www/cgi-bin">
-AllowOverride None
-Options None
-Require all granted
-</Directory>
 
 <IfModule mime_module>
 

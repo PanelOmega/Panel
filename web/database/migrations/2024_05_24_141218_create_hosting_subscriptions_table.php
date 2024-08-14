@@ -20,6 +20,7 @@ return new class extends Migration
             $table->string('domain')->nullable();
             $table->bigInteger('main_domain_id')->nullable();
 
+            $table->bigInteger('system_user_id')->nullable();
             $table->string('system_username')->nullable();
             $table->string('system_password')->nullable();
 

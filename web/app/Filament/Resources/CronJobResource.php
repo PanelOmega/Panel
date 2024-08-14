@@ -14,11 +14,11 @@ class CronJobResource extends Resource
 {
     protected static ?string $model = CronJob::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-clock';
+//    protected static ?string $navigationIcon = 'heroicon-o-clock';
 
-//    protected static ?string $navigationGroup = 'Server Management';
+    protected static ?string $navigationGroup = 'System';
 
-    protected static ?int $navigationSort = 98;
+    protected static ?int $navigationSort = 9;
 
 
     public static function form(Form $form): Form

@@ -8,6 +8,7 @@ use app\Filament\Resources\HostingSubscriptionResource\Pages\ManageHostingSubscr
 use App\Models\Customer;
 use App\Models\Domain;
 use App\Models\HostingSubscription;
+use Filament\Actions\Action;
 use Filament\Forms;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Form;
@@ -24,13 +25,15 @@ class HostingSubscriptionResource extends Resource
 {
     protected static ?string $model = HostingSubscription::class;
 
-    protected static ?string $navigationIcon = 'omega-hosting-subscribers';
+//    protected static ?string $navigationIcon = 'omega-hosting-subscribers';
 
-//    protected static ?string $navigationGroup = 'Hosting Services';
+    protected static ?string $navigationGroup = 'Hosting Services';
 
-    protected static ?string $label = 'Subscriptions';
+//    protected static ?string $label = 'Hosting Accounts';
 
     protected static ?int $navigationSort = 2;
+
+//    protected static ?string $slug = 'hosting-accounts';
 
     protected static SubNavigationPosition $subNavigationPosition = SubNavigationPosition::Top;
 
@@ -57,22 +60,37 @@ class HostingSubscriptionResource extends Resource
                     Forms\Components\TextInput::make('domain')
                         ->required()
                         ->regex('/^([a-z0-9]+(-[a-z0-9]+)*\.)+[a-z]{2,}$/i')
-                        ->disabled(function ($record) {
-                            if (isset($record->exists)) {
-                                return $record->exists;
-                            } else {
-                                return false;
-                            }
-                        })
+                        ->disabled()
                         ->suffixIcon('heroicon-m-globe-alt')
                         ->columnSpanFull(),
 
                     Forms\Components\Select::make('customer_id')
                         ->label('Customer')
-                        ->options(
-                            \App\Models\Customer::all()->pluck('name', 'id')
-                        )
-                        ->required()->columnSpanFull(),
+                        ->relationship('customer', 'name')
+                        ->searchable()
+                        ->required()
+                        ->createOptionForm([
+                            Forms\Components\TextInput::make('name')
+                                ->required()
+                                ->maxLength(255),
+
+                            Forms\Components\TextInput::make('email')
+                                ->label('Email address')
+                                ->required()
+                                ->email()
+                                ->maxLength(255)
+                                ->unique(),
+
+                            Forms\Components\TextInput::make('phone')
+                                ->maxLength(255),
+                        ])
+                        ->createOptionAction(function (Forms\Components\Actions\Action $action) {
+                            return $action
+                                ->modalHeading('Create customer')
+                                ->modalSubmitActionLabel('Create customer')
+                                ->modalWidth('lg');
+                        })
+                        ->columnSpanFull(),
 
                     Forms\Components\Select::make('hosting_plan_id')
                         ->label('Hosting Plan')
@@ -87,24 +105,12 @@ class HostingSubscriptionResource extends Resource
 
                     Forms\Components\TextInput::make('system_username')
                         ->hidden(fn(Forms\Get $get): bool => !$get('advanced'))
-                        ->disabled(function ($record) {
-                            if (isset($record->exists)) {
-                                return $record->exists;
-                            } else {
-                                return false;
-                            }
-                        })
+                        ->disabled()
                         ->suffixIcon('heroicon-m-user'),
 
                     Forms\Components\TextInput::make('system_password')
                         ->hidden(fn(Forms\Get $get): bool => !$get('advanced'))
-                        ->disabled(function ($record) {
-                            if (isset($record->exists)) {
-                                return $record->exists;
-                            } else {
-                                return false;
-                            }
-                        })
+                        ->disabled()
                         ->suffixIcon('heroicon-m-lock-closed'),
                 ]),
 
@@ -153,19 +159,19 @@ class HostingSubscriptionResource extends Resource
                     ->options(fn (): array => HostingSubscription::query()->pluck('system_username', 'id')->all())
             ])
             ->actions([
-                Tables\Actions\ViewAction::make(),
-                Tables\Actions\Action::make('visit')
-                    ->label('Open website')
-                    ->icon('heroicon-m-arrow-top-right-on-square')
-                    ->color('gray')
-                    ->url(fn($record): string => 'http://' . $record->domain, true),
-                Tables\Actions\EditAction::make(),
-                Tables\Actions\DeleteAction::make(),
+                Tables\Actions\ActionGroup::make([
+                    Tables\Actions\ViewAction::make(),
+                    Tables\Actions\Action::make('visit')
+                        ->label('Open website')
+                        ->icon('heroicon-m-arrow-top-right-on-square')
+                        ->color('gray')
+                        ->url(fn($record): string => 'http://' . $record->domain, true),
+                    Tables\Actions\EditAction::make(),
+                    Tables\Actions\DeleteAction::make(),
+                ])
             ])
             ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
-                ]),
+
             ]);
     }
 
@@ -193,8 +199,7 @@ class HostingSubscriptionResource extends Resource
         return [
             // 'index' => Pages\ManageHostingSubscriptions::route('/'),
             'index' => Pages\ListHostingSubscriptions::route('/'),
-            'create' => Pages\CreateHostingSubscription::route('/create'),
-            'edit' => Pages\EditHostingSubscription::route('/{record}/edit'),
+//            'edit' => Pages\EditHostingSubscription::route('/{record}/edit'),
           //  'view' => Pages\ViewHostingSubscription::route('/{record}'),
            // 'databases' => Pages\ManageHostingSubscriptionDatabases::route('/{record}/databases'),
           //  'backups' => Pages\ManageHostingSubscriptionBackups::route('/{record}/backups'),

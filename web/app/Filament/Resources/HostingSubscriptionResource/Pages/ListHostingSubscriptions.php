@@ -3,7 +3,13 @@
 namespace App\Filament\Resources\HostingSubscriptionResource\Pages;
 
 use App\Filament\Resources\HostingSubscriptionResource;
-use Filament\Actions;
+use App\Services\HostingSubscription\HostingSubscriptionService;
+use Filament\Actions\Action;
+use Filament\Forms\Components\Checkbox;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Get;
+use Filament\Notifications\Notification;
 use Filament\Resources\Pages\ListRecords;
 use JibayMcs\FilamentTour\Tour\HasTour;
 use JibayMcs\FilamentTour\Tour\Step;
@@ -13,7 +19,7 @@ class ListHostingSubscriptions extends ListRecords
 {
     protected static string $resource = HostingSubscriptionResource::class;
 
-    use HasTour;
+//    use HasTour;
 
     public function tours(): array {
         return [
@@ -35,7 +41,93 @@ class ListHostingSubscriptions extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
-            Actions\CreateAction::make(),
+            Action::make('createHostingSubscription')
+                ->slideOver()
+                ->form([
+                    TextInput::make('domain')
+                        ->required()
+                        ->regex('/^([a-z0-9]+(-[a-z0-9]+)*\.)+[a-z]{2,}$/i')
+                        ->suffixIcon('heroicon-m-globe-alt')
+                        ->columnSpanFull(),
+                    Select::make('customer_id')
+                        ->label('Customer')
+                        ->relationship('customer', 'name')
+                        ->searchable()
+                        ->required()
+                        ->createOptionForm([
+                            TextInput::make('name')
+                                ->required()
+                                ->maxLength(255),
+
+                            TextInput::make('email')
+                                ->label('Email address')
+                                ->required()
+                                ->email()
+                                ->maxLength(255)
+                                ->unique(),
+
+                            TextInput::make('phone')
+                                ->maxLength(255),
+                        ])
+                        ->createOptionAction(function (\Filament\Forms\Components\Actions\Action $action) {
+                            return $action
+                                ->modalHeading('Create customer')
+                                ->modalSubmitActionLabel('Create customer')
+                                ->modalWidth('lg');
+                        })
+                        ->columnSpanFull(),
+
+                    Select::make('hosting_plan_id')
+                        ->label('Hosting Plan')
+                        ->options(
+                            \App\Models\HostingPlan::all()->pluck('name', 'id')
+                        )
+                        ->required()->columnSpanFull(),
+
+                    Checkbox::make('advanced')
+                        ->live()
+                        ->columnSpanFull(),
+
+                    TextInput::make('system_username')
+                        ->hidden(fn(Get $get): bool => !$get('advanced'))
+
+                        ->suffixIcon('heroicon-m-user'),
+
+                    TextInput::make('system_password')
+                        ->hidden(fn(Get $get): bool => !$get('advanced'))
+                        ->suffixIcon('heroicon-m-lock-closed'),
+
+
+                ])
+                ->modalSubmitActionLabel('Create')
+                ->action(function ($data) {
+
+                    $systemUsername = $data['system_username'] ?? null;
+                    $systemPassword = $data['system_password'] ?? null;
+
+                    $hostingSubscriptionService = new HostingSubscriptionService();
+                    $createResponse = $hostingSubscriptionService->create(
+                        $data['domain'],
+                        $data['customer_id'],
+                        $data['hosting_plan_id'],
+                        $systemUsername,
+                        $systemPassword
+                    );
+
+                    if (isset($createResponse['success'])) {
+                        Notification::make()
+                            ->title('Hosting Subscription Created')
+                            ->success()
+                            ->send();
+
+                    } else {
+                        Notification::make()
+                            ->title('Failed to create hosting subscription')
+                            ->danger()
+                            ->send();
+                    }
+
+                }),
         ];
     }
 }

@@ -14,9 +14,9 @@ class ApiKeyResource extends Resource
 {
     protected static ?string $model = ApiKey::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-key';
+//    protected static ?string $navigationIcon = 'heroicon-o-key';
 
-//    protected static ?string $navigationGroup = 'Server Management';
+    protected static ?string $navigationGroup = 'Security';
 
     protected static ?int $navigationSort = 5;
 

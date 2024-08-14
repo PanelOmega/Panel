@@ -1,7 +1,22 @@
 @if($os == \App\Server\Helpers\OS::UBUNTU || $os == \App\Server\Helpers\OS::DEBIAN)
 @include('server.samples.configs.ubuntu.apache2-top-conf')
-@elseif($os == \App\Server\Helpers\OS::ALMA_LINUX || $os == \App\Server\Helpers\OS::CENTOS)
+@elseif($os == \App\Server\Helpers\OS::CLOUD_LINUX || $os == \App\Server\Helpers\OS::ALMA_LINUX || $os == \App\Server\Helpers\OS::CENTOS)
     @include('server.samples.configs.almalinux.apache2-top-conf')
+@endif
+
+@if(isset($installedPHPVersions))
+
+ScriptAlias /cgi-sys /usr/local/omega/cgi-sys/
+
+@foreach($installedPHPVersions as $phpVersion)
+Action {{$phpVersion['action']}}
+@endforeach
+
+@php
+$latestPHPVersion = end($installedPHPVersions);
+@endphp
+AddHandler {{$latestPHPVersion['fileType']}} {{$latestPHPVersion['fileExtensions']}}
+
 @endif
 
 @foreach($virtualHosts as $virtualHost)
@@ -24,11 +39,11 @@
 
     DocumentRoot {{$virtualHost['domainPublic']}}
     SetEnv APP_DOMAIN {{$virtualHost['domain']}}
+    SuexecUserGroup {{$virtualHost['user']}} {{$virtualHost['group']}}
 
     @if(isset($virtualHost['enableRuid2']) && $virtualHost['enableRuid2'] && !empty($virtualHost['user']) && !empty($virtualHost['group']))
 
         #RDocumentChRoot {{$virtualHost['domainPublic']}}
-        #SuexecUserGroup {{$virtualHost['user']}} {{$virtualHost['group']}}
         #RUidGid {{$virtualHost['user']}} {{$virtualHost['group']}}
 
     @endif
@@ -40,12 +55,6 @@
         CustomLog {{$virtualHost['domainRoot']}}/logs/apache2/bytes.log bytes
         CustomLog {{$virtualHost['domainRoot']}}/logs/apache2/access.log common
         ErrorLog {{$virtualHost['domainRoot']}}/logs/apache2/error.log
-
-    @endif
-
-    @if($virtualHost['appType'] == 'php')
-
-        ScriptAlias /cgi-bin/ {{$virtualHost['domainPublic']}}/cgi-bin/
 
     @endif
 
@@ -66,13 +75,6 @@
         AllowOverride All
         Require all granted
 
-        @if(isset($virtualHost['enableRuid2']) && $virtualHost['enableRuid2'] && !empty($virtualHost['user']) && !empty($virtualHost['group']))
-
-            RMode config
-            RUidGid {{$virtualHost['user']}} {{$virtualHost['group']}}
-
-        @endif
-
         @if($virtualHost['passengerAppRoot'] !== null)
 
             PassengerAppRoot {{$virtualHost['passengerAppRoot']}}
@@ -85,18 +87,13 @@
 
         @endif
 
-        @if($virtualHost['appType'] == 'php_proxy_fcgi')
+        @if($virtualHost['appType'] == 'php_proxy_fcgi' && isset($virtualHost['fcgi']))
             <Files *.php>
                 SetHandler "proxy:fcgi://{{$virtualHost['fcgi']}}"
             </Files>
         @endif
 
         @if($virtualHost['appType'] == 'php')
-
-            Action phpcgi-script /cgi-bin/php
-            <Files *.php>
-                SetHandler phpcgi-script
-            </Files>
 
             @php
                 $appendOpenBaseDirs = $virtualHost['homeRoot'];
@@ -107,11 +104,11 @@
                 }
             @endphp
 
-            php_admin_value open_basedir {{$appendOpenBaseDirs}}
+            #php_admin_value open_basedir {{$appendOpenBaseDirs}}
 
-            php_admin_value upload_tmp_dir {{$virtualHost['homeRoot']}}/tmp
-            php_admin_value session.save_path {{$virtualHost['homeRoot']}}/tmp
-            php_admin_value sys_temp_dir {{$virtualHost['homeRoot']}}/tmp
+            #php_admin_value upload_tmp_dir {{$virtualHost['homeRoot']}}/tmp
+            #php_admin_value session.save_path {{$virtualHost['homeRoot']}}/tmp
+            #php_admin_value sys_temp_dir {{$virtualHost['homeRoot']}}/tmp
 
         @endif
 

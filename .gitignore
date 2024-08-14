@@ -3,3 +3,16 @@
 /e2e-server-test/OmegaUnitTest.key
 /e2e-server-test/OmegaUnitTest.pub
 .cloudlinux
+.idea/blade.xml
+.idea/deployment.xml
+.idea/laravel-idea.xml
+.idea/modules.xml
+.idea/PanelOmega.iml
+.idea/php.xml
+.idea/phpunit.xml
+.idea/sshConfigs.xml
+.idea/vcs.xml
+.idea/webServers.xml
+.idea/copilot/chatSessions/xd.lck
+.idea/copilot/chatSessions/blobs/version
+.idea/copilot/chatSessions/00000000000.xd

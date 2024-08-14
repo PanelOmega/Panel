@@ -6,7 +6,7 @@ use Filament\Clusters\Cluster;
 
 class Fail2Ban extends Cluster
 {
-    protected static ?string $navigationIcon = 'heroicon-o-shield-check';
+//    protected static ?string $navigationIcon = 'heroicon-o-shield-check';
 
     protected static ?string $navigationLabel = 'Fail2Ban';
 
@@ -15,4 +15,6 @@ class Fail2Ban extends Cluster
     protected static ?string $title = 'Fail2Ban';
 
     protected static ?int $navigationSort = 10;
+
+    protected static ?string $navigationGroup = 'Security';
 }

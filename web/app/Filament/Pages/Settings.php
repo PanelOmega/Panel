@@ -6,11 +6,13 @@ use Filament\Pages\Page;
 
 class Settings extends Page
 {
-    protected static ?string $navigationIcon = 'heroicon-o-cog';
+//    protected static ?string $navigationIcon = 'heroicon-o-cog';
 
     protected static string $view = 'filament.admin.pages.settings';
 
     protected static ?int $navigationSort = 12;
+
+    protected static ?string $navigationGroup = 'Settings';
 
     protected function getViewData(): array
     {

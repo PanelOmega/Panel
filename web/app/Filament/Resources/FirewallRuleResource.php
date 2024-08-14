@@ -18,9 +18,11 @@ class FirewallRuleResource extends Resource
 {
     protected static ?string $model = FirewallRule::class;
 
-    protected static ?string $navigationIcon = 'omega-firewall';
+//    protected static ?string $navigationIcon = 'omega-firewall';
 
     protected static ?int $navigationSort = 10;
+
+    protected static ?string $navigationGroup = 'Security';
 
     public static function form(Form $form): Form
     {

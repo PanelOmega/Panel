@@ -13,7 +13,7 @@ class ListHostingSubscriptions extends ListRecords
 {
     protected static string $resource = HostingSubscriptionResource::class;
 
-    use HasTour;
+//    use HasTour;
 
     public function tours(): array {
         return [

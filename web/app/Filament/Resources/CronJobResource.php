@@ -14,9 +14,9 @@ class CronJobResource extends Resource
 {
     protected static ?string $model = CronJob::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-clock';
+//    protected static ?string $navigationIcon = 'heroicon-o-clock';
 
-//    protected static ?string $navigationGroup = 'Server Management';
+    protected static ?string $navigationGroup = 'Settings';
 
     protected static ?int $navigationSort = 9;
 

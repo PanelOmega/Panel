@@ -10,6 +10,7 @@ use Outerweb\Settings\Models\Setting;
 
 class BaseSettings extends Settings
 {
+    protected static bool $shouldRegisterNavigation = false;
     public function save() : void
     {
         try {

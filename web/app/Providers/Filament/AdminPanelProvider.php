@@ -56,11 +56,20 @@ class AdminPanelProvider extends PanelProvider
             ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\\Filament\\Widgets')
             ->navigationGroups([
                 NavigationGroup::make()
+                    ->label('Hosting Services')
+                    ->icon('heroicon-o-server'),
+                NavigationGroup::make()
                     ->label('My Apache')
                     ->icon('omega-apache'),
                 NavigationGroup::make()
                     ->label('CloudLinux')
                     ->icon('omega-cloudlinux'),
+                NavigationGroup::make()
+                    ->label('Security')
+                    ->icon('heroicon-o-shield-check'),
+                NavigationGroup::make()
+                    ->label('Settings')
+                    ->icon('heroicon-o-cog'),
             ])
             ->plugins([
                 FilamentTourPlugin::make(),

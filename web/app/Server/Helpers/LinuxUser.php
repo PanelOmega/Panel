@@ -7,7 +7,6 @@ class LinuxUser
 
     public const USER_FILE_PERMISSION = 0644;
     public const USER_DIRECTORY_PERMISSION = 0711;
-    public const USER_GROUP = 'www-data';
 
     public static function getLinuxUserIdByUsername($username)
     {
@@ -85,11 +84,6 @@ class LinuxUser
             $output .= shell_exec($command);
         } else {
             throw new \Exception('Unsupported OS');
-        }
-
-        if ($distro === OS::DEBIAN || $distro === OS::UBUNTU) {
-            $command = 'sudo usermod -a -G www-data ' . $username;
-            $output .= shell_exec($command);
         }
 
         $command = 'sudo echo ' . $username . ':' . $password . ' | chpasswd -e';

@@ -144,7 +144,9 @@ class Domain extends Model
             throw new \Exception('Domain root not found');
         }
 
-
+        if ($fixPermissions) {
+            $this->fixPermissions();
+        }
 
         if ($installSamples) {
 

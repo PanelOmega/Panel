@@ -59,13 +59,7 @@ class HostingSubscriptionResource extends Resource
                     Forms\Components\TextInput::make('domain')
                         ->required()
                         ->regex('/^([a-z0-9]+(-[a-z0-9]+)*\.)+[a-z]{2,}$/i')
-                        ->disabled(function ($record) {
-                            if (isset($record->exists)) {
-                                return $record->exists;
-                            } else {
-                                return false;
-                            }
-                        })
+                        ->disabled()
                         ->suffixIcon('heroicon-m-globe-alt')
                         ->columnSpanFull(),
 
@@ -89,24 +83,12 @@ class HostingSubscriptionResource extends Resource
 
                     Forms\Components\TextInput::make('system_username')
                         ->hidden(fn(Forms\Get $get): bool => !$get('advanced'))
-                        ->disabled(function ($record) {
-                            if (isset($record->exists)) {
-                                return $record->exists;
-                            } else {
-                                return false;
-                            }
-                        })
+                        ->disabled()
                         ->suffixIcon('heroicon-m-user'),
 
                     Forms\Components\TextInput::make('system_password')
                         ->hidden(fn(Forms\Get $get): bool => !$get('advanced'))
-                        ->disabled(function ($record) {
-                            if (isset($record->exists)) {
-                                return $record->exists;
-                            } else {
-                                return false;
-                            }
-                        })
+                        ->disabled()
                         ->suffixIcon('heroicon-m-lock-closed'),
                 ]),
 
@@ -155,19 +137,19 @@ class HostingSubscriptionResource extends Resource
                     ->options(fn (): array => HostingSubscription::query()->pluck('system_username', 'id')->all())
             ])
             ->actions([
-                Tables\Actions\ViewAction::make(),
-                Tables\Actions\Action::make('visit')
-                    ->label('Open website')
-                    ->icon('heroicon-m-arrow-top-right-on-square')
-                    ->color('gray')
-                    ->url(fn($record): string => 'http://' . $record->domain, true),
-                Tables\Actions\EditAction::make(),
-                Tables\Actions\DeleteAction::make(),
+                Tables\Actions\ActionGroup::make([
+                    Tables\Actions\ViewAction::make(),
+                    Tables\Actions\Action::make('visit')
+                        ->label('Open website')
+                        ->icon('heroicon-m-arrow-top-right-on-square')
+                        ->color('gray')
+                        ->url(fn($record): string => 'http://' . $record->domain, true),
+                    Tables\Actions\EditAction::make(),
+                    Tables\Actions\DeleteAction::make(),
+                ])
             ])
             ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
-                ]),
+
             ]);
     }
 
@@ -195,7 +177,6 @@ class HostingSubscriptionResource extends Resource
         return [
             // 'index' => Pages\ManageHostingSubscriptions::route('/'),
             'index' => Pages\ListHostingSubscriptions::route('/'),
-            'create' => Pages\CreateHostingSubscription::route('/create'),
             'edit' => Pages\EditHostingSubscription::route('/{record}/edit'),
           //  'view' => Pages\ViewHostingSubscription::route('/{record}'),
            // 'databases' => Pages\ManageHostingSubscriptionDatabases::route('/{record}/databases'),

@@ -23,49 +23,62 @@ class PHP
     {
         $phpVersions = [];
 
-        $isCloudLinuxInstalled = CloudLinuxInstaller::isCloudLinuxInstalled();
-        if ($isCloudLinuxInstalled) {
-            $getCloudLinuxPHPVersions = CloudLinuxPHPHelper::getSupportedPHPVersions();
-            if (isset($getCloudLinuxPHPVersions['data'])) {
-                foreach ($getCloudLinuxPHPVersions['data'] as $version) {
-
-                    $binPath = $version['path'];
-                    $binPath = str_replace('/usr/bin/php-cgi', '/usr/bin/', $binPath);
-                    $shortWithoutDot = str_replace('.', '', $version['short']);
-                    $fileType = 'application/x-httpd-php' . $shortWithoutDot;
-                    $fileExtensions = '.php .php' . substr($shortWithoutDot,0,1) . ' .phtml';
-
-                    $checkCopiedFile = '/usr/local/omega/cgi-sys/cl-php' . $shortWithoutDot;
-                    if (!is_file($checkCopiedFile)) {
-                        shell_exec('mkdir -p /usr/local/omega/cgi-sys');
-                        shell_exec('cp ' . $version['path'] . ' ' . $checkCopiedFile);
-                        shell_exec('chmod +x ' . $checkCopiedFile);
-                        shell_exec('chown root:wheel ' . $checkCopiedFile);
-                    }
-
-                    $phpVersions[] = [
-                        'short' => $version['short'],
-                        'shortWithoutDot' => $shortWithoutDot,
-                        'full' => $version['full'],
-                        'path' => $checkCopiedFile,
-                        'friendlyName' => 'PHP ' . $version['short'],
-                        'vendor' => 'CloudLinux',
-                        'action' => $fileType . ' /cgi-sys/cl-php' . $shortWithoutDot,
-                        'fileType' => $fileType,
-                        'fileExtensions' => $fileExtensions,
-                    ];
-
-                }
-            }
+        $getCloudLinuxPHPVersions = static::_getCloudLinuxPHP();
+        if (!empty($getCloudLinuxPHPVersions)) {
+            $phpVersions = array_merge($phpVersions, $getCloudLinuxPHPVersions);
         }
 
         $getRemiPHPVersions = static::_getRemiPHP();
         if (!empty($getRemiPHPVersions)) {
             $phpVersions = array_merge($phpVersions, $getRemiPHPVersions);
         }
+
         return $phpVersions;
     }
 
+    private static function _getCloudLinuxPHP()
+    {
+        return Cache::remember('getCoudLinuxPHP', 600, function () {
+
+            $phpVersions = [];
+            $isCloudLinuxInstalled = CloudLinuxInstaller::isCloudLinuxInstalled();
+            if ($isCloudLinuxInstalled) {
+                $getCloudLinuxPHPVersions = CloudLinuxPHPHelper::getSupportedPHPVersions();
+                if (isset($getCloudLinuxPHPVersions['data'])) {
+                    foreach ($getCloudLinuxPHPVersions['data'] as $version) {
+
+                        $binPath = $version['path'];
+                        $binPath = str_replace('/usr/bin/php-cgi', '/usr/bin/', $binPath);
+                        $shortWithoutDot = str_replace('.', '', $version['short']);
+                        $fileType = 'application/x-httpd-php' . $shortWithoutDot;
+                        $fileExtensions = '.php .php' . substr($shortWithoutDot, 0, 1) . ' .phtml';
+
+                        $checkCopiedFile = '/usr/local/omega/cgi-sys/cl-php' . $shortWithoutDot;
+                        if (!is_file($checkCopiedFile)) {
+                            shell_exec('mkdir -p /usr/local/omega/cgi-sys');
+                            shell_exec('cp ' . $version['path'] . ' ' . $checkCopiedFile);
+                            shell_exec('chmod +x ' . $checkCopiedFile);
+                            shell_exec('chown root:wheel ' . $checkCopiedFile);
+                        }
+
+                        $phpVersions[] = [
+                            'short' => $version['short'],
+                            'shortWithoutDot' => $shortWithoutDot,
+                            'full' => $version['full'],
+                            'path' => $checkCopiedFile,
+                            'friendlyName' => 'PHP ' . $version['short'],
+                            'vendor' => 'CloudLinux',
+                            'action' => $fileType . ' /cgi-sys/cl-php' . $shortWithoutDot,
+                            'fileType' => $fileType,
+                            'fileExtensions' => $fileExtensions,
+                        ];
+
+                    }
+                }
+            }
+            return $phpVersions;
+        });
+    }
     private static function _getRemiPHP()
     {
 

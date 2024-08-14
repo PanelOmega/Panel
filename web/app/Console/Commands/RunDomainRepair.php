@@ -34,6 +34,7 @@ class RunDomainRepair extends Command
             foreach ($getActiveDomains as $domain) {
                 $this->info('Fixing domain permissions: ' . $domain->domain);
                 try {
+                    $domainService->configureHtaccess($domain->id);
                     $domainService->fixPermissions($domain->id, true, true);
                 } catch (\Exception $e) {
                     $this->error('Failed to fix permissions for domain: ' . $domain->domain);

@@ -98,18 +98,12 @@ class Domain extends Model
             $apacheBuild->handle();
 
         });
-
-        static::updating(function ($model) {
-
-            $domainService = new DomainService();
-            $domainService->configureHtaccess($model->id);
-
-        });
-
         static::updated(function ($model) {
 
-            $apacheBuild = new ApacheBuild();
-            $apacheBuild->handle();
+           $domainService = new DomainService();
+           $domainService->configureHtaccess($model->id);
+
+           ApacheBuild::dispatch();
 
         });
 

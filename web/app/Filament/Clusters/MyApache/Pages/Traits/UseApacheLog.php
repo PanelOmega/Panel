@@ -6,7 +6,7 @@ trait UseApacheLog
 {
     public $log = '';
     public $loading = true;
-    public $emptyLogMessage = 'Access log is empty';
+    public $emptyLogMessage = 'Log is empty';
 
     public function pullLog()
     {

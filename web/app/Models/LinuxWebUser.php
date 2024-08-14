@@ -23,6 +23,21 @@ class LinuxWebUser extends Model
         'can_be_deleted'=>'boolean'
     ];
 
+    public static function boot()
+    {
+        parent::boot();
+
+        static::deleting(function ($model) {
+            $canBeDeleted = $model->_canBeDeleted($model->username, $model->id);
+            if (!$canBeDeleted) {
+                throw new \Exception('Cannot delete this user');
+            }
+            shell_exec('userdel -r '.$model->username);
+            shell_exec('rm -rf /home/'.$model->username);
+        });
+
+    }
+
     public function getRows()
     {
         $users = [];

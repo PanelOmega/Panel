@@ -17,8 +17,8 @@ class HtaccessBuildPHPVersions implements ShouldQueue
     public $fixPermissions = false;
     public $hostingSubscriptionId;
     public $phpVersion;
-    public $startComment = '# Section managed by omegaPanel: Default PHP Programing Language, do not edit';
-    public $endComment = '# End section managed by omegaPanel: Default PHP Programing Language';
+    public $startComment = '# Section managed by panelOmega: Default PHP Programing Language, do not edit';
+    public $endComment = '# End section managed by panelOmega: Default PHP Programing Language';
 
     public function __construct($fixPermissions = false, $hostingSubscriptionId, $phpVersion)
     {

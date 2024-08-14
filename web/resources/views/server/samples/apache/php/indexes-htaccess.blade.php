@@ -1,7 +1,6 @@
 @if(isset($index) && !empty($index))
-    Options {{ $index['indexes'] }}
-{{--    +Indexes--}}
-    IndexOptions {{ $index['html_table'] }} {{ $index['fancy_indexing'] }}
-{{--    -HTMLTable -FancyIndexing--}}
-
+    Options {{ $index['Indexes'] }}Indexes
+    @if(isset($index['HTMLTable']) && isset($index['FancyIndexing']))
+    IndexOptions {{ $index['HTMLTable'] }}HTMLTable {{ $index['FancyIndexing'] }}FancyIndexing
+    @endif
 @endif

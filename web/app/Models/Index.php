@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Jobs\HtaccessBuildIndexes;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -45,11 +46,30 @@ class Index extends Model
         foreach ($filteredDirs as $dir) {
             $directories[$dir] = $dir;
         }
-    
+
         return $directories;
     }
 
     public static function indexesBoot() {
 
+        $hostingSubscription = Customer::getHostingSubscriptionSession();
+
+        static::creating(function ($model) use ($hostingSubscription) {
+            $model->hosting_subscription_id = $hostingSubscription->id;
+        });
+
+        $callback = function ($model) use ($hostingSubscription) {
+            $htaccessBuild = new HtaccessBuildIndexes(false, $model, $hostingSubscription);
+            $htaccessBuild->handle();
+        };
+
+        static::created($callback);
+        static::updated($callback);
+
+        static::deleted(function ($model) use ($hostingSubscription) {
+            $htaccessBuild = new HtaccessBuildIndexes(false, $model, $hostingSubscription);
+            $htaccessBuild->isDeleted(true);
+            $htaccessBuild->handle();
+        });
     }
 }

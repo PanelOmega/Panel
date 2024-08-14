@@ -5,6 +5,7 @@ namespace App\FilamentCustomer\Resources;
 use App\FilamentCustomer\Resources\IndexResource\Pages;
 use App\FilamentCustomer\Resources\IndexResource\RelationManagers;
 use App\Models\Index;
+use App\Server\SupportedApplicationTypes;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -16,35 +17,31 @@ class IndexResource extends Resource
     protected static ?string $model = Index::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
-
+    protected static bool $shouldRegisterNavigation = false;
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
-                Select::make('direrctory')
+                Select::make('directory')
                     ->label('Directory')
                     ->placeholder('Select Directory')
                     ->required()
                     ->options(
                         Index::loadDirectories()
                     ),
+
                 Select::make('index_type')
                     ->label('Index Type')
                     ->live()
                     ->placeholder('Select Type')
                     ->required()
-                    ->options([
-                        'Inherit' => 'Inherit',
-                        'No Indexing' => 'No Indexing',
-                        'Show Filename Only' => 'Show Filename Only',
-                        'Show Filename And Description' => 'Show Filename And Description',
-                    ])
+                    ->options(SupportedApplicationTypes::getIndexesIndexTypes())
                     ->helperText(function ($state) {
                         $hints = [
-                            'Inherit' => 'Select this mode to use the parent directory’s setting. If the index settings are not defined in the parent directory, the system will use its default settings.',
-                            'No Indexing' => 'No files will appear for this directory if a default file is missing.',
-                            'Show Filename Only' => 'This mode shows a simple list of the files present if the default file is missing.',
-                            'Show Filename And Description' => 'This mode shows a list of files and their attributes: file size and file type.',
+                            'inherit' => 'Select this mode to use the parent directory’s setting. If the index settings are not defined in the parent directory, the system will use its default settings.',
+                            'no_indexing' => 'No files will appear for this directory if a default file is missing.',
+                            'show_filename_only' => 'This mode shows a simple list of the files present if the default file is missing.',
+                            'show_filename_and_description' => 'This mode shows a list of files and their attributes: file size and file type.',
                         ];
                         return $hints[$state] ?? 'Please select an index type.';
                     }),
@@ -56,12 +53,7 @@ class IndexResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('directory')
-                    ->label('Directory')
-                    ->formatStateUsing(fn ($state) => $state === '/'
-                        ? '<p heroicon-o-home class="w-5 h-5" />'
-                        : $state
-                    )
-                    ->html(),
+                    ->label('Directory'),
 
                 Tables\Columns\TextColumn::make('index_type')
                     ->label('Index Type')
@@ -85,6 +77,7 @@ class IndexResource extends Resource
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
+                Tables\Actions\DeleteAction::make(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([

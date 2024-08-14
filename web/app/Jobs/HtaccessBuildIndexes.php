@@ -3,10 +3,6 @@
 namespace App\Jobs;
 
 use App\HtaccessBuildTrait;
-use App\Models\DirectoryPrivacy;
-use App\Models\Domain;
-use App\Models\HostingSubscription;
-use App\Server\Helpers\PHP;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -19,58 +15,68 @@ class HtaccessBuildIndexes implements ShouldQueue
 
     public $fixPermissions = false;
     public $model;
+    public $hostingSubscription;
+    public $startComment = '# Section managed by panelOmega: Indexing, do not edit';
+    public $endComment = '# End section managed by panelOmega: Indexing Privacy';
 
-    public function __construct($fixPermissions = false, $model)
+    public $isDeleted = false;
+
+    public function __construct($fixPermissions = false, $model = null, $hostingSubscription)
     {
         $this->fixPermissions = $fixPermissions;
         $this->model = $model;
+        $this->hostingSubscription = $hostingSubscription;
     }
 
     public function handle()
     {
-        $password = $model->password ?? '';
-        $records = DirectoryPrivacy::where('hosting_subscription_id', $this->model->hosting_subscription_id)
-            ->get()
-            ->groupBy('directory');
+            $htAccessFilePath = "{$this->model->directory}/.htaccess";
 
-        $directories = $records->isEmpty() ? [$this->model->directory] : $records->keys()->toArray();
+            $indexContent = $this->isDeleted ? [] : $this->getIndexConfig();
+            $htAccessView = $this->getHtAccessFileConfig($indexContent);
+            $htAccessFileRealPath = '/home/' . $this->hostingSubscription->system_username . $htAccessFilePath;
+            $this->updateSystemFile($htAccessFileRealPath, $htAccessView);
+    }
 
-        if (!in_array('/', $directories)) {
-            $directories[] = '/';
-        }
+    public function getIndexConfig() {
 
-        if($model !== null) {
-            if(!in_array($model->directory, $directories)) {
-                $directories[] = $model->directory;
-            }
+        $indexConfigArr = match ($this->model->index_type) {
+            'no_indexing' => [
+                'Indexes' => '-',
+            ],
+            'show_filename_only' => [
+                'Indexes' => '+',
+                'HTMLTable' => '-',
+                'FancyIndexing' => '-',
+            ],
+            'show_filename_and_description' => [
+                'Indexes' => '+',
+                'HTMLTable' => '+',
+                'FancyIndexing' => '+',
+            ],
+            default => []
+        };
 
-            if(!in_array($model->getOriginal('directory'), $directories)) {
-                $directories[] = $model->getOriginal('directory');
-            }
-        }
+        return $indexConfigArr;
+    }
 
-        $domain = Domain::where('hosting_subscription_id', $this->hostingSubscriptionId)->first();
+    public function getHtAccessFileConfig($indexContent)
+    {
+        $htaccessContent = view('server.samples.apache.php.indexes-htaccess', [
+            'index' => $indexContent
+        ])->render();
 
-        $hostingSubscription = HostingSubscription::where('id', $this->hostingSubscriptionId)->first();
+        $htaccessContent = preg_replace_callback(
+            '/(^\s*)(Rewrite.*|$)/m',
+            function ($matches) {
+                return str_repeat(' ', 4) . trim($matches[0]);
+            },
+            $htaccessContent
+        );
+        return $htaccessContent;
+    }
 
-        $phpVersion = $domain->server_application_settings['php_version'] ?? null;
-        $phpVersion = $phpVersion ? PHP::getPHPVersion($phpVersion) : [];
-
-        foreach ($directories as $directory) {
-            $htPasswdRecords = $records->get($directory, collect())->map(fn($record) => "{$record->username}:{$record->password}")->toArray();
-            $htAccessFilePath = str_replace('//', '/', "{$directory}/.htaccess");
-            $htPasswdFilePath = str_replace('//', '/', "{$directory}/.htpasswd");
-
-            $label = $records->isEmpty() || $records->get($directory) === null
-                ? null
-                : $records->get($directory)->first()->label;
-
-            $hotlinkData = $this->getHotlinkData($directory, $hostingSubscription->hotlinkProtection);
-            $htViews = $this->getHtFileConfig($label, $phpVersion, $htPasswdFilePath, $htPasswdRecords, $hotlinkData);
-            $htAccessFileRealPath = '/home/' . $hostingSubscription->system_username . $htAccessFilePath;
-            $htPasswdFileRealPath = '/home/' . $hostingSubscription->system_username . $htPasswdFilePath;
-            $this->updateSystemFile($htAccessFileRealPath, $htViews['htaccessContent']);
-            $this->updateSystemFile($htPasswdFileRealPath, $htViews['htpasswdContent']);
-        }
+    public function isDeleted($isDeleted = false) {
+        $this->isDeleted = $isDeleted;
     }
 }

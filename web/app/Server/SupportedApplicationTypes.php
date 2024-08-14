@@ -260,6 +260,22 @@ class SupportedApplicationTypes
         return $filters;
     }
 
+    public static function getIndexesIndexTypes() {
+        $types = [];
+        $indexTypes = [
+            'inherit' => 'Inherit',
+            'no_indexing' => 'No Indexing',
+            'show_filename_only' => 'Show Filename Only',
+            'show_filename_and_description' => 'Show Filename And Description',
+        ];
+
+        foreach($indexTypes as $name => $type) {
+            $types[$name] = $type;
+        }
+
+        return $types;
+    }
+
     public function getFail2BanProtocols() {
 
         $protocols = [];

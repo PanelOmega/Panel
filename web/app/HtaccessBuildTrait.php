@@ -13,38 +13,47 @@ trait HtaccessBuildTrait
 
     public function replaceContentBetweenComments($existingContent, $newContent)
     {
-        $startComment = '# BEGIN PanelOmega-generated handler, do not edit';
-        $endComment = '# END PanelOmega-generated handler, do not edit';
-
         $startInnerComment = $this->startComment ?? null;
         $endInnerComment = $this->endComment ?? null;
 
-        $pattern = '/' . preg_quote($startComment, '/') . '(.*?)' . preg_quote($endComment, '/') . '/s';
+        if ($startInnerComment && $endInnerComment) {
+            $escapedStartComment = preg_quote($startInnerComment, '/');
+            $escapedEndComment = preg_quote($endInnerComment, '/');
 
-        $currentContent = '';
-        if (preg_match($pattern, $existingContent, $matches)) {
-            $currentContent = trim($matches[1]);
-        }
+            $newContent = $this->trimContent($newContent);
 
-        $patternInnerComments = '/(' . preg_quote($startInnerComment, '/') . ')(.*?)(?=' . preg_quote($endInnerComment, '/') . ')/s';
+            if(empty($newContent)) {
+                return $this->removeCommentsUponDeletion($escapedStartComment, $escapedEndComment, $existingContent);
+            }
 
-        if (($startInnerComment && $endInnerComment) && preg_match($patternInnerComments, $currentContent, $matches)) {
-            $innerCommentsContentAdd = trim($newContent);
-            $currentContent = preg_replace($patternInnerComments, "$startInnerComment\n$innerCommentsContentAdd\n", $currentContent);
+            $patternInnerComments = '/(' . $escapedStartComment . ')(.*?)(?=' . $escapedEndComment . ')/s';
+
+            if (preg_match($patternInnerComments, $existingContent)) {
+                $innerCommentsContentAdd = trim($newContent);
+                $currentContent = preg_replace($patternInnerComments, "$startInnerComment\n$innerCommentsContentAdd\n", $existingContent);
+            } else {
+                $innerCommentsContentAdd = trim($newContent);
+                $currentContent = $existingContent . "\n$startInnerComment\n$innerCommentsContentAdd\n$endInnerComment";
+            }
         } else {
             $innerCommentsContentAdd = trim($newContent);
-            $currentContent .= "\n$startInnerComment\n$innerCommentsContentAdd\n$endInnerComment";
+            $currentContent = $existingContent . "\n$innerCommentsContentAdd";
         }
 
-        $currentContent = preg_replace_callback(
-            '/^#.*\n(?!#)/m',
-            function ($matches) {
-                return $matches[0] . "\t";
-            },
-            $currentContent
-        );
+        return $this->trimContent($currentContent);
+    }
 
-        $existingContent = "$startComment\n$currentContent\n$endComment";
-        return $existingContent;
+    public function trimContent($content) {
+        $content = preg_replace('/<!--\[if.*?\]>\s*<!\[endif\]-->\s*/s', '', $content);
+        $content = preg_replace('/^[ \t]+/m', '', $content);
+        $content = preg_replace('/^[\r\n]+/', '', $content);
+        return $content;
+    }
+
+    public function removeCommentsUponDeletion($escapedStartComment, $escapedEndComment, $existingContent) {
+
+        $patternRemoveComments = '/' . $escapedStartComment . '.*?' . $escapedEndComment . '/s';
+        $existingContent = preg_replace($patternRemoveComments, '', $existingContent);
+        return $this->trimContent($existingContent);
     }
 }

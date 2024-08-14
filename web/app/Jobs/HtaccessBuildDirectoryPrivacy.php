@@ -17,8 +17,8 @@ class HtaccessBuildDirectoryPrivacy implements ShouldQueue
 
     public $fixPermissions = false;
     public $hostingSubscriptionId;
-    public $startComment = '# Section managed by omegaPanel: Directory Privacy, do not edit';
-    public $endComment = '# End section managed by omegaPanel: Directory Privacy';
+    public $startComment = '# Section managed by panelOmega: Directory Privacy, do not edit';
+    public $endComment = '# End section managed by panelOmega: Directory Privacy';
 
     public function __construct($fixPermissions = false, $hostingSubscriptionId)
     {
@@ -51,11 +51,6 @@ class HtaccessBuildDirectoryPrivacy implements ShouldQueue
 
         $hostingSubscription = HostingSubscription::where('id', $this->hostingSubscriptionId)->first();
 
-//        $domain = Domain::where('hosting_subscription_id', $this->hostingSubscriptionId)->first();
-//        $phpVersion = $domain->server_application_settings['php_version'] ?? null;
-//        $phpVersion = $phpVersion ? PHP::getPHPVersion($phpVersion) : [];
-//
-//        dd($phpVersion);
         foreach ($directories as $directory) {
 
             $htPasswdRecords = $records->get($directory, collect())->map(fn($record) => "{$record->username}:{$record->password}")->toArray();

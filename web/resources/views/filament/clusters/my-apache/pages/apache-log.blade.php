@@ -33,6 +33,11 @@
                 // [mpm_event:notice]
                 $log = preg_replace('/\[mpm_event:notice\]/', '<span class="text-blue-500">$0</span>', $log);
 
+
+                // ip address
+                $log = preg_replace('/([0-9]{1,3}\.){3}[0-9]{1,3}/', '<span class="text-blue-500">$0</span>', $log);
+
+             
             @endphp
 
             {!! $log !!}

@@ -4,7 +4,7 @@ namespace App\Filament\Resources\HostingSubscriptionResource\Pages;
 
 use App\Filament\Resources\HostingSubscriptionResource;
 use App\Services\HostingSubscription\HostingSubscriptionService;
-use Filament\Actions;
+use Filament\Actions\Action;
 use Filament\Forms\Components\Checkbox;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
@@ -41,7 +41,7 @@ class ListHostingSubscriptions extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
-            Actions\Action::make('createHostingSubscription')
+            Action::make('createHostingSubscription')
                 ->slideOver()
                 ->form([
                     TextInput::make('domain')
@@ -51,10 +51,31 @@ class ListHostingSubscriptions extends ListRecords
                         ->columnSpanFull(),
                     Select::make('customer_id')
                         ->label('Customer')
-                        ->options(
-                            \App\Models\Customer::all()->pluck('name', 'id')
-                        )
-                        ->required()->columnSpanFull(),
+                        ->relationship('customer', 'name')
+                        ->searchable()
+                        ->required()
+                        ->createOptionForm([
+                            TextInput::make('name')
+                                ->required()
+                                ->maxLength(255),
+
+                            TextInput::make('email')
+                                ->label('Email address')
+                                ->required()
+                                ->email()
+                                ->maxLength(255)
+                                ->unique(),
+
+                            TextInput::make('phone')
+                                ->maxLength(255),
+                        ])
+                        ->createOptionAction(function (\Filament\Forms\Components\Actions\Action $action) {
+                            return $action
+                                ->modalHeading('Create customer')
+                                ->modalSubmitActionLabel('Create customer')
+                                ->modalWidth('lg');
+                        })
+                        ->columnSpanFull(),
 
                     Select::make('hosting_plan_id')
                         ->label('Hosting Plan')

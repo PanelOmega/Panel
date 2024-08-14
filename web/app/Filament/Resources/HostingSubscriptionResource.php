@@ -8,6 +8,7 @@ use app\Filament\Resources\HostingSubscriptionResource\Pages\ManageHostingSubscr
 use App\Models\Customer;
 use App\Models\Domain;
 use App\Models\HostingSubscription;
+use Filament\Actions\Action;
 use Filament\Forms;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Form;
@@ -65,10 +66,31 @@ class HostingSubscriptionResource extends Resource
 
                     Forms\Components\Select::make('customer_id')
                         ->label('Customer')
-                        ->options(
-                            \App\Models\Customer::all()->pluck('name', 'id')
-                        )
-                        ->required()->columnSpanFull(),
+                        ->relationship('customer', 'name')
+                        ->searchable()
+                        ->required()
+                        ->createOptionForm([
+                            Forms\Components\TextInput::make('name')
+                                ->required()
+                                ->maxLength(255),
+
+                            Forms\Components\TextInput::make('email')
+                                ->label('Email address')
+                                ->required()
+                                ->email()
+                                ->maxLength(255)
+                                ->unique(),
+
+                            Forms\Components\TextInput::make('phone')
+                                ->maxLength(255),
+                        ])
+                        ->createOptionAction(function (Forms\Components\Actions\Action $action) {
+                            return $action
+                                ->modalHeading('Create customer')
+                                ->modalSubmitActionLabel('Create customer')
+                                ->modalWidth('lg');
+                        })
+                        ->columnSpanFull(),
 
                     Forms\Components\Select::make('hosting_plan_id')
                         ->label('Hosting Plan')
@@ -177,7 +199,7 @@ class HostingSubscriptionResource extends Resource
         return [
             // 'index' => Pages\ManageHostingSubscriptions::route('/'),
             'index' => Pages\ListHostingSubscriptions::route('/'),
-            'edit' => Pages\EditHostingSubscription::route('/{record}/edit'),
+//            'edit' => Pages\EditHostingSubscription::route('/{record}/edit'),
           //  'view' => Pages\ViewHostingSubscription::route('/{record}'),
            // 'databases' => Pages\ManageHostingSubscriptionDatabases::route('/{record}/databases'),
           //  'backups' => Pages\ManageHostingSubscriptionBackups::route('/{record}/backups'),

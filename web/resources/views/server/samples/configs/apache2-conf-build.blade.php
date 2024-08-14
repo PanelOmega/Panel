@@ -104,11 +104,11 @@ AddHandler {{$latestPHPVersion['fileType']}} {{$latestPHPVersion['fileExtensions
                 }
             @endphp
 
-            php_admin_value open_basedir {{$appendOpenBaseDirs}}
+            #php_admin_value open_basedir {{$appendOpenBaseDirs}}
 
-            php_admin_value upload_tmp_dir {{$virtualHost['homeRoot']}}/tmp
-            php_admin_value session.save_path {{$virtualHost['homeRoot']}}/tmp
-            php_admin_value sys_temp_dir {{$virtualHost['homeRoot']}}/tmp
+            #php_admin_value upload_tmp_dir {{$virtualHost['homeRoot']}}/tmp
+            #php_admin_value session.save_path {{$virtualHost['homeRoot']}}/tmp
+            #php_admin_value sys_temp_dir {{$virtualHost['homeRoot']}}/tmp
 
         @endif
 

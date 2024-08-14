@@ -1,5 +1,5 @@
-@if(isset($dPrivacyContent) && !empty($dPrivacyContent))
-    @foreach($dPrivacyContent as $content)
-        {{ $content }}
+@if(isset($htPasswdRecords) && !empty($htPasswdRecords))
+    @foreach($htPasswdRecords as $record)
+        {{ $record }}
     @endforeach
 @endif

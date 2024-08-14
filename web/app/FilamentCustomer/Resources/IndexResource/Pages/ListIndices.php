@@ -13,7 +13,6 @@ class ListIndices extends ListRecords
 
     public function getHeader(): View
     {
-
         $sectionData = [
             'title' => 'Indexes',
             'subtitle' => 'Example Index Files',
@@ -22,15 +21,21 @@ class ListIndices extends ListRecords
                 index.phtml index.shtml index.xhtml index.html index.htm index.wml Default.html Default.htm default.html default.htm home.html home.htm index.js'
         ];
 
+        $headerActions = $this->getHeaderActions();
+
         return view('filament.customer.components.indexes.indexes-list-page', [
-            'sectionData' => $sectionData
+            'sectionData' => $sectionData,
+            'headerActions' => $headerActions,
         ]);
     }
+
 
     protected function getHeaderActions(): array
     {
         return [
-            Actions\CreateAction::make(),
+            Actions\CreateAction::make()
+            ->label('Add Index')
+            ->icon('heroicon-o-plus'),
         ];
     }
 }

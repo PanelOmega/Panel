@@ -2,23 +2,23 @@
 
 namespace App\Jobs;
 
-use App\HtConfigBuildTrait;
+use App\HtaccessBuildTrait;
 use App\Models\DirectoryPrivacy;
-use App\Models\Domain;
 use App\Models\HostingSubscription;
-use App\Server\Helpers\PHP;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 
-class DirectoryPrivacyHtConfigBuild implements ShouldQueue
+class HtaccessBuildDirectoryPrivacy implements ShouldQueue
 {
-    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels, HtConfigBuildTrait;
+    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels, HtaccessBuildTrait;
 
     public $fixPermissions = false;
     public $hostingSubscriptionId;
+    public $startComment = '# Section managed by omegaPanel: Directory Privacy, do not edit';
+    public $endComment = '# End section managed by omegaPanel: Directory Privacy';
 
     public function __construct($fixPermissions = false, $hostingSubscriptionId)
     {
@@ -48,13 +48,14 @@ class DirectoryPrivacyHtConfigBuild implements ShouldQueue
             }
         }
 
-        $domain = Domain::where('hosting_subscription_id', $this->hostingSubscriptionId)->first();
 
         $hostingSubscription = HostingSubscription::where('id', $this->hostingSubscriptionId)->first();
 
-        $phpVersion = $domain->server_application_settings['php_version'] ?? null;
-        $phpVersion = $phpVersion ? PHP::getPHPVersion($phpVersion) : [];
-
+//        $domain = Domain::where('hosting_subscription_id', $this->hostingSubscriptionId)->first();
+//        $phpVersion = $domain->server_application_settings['php_version'] ?? null;
+//        $phpVersion = $phpVersion ? PHP::getPHPVersion($phpVersion) : [];
+//
+//        dd($phpVersion);
         foreach ($directories as $directory) {
 
             $htPasswdRecords = $records->get($directory, collect())->map(fn($record) => "{$record->username}:{$record->password}")->toArray();
@@ -66,35 +67,49 @@ class DirectoryPrivacyHtConfigBuild implements ShouldQueue
                 ? null
                 : $records->get($directory)->first()->label;
 
-            $htAccessView = 'server.samples.apache.php.directory-privacy-htaccess';
-            $htPasswdView = 'server.samples.apache.php.directory-privacy-htpasswd';
-
-            $htAccessParams = [
-                'label' => $label,
-                'phpVersion' => $phpVersion,
-                'htPasswdFilePath' => $htAccessFilePath,
-                'htPasswdRecords' => $htPasswdFilePath,
-                'hotlinkData' => null,
-                'view' => $htAccessView
-            ];
-
-            $htPasswdParams = [
-                'htPasswdRecords' => $htPasswdRecords,
-                'view' => $htPasswdView
-            ];
-
-            $htAccessView = $this->getHtAccessFileConfig($htAccessParams);
-            $htPasswdView = $this->getHtPasswdFileConfig($htPasswdParams);
+            $htAccessView = $this->getHtAccessFileConfig($label, $htPasswdFilePath);
+            $htPasswdView = $this->getHtPasswdFileConfig($htPasswdRecords);
             $htAccessFileRealPath = '/home/' . $hostingSubscription->system_username . $htAccessFilePath;
             $htPasswdFileRealPath = '/home/' . $hostingSubscription->system_username . $htPasswdFilePath;
 
-            $innerComments = [
-                'start' => '# Section managed by omegaPanel: Directory Privacy, do not edit',
-                'end' => '# End section managed by omegaPanel: Directory Privacy'
-            ];
-
-            $this->updateSystemFile($htAccessFileRealPath, $htAccessView, $innerComments);
+            $this->updateSystemFile($htAccessFileRealPath, $htAccessView);
             $this->updateSystemFile($htPasswdFileRealPath, $htPasswdView);
         }
+    }
+
+    public function getHtAccessFileConfig($label, $htPasswdFilePath)
+    {
+        $htaccessContent = view('server.samples.apache.php.directory-privacy-htaccess', [
+            'dPrivacyContent' => [
+                'auth_name' => $label,
+                'auth_user_file' => $htPasswdFilePath,
+            ],
+        ])->render();
+
+        $htaccessContent = preg_replace_callback(
+            '/(^\s*)(Rewrite.*|$)/m',
+            function ($matches) {
+                return str_repeat(' ', 4) . trim($matches[0]);
+            },
+            $htaccessContent
+        );
+        return $htaccessContent;
+    }
+
+    public function getHtPasswdFileConfig($htPasswdRecords)
+    {
+        $htpasswdContent = view('server.samples.apache.php.directory-privacy-htpasswd', [
+            'htPasswdRecords' => $htPasswdRecords
+        ])->render();
+
+        $htpasswdContent = preg_replace_callback(
+            '/(^\s*)(Rewrite.*|$)/m',
+            function ($matches) {
+                return str_repeat(' ', 4) . trim($matches[0]);
+            },
+            $htpasswdContent
+        );
+
+        return $htpasswdContent;
     }
 }

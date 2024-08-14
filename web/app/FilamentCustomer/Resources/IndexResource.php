@@ -15,13 +15,24 @@ class IndexResource extends Resource
 {
     protected static ?string $model = Index::class;
 
+    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
+                Select::make('direrctory')
+                    ->label('Directory')
+                    ->placeholder('Select Directory')
+                    ->required()
+                    ->options(
+                        Index::loadDirectories()
+                    ),
                 Select::make('index_type')
                     ->label('Index Type')
                     ->live()
+                    ->placeholder('Select Type')
+                    ->required()
                     ->options([
                         'Inherit' => 'Inherit',
                         'No Indexing' => 'No Indexing',
@@ -67,6 +78,18 @@ class IndexResource extends Resource
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
+
+            ])
+            ->filters([
+                //
+            ])
+            ->actions([
+                Tables\Actions\EditAction::make(),
+            ])
+            ->bulkActions([
+                Tables\Actions\BulkActionGroup::make([
+                    Tables\Actions\DeleteBulkAction::make(),
+                ]),
             ]);
     }
 
@@ -81,7 +104,7 @@ class IndexResource extends Resource
     {
         return [
             'index' => Pages\ListIndices::route('/'),
-//            'create' => Pages\CreateIndex::route('/create'),
+            'create' => Pages\CreateIndex::route('/create'),
             'edit' => Pages\EditIndex::route('/{record}/edit'),
         ];
     }

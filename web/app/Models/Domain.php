@@ -3,10 +3,10 @@
 namespace App\Models;
 
 use App\Jobs\ApacheBuild;
+use App\Jobs\HtaccessBuildPHPVersions;
 use App\Server\Helpers\PHP;
 use App\Server\VirtualHosts\DTO\ApacheVirtualHostSettings;
 use App\Virtualization\Docker\DockerClient;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
@@ -48,7 +48,6 @@ class Domain extends Model
         parent::boot();
 
         static::created(function ($model) {
-
             if ($model->hosting_subscription_id !== null) {
                 $findHostingSubscription = HostingSubscription::where('id', $model->hosting_subscription_id)->first();
                 if (!$findHostingSubscription) {
@@ -97,7 +96,6 @@ class Domain extends Model
         });
 
         static::updating(function ($model) {
-
             $model->configureHtaccess();
 
         });
@@ -126,105 +124,6 @@ class Domain extends Model
 //            $apacheBuild->handle();
 
         });
-    }
-
-    public function hostingSubscription()
-    {
-        return $this->belongsTo(HostingSubscription::class);
-    }
-
-    public function getPHPVersionAttribute()
-    {
-        if (isset($this->server_application_settings['php_version'])) {
-            return 'PHP ' . $this->server_application_settings['php_version'];
-        }
-        return 'PHP 8.3';
-    }
-    public function getPHPFpmAttribute()
-    {
-        if (isset($this->server_application_settings['enable_php_fpm']) && $this->server_application_settings['enable_php_fpm'] == true) {
-            return 'enabled';
-        }
-        return 'disabled';
-    }
-
-    public function getDocumentRootAttribute()
-    {
-        return '/public_html';
-    }
-
-    public function configureHtaccess()
-    {
-
-        if ($this->server_application_type !== 'apache_php') {
-            return;
-        }
-        if (!isset($this->server_application_settings['php_version'])) {
-            return;
-        }
-
-        $phpVersion = PHP::getPHPVersion($this->server_application_settings['php_version']);
-        if (!$phpVersion) {
-            return;
-        }
-
-      $htaccessContent = view('server.samples.apache.php.htaccess',[
-          'phpVersion' => $phpVersion
-      ])->render();
-
-      file_put_contents($this->domain_public . '/.htaccess', $htaccessContent);
-
-    }
-
-    public function createDockerContainer()
-    {
-        $dockerClient = new DockerClient();
-
-       // $containers = $dockerClient->listContainers()['response'];
-       // dd($containers);
-//        foreach ($containers as $container) {
-//            $dockerClient->stopContainer($container['Id']);
-//            $dockerClient->deleteContainer($container['Id']);
-//        }
-        //return;
-
-        if ($this->server_application_type !== 'apache_php') {
-            return;
-        }
-        return;
-
-        $dockerImage = 'php:8.2-fpm';
-
-        if (isset($this->server_application_settings['php_version'])) {
-            $dockerImage = 'php:'.$this->server_application_settings['php_version'].'-fpm';
-        }
-
-        $dockerClient->pullImage($dockerImage);
-        $dockerContainerName =  Str::slug($dockerImage . $this->domain);
-        $createDocker = $dockerClient->createContainer($dockerContainerName, [
-            'Image' => $dockerImage,
-            'HostConfig'=>[
-                'Binds'=>[
-                    $this->domain_public . ':'.$this->domain_public
-                ]
-            ]
-        ]);
-
-        if (!isset($createDocker['response']['Id'])) {
-            throw new \Exception('Docker container not created. Error: '.json_encode($createDocker) ?? 'Unknown error');
-        }
-
-        $startDockerContainer = $dockerClient->startContainer($createDocker['response']['Id']);
-        $getDockerContainer = $dockerClient->getContainer($createDocker['response']['Id']);
-        $dockerContainerIp = $getDockerContainer['response']['NetworkSettings']['Networks']['bridge']['IPAddress'];
-
-        $this->docker_settings = [
-            'containerId' => $createDocker['response']['Id'],
-            'containerName' => $dockerContainerName,
-            'containerIp' => $dockerContainerIp
-        ];
-        $this->saveQuietly();
-
     }
 
     public function configureVirtualHost($fixPermissions = false, $installSamples = false)
@@ -576,4 +475,95 @@ class Domain extends Model
 
     }
 
+    public function configureHtaccess()
+    {
+        if ($this->server_application_type !== 'apache_php') {
+            return;
+        }
+        if (!isset($this->server_application_settings['php_version'])) {
+            return;
+        }
+        $phpVersion = PHP::getPHPVersion($this->server_application_settings['php_version']);
+        if (!$phpVersion) {
+            return;
+        }
+
+        $htaccessBuild = new HtaccessBuildPHPVersions(false, $this->hosting_subscription_id, $phpVersion);
+        $htaccessBuild->handle();
+    }
+    public function hostingSubscription()
+    {
+        return $this->belongsTo(HostingSubscription::class);
+    }
+
+    public function getPHPVersionAttribute()
+    {
+        if (isset($this->server_application_settings['php_version'])) {
+            return 'PHP ' . $this->server_application_settings['php_version'];
+        }
+        return 'PHP 8.3';
+    }
+
+    public function getPHPFpmAttribute()
+    {
+        if (isset($this->server_application_settings['enable_php_fpm']) && $this->server_application_settings['enable_php_fpm'] == true) {
+            return 'enabled';
+        }
+        return 'disabled';
+    }
+
+    public function getDocumentRootAttribute()
+    {
+        return '/public_html';
+    }
+
+    public function createDockerContainer()
+    {
+        $dockerClient = new DockerClient();
+
+       // $containers = $dockerClient->listContainers()['response'];
+       // dd($containers);
+//        foreach ($containers as $container) {
+//            $dockerClient->stopContainer($container['Id']);
+//            $dockerClient->deleteContainer($container['Id']);
+//        }
+        //return;
+
+        if ($this->server_application_type !== 'apache_php') {
+            return;
+        }
+        return;
+
+        $dockerImage = 'php:8.2-fpm';
+
+        if (isset($this->server_application_settings['php_version'])) {
+            $dockerImage = 'php:'.$this->server_application_settings['php_version'].'-fpm';
+        }
+
+        $dockerClient->pullImage($dockerImage);
+        $dockerContainerName =  Str::slug($dockerImage . $this->domain);
+        $createDocker = $dockerClient->createContainer($dockerContainerName, [
+            'Image' => $dockerImage,
+            'HostConfig'=>[
+                'Binds'=>[
+                    $this->domain_public . ':'.$this->domain_public
+                ]
+            ]
+        ]);
+
+        if (!isset($createDocker['response']['Id'])) {
+            throw new \Exception('Docker container not created. Error: '.json_encode($createDocker) ?? 'Unknown error');
+        }
+
+        $startDockerContainer = $dockerClient->startContainer($createDocker['response']['Id']);
+        $getDockerContainer = $dockerClient->getContainer($createDocker['response']['Id']);
+        $dockerContainerIp = $getDockerContainer['response']['NetworkSettings']['Networks']['bridge']['IPAddress'];
+
+        $this->docker_settings = [
+            'containerId' => $createDocker['response']['Id'],
+            'containerName' => $dockerContainerName,
+            'containerIp' => $dockerContainerIp
+        ];
+        $this->saveQuietly();
+    }
 }

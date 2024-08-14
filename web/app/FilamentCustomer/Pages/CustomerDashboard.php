@@ -465,7 +465,7 @@ class CustomerDashboard extends Page
                         [
                             'title' => 'MultiPHP Manager',
                             'icon' => 'omega_customer-software-manager',
-                            'link' => '#'
+                            'link' => route('filament.customer.resources.multi-php-manager.index')
                         ],
 //                        [
 //                            'title'=>'MultiPHP INI Editor',

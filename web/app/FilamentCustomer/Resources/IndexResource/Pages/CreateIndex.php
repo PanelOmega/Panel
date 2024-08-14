@@ -1,8 +1,9 @@
 <?php
 
-namespace App\FilamentCustomer\Resources\Index2Resource\Pages;
+namespace App\FilamentCustomer\Resources\IndexResource\Pages;
 
-use App\FilamentCustomer\Resources\Index2Resource;
+use App\FilamentCustomer\Resources\IndexResource;
+use Filament\Actions;
 use Filament\Resources\Pages\CreateRecord;
 
 class CreateIndex extends CreateRecord

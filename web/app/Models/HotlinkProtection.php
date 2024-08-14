@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-use App\Jobs\HotlinkProtectionHtConfigBuild;
+use App\Jobs\HtaccessBuildHotlinkProtection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -28,7 +28,7 @@ class HotlinkProtection extends Model
     public static function hotlinkProtectionBoot()
     {
         $callback = function ($model) {
-            $hotlinkProtection = new HotlinkProtectionHtConfigBuild(false, $model);
+            $hotlinkProtection = new HtaccessBuildHotlinkProtection(false, $model);
             $hotlinkProtection->handle();
         };
         static::saved($callback);

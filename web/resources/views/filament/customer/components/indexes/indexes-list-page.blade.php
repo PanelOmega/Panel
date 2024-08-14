@@ -13,4 +13,14 @@
             <p>{{ $sectionData['section_subtitle'] }}</p>
         </div>
     </div>
+
+    <div class="mb-4">
+        @if (isset($headerActions))
+            <div class="mb-4">
+                @foreach($headerActions as $action)
+                    {{ $action }}
+                @endforeach
+            </div>
+        @endif
+    </div>
 </div>

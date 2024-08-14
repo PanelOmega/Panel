@@ -2,7 +2,7 @@
 
 namespace App\Jobs;
 
-use App\HtConfigBuildTrait;
+use App\HtaccessBuildTrait;
 use App\Models\DirectoryPrivacy;
 use App\Models\Domain;
 use App\Models\HostingSubscription;
@@ -13,9 +13,9 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 
-class IndexHtConfigBuild implements ShouldQueue
+class HtaccessBuildIndexes implements ShouldQueue
 {
-    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels, HtConfigBuildTrait;
+    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels, HtaccessBuildTrait;
 
     public $fixPermissions = false;
     public $model;

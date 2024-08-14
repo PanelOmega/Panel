@@ -2,7 +2,7 @@
 
     <div>
 
-        <div id="js-log" wire:poll="pullLog" class="bg-gray-50 dark:bg-[#161719] p-4 rounded-md leading-10 text-left text-sm font-medium text-gray-950 dark:text-[#E0E0E0] h-screen overflow-x-hidden overflow-y-scroll">
+        <div id="js-log" wire:poll="pullLog" class="bg-gray-50 dark:bg-[#161719] p-4 rounded-md leading-10 text-left text-sm font-medium text-gray-950 dark:text-[#E0E0E0] h-[20rem] overflow-x-hidden overflow-y-scroll">
 
             @if ($this->loading)
                 <div class="flex gap-2 items-center">

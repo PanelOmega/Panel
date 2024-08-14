@@ -3,7 +3,7 @@
 namespace App\Filament\Clusters\Fail2Ban\Pages\Settings;
 
 use App\Filament\Clusters\Fail2Ban\Fail2Ban;
-use App\Filament\Pages\Base\BaseSettings;
+use App\Filament\BasePages\BaseSettings;
 use App\Jobs\Fail2BanConfigBuild;
 use App\Server\SupportedApplicationTypes;
 use CodeWithDennis\SimpleAlert\Components\Forms\SimpleAlert;

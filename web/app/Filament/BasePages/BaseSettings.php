@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Filament\Pages\Base;
+namespace App\Filament\BasePages;
 
 use Filament\Support\Exceptions\Halt;
 use Filament\Support\Facades\FilamentView;
@@ -10,7 +10,6 @@ use Outerweb\Settings\Models\Setting;
 
 class BaseSettings extends Settings
 {
-    protected static bool $shouldRegisterNavigation = false;
     public function save() : void
     {
         try {

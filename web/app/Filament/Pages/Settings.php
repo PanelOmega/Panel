@@ -12,7 +12,7 @@ class Settings extends Page
 
     protected static ?int $navigationSort = 12;
 
-    protected static ?string $navigationGroup = 'Settings';
+    protected static ?string $navigationGroup = 'System';
 
     protected function getViewData(): array
     {

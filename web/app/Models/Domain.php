@@ -144,17 +144,7 @@ class Domain extends Model
             throw new \Exception('Domain root not found');
         }
 
-        if ($fixPermissions) {
-            if (!is_dir($this->domain_root)) {
-                mkdir($this->domain_root, 0711, true);
-            }
-            if (!is_dir($this->domain_public)) {
-                mkdir($this->domain_public, 0755, true);
-            }
-            if (!is_dir($this->home_root)) {
-                mkdir($this->home_root, 0711, true);
-            }
-        }
+
 
         if ($installSamples) {
 
@@ -208,34 +198,7 @@ class Domain extends Model
         $webUser = $findHostingSubscription->system_username;
         $webUserGroup = $findHostingSubscription->system_username;
 
-        if ($fixPermissions) {
-            // Fix file permissions
-            shell_exec('chown -R ' . $webUser. ':' . $webUserGroup . ' ' . $this->domain_root);
 
-            shell_exec('chmod -R 0711 ' . $this->home_root);
-            shell_exec('chmod -R 0711 ' . $this->domain_root);
-            shell_exec('chmod -R 775 ' . $this->domain_public);
-
-            if (!is_dir($this->domain_root . '/logs/apache2')) {
-                shell_exec('mkdir -p ' . $this->domain_root . '/logs/apache2');
-            }
-            shell_exec('chown -R ' . $findHostingSubscription->system_username . ':' . $webUserGroup . ' ' . $this->domain_root . '/logs/apache2');
-            shell_exec('chmod -R 775 ' . $this->domain_root . '/logs/apache2');
-
-            if (!is_file($this->domain_root . '/logs/apache2/bytes.log')) {
-                shell_exec('touch ' . $this->domain_root . '/logs/apache2/bytes.log');
-            }
-            if (!is_file($this->domain_root . '/logs/apache2/access.log')) {
-                shell_exec('touch ' . $this->domain_root . '/logs/apache2/access.log');
-            }
-            if (!is_file($this->domain_root . '/logs/apache2/error.log')) {
-                shell_exec('touch ' . $this->domain_root . '/logs/apache2/error.log');
-            }
-
-            shell_exec('chmod -R 775 ' . $this->domain_root . '/logs/apache2/bytes.log');
-            shell_exec('chmod -R 775 ' . $this->domain_root . '/logs/apache2/access.log');
-            shell_exec('chmod -R 775 ' . $this->domain_root . '/logs/apache2/error.log');
-        }
 
         $appType = 'php';
         $appVersion = '8.3';
@@ -467,10 +430,62 @@ class Domain extends Model
 //
 //        }
 
+        if ($fixPermissions) {
+            $this->fixPermissions();
+        }
+
         return [
             'virtualHostSettings' => $virtualHostSettings,
          //   'virtualHostSettingsWithSSL' => $virtualHostSettingsWithSSL,
         ];
+
+    }
+
+    public function fixPermissions()
+    {
+        if (empty($this->domain_root)) {
+            throw new \Exception('Domain root not found');
+        }
+
+        if (!is_dir($this->domain_root)) {
+            mkdir($this->domain_root, 0711, true);
+        }
+        if (!is_dir($this->domain_public)) {
+            mkdir($this->domain_public, 0755, true);
+        }
+        if (!is_dir($this->home_root)) {
+            mkdir($this->home_root, 0711, true);
+        }
+
+        $webUser = $this->hostingSubscription->system_username;
+        $webUserGroup = $this->hostingSubscription->system_username;
+
+        // Fix file permissions
+        shell_exec('chown -R ' . $webUser . ':' . $webUserGroup . ' ' . $this->domain_root);
+
+        shell_exec('chmod -R 0711 ' . $this->home_root);
+        shell_exec('chmod -R 0711 ' . $this->domain_root);
+        shell_exec('chmod -R 775 ' . $this->domain_public);
+
+        if (!is_dir($this->domain_root . '/logs/apache2')) {
+            shell_exec('mkdir -p ' . $this->domain_root . '/logs/apache2');
+        }
+        shell_exec('chown -R ' . $webUser . ':' . $webUserGroup . ' ' . $this->domain_root . '/logs/apache2');
+        shell_exec('chmod -R 775 ' . $this->domain_root . '/logs/apache2');
+
+        if (!is_file($this->domain_root . '/logs/apache2/bytes.log')) {
+            shell_exec('touch ' . $this->domain_root . '/logs/apache2/bytes.log');
+        }
+        if (!is_file($this->domain_root . '/logs/apache2/access.log')) {
+            shell_exec('touch ' . $this->domain_root . '/logs/apache2/access.log');
+        }
+        if (!is_file($this->domain_root . '/logs/apache2/error.log')) {
+            shell_exec('touch ' . $this->domain_root . '/logs/apache2/error.log');
+        }
+
+        shell_exec('chmod -R 775 ' . $this->domain_root . '/logs/apache2/bytes.log');
+        shell_exec('chmod -R 775 ' . $this->domain_root . '/logs/apache2/access.log');
+        shell_exec('chmod -R 775 ' . $this->domain_root . '/logs/apache2/error.log');
 
     }
 

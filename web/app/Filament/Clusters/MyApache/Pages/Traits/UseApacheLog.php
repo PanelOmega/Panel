@@ -12,7 +12,6 @@ trait UseApacheLog
     {
         $getContent = file_get_contents($this->logFile);
         if ($getContent) {
-            $getContent = nl2br($getContent);
             $this->log = $getContent;
         } else {
             $this->log = $this->emptyLogMessage;

@@ -90,14 +90,6 @@ class HostingSubscriptionService
         $domain->save();
 
         if (($hostingSubscription->id > 0) && ($domain->id > 0)) {
-
-            $recipient = auth()->user();
-            $recipient->notify(
-                Notification::make()
-                    ->title('Hosting Subscription Created')
-                    ->toDatabase(),
-            );
-
             return [
                 'success' => true,
                 'message' => 'Hosting subscription created successfully',

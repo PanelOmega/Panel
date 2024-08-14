@@ -98,6 +98,7 @@ class ListHostingSubscriptions extends ListRecords
                             ->title('Hosting Subscription Created')
                             ->success()
                             ->send();
+
                     } else {
                         Notification::make()
                             ->title('Failed to create hosting subscription')

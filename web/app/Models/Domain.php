@@ -84,7 +84,7 @@ class Domain extends Model
             $model->saveQuietly();
 
             $model->configureVirtualHost(true, true);
-//
+
 //            if ($model->server_application_type == 'apache_php') {
 //                $model->createDockerContainer();
 //            }
@@ -205,13 +205,12 @@ class Domain extends Model
             }
         }
 
+        $webUser = $findHostingSubscription->system_username;
         $webUserGroup = $findHostingSubscription->system_username;
 
         if ($fixPermissions) {
             // Fix file permissions
-            shell_exec('chown -R ' . $findHostingSubscription->system_username . ':' . $webUserGroup . ' ' . $this->home_root);
-            shell_exec('chown -R ' . $findHostingSubscription->system_username . ':' . $webUserGroup . ' ' . $this->domain_root);
-            shell_exec('chown -R ' . $findHostingSubscription->system_username . ':' . $webUserGroup . ' ' . $this->domain_public);
+            shell_exec('chown -R ' . $webUser. ':' . $webUserGroup . ' ' . $this->domain_root);
 
             shell_exec('chmod -R 0711 ' . $this->home_root);
             shell_exec('chmod -R 0711 ' . $this->domain_root);

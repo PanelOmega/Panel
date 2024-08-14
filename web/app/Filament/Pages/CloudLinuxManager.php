@@ -10,7 +10,7 @@ class CloudLinuxManager extends Page
 
     protected static ?string $navigationGroup = 'CloudLinux';
 
-    protected static ?string $navigationIcon = 'omega-cloudlinux';
+//    protected static ?string $navigationIcon = 'omega-cloudlinux';
 
     protected static string $view = 'filament.admin.pages.cloudlinux-manager';
 

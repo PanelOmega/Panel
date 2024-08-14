@@ -1,11 +1,49 @@
 <div>
 <x-filament-panels::page>
 
+
+    <div class="flex gap-4 justify-between mb-4">
+        <div>
+
+            <x-filament::tabs label="Apache Logs">
+
+                <x-filament::tabs.item
+                    :active="$logName === 'error_log'"
+                    wire:click="switchLog('error_log')"
+                >
+                    Error Log
+                </x-filament::tabs.item>
+
+                <x-filament::tabs.item
+                    :active="$logName === 'access_log'"
+                    wire:click="switchLog('access_log')"
+                >
+                    Access Log
+                </x-filament::tabs.item>
+
+                <x-filament::tabs.item
+                    :active="$logName === 'suexec_log'"
+                    wire:click="switchLog('suexec_log')"
+                >
+                    Suexec Log
+                </x-filament::tabs.item>
+            </x-filament::tabs>
+        </div>
+        <div>
+            <x-filament::button wire:click="clearLog">
+                Clear {{str_replace('_', ' ', $logName)}}
+            </x-filament::button>
+        </div>
+    </div>
+
     <div>
+
         <div id="js-log" wire:poll="pullLog" class="bg-gray-50 dark:bg-[#161719] p-4 rounded-md leading-10 text-left text-sm font-medium text-gray-950 dark:text-[#E0E0E0] h-screen overflow-x-hidden overflow-y-scroll">
 
             @if ($this->loading)
-                <x-filament::loading-indicator class="h-12 w-12" />
+                <div class="flex gap-2 items-center">
+                    <x-filament::loading-indicator class="h-6 w-6" /> Loading...
+                </div>
             @endif
 
 

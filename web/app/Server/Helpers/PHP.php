@@ -58,6 +58,20 @@ class PHP
             }
         }
 
+        $getRemiPHPVersions = self::getRemiPHP();
+        if (!empty($getRemiPHPVersions)) {
+            $phpVersions = array_merge($phpVersions, $getRemiPHPVersions);
+        }
+        return $phpVersions;
+    }
+
+    public function getRemiPHP()
+    {
+
+        
+
+        $phpVersions = [];
+
         $shellOutput = shell_exec('find / -name php | grep bin');
         $shellOutput = explode("\n", $shellOutput);
         if (!empty($shellOutput)) {

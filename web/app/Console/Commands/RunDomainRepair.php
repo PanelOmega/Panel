@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use App\Jobs\ApacheBuild;
 use App\Models\Domain;
+use App\Services\Domain\DomainService;
 use Illuminate\Console\Command;
 
 class RunDomainRepair extends Command
@@ -27,11 +28,17 @@ class RunDomainRepair extends Command
      */
     public function handle()
     {
+        $domainService = new DomainService();
         $getActiveDomains = Domain::get();
         if ($getActiveDomains->count() > 0) {
             foreach ($getActiveDomains as $domain) {
                 $this->info('Fixing domain permissions: ' . $domain->domain);
-                $domain->fixPermissions(true, true);
+                try {
+                    $domainService->fixPermissions($domain->id, true, true);
+                } catch (\Exception $e) {
+                    $this->error('Failed to fix permissions for domain: ' . $domain->domain);
+                    $this->error($e->getMessage());
+                }
             }
         }
 

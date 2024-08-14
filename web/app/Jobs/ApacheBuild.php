@@ -6,6 +6,7 @@ use App\MasterDomain;
 use App\Models\Domain;
 use App\Server\Helpers\OS;
 use App\Server\Helpers\PHP;
+use App\Services\Domain\DomainService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -31,11 +32,14 @@ class ApacheBuild implements ShouldQueue
      */
     public function handle(): void
     {
-        $getAllDomains = Domain::whereNot('status','<=>', 'broken')->get();
+
         $virtualHosts = [];
+        $domainService = new DomainService();
+        $getAllDomains = Domain::whereNot('status','<=>', 'broken')->get();
+
         foreach ($getAllDomains as $domain) {
             try {
-                $virtualHostSettings = $domain->configureVirtualHost();
+                $virtualHostSettings = $domainService->configureVirtualHost($domain->id);
                 if (isset($virtualHostSettings['virtualHostSettings'])) {
                     $virtualHosts[] = $virtualHostSettings['virtualHostSettings'];
                 }

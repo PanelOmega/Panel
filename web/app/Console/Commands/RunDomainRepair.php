@@ -27,6 +27,16 @@ class RunDomainRepair extends Command
      */
     public function handle()
     {
+        $getActiveDomains = Domain::where('status', 'active')->get();
+        if ($getActiveDomains->count() > 0) {
+            foreach ($getActiveDomains as $domain) {
+                $this->info('Fixing domain: ' . $domain->domain);
+                $domain->configureVirtualHost(true, true);
+            }
+        }
+
+        $this->info('Rebuilding Apache configuration');
+
         $apacheBuild = new ApacheBuild();
         $apacheBuild->handle();
     }

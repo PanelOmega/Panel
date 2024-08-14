@@ -6,6 +6,7 @@ use App\FilamentCustomer\Resources\MultiPHPManagerResource\Pages;
 use App\FilamentCustomer\Resources\MultiPHPManagerResource\RelationManagers;
 use App\Models\Domain;
 use App\Models\MultiPHPManager;
+use App\Models\Scopes\CustomerScope;
 use App\Server\Helpers\PHP;
 use Filament\Forms;
 use Filament\Forms\Form;
@@ -84,6 +85,11 @@ class MultiPHPManagerResource extends Resource
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
             ]);
+    }
+
+    public static function getEloquentQuery(): Builder
+    {
+        return parent::getEloquentQuery()->withGlobalScope('customer', new CustomerScope());
     }
 
     public static function getRelations(): array

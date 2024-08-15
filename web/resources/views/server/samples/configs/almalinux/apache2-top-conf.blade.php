@@ -69,4 +69,19 @@ AddDefaultCharset UTF-8
 
 EnableSendfile on
 
-IncludeOptional conf.d/*.conf
+IndexOptions FancyIndexing HTMLTable VersionSort
+
+
+<Directory "/home/*/public_html">
+AllowOverride FileInfo AuthConfig Limit Indexes
+Options MultiViews Indexes SymLinksIfOwnerMatch IncludesNoExec
+Require method GET POST OPTIONS
+</Directory>
+
+
+
+
+
+
+
+

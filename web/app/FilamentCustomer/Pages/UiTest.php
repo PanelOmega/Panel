@@ -13,6 +13,8 @@ class UiTest extends Page
 
     protected static string $view = 'filament-customer.pages.ui-test';
 
+    public $name = '';
+    public $folder = '';
 
     public function form(Form $form): Form
     {
@@ -22,9 +24,11 @@ class UiTest extends Page
                 TextInput::make('name')
                     ->label('Name')
                     ->required()
+                    ->live()
                     ->placeholder('John Doe'),
 
                 TreeSelect::make('folder')
+                    ->live()
                     ->options([
                         [
                             'name' => 'Folder 1',

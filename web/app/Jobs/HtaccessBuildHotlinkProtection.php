@@ -27,10 +27,9 @@ class HtaccessBuildHotlinkProtection implements ShouldQueue
 
     public function handle()
     {
-
         $hostingSubscription = HostingSubscription::where('id', $this->model->hosting_subscription_id)->first();
 
-        $htAccessFilePath = '/.htaccess';
+        $htAccessFilePath = '/public_html/.htaccess';
         $hotlinkData = $this->getHotlinkData($hostingSubscription->hotlinkProtection);
         $htAccessView = $this->getHtAccessFileConfig($hotlinkData);
         $htAccessFileRealPath = '/home/' . $hostingSubscription->system_username . $htAccessFilePath;

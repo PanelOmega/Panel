@@ -55,8 +55,8 @@ class HtaccessBuildDirectoryPrivacy implements ShouldQueue
 
             $htPasswdRecords = $records->get($directory, collect())->map(fn($record) => "{$record->username}:{$record->password}")->toArray();
 
-            $htAccessFilePath = str_replace('//', '/', "{$directory}/.htaccess");
-            $htPasswdFilePath = str_replace('//', '/', "{$directory}/.htpasswd");
+            $htAccessFilePath = ($directory === '/') ? "{$directory}.htaccess" : "$directory/.htaccess";
+            $htPasswdFilePath = ($directory=== '/') ? "{$directory}.htpasswd" : "{$directory}/.htpasswd";
 
             $label = $records->isEmpty() || $records->get($directory) === null
                 ? null

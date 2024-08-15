@@ -30,12 +30,11 @@ class HtaccessBuildIndexes implements ShouldQueue
 
     public function handle()
     {
-            $htAccessFilePath = "{$this->model->directory}/.htaccess";
-
-            $indexContent = $this->isDeleted ? [] : $this->getIndexConfig();
-            $htAccessView = $this->getHtAccessFileConfig($indexContent);
-            $htAccessFileRealPath = '/home/' . $this->hostingSubscription->system_username . $htAccessFilePath;
-            $this->updateSystemFile($htAccessFileRealPath, $htAccessView);
+        $htAccessFilePath = ($this->model->directory === '/') ? "{$this->model->directory}.htaccess" : "{$this->model->directory}/.htaccess";
+        $indexContent = $this->isDeleted ? [] : $this->getIndexConfig();
+        $htAccessView = $this->getHtAccessFileConfig($indexContent);
+        $htAccessFileRealPath = '/home/' . $this->hostingSubscription->system_username . $htAccessFilePath;
+        $this->updateSystemFile($htAccessFileRealPath, $htAccessView);
     }
 
     public function getIndexConfig() {

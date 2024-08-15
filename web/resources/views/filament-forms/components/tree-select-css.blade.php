@@ -13,6 +13,11 @@
         background-color: #fff;
         cursor: text
     }
+    .dark .treeselect-input {
+        border: 1px solid #414145;
+        background-color: #1e1e23;
+        color: #fff;
+    }
 
     .treeselect-input--unsearchable {
         cursor: default
@@ -122,6 +127,7 @@
         position: absolute;
         z-index: -1;
         min-width: 0;
+        background: transparent !important;
     }
 
     .treeselect-input__edit:focus {
@@ -178,6 +184,11 @@
         overflow-y: auto;
         background-color: #fff;
         max-height: 300px
+    }
+    .dark .treeselect-list {
+        border: 1px solid #414145;
+        background-color: #1e1e23;
+        color: #fff;
     }
 
     .treeselect-list__group-container {
@@ -407,7 +418,6 @@
     }
 
     .treeselect-input--focused {
-        border-color: #d8d8d9
 
     }
 

@@ -2,6 +2,7 @@
 
 namespace App\FilamentCustomer\Resources;
 
+use App\Filament\Forms\Components\TreeSelect;
 use App\FilamentCustomer\Resources\IndexResource\Pages;
 use App\FilamentCustomer\Resources\IndexResource\RelationManagers;
 use App\Models\Index;
@@ -22,13 +23,11 @@ class IndexResource extends Resource
     {
         return $form
             ->schema([
-                Select::make('directory')
+                TreeSelect::make('directory')
                     ->label('Directory')
-                    ->placeholder('Select Directory')
-                    ->required()
-                    ->options(
-                        Index::loadDirectories()
-                    ),
+                    ->live()
+                    ->options(Index::buildDirectoryTree())
+                    ->required(),
 
                 Select::make('index_type')
                     ->label('Index Type')
@@ -45,7 +44,8 @@ class IndexResource extends Resource
                         ];
                         return $hints[$state] ?? 'Please select an index type.';
                     }),
-            ]);
+            ])
+            ->columns(1);
     }
 
     public static function table(Table $table): Table

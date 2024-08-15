@@ -21,7 +21,7 @@ class PasswordAndSecurity extends Component implements HasForms
     use InteractsWithForms;
     public ?string $mainTitle = null;
     public ?array $sections = null;
-    public ?array $state = [];
+    public ?array $state = null;
     public int $passwordStrength = 0;
 
     public function mount(string $mainTitle, array $sections): void

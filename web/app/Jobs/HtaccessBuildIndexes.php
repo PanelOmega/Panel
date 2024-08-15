@@ -16,8 +16,8 @@ class HtaccessBuildIndexes implements ShouldQueue
     public $fixPermissions = false;
     public $model;
     public $hostingSubscription;
-    public $startComment = '# Section managed by panelOmega: Indexing, do not edit';
-    public $endComment = '# End section managed by panelOmega: Indexing Privacy';
+    public $startComment = '# Section managed by Panel Omega: Indexing, do not edit';
+    public $endComment = '# End section managed by Panel Omega: Indexing Privacy';
 
     public $isDeleted = false;
 

@@ -2,15 +2,16 @@
 
 namespace App\FilamentCustomer\Resources;
 
+use App\Filament\Forms\Components\TreeSelect;
 use App\FilamentCustomer\Resources\DirectoryPrivacyResource\Pages;
 use App\FilamentCustomer\Resources\DirectoryPrivacyResource\RelationManagers;
 use App\Models\DirectoryPrivacy;
 use App\Services\DirectoryPrivacy\DirectoryPrivacyService;
 use Filament\Forms\Components\Checkbox;
 use Filament\Forms\Components\Section;
-use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
+use Filament\Forms\Get;
 use Filament\Forms\Set;
 use Filament\Resources\Resource;
 use Filament\Tables;
@@ -34,51 +35,54 @@ class DirectoryPrivacyResource extends Resource
         return $form
             ->schema([
 
-                Select::make('directory')
-                    ->label('Directory')
-                    ->options(function () {
-                        $directories = DirectoryPrivacy::scanUserDirectories();
-                        return array_combine($directories, $directories);
-                    })
-                    ->required(),
+                        TreeSelect::make('directory')
+                            ->label('Directory')
+                            ->live()
+                            ->options(DirectoryPrivacy::buildDirectoryTree())
+                            ->required(),
 
                 Checkbox::make('protected')
                     ->label('Password protect this directory')
                     ->required()
+                    ->live()
                     ->default(false),
 
-                TextInput::make('label')
-                    ->label('Enter a name for the protected directory'),
+                \Filament\Forms\Components\Group::make([
+                    TextInput::make('label')
+                        ->label('Enter a name for the protected directory'),
 
-                Section::make('Create user')
-                    ->label('Create User')
-                    ->schema([
-                        TextInput::make('username')
-                            ->label('Username')
-                            ->required(),
+                    Section::make('Create user')
+                        ->label('Create User')
+                        ->schema([
+                            TextInput::make('username')
+                                ->label('Username')
+                                ->required(),
 
-                        // the password to be decrypted
-                        TextInput::make('password')
-                            ->label('Password')
-                            ->password()
-                            ->revealable()
-                            ->afterStateHydrated(function ($set, $state, $record) {
-                                if ($record) {
-                                    $set('password', DirectoryPrivacy::decryptPassword($record->password));
-                                }
-                            })
-                            ->hintAction(
-                                \Filament\Forms\Components\Actions\Action::make('generate_password')
-                                    ->icon('heroicon-m-key')
-                                    ->action(function (Set $set) {
-                                        $randomPassword = substr(str_shuffle('abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()_+'), 0, 20);
-                                        $set('password', $randomPassword);
-                                        $set('password_confirmation', $randomPassword);
-                                    })
-                            )
-                            ->required(),
-                    ])
-                    ->columns(2),
+                            TextInput::make('password')
+                                ->label('Password')
+                                ->password()
+                                ->revealable()
+                                ->afterStateHydrated(function ($set, $state, $record) {
+                                    if ($record && $record->exists) {
+                                        $set('password', '');
+                                    }
+                                })
+                                ->hintAction(
+                                    \Filament\Forms\Components\Actions\Action::make('generate_password')
+                                        ->icon('heroicon-m-key')
+                                        ->action(function (Set $set) {
+                                            $randomPassword = substr(str_shuffle('abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()_+'), 0, 20);
+                                            $set('password', $randomPassword);
+                                            $set('password_confirmation', $randomPassword);
+                                        })
+                                )
+                                ->required(),
+                        ])
+                        ->columns(2),
+                ])
+                ->hidden(function (Get $get) {
+                    return !$get('protected');
+                }),
             ])
             ->columns(1);
     }

@@ -32,9 +32,8 @@
                 const domElement = document.getElementById('js-tree-select-{{$id}}')
                 const treeSelect = new Treeselect({
                     parentHtmlContainer: domElement,
-                    value: [4, 7, 8],
+                    value: [domElement.value],
                     options: options,
-                    alwaysOpen: true,
                     isSingleSelect: true,
                 })
 

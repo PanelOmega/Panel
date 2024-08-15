@@ -16,8 +16,8 @@ class HtaccessBuildHotlinkProtection implements ShouldQueue
 
     public $fixPermissions = false;
     public $model;
-    public $startComment = '# Section managed by panelOmega: Hotlink Protection, do not edit';
-    public $endComment = '# End section managed by panelOmega: Hotlink Protection';
+    public $startComment = '# Section managed by Panel Omega: Hotlink Protection, do not edit';
+    public $endComment = '# End section managed by Panel Omega: Hotlink Protection';
 
     public function __construct($fixPermissions = false, $model)
     {

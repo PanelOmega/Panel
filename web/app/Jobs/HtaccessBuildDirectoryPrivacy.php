@@ -17,8 +17,8 @@ class HtaccessBuildDirectoryPrivacy implements ShouldQueue
 
     public $fixPermissions = false;
     public $hostingSubscriptionId;
-    public $startComment = '# Section managed by panelOmega: Directory Privacy, do not edit';
-    public $endComment = '# End section managed by panelOmega: Directory Privacy';
+    public $startComment = '# Section managed by Panel Omega: Directory Privacy, do not edit';
+    public $endComment = '# End section managed by Panel Omega: Directory Privacy';
 
     public function __construct($fixPermissions = false, $hostingSubscriptionId)
     {
@@ -26,17 +26,13 @@ class HtaccessBuildDirectoryPrivacy implements ShouldQueue
         $this->hostingSubscriptionId = $hostingSubscriptionId;
     }
 
-    public function handle($model = null)
+    public function handle($model)
     {
         $records = DirectoryPrivacy::where('hosting_subscription_id', $this->hostingSubscriptionId)
             ->get()
             ->groupBy('directory');
 
         $directories = $records->isEmpty() ? [$model->directory] : $records->keys()->toArray();
-
-        if (!in_array('/', $directories)) {
-            $directories[] = '/';
-        }
 
         if($model !== null) {
             if(!in_array($model->directory, $directories)) {
@@ -48,15 +44,13 @@ class HtaccessBuildDirectoryPrivacy implements ShouldQueue
             }
         }
 
-
         $hostingSubscription = HostingSubscription::where('id', $this->hostingSubscriptionId)->first();
 
         foreach ($directories as $directory) {
 
             $htPasswdRecords = $records->get($directory, collect())->map(fn($record) => "{$record->username}:{$record->password}")->toArray();
-
-            $htAccessFilePath = ($directory === '/') ? "{$directory}.htaccess" : "$directory/.htaccess";
-            $htPasswdFilePath = ($directory=== '/') ? "{$directory}.htpasswd" : "{$directory}/.htpasswd";
+            $htAccessFilePath = ($directory === '/') ? "{$directory}.htaccess" : "/$directory/.htaccess";
+            $htPasswdFilePath = ($directory === '/') ? "{$directory}.htpasswd" : "/home/$hostingSubscription->system_username/$directory/.htpasswd";
 
             $label = $records->isEmpty() || $records->get($directory) === null
                 ? null
@@ -65,10 +59,9 @@ class HtaccessBuildDirectoryPrivacy implements ShouldQueue
             $htAccessView = $this->getHtAccessFileConfig($label, $htPasswdFilePath);
             $htPasswdView = $this->getHtPasswdFileConfig($htPasswdRecords);
             $htAccessFileRealPath = '/home/' . $hostingSubscription->system_username . $htAccessFilePath;
-            $htPasswdFileRealPath = '/home/' . $hostingSubscription->system_username . $htPasswdFilePath;
 
             $this->updateSystemFile($htAccessFileRealPath, $htAccessView);
-            $this->updateSystemFile($htPasswdFileRealPath, $htPasswdView);
+            $this->updateSystemFile($htPasswdFilePath, $htPasswdView);
         }
     }
 

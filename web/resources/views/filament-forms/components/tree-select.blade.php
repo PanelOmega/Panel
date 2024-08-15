@@ -14,6 +14,8 @@
     }"
 >
 
+
+
     <input type="hidden" id="js-tree-select-hidden-{{$id}}" x-model="state" />
 
     <div wire:ignore>
@@ -21,6 +23,70 @@
         <script src="//cdn.jsdelivr.net/npm/treeselectjs@0.11.0/dist/treeselectjs.umd.js"></script>
         <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/treeselectjs@0.11.0/dist/treeselectjs.css" />
 
+        <style>
+            .treeselect-list {
+                padding: 10px;
+            }
+            .treeselect-input {
+                border-radius: 6px;
+            }
+            .treeselect-input__edit {
+                padding: 5px 10px;
+            }
+            .treeselect-input__tags-element {
+                padding: 5px 10px;
+            }
+
+            .dark .treeselect-input__tags-element {
+                background-color: #2d2d2d;
+            }
+            .dark .treeselect-input__tags-cross svg {
+                stroke: #d8d8d9;
+            }
+            .dark .treeselect-input {
+                border: 1px solid #4b4b4b;
+                background-color: #1e1e23;
+            }
+            .dark .treeselect-input__edit {
+                background: transparent !important;
+            }
+            .dark .treeselect-list {
+                background-color: #1e1e23;
+                border: 1px solid #4b4b4b;
+            }
+            .dark .treeselect-list.treeselect-list--single-select .treeselect-list__item--single-selected {
+                background-color: rgba(255, 255, 255, 0.1) !important;
+            }
+            .dark .treeselect-list__item--focused {
+                background-color: rgba(255, 255, 255, 0.1) !important;
+            }
+
+            .treeselect-list.treeselect-list--single-select .treeselect-list__item--single-selected {
+                background-color: #0000000f !important;
+                border-radius: 6px;
+            }
+
+            .treeselect-list__item--focused {
+                background-color: #0000000f !important;
+                border-radius: 6px;
+            }
+
+            .treeselect-input--focused {
+                border-color: #d8d8d9 !important;;
+            }
+
+            .treeselect-list--focused {
+                border-color: #d8d8d9
+            }
+
+            .treeselect-list--top, .treeselect-list--top-to-body {
+                border-bottom-color: transparent;
+            }
+
+            .treeselect-list--bottom, .treeselect-list--bottom-to-body {
+                border-top-color: transparent;
+            }
+        </style>
 
         <script>
 
@@ -32,6 +98,7 @@
                     parentHtmlContainer: domElement,
                     value: [4, 7, 8],
                     options: options,
+                    alwaysOpen: true,
                     isSingleSelect: true,
                 })
 

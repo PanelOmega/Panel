@@ -66,10 +66,11 @@
     .treeselect-input__tags-element {
         display: inline-flex;
         align-items: center;
-        background-color: #d8d8d9;
+        background-color: #e16449;
+        color: #fff;
         cursor: pointer;
-        padding: 2px 5px;
-        border-radius: 2px;
+        padding: 4px 6px;
+        border-radius: 6px;
         font-size: 14px;
         max-width: 100%;
         box-sizing: border-box
@@ -79,8 +80,12 @@
         background-color: #c5c7cb
     }
 
+    .treeselect-input__tags-cross svg {
+        stroke: #fff !important;
+    }
+
     .treeselect-input__tags-element:hover .treeselect-input__tags-cross svg {
-        stroke: #eb4c42
+        stroke: #fff !important;
     }
 
     .treeselect-input__tags-name {
@@ -116,7 +121,7 @@
         padding: 0;
         position: absolute;
         z-index: -1;
-        min-width: 0
+        min-width: 0;
     }
 
     .treeselect-input__edit:focus {
@@ -140,7 +145,7 @@
     }
 
     .treeselect-input__clear svg {
-        stroke: #c5c7cb;
+        stroke: #fff;
         width: 17px;
         min-width: 17px;
         height: 20px
@@ -192,7 +197,8 @@
     }
 
     .treeselect-list__item--focused {
-        background-color: azure !important
+        background-color: #e164491a !important;
+        border-radius: 6px;
     }
 
     .treeselect-list__item--hidden {
@@ -324,7 +330,9 @@
     }
 
     .treeselect-list.treeselect-list--single-select .treeselect-list__item--single-selected {
-        background-color: #d8d8d9
+        background-color: #e16449;
+        color: #fff;
+        border-radius: 6px;
     }
 
     .treeselect-list__item .treeselect-list__item-checkbox-container svg {

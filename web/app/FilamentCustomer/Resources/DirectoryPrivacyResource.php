@@ -35,11 +35,11 @@ class DirectoryPrivacyResource extends Resource
         return $form
             ->schema([
 
-                        TreeSelect::make('directory')
-                            ->label('Directory')
-                            ->live()
-                            ->options(DirectoryPrivacy::buildDirectoryTree())
-                            ->required(),
+                TreeSelect::make('directory')
+                    ->label('Directory')
+                    ->live()
+                    ->options(DirectoryPrivacy::buildDirectoryTree())
+                    ->required(),
 
                 Checkbox::make('protected')
                     ->label('Password protect this directory')
@@ -80,9 +80,9 @@ class DirectoryPrivacyResource extends Resource
                         ])
                         ->columns(2),
                 ])
-                ->hidden(function (Get $get) {
-                    return !$get('protected');
-                }),
+                    ->hidden(function (Get $get) {
+                        return !$get('protected');
+                    }),
             ])
             ->columns(1);
     }
@@ -110,7 +110,7 @@ class DirectoryPrivacyResource extends Resource
                     ->label('Protected')
                     ->badge()
                     ->color('success')
-                    ->formatStateUsing(fn ($state) => $state == 1 ? 'PROTECTED' : null),
+                    ->formatStateUsing(fn($state) => $state == 1 ? 'PROTECTED' : null),
             ])
             ->filters([
                 //

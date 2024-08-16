@@ -490,9 +490,9 @@ class CustomerDashboard extends Page
 //                            'link'=>'#'
 //                        ],
                         [
-                            'title'=>'Indexes',
-                            'icon'=>'omega_customer-advanced-indexes',
-                            'link'=>route('filament.customer.pages.indexes-page')
+                            'title' => 'Indexes',
+                            'icon' => 'omega_customer-advanced-indexes',
+                            'link' => route('filament.customer.pages.indexes-page')
                         ],
                         [
                             'title' => 'Error Pages',

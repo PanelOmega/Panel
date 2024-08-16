@@ -28,16 +28,33 @@ class HtaccessBuildIndexes implements ShouldQueue
         $this->hostingSubscription = $hostingSubscription;
     }
 
+    public static function getIndexType($directoryRealPath)
+    {
+        $indexType = 'inherit';
+        if (file_exists($directoryRealPath . '/.htaccess')) {
+            $htaccessContent = file_get_contents($directoryRealPath . '/.htaccess');
+            if (strpos($htaccessContent, '-Indexes') !== false) {
+                $indexType = 'no_indexing';
+            } elseif (strpos($htaccessContent, '+HTMLTable +FancyIndexing') !== false) {
+                $indexType = 'show_filename_and_description';
+            } elseif (strpos($htaccessContent, '-HTMLTable -FancyIndexing') !== false) {
+                $indexType = 'show_filename_only';
+            }
+        }
+        return $indexType;
+    }
+
     public function handle()
     {
-        $htAccessFilePath = ($this->model->directory === '/') ? "{$this->model->directory}.htaccess" : "{$this->model->directory}/.htaccess";
+        $htAccessFilePath = ($this->model->directory === '/') ? "{$this->model->directory_real_path}.htaccess" : "{$this->model->directory_real_path}/.htaccess";
         $indexContent = $this->isDeleted ? [] : $this->getIndexConfig();
         $htAccessView = $this->getHtAccessFileConfig($indexContent);
-        $htAccessFileRealPath = '/home/' . $this->hostingSubscription->system_username . $htAccessFilePath;
+        $htAccessFileRealPath = "/home/{$this->hostingSubscription->system_username}/{$htAccessFilePath}";
         $this->updateSystemFile($htAccessFileRealPath, $htAccessView);
     }
 
-    public function getIndexConfig() {
+    public function getIndexConfig()
+    {
 
         $indexConfigArr = match ($this->model->index_type) {
             'no_indexing' => [
@@ -75,7 +92,8 @@ class HtaccessBuildIndexes implements ShouldQueue
         return $htaccessContent;
     }
 
-    public function isDeleted($isDeleted = false) {
+    public function isDeleted($isDeleted = false)
+    {
         $this->isDeleted = $isDeleted;
     }
 }

@@ -1,16 +1,5 @@
-{{--<div>--}}
-{{--    @livewire('indexes.indexes', [--}}
-{{--        'mainTitle' => $mainTitle,--}}
-{{--        'sections' => $sections--}}
-{{--    ])--}}
-{{--</div>--}}
 <x-filament-panels::page>
     <div>
-
-        <div class="mb-6">
-            <h1 class="text-3xl font-bold mb-2">{{ $mainTitle }}</h1>
-        </div>
-
         <div x-data="{ open: false }" class="mb-6">
             <p class="mt-4">
                 {{ $sections['section_title'] }}
@@ -26,15 +15,8 @@
                 </div>
             </div>
         </div>
-
-        <form wire:submit.prevent="update">
-            {{ $this->form }}
-
-            <button type="submit" class="bg-blue-500 dark:before:bg-primary-500 font-bold border py-2 px-4 mt-6 rounded">
-                Add Index
-            </button>
-        </form>
-
-        <x-filament-actions::modals />
+        <div class="mt-6">
+            {{ $this->table }}
+        </div>
     </div>
 </x-filament-panels::page>

@@ -225,7 +225,7 @@ class CustomerDashboard extends Page
                         [
                             'title' => 'Directory Privacy',
                             'icon' => 'omega_customer-file-directory-privacy',
-                            'link' => route('filament.customer.resources.directory-privacies.index')
+                            'link' => route('filament.customer.pages.directory-privacy-page')
                         ],
                         [
                             'title' => 'Disk Usage',

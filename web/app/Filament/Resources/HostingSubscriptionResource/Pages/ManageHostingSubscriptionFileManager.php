@@ -4,7 +4,7 @@ namespace App\Filament\Resources\HostingSubscriptionResource\Pages;
 
 use App\Filament\Resources\HostingSubscriptionResource;
 use App\Models\Domain;
-use App\Models\FolderItem;
+use App\Models\Index;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
@@ -81,7 +81,7 @@ class ManageHostingSubscriptionFileManager extends ViewRecord implements HasTabl
             //   ->deferLoading()
             ->heading($this->disk . '/' . $this->path ?: 'Root')
             ->query(
-                FolderItem::queryForDiskAndPath($this->disk, $this->path)
+                Index::queryForDiskAndPath($this->disk, $this->path)
             )
             ->paginated(false)
             ->columns([
@@ -94,7 +94,7 @@ class ManageHostingSubscriptionFileManager extends ViewRecord implements HasTabl
                         'Folder' => 'warning',
                         default => 'gray',
                     })
-                    ->action(function (FolderItem $record) {
+                    ->action(function (Index $record) {
                         if ($record->isFolder()) {
                             $this->path = $record->path;
                             $this->dispatch('updatePath');
@@ -111,18 +111,18 @@ class ManageHostingSubscriptionFileManager extends ViewRecord implements HasTabl
                 ActionGroup::make([
 //                    ViewAction::make('open')
 //                        ->label('Open')
-//                        ->hidden(fn (FolderItem $record): bool => ! $record->canOpen())
-//                        ->url(fn (FolderItem $record): string => $storage->url($record->path))
+//                        ->hidden(fn (Index $record): bool => ! $record->canOpen())
+//                        ->url(fn (Index $record): string => $storage->url($record->path))
 //                        ->openUrlInNewTab(),
                     Action::make('download')
                         ->label('Download')
                         ->icon('heroicon-o-document-arrow-down')
-                        ->hidden(fn(FolderItem $record): bool => $record->isFolder())
-                        ->action(fn(FolderItem $record) => $storage->download($record->path)),
+                        ->hidden(fn(Index $record): bool => $record->isFolder())
+                        ->action(fn(Index $record) => $storage->download($record->path)),
                     DeleteAction::make('delete')
                         ->successNotificationTitle('File deleted')
-                        ->hidden(fn(FolderItem $record): bool => $record->isPreviousPath())
-                        ->action(function (FolderItem $record, Action $action) {
+                        ->hidden(fn(Index $record): bool => $record->isPreviousPath())
+                        ->action(function (Index $record, Action $action) {
                             if ($record->delete()) {
                                 $action->sendSuccessNotification();
                             }
@@ -138,11 +138,11 @@ class ManageHostingSubscriptionFileManager extends ViewRecord implements HasTabl
                     ->successNotificationTitle('Files deleted')
                     ->deselectRecordsAfterCompletion()
                     ->action(function (Collection $records, BulkAction $action) {
-                        $records->each(fn(FolderItem $record) => $record->delete());
+                        $records->each(fn(Index $record) => $record->delete());
                         $action->sendSuccessNotification();
                     }),
             ])
-            ->checkIfRecordIsSelectableUsing(fn(FolderItem $record): bool => !$record->isPreviousPath())
+            ->checkIfRecordIsSelectableUsing(fn(Index $record): bool => !$record->isPreviousPath())
             ->headerActionsPosition(HeaderActionsPosition::Bottom)
             ->headerActions([
 

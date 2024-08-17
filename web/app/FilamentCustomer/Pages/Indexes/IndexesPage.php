@@ -3,7 +3,7 @@
 namespace App\FilamentCustomer\Pages\Indexes;
 
 use App\Models\Customer;
-use App\Models\FolderItem;
+use App\Models\Index;
 use App\Server\SupportedApplicationTypes;
 use Filament\Forms\Components\Radio;
 use Filament\Pages\Page;
@@ -66,7 +66,7 @@ class IndexesPage extends Page implements HasTable
         return $table
             ->heading($this->path ?: 'Root')
             ->query(
-                FolderItem::queryForDiskAndPath($this->disk, $this->path)
+                Index::queryForDiskAndPath($this->disk, $this->path)
             )
             ->paginated(false)
             ->columns([
@@ -79,7 +79,7 @@ class IndexesPage extends Page implements HasTable
                         'Folder' => 'warning',
                         default => 'gray',
                     })
-                    ->action(function (FolderItem $record) {
+                    ->action(function (Index $record) {
                         if ($record->isFolder()) {
                             $this->path = $record->path;
 
@@ -101,7 +101,7 @@ class IndexesPage extends Page implements HasTable
                         Radio::make('index_type')
                             ->label('Set Indexing Settings for all directories.')
                             ->options(SupportedApplicationTypes::getIndexesIndexTypes())
-                            ->default(function (FolderItem $record) {
+                            ->default(function (Index $record) {
                                 return $record->index_type;
                             })
                             ->live()
@@ -127,11 +127,11 @@ class IndexesPage extends Page implements HasTable
                     ->successNotificationTitle('Files deleted')
                     ->deselectRecordsAfterCompletion()
                     ->action(function (Collection $records, BulkAction $action) {
-                        $records->each(fn(FolderItem $record) => $record->delete());
+                        $records->each(fn(Index $record) => $record->delete());
                         $action->sendSuccessNotification();
                     }),
             ])
-            ->checkIfRecordIsSelectableUsing(fn(FolderItem $record): bool => !$record->isPreviousPath())
+            ->checkIfRecordIsSelectableUsing(fn(Index $record): bool => !$record->isPreviousPath())
             ->headerActions([
 //                Action::make('settings')
 //                    ->label('Settings')

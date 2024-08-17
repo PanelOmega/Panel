@@ -18,7 +18,8 @@ class HotlinkProtection extends Page
         $this->sections = $this->getSections();
     }
 
-    protected function getSections(): array {
+    protected function getSections(): array
+    {
         return [
             [
                 'helperTexts' => 'Hotlink protection prevents other websites from directly linking to files

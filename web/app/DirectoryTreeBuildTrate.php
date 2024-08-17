@@ -6,7 +6,8 @@ use App\Models\Customer;
 
 trait DirectoryTreeBuildTrate
 {
-    public static function buildDirectoryTree() {
+    public static function buildDirectoryTree()
+    {
         $customer = Customer::getHostingSubscriptionSession();
         $username = $customer['system_username'];
         $baseDir = '/home/' . $username;
@@ -59,4 +60,6 @@ trait DirectoryTreeBuildTrate
         }
         return $formatted;
     }
+
+
 }

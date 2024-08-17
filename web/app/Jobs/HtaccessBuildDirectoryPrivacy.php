@@ -26,6 +26,38 @@ class HtaccessBuildDirectoryPrivacy implements ShouldQueue
         $this->hostingSubscriptionId = $hostingSubscriptionId;
     }
 
+    public static function getDirectoryPrivacyData($directoryRealPath)
+    {
+        $directoryPrivacyData = [];
+
+        if (file_exists($directoryRealPath . '/.htaccess')) {
+            $htaccessContent = file_get_contents($directoryRealPath . '/.htaccess');
+            if (strpos($htaccessContent, 'AuthName') !== false) {
+                $directoryPrivacyData['protected'] = 'Yes';
+                preg_match('/AuthName\s+(\S+)/', $htaccessContent, $matches);
+                isset($matches[1]) ? $directoryPrivacyData['label'] = $matches[1] : $directoryPrivacyData['label'] = null;
+            }
+        }
+
+        $directoryPrivacyData['authorized_users'] = '';
+        if (file_exists($directoryRealPath . '/.htpasswd')) {
+            $htpasswdContent = file_get_contents($directoryRealPath . '/.htpasswd');
+            $lines = explode(PHP_EOL, $htpasswdContent);
+
+            foreach ($lines as $line) {
+                if (trim($line) !== '' && strpos($line, '#') !== 0) {
+                    $username = strstr($line, ':', true);
+
+                    if ($username) {
+                        $directoryPrivacyData['authorized_users'] .= ',' . $username;
+                    }
+                }
+            }
+        }
+        return $directoryPrivacyData;
+    }
+
+
     public function handle($model)
     {
         $records = DirectoryPrivacy::where('hosting_subscription_id', $this->hostingSubscriptionId)
@@ -34,12 +66,12 @@ class HtaccessBuildDirectoryPrivacy implements ShouldQueue
 
         $directories = $records->isEmpty() ? [$model->directory] : $records->keys()->toArray();
 
-        if($model !== null) {
-            if(!in_array($model->directory, $directories)) {
+        if ($model !== null) {
+            if (!in_array($model->directory, $directories)) {
                 $directories[] = $model->directory;
             }
 
-            if(!in_array($model->getOriginal('directory'), $directories)) {
+            if (!in_array($model->getOriginal('directory'), $directories)) {
                 $directories[] = $model->getOriginal('directory');
             }
         }

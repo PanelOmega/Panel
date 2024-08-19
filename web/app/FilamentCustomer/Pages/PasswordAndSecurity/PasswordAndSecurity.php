@@ -178,7 +178,6 @@ class PasswordAndSecurity extends Page
 
     public function update(): void
     {
-
         $subscriptionAccount = Customer::getHostingSubscriptionSession();
         $encryptedPassword = $subscriptionAccount->system_password;
 

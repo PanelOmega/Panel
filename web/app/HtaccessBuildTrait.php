@@ -48,7 +48,7 @@ trait HtaccessBuildTrait
     {
         $content = preg_replace('/<!--\[if.*?\]>\s*<!\[endif\]-->\s*/s', '', $content);
         $content = preg_replace('/^[ \t]+/m', '', $content);
-        $content = preg_replace('/^[\r\n]+/', '', $content);
+        $content = preg_replace('/^[\r\n]+|[\r\n]+$/', '', $content);
         return $content;
     }
 

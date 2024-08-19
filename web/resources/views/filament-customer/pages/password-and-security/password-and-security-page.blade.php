@@ -18,10 +18,11 @@
         <form wire:submit.prevent="update">
             {{ $this->form }}
 
-            <button type="submit"
-                    class="dark:before:bg-primary-500 font-bold border py-2 px-4 mt-6 rounded">
-                Change Password
-            </button>
+            <div class="mb-10 mt-6 mx-4">
+                <x-filament::button type="submit">
+                    Change Password
+                </x-filament::button>
+            </div>
         </form>
 
         <x-filament-actions::modals/>

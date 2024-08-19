@@ -13,7 +13,6 @@ trait HtaccessBuildTrait
 
     public function replaceContentBetweenComments($existingContent, $newContent)
     {
-
         $startInnerComment = $this->startComment ?? null;
         $endInnerComment = $this->endComment ?? null;
 

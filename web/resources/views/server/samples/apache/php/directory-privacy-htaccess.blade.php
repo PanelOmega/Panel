@@ -1,4 +1,4 @@
-@if(isset($dPrivacyContent['auth_name']) && isset($dPrivacyContent['auth_user_file']))
+@if(isset($dPrivacyContent['protected']) && $dPrivacyContent['protected'] === true)
     AuthType Basic
     AuthName {{ $dPrivacyContent['auth_name'] }}
     AuthUserFile {{ $dPrivacyContent['auth_user_file'] }}

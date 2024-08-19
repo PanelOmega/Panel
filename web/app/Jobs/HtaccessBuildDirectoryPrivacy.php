@@ -3,7 +3,6 @@
 namespace App\Jobs;
 
 use App\HtaccessBuildTrait;
-use App\Models\DirectoryPrivacy;
 use App\Models\HostingSubscription;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -16,13 +15,15 @@ class HtaccessBuildDirectoryPrivacy implements ShouldQueue
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels, HtaccessBuildTrait;
 
     public $fixPermissions = false;
+    public $directoryRealPath;
     public $hostingSubscriptionId;
     public $startComment = '# Section managed by Panel Omega: Directory Privacy, do not edit';
     public $endComment = '# End section managed by Panel Omega: Directory Privacy';
 
-    public function __construct($fixPermissions = false, $hostingSubscriptionId)
+    public function __construct($fixPermissions = false, $directoryRealPath = null, $hostingSubscriptionId)
     {
         $this->fixPermissions = $fixPermissions;
+        $this->directoryRealPath = $directoryRealPath;
         $this->hostingSubscriptionId = $hostingSubscriptionId;
     }
 
@@ -38,71 +39,30 @@ class HtaccessBuildDirectoryPrivacy implements ShouldQueue
                 isset($matches[1]) ? $directoryPrivacyData['label'] = $matches[1] : $directoryPrivacyData['label'] = null;
             }
         }
-
-        $directoryPrivacyData['authorized_users'] = '';
-        if (file_exists($directoryRealPath . '/.htpasswd')) {
-            $htpasswdContent = file_get_contents($directoryRealPath . '/.htpasswd');
-            $lines = explode(PHP_EOL, $htpasswdContent);
-
-            foreach ($lines as $line) {
-                if (trim($line) !== '' && strpos($line, '#') !== 0) {
-                    $username = strstr($line, ':', true);
-
-                    if ($username) {
-                        $directoryPrivacyData['authorized_users'] .= ',' . $username;
-                    }
-                }
-            }
-        }
         return $directoryPrivacyData;
     }
 
 
     public function handle($model)
     {
-        $records = DirectoryPrivacy::where('hosting_subscription_id', $this->hostingSubscriptionId)
-            ->get()
-            ->groupBy('directory');
-
-        $directories = $records->isEmpty() ? [$model->directory] : $records->keys()->toArray();
-
-        if ($model !== null) {
-            if (!in_array($model->directory, $directories)) {
-                $directories[] = $model->directory;
-            }
-
-            if (!in_array($model->getOriginal('directory'), $directories)) {
-                $directories[] = $model->getOriginal('directory');
-            }
-        }
-
         $hostingSubscription = HostingSubscription::where('id', $this->hostingSubscriptionId)->first();
 
-        foreach ($directories as $directory) {
+        $htAccessFilePath = "{$this->directoryRealPath}/.htaccess";
+        $htPasswdFilePath = "/home/{$hostingSubscription->system_username}/.htpasswd";
 
-            $htPasswdRecords = $records->get($directory, collect())->map(fn($record) => "{$record->username}:{$record->password}")->toArray();
-            $htAccessFilePath = ($directory === '/') ? "{$directory}.htaccess" : "/$directory/.htaccess";
-            $htPasswdFilePath = ($directory === '/') ? "{$directory}.htpasswd" : "/home/$hostingSubscription->system_username/$directory/.htpasswd";
-
-            $label = $records->isEmpty() || $records->get($directory) === null
-                ? null
-                : $records->get($directory)->first()->label;
-
-            $htAccessView = $this->getHtAccessFileConfig($label, $htPasswdFilePath);
-            $htPasswdView = $this->getHtPasswdFileConfig($htPasswdRecords);
-            $htAccessFileRealPath = '/home/' . $hostingSubscription->system_username . $htAccessFilePath;
-
-            $this->updateSystemFile($htAccessFileRealPath, $htAccessView);
-            $this->updateSystemFile($htPasswdFilePath, $htPasswdView);
-        }
+        $label = $model->label ?? '';
+        $htAccessView = $this->getHtAccessFileConfig($label, $htPasswdFilePath, $model->protected);
+        $this->updateSystemFile($htAccessFilePath, $htAccessView);
     }
 
-    public function getHtAccessFileConfig($label, $htPasswdFilePath)
+
+    public function getHtAccessFileConfig($label, $htPasswdFilePath, $protected)
     {
         $htaccessContent = view('server.samples.apache.php.directory-privacy-htaccess', [
             'dPrivacyContent' => [
                 'auth_name' => $label,
                 'auth_user_file' => $htPasswdFilePath,
+                'protected' => $protected
             ],
         ])->render();
 
@@ -114,22 +74,5 @@ class HtaccessBuildDirectoryPrivacy implements ShouldQueue
             $htaccessContent
         );
         return $htaccessContent;
-    }
-
-    public function getHtPasswdFileConfig($htPasswdRecords)
-    {
-        $htpasswdContent = view('server.samples.apache.php.directory-privacy-htpasswd', [
-            'htPasswdRecords' => $htPasswdRecords
-        ])->render();
-
-        $htpasswdContent = preg_replace_callback(
-            '/(^\s*)(Rewrite.*|$)/m',
-            function ($matches) {
-                return str_repeat(' ', 4) . trim($matches[0]);
-            },
-            $htpasswdContent
-        );
-
-        return $htpasswdContent;
     }
 }

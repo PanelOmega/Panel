@@ -34,7 +34,6 @@ class DirectoryPrivacyPage extends Page implements HasTable
     public array $sections;
     #[Url(except: '')]
     public string $path = '';
-    public DirectoryPrivacy $directoryPrivacy;
     protected string $disk = 'public';
     protected $listeners = ['updatePath' => '$refresh'];
 
@@ -80,7 +79,6 @@ class DirectoryPrivacyPage extends Page implements HasTable
                         if ($state === 'Yes') {
                             return 'heroicon-o-lock-closed';
                         }
-
                         return 'heroicon-o-lock-open';
                     })
             ])
@@ -103,6 +101,16 @@ class DirectoryPrivacyPage extends Page implements HasTable
                                 ->schema([
                                     TextInput::make('username')
                                         ->label('Username')
+                                        ->rules([
+                                            \Illuminate\Validation\Rule::unique('directory_privacies', 'username')
+                                                ->where(function ($query) {
+                                                    $directory = request()->input('directory');
+
+                                                    if ($directory) {
+                                                        $query->where('directory', $directory);
+                                                    }
+                                                })
+                                        ])
                                         ->required(),
 
                                     TextInput::make('password')
@@ -129,29 +137,37 @@ class DirectoryPrivacyPage extends Page implements HasTable
 
                             Section::make('Authorized Users')
                                 ->schema([
-                                    Repeater::make('authorized_users')
+                                    Repeater::make('authorized_usernames')
                                         ->label('')
                                         ->schema([
                                             TextInput::make('username')
-                                                ->label('Username')
+                                                ->label('User')
+                                                ->reactive()
                                                 ->disabled(),
+
                                         ])
-                                        ->default(function () {
-                                            return $this->directoryPrivacy->htpasswdUser()->get();
+                                        ->addable(fn() => false)
+                                        ->reorderable(false)
+                                        ->afterStateHydrated(function ($set, $state, $record) {
+
+                                            $authorizedUsernames = $this->getAuthorizedUsernames();
+                                            if (!empty($authorizedUsernames)) {
+                                                $set('authorized_usernames', $authorizedUsernames);
+                                            }
                                         })
-                                        ->addable(fn() => false),
+                                        ->afterStateUpdated(function ($set, $state, $record) {
+                                            $authorizedUsernames = $this->getAuthorizedUsernames();
+                                            $currentUsernames = array_column($state, 'username');
+                                            $previousUsernames = array_column($authorizedUsernames, 'username');
+                                            $deletedUsername = array_diff($previousUsernames, $currentUsernames);
+                                            $deletedUsername = array_shift($deletedUsername);
+                                            $directoryPrivacy = DirectoryPrivacy::where('username', $deletedUsername)->first();
+                                            if ($directoryPrivacy) {
+                                                $directoryPrivacy->delete();
+                                            }
+                                        }),
                                 ])
                         ])
-                            ->afterStateUpdated(function ($set, $state, $record) {
-                                $directoryPrivacy = new DirectoryPrivacy();
-                                $directoryPrivacy->directory = $record->directory;
-                                $directoryPrivacy->username = $record->username;
-                                $directoryPrivacy->password = $record->password;
-                                $directoryPrivacy->protected = $record->protected;
-                                $directoryPrivacy->label = $record->label;
-                                $directoryPrivacy->path = $record->path;
-                                $directoryPrivacy->save();
-                            })
                             ->hidden(function (Get $get) {
                                 return !$get('protected');
                             }),
@@ -180,10 +196,28 @@ class DirectoryPrivacyPage extends Page implements HasTable
             ]);
     }
 
+    public function getAuthorizedUsernames()
+    {
+        $hostingSubscription = Customer::getHostingSubscriptionSession();
+        $directoryPrivacy = DirectoryPrivacy::where('hosting_subscription_id', $hostingSubscription->id)->get();
+
+        $users = [
+            'authorized_usernames' => $directoryPrivacy->map(function ($dPrivacy) {
+                return [
+                    'username' => $dPrivacy->username
+                ];
+            })->toArray()
+        ];
+        $users['authorized_usernames'] = array_filter($users['authorized_usernames'], function ($item) {
+            return !empty($item['username']);
+        });
+
+        return $users['authorized_usernames'];
+    }
+
     public function mount(): void
     {
         $this->sections = $this->getSections();
-        $this->directoryPrivacy = $this->getDirectoryPrivacy();
     }
 
     public function getSections()
@@ -195,11 +229,5 @@ class DirectoryPrivacyPage extends Page implements HasTable
                 'Click a folder’s icon or name to navigate the file system. To select a folder, click “Edit”.'
             ]
         ];
-    }
-
-    protected function getDirectoryPrivacy(): DirectoryPrivacy
-    {
-        $subscriptionId = Customer::getHostingSubscriptionSession()->id;
-        return DirectoryPrivacy::where('hosting_subscription_id', $subscriptionId)->firstOrFail();
     }
 }

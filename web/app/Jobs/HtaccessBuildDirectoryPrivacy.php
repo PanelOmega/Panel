@@ -42,15 +42,12 @@ class HtaccessBuildDirectoryPrivacy implements ShouldQueue
         return $directoryPrivacyData;
     }
 
-
     public function handle($model)
     {
         $hostingSubscription = HostingSubscription::where('id', $this->hostingSubscriptionId)->first();
-
         $htAccessFilePath = "{$this->directoryRealPath}/.htaccess";
         $htPasswdFilePath = "/home/{$hostingSubscription->system_username}/.htpasswd";
-
-        $label = $model->label ?? '';
+        $label = $model->label ?? 'Directory Privacy';
         $htAccessView = $this->getHtAccessFileConfig($label, $htPasswdFilePath, $model->protected);
         $this->updateSystemFile($htAccessFilePath, $htAccessView);
     }

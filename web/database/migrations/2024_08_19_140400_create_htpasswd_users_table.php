@@ -14,7 +14,7 @@ return new class extends Migration {
             $table->id();
             $table->unsignedBigInteger('hosting_subscription_id')->nullable();
             $table->string('directory')->nullable();
-            $table->string('username')->nullable()->unique();
+            $table->string('username')->nullable();
             $table->string('password')->nullable();
             $table->timestamps();
         });

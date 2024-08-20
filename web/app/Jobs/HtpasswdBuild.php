@@ -3,7 +3,6 @@
 namespace App\Jobs;
 
 use App\HtaccessBuildTrait;
-use App\Models\HostingSubscription;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -18,6 +17,9 @@ class HtpasswdBuild implements ShouldQueue
     public $directoryRealPath;
     public $hostingSubscriptionId;
 
+    public $startComment = null;
+    public $endComment = null;
+
     public function __construct($fixPermissions = false, $directoryRealPath, $hostingSubscriptionId, $startComment, $endComment)
     {
         $this->fixPermissions = $fixPermissions;
@@ -27,11 +29,10 @@ class HtpasswdBuild implements ShouldQueue
         $this->endComment = $endComment;
     }
 
-    public function handle($model = null)
+    public function handle($model)
     {
-        $hostingSubscription = HostingSubscription::where('id', $this->hostingSubscriptionId)->first();
-
         $htPasswdRecords = [];
+
         if (file_exists($this->directoryRealPath)) {
             $pattern = '/^(?!\s*#).+$/';
             $lines = file($this->directoryRealPath, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
@@ -42,9 +43,10 @@ class HtpasswdBuild implements ShouldQueue
                 }
             }
 
+        }
+        if ($model) {
             $htPasswdRecords[] = "{$model->username}:{$model->password}";
         }
-
         $htPasswdView = $this->getHtPasswdFileConfig($htPasswdRecords);
         $this->updateSystemFile($this->directoryRealPath, $htPasswdView);
     }

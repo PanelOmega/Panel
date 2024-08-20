@@ -52,43 +52,26 @@ class DirectoryPrivacyListFolder extends Model
     {
         $hostingSubscription = Customer::getHostingSubscriptionSession();
 
-        static::creating(function ($model) use ($hostingSubscription) {
+        static::updating(function ($model) use ($hostingSubscription) {
+            $directoryPrivacy = DirectoryPrivacy::where('hosting_subscription_id', $hostingSubscription->id)->first();
 
-            $htpasswdUser = new HtpasswdUser();
-            $htpasswdUser->hosting_subscription_id = $hostingSubscription->id;
-            $htpasswdUser->directory = $model->directory;
-            $htpasswdUser->password = $model->password;
-            $htpasswdUser->save();
-        });
-
-        $callback = function ($model = null) use ($hostingSubscription) {
-            $directoryRealPath = null;
-            if ($model) {
-                $storage = $model->storageInstance();
-                $directoryRealPath = $storage->path($model->path);
+            if ($directoryPrivacy && $directoryPrivacy->protected != $model->protected) {
+                $directoryPrivacy->update([
+                    'protected' => $model->protected
+                ]);
+            } else {
+                if (!empty($model->username)) {
+                    $directoryPrivacy = new DirectoryPrivacy();
+                    $directoryPrivacy->directory = $model->directory;
+                    $directoryPrivacy->username = $model->username;
+                    $directoryPrivacy->password = $model->password;
+                    $directoryPrivacy->protected = $model->protected;
+                    $directoryPrivacy->label = $model->label;
+                    $directoryPrivacy->path = $model->path;
+                    $directoryPrivacy->save();
+                }
             }
-            $directoryPrivacy = new HtaccessBuildDirectoryPrivacy(false, $directoryRealPath, $hostingSubscription->id);
-            $directoryPrivacy->handle($model);
-        };
-
-        static::created(function () use ($callback) {
-            $callback();
         });
-        static::updated(function ($model) use ($callback) {
-            $callback($model);
-        });
-        static::deleted(function ($model) use ($callback) {
-            $callback($model);
-        });
-    }
-
-    public function storageInstance()
-    {
-        return Storage::build([
-            'driver' => 'local',
-            'throw' => false,
-            'root' => static::$rootPath,
-        ]);
     }
 
     public static function queryForDiskAndPath(string $rootPath = 'public', string $path = ''): Builder
@@ -107,6 +90,15 @@ class DirectoryPrivacyListFolder extends Model
     {
         return $this->type === 'Folder'
             && is_dir($this->storageInstance()->path($this->path));
+    }
+
+    public function storageInstance()
+    {
+        return Storage::build([
+            'driver' => 'local',
+            'throw' => false,
+            'root' => static::$rootPath,
+        ]);
     }
 
     public function canOpen(): bool

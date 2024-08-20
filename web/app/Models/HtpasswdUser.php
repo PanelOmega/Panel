@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-use App\Jobs\HtaccessBuildDirectoryPrivacy;
 use App\Jobs\HtpasswdBuild;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -10,9 +9,6 @@ use Illuminate\Database\Eloquent\Model;
 class HtpasswdUser extends Model
 {
     use HasFactory;
-
-    public $startComment = '# Section managed by Panel Omega: Directory Privacy, do not edit';
-    public $endComment = '# End section managed by Panel Omega: Directory Privacy';
 
     protected $fillable = [
         'directory',
@@ -30,31 +26,34 @@ class HtpasswdUser extends Model
     {
         $hostingSubscription = Customer::getHostingSubscriptionSession();
         $directoryRealPath = "/home/{$hostingSubscription->system_username}/.htpasswd";
-
         static::creating(function ($model) use ($hostingSubscription, $directoryRealPath) {
-
             $command = "htpasswd -nb $model->username $model->password";
             $result = shell_exec($command);
             if ($result) {
                 list($user, $hashedPasswd) = explode(':', trim($result), 2);
                 $model->password = $hashedPasswd;
             }
-
-
-            $directoryPrivacy = new HtpasswdBuild(false, $directoryRealPath, $hostingSubscription->id, $this->startComment, $this->endComment);
-            $directoryPrivacy->handle($model);
         });
 
+        $startComment = '# Section managed by Panel Omega: Directory Privacy, do not edit';
+        $endComment = '# End section managed by Panel Omega: Directory Privacy';
 
-        $callback = function ($model) use ($hostingSubscription, $directoryRealPath) {
-            $directoryPrivacy = new HtaccessBuildDirectoryPrivacy(false, $directoryRealPath, $hostingSubscription->id);
+        $callback = function ($model = null) use ($hostingSubscription, $directoryRealPath, $startComment, $endComment) {
+            $directoryPrivacy = new HtpasswdBuild(false, $directoryRealPath, $hostingSubscription->id, $startComment, $endComment);
             $directoryPrivacy->handle($model);
         };
 
-        static::create($callback);
+        static::created(function ($model) use ($callback) {
+            $callback($model);
+        });
 
-        static::deleting(function ($model) {
-            //htpasswd -D [filename] [username]
+        static::deleting(function ($model) use ($hostingSubscription) {
+            $command = "htpasswd -D /home/{$hostingSubscription->system_username}/.htpasswd {$model->username}";
+            shell_exec($command);
+        });
+
+        static::deleted(function ($model) use ($callback) {
+            $callback();
         });
     }
 
@@ -86,6 +85,6 @@ class HtpasswdUser extends Model
 
     public function directoryPrivacy()
     {
-        return $this->belongsTo(DirectoryPrivacy::class);
+        return $this->belongsTo(DirectoryPrivacy::class, 'directory', 'directory');
     }
 }

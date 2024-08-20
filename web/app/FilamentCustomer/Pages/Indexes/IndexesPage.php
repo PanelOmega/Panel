@@ -55,7 +55,7 @@ class IndexesPage extends Page implements HasTable
 
         $hostingSubscription = Customer::getHostingSubscriptionSession();
 
-        $this->disk = "/home/$hostingSubscription->system_username";
+        $this->disk = "/home/{$hostingSubscription->system_username}/public_html";
 
         $storage = Storage::build([
             'driver' => 'local',
@@ -133,31 +133,6 @@ class IndexesPage extends Page implements HasTable
             ])
             ->checkIfRecordIsSelectableUsing(fn(Index $record): bool => !$record->isPreviousPath())
             ->headerActions([
-//                Action::make('settings')
-//                    ->label('Settings')
-//                    ->icon('heroicon-o-cog-8-tooth')
-//                    ->form([
-//                        Radio::make('option')
-//                            ->options([
-//                                'Home' => 'Home',
-//                                'Web Root (public_html or www)' => 'Web Root (public_html or www)',
-//                                'Document Root for' => 'Document Root for',
-//                            ])
-//                            ->default('Home')
-//                            ->live(),
-//
-//                        Select::make('domain')
-//                            ->options([
-//                                'domain' => 'domain'
-//                            ])
-//                            ->disabled(fn($state) => !isset($state['option']) || $state['option'] !== 'Document Root for'),
-//
-//                        Checkbox::make('open_directory')
-//                            ->label('Always open this deirectory in the future')
-//                            ->default(false),
-//                    ])
-//                    }),
-
                 Action::make('home')
                     ->label('Home')
                     ->icon('heroicon-o-home')

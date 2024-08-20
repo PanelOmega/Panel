@@ -40,7 +40,7 @@ class DirectoryPrivacyPage extends Page implements HasTable
     public function table(Table $table): Table
     {
         $hostingSubscription = Customer::getHostingSubscriptionSession();
-        $this->disk = "/home/$hostingSubscription->system_username";
+        $this->disk = "/home/{$hostingSubscription->system_username}/public_html";
 
         $storage = Storage::build([
             'driver' => 'local',

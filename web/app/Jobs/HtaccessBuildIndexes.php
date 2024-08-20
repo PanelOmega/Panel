@@ -30,15 +30,15 @@ class HtaccessBuildIndexes implements ShouldQueue
 
     public static function getIndexType($directoryRealPath)
     {
-        $indexType = 'inherit';
+        $indexType = 'Inherit';
         if (file_exists($directoryRealPath . '/.htaccess')) {
             $htaccessContent = file_get_contents($directoryRealPath . '/.htaccess');
             if (strpos($htaccessContent, '-Indexes') !== false) {
-                $indexType = 'no_indexing';
+                $indexType = 'No Indexing';
             } elseif (strpos($htaccessContent, '+HTMLTable +FancyIndexing') !== false) {
-                $indexType = 'show_filename_and_description';
+                $indexType = 'Filename And Description';
             } elseif (strpos($htaccessContent, '-HTMLTable -FancyIndexing') !== false) {
-                $indexType = 'show_filename_only';
+                $indexType = 'Filename Only';
             }
         }
         return $indexType;
@@ -49,7 +49,7 @@ class HtaccessBuildIndexes implements ShouldQueue
         $htAccessFilePath = ($this->model->directory === '/') ? "{$this->model->directory_real_path}.htaccess" : "{$this->model->directory_real_path}/.htaccess";
         $indexContent = $this->isDeleted ? [] : $this->getIndexConfig();
         $htAccessView = $this->getHtAccessFileConfig($indexContent);
-        $htAccessFileRealPath = "/home/{$this->hostingSubscription->system_username}/{$htAccessFilePath}";
+        $htAccessFileRealPath = "/home/{$this->hostingSubscription->system_username}/public_html/{$htAccessFilePath}";
         $this->updateSystemFile($htAccessFileRealPath, $htAccessView);
     }
 
@@ -57,15 +57,15 @@ class HtaccessBuildIndexes implements ShouldQueue
     {
 
         $indexConfigArr = match ($this->model->index_type) {
-            'no_indexing' => [
+            'No Indexing' => [
                 'Indexes' => '-',
             ],
-            'show_filename_only' => [
+            'Filename Only' => [
                 'Indexes' => '+',
                 'HTMLTable' => '-',
                 'FancyIndexing' => '-',
             ],
-            'show_filename_and_description' => [
+            'Filename And Description' => [
                 'Indexes' => '+',
                 'HTMLTable' => '+',
                 'FancyIndexing' => '+',

@@ -38,7 +38,7 @@ class DirectoryPrivacy extends Model
 
         });
         $callback = function ($model) use ($hostingSubscription) {
-            $directoryRealPath = "/home/{$hostingSubscription->system_username}/{$model->path}";
+            $directoryRealPath = "/home/{$hostingSubscription->system_username}/public_html/{$model->path}";
             $directoryPrivacy = new HtaccessBuildDirectoryPrivacy(false, $directoryRealPath, $hostingSubscription->id);
             $directoryPrivacy->handle($model);
         };

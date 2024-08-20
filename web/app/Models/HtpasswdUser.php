@@ -56,33 +56,7 @@ class HtpasswdUser extends Model
             $callback();
         });
     }
-
-//    public function getUsers($directoryPath)
-//    {
-//        $userRecords = [];
-//        if (file_exists($directoryPath)) {
-//            $pattern = '/^(?!\s*#).+$/';
-//            $lines = file($directoryPath, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
-//
-//            $index = 1;
-//
-//            foreach ($lines as $line) {
-//                if (preg_match($pattern, $line)) {
-//                    $user = explode(':', $line);
-//                    $userRecords[] = [
-//                        'id' => $index,
-//                        'directory' => null,
-//                        'username' => $user[0],
-//                        'password' => null,
-//                    ];
-//                    $index++;
-//                }
-//
-//            }
-//        }
-//        return $userRecords;
-//    }
-
+    
     public function directoryPrivacy()
     {
         return $this->belongsTo(DirectoryPrivacy::class, 'directory', 'directory');

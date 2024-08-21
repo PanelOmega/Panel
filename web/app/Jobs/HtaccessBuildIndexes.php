@@ -16,8 +16,8 @@ class HtaccessBuildIndexes implements ShouldQueue
     public $fixPermissions = false;
     public $model;
     public $hostingSubscription;
-    public $startComment = '# Section managed by panelOmega: Indexing, do not edit';
-    public $endComment = '# End section managed by panelOmega: Indexing Privacy';
+    public $startComment = '# Section managed by Panel Omega: Indexing, do not edit';
+    public $endComment = '# End section managed by Panel Omega: Indexing Privacy';
 
     public $isDeleted = false;
 
@@ -28,28 +28,44 @@ class HtaccessBuildIndexes implements ShouldQueue
         $this->hostingSubscription = $hostingSubscription;
     }
 
-    public function handle()
+    public static function getIndexType($directoryRealPath)
     {
-            $htAccessFilePath = "{$this->model->directory}/.htaccess";
-
-            $indexContent = $this->isDeleted ? [] : $this->getIndexConfig();
-            $htAccessView = $this->getHtAccessFileConfig($indexContent);
-            $htAccessFileRealPath = '/home/' . $this->hostingSubscription->system_username . $htAccessFilePath;
-            $this->updateSystemFile($htAccessFileRealPath, $htAccessView);
+        $indexType = 'Inherit';
+        if (file_exists($directoryRealPath . '/.htaccess')) {
+            $htaccessContent = file_get_contents($directoryRealPath . '/.htaccess');
+            if (strpos($htaccessContent, '-Indexes') !== false) {
+                $indexType = 'No Indexing';
+            } elseif (strpos($htaccessContent, '+HTMLTable +FancyIndexing') !== false) {
+                $indexType = 'Filename And Description';
+            } elseif (strpos($htaccessContent, '-HTMLTable -FancyIndexing') !== false) {
+                $indexType = 'Filename Only';
+            }
+        }
+        return $indexType;
     }
 
-    public function getIndexConfig() {
+    public function handle()
+    {
+        $htAccessFilePath = ($this->model->directory === '/') ? "{$this->model->directory_real_path}.htaccess" : "{$this->model->directory_real_path}/.htaccess";
+        $indexContent = $this->isDeleted ? [] : $this->getIndexConfig();
+        $htAccessView = $this->getHtAccessFileConfig($indexContent);
+        $htAccessFileRealPath = "/home/{$this->hostingSubscription->system_username}/public_html/{$htAccessFilePath}";
+        $this->updateSystemFile($htAccessFileRealPath, $htAccessView);
+    }
+
+    public function getIndexConfig()
+    {
 
         $indexConfigArr = match ($this->model->index_type) {
-            'no_indexing' => [
+            'No Indexing' => [
                 'Indexes' => '-',
             ],
-            'show_filename_only' => [
+            'Filename Only' => [
                 'Indexes' => '+',
                 'HTMLTable' => '-',
                 'FancyIndexing' => '-',
             ],
-            'show_filename_and_description' => [
+            'Filename And Description' => [
                 'Indexes' => '+',
                 'HTMLTable' => '+',
                 'FancyIndexing' => '+',
@@ -76,7 +92,8 @@ class HtaccessBuildIndexes implements ShouldQueue
         return $htaccessContent;
     }
 
-    public function isDeleted($isDeleted = false) {
+    public function isDeleted($isDeleted = false)
+    {
         $this->isDeleted = $isDeleted;
     }
 }

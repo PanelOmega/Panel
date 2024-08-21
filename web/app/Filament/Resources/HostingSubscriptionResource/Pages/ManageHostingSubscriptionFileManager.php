@@ -4,19 +4,16 @@ namespace App\Filament\Resources\HostingSubscriptionResource\Pages;
 
 use App\Filament\Resources\HostingSubscriptionResource;
 use App\Models\Domain;
-use App\Models\FileItem;
-use App\Models\HostingSubscription;
+use App\Models\Index;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
-use Filament\Resources\Pages\ManageRelatedRecords;
 use Filament\Resources\Pages\ViewRecord;
 use Filament\Tables\Actions\Action;
 use Filament\Tables\Actions\ActionGroup;
 use Filament\Tables\Actions\BulkAction;
 use Filament\Tables\Actions\DeleteAction;
 use Filament\Tables\Actions\HeaderActionsPosition;
-use Filament\Tables\Actions\ViewAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Concerns\InteractsWithTable;
 use Filament\Tables\Contracts\HasTable;
@@ -47,6 +44,11 @@ class ManageHostingSubscriptionFileManager extends ViewRecord implements HasTabl
 
     protected $listeners = ['updatePath' => '$refresh'];
 
+    public static function getNavigationLabel(): string
+    {
+        return 'File Manager';
+    }
+
     public function getTitle(): string|Htmlable
     {
         $recordTitle = $this->getRecordTitle();
@@ -61,16 +63,11 @@ class ManageHostingSubscriptionFileManager extends ViewRecord implements HasTabl
         return 'File Manager';
     }
 
-    public static function getNavigationLabel(): string
-    {
-        return 'File Manager';
-    }
-
     public function table(Table $table): Table
     {
         $findDomain = Domain::select(['home_root', 'hosting_subscription_id', 'is_main'])
             ->where('hosting_subscription_id', $this->record->id)
-            ->where('is_main',1)->first();
+            ->where('is_main', 1)->first();
 
         $this->disk = $findDomain->home_root;
 
@@ -81,23 +78,23 @@ class ManageHostingSubscriptionFileManager extends ViewRecord implements HasTabl
         ]);
 
         return $table
-         //   ->deferLoading()
-            ->heading($this->disk .'/'. $this->path ?: 'Root')
+            //   ->deferLoading()
+            ->heading($this->disk . '/' . $this->path ?: 'Root')
             ->query(
-                FileItem::queryForDiskAndPath($this->disk, $this->path)
+                Index::queryForDiskAndPath($this->disk, $this->path)
             )
             ->paginated(false)
             ->columns([
                 TextColumn::make('name')
-                    ->icon(fn ($record): string => match ($record->type) {
+                    ->icon(fn($record): string => match ($record->type) {
                         'Folder' => 'heroicon-o-folder',
                         default => 'heroicon-o-document'
                     })
-                    ->iconColor(fn ($record): string => match ($record->type) {
+                    ->iconColor(fn($record): string => match ($record->type) {
                         'Folder' => 'warning',
                         default => 'gray',
                     })
-                    ->action(function (FileItem $record) {
+                    ->action(function (Index $record) {
                         if ($record->isFolder()) {
                             $this->path = $record->path;
                             $this->dispatch('updatePath');
@@ -106,7 +103,7 @@ class ManageHostingSubscriptionFileManager extends ViewRecord implements HasTabl
                 TextColumn::make('dateModified')
                     ->dateTime(),
                 TextColumn::make('size')
-                    ->formatStateUsing(fn ($state) => $state ? Number::fileSize($state) : '0.0KB'),
+                    ->formatStateUsing(fn($state) => $state ? Number::fileSize($state) : '0.0KB'),
                 TextColumn::make('type'),
             ])
             ->actions([
@@ -114,18 +111,18 @@ class ManageHostingSubscriptionFileManager extends ViewRecord implements HasTabl
                 ActionGroup::make([
 //                    ViewAction::make('open')
 //                        ->label('Open')
-//                        ->hidden(fn (FileItem $record): bool => ! $record->canOpen())
-//                        ->url(fn (FileItem $record): string => $storage->url($record->path))
+//                        ->hidden(fn (Index $record): bool => ! $record->canOpen())
+//                        ->url(fn (Index $record): string => $storage->url($record->path))
 //                        ->openUrlInNewTab(),
                     Action::make('download')
                         ->label('Download')
                         ->icon('heroicon-o-document-arrow-down')
-                        ->hidden(fn (FileItem $record): bool => $record->isFolder())
-                        ->action(fn (FileItem $record) => $storage->download($record->path)),
+                        ->hidden(fn(Index $record): bool => $record->isFolder())
+                        ->action(fn(Index $record) => $storage->download($record->path)),
                     DeleteAction::make('delete')
                         ->successNotificationTitle('File deleted')
-                        ->hidden(fn (FileItem $record): bool => $record->isPreviousPath())
-                        ->action(function (FileItem $record, Action $action) {
+                        ->hidden(fn(Index $record): bool => $record->isPreviousPath())
+                        ->action(function (Index $record, Action $action) {
                             if ($record->delete()) {
                                 $action->sendSuccessNotification();
                             }
@@ -141,11 +138,11 @@ class ManageHostingSubscriptionFileManager extends ViewRecord implements HasTabl
                     ->successNotificationTitle('Files deleted')
                     ->deselectRecordsAfterCompletion()
                     ->action(function (Collection $records, BulkAction $action) {
-                        $records->each(fn (FileItem $record) => $record->delete());
+                        $records->each(fn(Index $record) => $record->delete());
                         $action->sendSuccessNotification();
                     }),
             ])
-            ->checkIfRecordIsSelectableUsing(fn (FileItem $record): bool => ! $record->isPreviousPath())
+            ->checkIfRecordIsSelectableUsing(fn(Index $record): bool => !$record->isPreviousPath())
             ->headerActionsPosition(HeaderActionsPosition::Bottom)
             ->headerActions([
 
@@ -169,8 +166,8 @@ class ManageHostingSubscriptionFileManager extends ViewRecord implements HasTabl
                             ->required(),
                     ])
                     ->successNotificationTitle('Folder created')
-                    ->action(function (array $data, Component $livewire, Action $action) use($storage) : void {
-                        $storage->makeDirectory($livewire->path.'/'.$data['name']);
+                    ->action(function (array $data, Component $livewire, Action $action) use ($storage): void {
+                        $storage->makeDirectory($livewire->path . '/' . $data['name']);
 
                         $this->resetTable();
                         $action->sendSuccessNotification();
@@ -189,9 +186,9 @@ class ManageHostingSubscriptionFileManager extends ViewRecord implements HasTabl
                             ->required(),
                     ])
                     ->successNotificationTitle('File created')
-                    ->action(function (array $data, Component $livewire, Action $action) use($storage) : void {
+                    ->action(function (array $data, Component $livewire, Action $action) use ($storage): void {
 
-                        $storage->put($livewire->path.'/'.$data['file_name'], $data['file_content']);
+                        $storage->put($livewire->path . '/' . $data['file_name'], $data['file_content']);
 
                         $this->resetTable();
                         $action->sendSuccessNotification();

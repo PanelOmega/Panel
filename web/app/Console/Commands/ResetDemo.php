@@ -7,12 +7,14 @@ use App\Models\CronJob;
 use App\Models\Customer;
 use App\Models\Database;
 use App\Models\DatabaseUser;
+use App\Models\Domain;
 use App\Models\HostingPlan;
 use App\Models\HostingSubscription;
 use App\Models\HostingSubscriptionFtpAccount;
 use App\Models\User;
 use App\OmegaConfig;
 use App\Server\Helpers\CloudLinux\CloudLinuxPHPHelper;
+use App\Services\HostingSubscription\HostingSubscriptionService;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -53,6 +55,10 @@ class ResetDemo extends Command
         $findHostingSubscriptions = HostingSubscription::all();
         foreach ($findHostingSubscriptions as $hostingSubscription) {
             $hostingSubscription->delete();
+        }
+        $findDomains = Domain::all();
+        foreach ($findDomains as $domain) {
+            $domain->delete();
         }
 
         $findAdmins = Admin::all();
@@ -107,28 +113,38 @@ class ResetDemo extends Command
         $hostingPlan->description = 'Premium hosting plan';
         $hostingPlan->save();
 
-//        $hostingSubscription = new HostingSubscription();
-//        $hostingSubscription->domain = 'vasil-levski.demo.panelomega.com';
-//        $hostingSubscription->customer_id = $customer->id;
-//        $hostingSubscription->hosting_plan_id = $hostingPlan->id;
-//        $hostingSubscription->save();
+
+        $hostingSubscriptionService = new HostingSubscriptionService();
+        $createResponse = $hostingSubscriptionService->create(
+            'vasil-levski.demo.panelomega.com',
+            $customer->id,
+            $hostingPlan->id,
+            null,
+            null
+        );
 
         $wildCardDomain = '.omega.vanesa.ai';
 
-        $hostingSubscription = new HostingSubscription();
-        $hostingSubscription->domain = 'wordpress'.$wildCardDomain;
-        $hostingSubscription->customer_id = $customer->id;
-        $hostingSubscription->hosting_plan_id = $hostingPlan->id;
-        $hostingSubscription->save();
-        $this->installWordpress($hostingSubscription);
+        $hostingSubscriptionService = new HostingSubscriptionService();
+        $createResponse = $hostingSubscriptionService->create(
+            'wordpress'.$wildCardDomain,
+            $customer->id,
+            $hostingPlan->id,
+            null,
+            null
+        );
+        $this->installWordpress($createResponse['hostingSubscription']);
 
 
-        $hostingSubscription = new HostingSubscription();
-        $hostingSubscription->domain = 'opencart'.$wildCardDomain;
-        $hostingSubscription->customer_id = $customer->id;
-        $hostingSubscription->hosting_plan_id = $hostingPlan->id;
-        $hostingSubscription->save();
-        $this->installOpenCart($hostingSubscription);
+        $hostingSubscriptionService = new HostingSubscriptionService();
+        $createResponse = $hostingSubscriptionService->create(
+            'opencart'.$wildCardDomain,
+            $customer->id,
+            $hostingPlan->id,
+            null,
+            null
+        );
+        $this->installOpenCart($createResponse['hostingSubscription']);
 //
 //        $hostingSubscription = new HostingSubscription();
 //        $hostingSubscription->domain = 'presta-shop.demo.panelomega.com';

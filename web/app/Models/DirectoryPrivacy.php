@@ -3,14 +3,10 @@
 namespace App\Models;
 
 use App\Jobs\HtaccessBuildDirectoryPrivacy;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\Crypt;
-use Illuminate\Support\Facades\Session;
 
 class DirectoryPrivacy extends Model
 {
-    use HasFactory;
 
     protected $fillable = [
         'hosting_subscription_id',
@@ -18,10 +14,11 @@ class DirectoryPrivacy extends Model
         'username',
         'password',
         'protected',
-        'label'
+        'label',
+        'path'
     ];
 
-    public static function boot()
+    protected static function boot()
     {
         parent::boot();
         static::DirectoryPrivacyBoot();
@@ -29,50 +26,43 @@ class DirectoryPrivacy extends Model
 
     public static function DirectoryPrivacyBoot()
     {
-        $hostingSubscriptionId = Session::get('hosting_subscription_id');
+        $hostingSubscription = Customer::getHostingSubscriptionSession();
+        static::creating(function ($model) use ($hostingSubscription) {
+            $model->hosting_subscription_id = $hostingSubscription->id;
+            $htpasswdUser = new HtpasswdUser();
+            $htpasswdUser->hosting_subscription_id = $hostingSubscription->id;
+            $htpasswdUser->directory = $model->directory;
+            $htpasswdUser->username = $model->username;
+            $htpasswdUser->password = $model->password;
+            $htpasswdUser->save();
 
-        static::saving(function ($model) use ($hostingSubscriptionId) {
-            $model->hosting_subscription_id = $hostingSubscriptionId;
-            $model->password = Crypt::encrypt($model->password);
         });
-
-        static::created(function ($model) use ($hostingSubscriptionId) {
-            $directoryPrivacy = new HtaccessBuildDirectoryPrivacy(false, $hostingSubscriptionId);
-            $directoryPrivacy->handle();
-        });
-
-        $callback = function ($model) use ($hostingSubscriptionId) {
-            $directoryPrivacy = new HtaccessBuildDirectoryPrivacy(false, $hostingSubscriptionId);
+        $callback = function ($model) use ($hostingSubscription) {
+            $directoryRealPath = "/home/{$hostingSubscription->system_username}/public_html/{$model->path}";
+            $directoryPrivacy = new HtaccessBuildDirectoryPrivacy(false, $directoryRealPath, $hostingSubscription->id);
             $directoryPrivacy->handle($model);
         };
 
-        static::updated($callback);
-        static::deleted($callback);
+        static::created(function ($model) use ($callback) {
+            $callback($model);
+        });
+
+        static::updated(function ($model) use ($callback) {
+            $callback($model);
+        });
+
+        static::deleting(function ($model) {
+            $htpasswdUser = HtpasswdUser::where('username', $model->username)->first();
+            $htpasswdUser->delete();
+        });
+
+        static::deleted(function ($model) use ($callback) {
+            $callback($model);
+        });
     }
 
-    public static function decryptPassword($password)
+    public function htpasswdUser()
     {
-        return $password ? Crypt::decrypt($password) : null;
-    }
-
-    public static function scanUserDirectories()
-    {
-        $customer = Customer::getHostingSubscriptionSession();
-        $username = $customer['system_username'];
-        $baseDir = '/home/' . $username;
-        $command = "find $baseDir -type d";
-        $userDirs = shell_exec($command);
-        $userDirsArray = array_filter(explode(PHP_EOL, trim($userDirs)));
-
-        $filteredDirs = array_map(function ($dir) use ($baseDir) {
-            $relativeDir = str_replace($baseDir, '', $dir);
-
-            return $relativeDir === '' ? '/' : $relativeDir;
-        }, $userDirsArray);
-
-        if (count($filteredDirs) === 1 && $filteredDirs[0] === '/') {
-            $filteredDirs = ['/'];
-        }
-        return $filteredDirs;
+        return $this->hasOne(HtpasswdUser::class, 'directory', ' directory');
     }
 }

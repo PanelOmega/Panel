@@ -22,7 +22,7 @@ trait HtaccessBuildTrait
 
             $newContent = $this->trimContent($newContent);
 
-            if(empty($newContent)) {
+            if (empty($newContent)) {
                 return $this->removeCommentsUponDeletion($escapedStartComment, $escapedEndComment, $existingContent);
             }
 
@@ -43,14 +43,16 @@ trait HtaccessBuildTrait
         return $this->trimContent($currentContent);
     }
 
-    public function trimContent($content) {
+    public function trimContent($content)
+    {
         $content = preg_replace('/<!--\[if.*?\]>\s*<!\[endif\]-->\s*/s', '', $content);
         $content = preg_replace('/^[ \t]+/m', '', $content);
-        $content = preg_replace('/^[\r\n]+/', '', $content);
+        $content = preg_replace('/^[\r\n]+|[\r\n]+$/', '', $content);
         return $content;
     }
 
-    public function removeCommentsUponDeletion($escapedStartComment, $escapedEndComment, $existingContent) {
+    public function removeCommentsUponDeletion($escapedStartComment, $escapedEndComment, $existingContent)
+    {
 
         $patternRemoveComments = '/' . $escapedStartComment . '.*?' . $escapedEndComment . '/s';
         $existingContent = preg_replace($patternRemoveComments, '', $existingContent);

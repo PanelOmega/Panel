@@ -15,26 +15,15 @@ User nobody
 Group nobody
 
 ServerAdmin root@localhost
-DocumentRoot "/var/www/html"
-
-<Directory "/var/www">
-AllowOverride None
-# Allow open access:
-Require all granted
-</Directory>
 
 
-
-<Directory "/var/www/html">
-Options Indexes FollowSymLinks
-
-
-AllowOverride None
-Require all granted
+<Directory "/">
+AllowOverride All
+Options ExecCGI FollowSymLinks IncludesNOEXEC Indexes
 </Directory>
 
 <IfModule dir_module>
-    DirectoryIndex index.html index.php
+    DirectoryIndex index.php index.php8 index.php7 index.php5 index.perl index.pl index.plx index.ppl index.cgi index.jsp index.jp index.phtml index.shtml index.xhtml index.html index.htm index.js
 </IfModule>
 
 <Files ".ht*">
@@ -43,9 +32,7 @@ Require all denied
 
 
 ErrorLog "logs/error_log"
-
 LogLevel debug
-
 
 <IfModule log_config_module>
 
@@ -81,5 +68,11 @@ AddDefaultCharset UTF-8
 
 
 EnableSendfile on
+IndexOptions FancyIndexing HTMLTable VersionSort
 
-IncludeOptional conf.d/*.conf
+<Directory "/home/*/public_html">
+AllowOverride FileInfo AuthConfig Limit Indexes
+Options MultiViews Indexes SymLinksIfOwnerMatch IncludesNoExec
+Require method GET POST OPTIONS
+</Directory>
+

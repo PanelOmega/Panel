@@ -105,14 +105,14 @@ class SupportedApplicationTypes
         $command = "fail2ban-client status | grep 'Jail list'";
         $fail2BanJails = shell_exec($command);
 
-        if($fail2BanJails !== null) {
+        if ($fail2BanJails !== null) {
             $jails = trim($fail2BanJails);
 
             if (preg_match('/Jail list:\s*(.*)/', $jails, $matches)) {
                 $jailList = $matches[1];
                 $activeJails = explode(', ', $jailList);
 
-                foreach($activeJails as $service) {
+                foreach ($activeJails as $service) {
                     $activeServices[$service] = $service;
                 }
             }
@@ -131,7 +131,7 @@ class SupportedApplicationTypes
             'h' => 'hour/s'
         ];
 
-        foreach($f2bTime as $unit => $timeUnit) {
+        foreach ($f2bTime as $unit => $timeUnit) {
             $timeUnits[$unit] = $timeUnit;
         }
 
@@ -244,15 +244,16 @@ class SupportedApplicationTypes
         return $banactions;
     }
 
-    public static function getFail2BanJailFilters($jail) {
+    public static function getFail2BanJailFilters($jail)
+    {
 
         $filters = [];
         $filterPath = '/etc/fail2ban/filter.d';
         $pattern = $filterPath . "/{$jail}*.conf";
 
         $files = glob($pattern);
-        if($files) {
-            foreach($files as $file) {
+        if ($files) {
+            foreach ($files as $file) {
                 $file = pathinfo(basename($file), PATHINFO_FILENAME);
                 $filters[$file] = $file;
             }
@@ -260,30 +261,94 @@ class SupportedApplicationTypes
         return $filters;
     }
 
-    public static function getIndexesIndexTypes() {
+    public static function getIndexesIndexTypes()
+    {
         $types = [];
         $indexTypes = [
-            'inherit' => 'Inherit',
-            'no_indexing' => 'No Indexing',
-            'show_filename_only' => 'Show Filename Only',
-            'show_filename_and_description' => 'Show Filename And Description',
+            'Inherit' => 'Inherit',
+            'No Indexing' => 'No Indexing',
+            'Filename Only' => 'Show Filename Only',
+            'Filename And Description' => 'Show Filename And Description',
         ];
 
-        foreach($indexTypes as $name => $type) {
+        foreach ($indexTypes as $name => $type) {
             $types[$name] = $type;
         }
 
         return $types;
     }
 
-    public function getFail2BanProtocols() {
+    public static function getErrorPages()
+    {
+        $errorPages = [];
+        $pages = [
+            '400 (Bad request)',
+            '401 (Authorization required)',
+            '403 (Forbidden)',
+            '404 (Not found)',
+            '405 (Method not allowed)',
+            '406 (Not acceptable)',
+            '407 (Proxy authentication required)',
+            '408 (Request timeout)',
+            '409 (Conflict)',
+            '410 (Gone)',
+            '411 (Length required)',
+            '412 (Precondition failed)',
+            '413 (Request entity too Large)',
+            '414 (Request URI too long)',
+            '415 (Unsupported media type)',
+            '416 (Requested range not satisfiable)',
+            '417 (Expectation failed)',
+            '422 (Unprocessable entity)',
+            '423 (Locked)',
+            '424 (Failed dependency)',
+            '500 (Internal server error)',
+            '501 (Not implemented)',
+            '502 (Bad gateway)',
+            '503 (Service unavailable)',
+            '504 (Gateway timeout)',
+            '505 (HTTP version not supported)',
+            '506 (Variant also negotiates)',
+            '507 (Insufficient storage)',
+            '508 (Not expected)',
+        ];
+
+        foreach ($pages as $page) {
+            $errorPages[$page] = $page;
+        }
+
+        return $errorPages;
+    }
+
+    public static function getErrorPagesTags()
+    {
+
+        $errorTags = [];
+        $tags = [
+            'Referring URL' => '<!--#echo var="HTTP_REFERER" -->',
+            'Visitor`s IP Address' => '<!--#echo var="REMOTE_ADDR" -->',
+            'Requested URL' => '<!--#echo var="REQUEST_URI" -->',
+            'Server Name' => '<!--#echo var="HTTP_HOST" -->',
+            'Visitor`s Browser' => '<!--#echo var="HTTP_USER_AGENT" -->',
+            'Redirect Status Code' => '<!--#echo var="REDIRECT_STATUS" -->'
+        ];
+
+        foreach ($tags as $tagName => $tag) {
+            $errorTags[$tagName] = $tag;
+        }
+
+        return $errorTags;
+    }
+
+    public function getFail2BanProtocols()
+    {
 
         $protocols = [];
         $fail2BanProtocols = [
             'tcp' => 'tcp'
         ];
 
-        foreach($fail2BanProtocols as $name => $protocol) {
+        foreach ($fail2BanProtocols as $name => $protocol) {
             $protocols[$name] = $protocol;
         }
 

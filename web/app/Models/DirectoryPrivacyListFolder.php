@@ -2,16 +2,20 @@
 
 namespace App\Models;
 
-use App\Jobs\HtaccessBuildIndexes;
+use App\DirectoryTreeBuildTrate;
+use App\Jobs\HtaccessBuildDirectoryPrivacy;
 use Illuminate\Contracts\Filesystem\Filesystem as FilesystemContract;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Sushi\Sushi;
 
-class Index extends Model
+class DirectoryPrivacyListFolder extends Model
 {
+    use HasFactory, DirectoryTreeBuildTrate;
+
     use Sushi;
 
     protected static string $rootPath;
@@ -20,42 +24,53 @@ class Index extends Model
 
     protected $fillable = [
         'directory',
-        'index_type',
+        'username',
+        'authorized_users',
+        'password',
+        'protected',
+        'label',
     ];
 
     protected array $schema = [
         'directory' => 'string',
-        'directory_real_path' => 'string',
-        'index_type' => 'string',
+        'username' => 'string',
+        'authorized_users' => 'string',
+        'password' => 'string',
+        'protected' => 'string',
+        'label' => 'string',
         'type' => 'string',
+        'path' => 'string'
     ];
 
     public static function boot()
     {
         parent::boot();
-        static::IndexesBoot();
+        static::DirectoryPrivacyListFolderBoot();
     }
 
-    public static function IndexesBoot()
+    public static function DirectoryPrivacyListFolderBoot()
     {
         $hostingSubscription = Customer::getHostingSubscriptionSession();
 
-        static::creating(function ($model) use ($hostingSubscription) {
-            $model->hosting_subscription_id = $hostingSubscription->id;
-        });
+        static::updating(function ($model) use ($hostingSubscription) {
+            $directoryPrivacy = DirectoryPrivacy::where('hosting_subscription_id', $hostingSubscription->id)->first();
 
-        $callback = function ($model) use ($hostingSubscription) {
-            $htaccessBuild = new HtaccessBuildIndexes(false, $model, $hostingSubscription);
-            $htaccessBuild->handle();
-        };
-
-        static::created($callback);
-        static::updated($callback);
-
-        static::deleted(function ($model) use ($hostingSubscription) {
-            $htaccessBuild = new HtaccessBuildIndexes(false, $model, $hostingSubscription);
-            $htaccessBuild->isDeleted(true);
-            $htaccessBuild->handle();
+            if ($directoryPrivacy && $directoryPrivacy->protected != $model->protected) {
+                $directoryPrivacy->update([
+                    'protected' => $model->protected
+                ]);
+            } else {
+                if (!empty($model->username)) {
+                    $directoryPrivacy = new DirectoryPrivacy();
+                    $directoryPrivacy->directory = $model->directory;
+                    $directoryPrivacy->username = $model->username;
+                    $directoryPrivacy->password = $model->password;
+                    $directoryPrivacy->protected = $model->protected;
+                    $directoryPrivacy->label = $model->label;
+                    $directoryPrivacy->path = $model->path;
+                    $directoryPrivacy->save();
+                }
+            }
         });
     }
 
@@ -63,7 +78,6 @@ class Index extends Model
     {
         static::$rootPath = $rootPath;
         static::$path = $path;
-
         return static::query();
     }
 
@@ -103,8 +117,11 @@ class Index extends Model
             $backPath = [
                 [
                     'directory' => 'Up One Level',
-                    'directory_real_path' => null,
-                    'index_type' => null,
+                    'username' => null,
+                    'authorized_users' => null,
+                    'password' => null,
+                    'protected' => null,
+                    'label' => null,
                     'type' => 'Folder',
                     'path' => $path->count() > 1 ? $path->take($path->count() - 1)->join('/') : '',
                 ],
@@ -116,16 +133,17 @@ class Index extends Model
         $directories = collect($storage->directories(static::$path))
             ->sort()
             ->map(function (string $directory) use ($storage) {
-                $indexType = 'inherit';
-                $private = 'public';
 
                 $directoryRealPath = $storage->path($directory);
-                $indexType = HtaccessBuildIndexes::getIndexType($directoryRealPath);
+                $directoryPrivacyData = HtaccessBuildDirectoryPrivacy::getDirectoryPrivacyData($directoryRealPath);
 
                 return [
                     'directory' => Str::remove(self::$path . '/', $directory),
-                    'directory_real_path' => $directory,
-                    'index_type' => $indexType,
+                    'username' => '',
+                    'authorized_users' => '',
+                    'password' => $directoryPrivacyData['password'] ?? '',
+                    'protected' => $directoryPrivacyData['protected'] ?? 'No',
+                    'label' => $directoryPrivacyData['label'] ?? '',
                     'type' => 'Folder',
                     'path' => $directory,
                 ];
@@ -133,6 +151,7 @@ class Index extends Model
         return collect($backPath)
             ->push(...$directories)
             ->toArray();
-
     }
+
+
 }

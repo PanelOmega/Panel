@@ -1,33 +1,32 @@
 <?php
 
-namespace App\Livewire;
+namespace App\FilamentCustomer\Pages\HotlinkProtection;
 
 use App\Models\Customer;
 use Filament\Actions\Action;
 use Filament\Actions\Concerns\InteractsWithActions;
-use Filament\Actions\Contracts\HasActions;
 use Filament\Forms\Components\Checkbox;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Concerns\InteractsWithForms;
-use Filament\Forms\Contracts\HasForms;
 use Filament\Forms\Form;
 use Filament\Notifications\Notification;
-use Livewire\Component;
+use Filament\Pages\Page;
 
-class HotlinkProtection extends Component implements HasForms, HasActions
+class HotlinkProtection extends Page
 {
+
     use InteractsWithForms;
     use InteractsWithActions;
 
-    public ?string $mainTitle = null;
-    public ?array $sections = null;
-    public ?array $urls_allow_access = [];
+    protected static bool $shouldRegisterNavigation = false;
+    protected static string $view = 'filament-customer.pages.hotlink-protection.hotlink-protection';
+    protected static ?string $title = 'Hotlink Protection';
+    public array $sections;
+    public array $state = [];
 
-    public ?array $state = [];
-
-    public function mount(string $mainTitle, array $sections): void
+    public function mount(): void
     {
         $subscriptionAccount = Customer::getHostingSubscriptionSession();
         $hotlinkProtection = \App\Models\HotlinkProtection::where('hosting_subscription_id', $subscriptionAccount->id)->first() ?? null;
@@ -40,7 +39,7 @@ class HotlinkProtection extends Component implements HasForms, HasActions
         }
 
         $this->state = $hotlinkProtection->toArray();
-        if(!empty($this->state['url_allow_access'])) {
+        if (!empty($this->state['url_allow_access'])) {
             $urls = explode(',', $this->state['url_allow_access']);
             $this->state['urls_allow_access'] = [];
 
@@ -50,17 +49,26 @@ class HotlinkProtection extends Component implements HasForms, HasActions
         } else {
             $this->state['urls_allow_access'] = [];
         }
-
-        $this->mainTitle = $mainTitle;
-        $this->sections = $sections;
+        $this->sections = $this->getSections();
     }
 
-    public function render()
+    protected function getSections(): array
     {
-        return view('livewire.hotlink-protection');
+        return [
+            [
+                'helperTexts' => 'Hotlink protection prevents other websites from directly linking to files
+                              (as specified below) on your website. Other sites will still be able to link to any file type that you don’t specify below
+                              (i.e., HTML files). An example of hotlinking would be using an <img> tag to display an image from your
+                              site from somewhere else on the net. The end result is that the other site is stealing your bandwidth. List all sites below from which you
+                              wish to allow direct links. This system attempts to add all sites it knows you own to the list; however, you may need to add others.'
+            ],
+            [
+                'title' => 'Configure Hotlink Protection',
+            ],
+        ];
     }
 
-    public function form(Form $form)
+    public function form(Form $form): Form
     {
         return $form
             ->statePath('state')
@@ -93,11 +101,12 @@ class HotlinkProtection extends Component implements HasForms, HasActions
             ]);
     }
 
-    public function updateEnabledAction(): Action {
+    public function updateEnabledAction(): Action
+    {
         return Action::make('updateEnabled')
             ->requiresConfirmation()
             ->label($this->state['enabled'] === 'enabled' ? 'Disable' : 'Enable')
-            ->action(function() {
+            ->action(function () {
                 $hotlinkProtectionModel = \App\Models\HotlinkProtection::where('hosting_subscription_id', $this->state['hosting_subscription_id'])->first();
                 $hotlinkProtectionModel->enabled = $this->state['enabled'] === 'enabled' ? 'disabled' : 'enabled';
                 $hotlinkProtectionModel->save();
@@ -113,20 +122,27 @@ class HotlinkProtection extends Component implements HasForms, HasActions
 
     public function update()
     {
-        if(isset($this->state['urls_allow_access'])) {
+
+        $this->validate([
+            'state.urls_allow_access.*.url' => 'required|url',
+            'state.block_extensions' => 'nullable|string',
+            'state.redirect_to' => 'nullable|url',
+        ]);
+
+        if (isset($this->state['urls_allow_access'])) {
             $duplicates = $this->hasDublicateUrls($this->state['urls_allow_access']);
-            if($duplicates) {
+            if ($duplicates) {
                 return;
             }
 
             $this->state['url_allow_access'] = collect($this->state['urls_allow_access'])
-                                               ->pluck('url')
-                                               ->implode(',');
+                ->pluck('url')
+                ->implode(',');
         } else {
             $this->state['url_allow_access'] = '';
         }
 
-        if(isset($this->state['block_extensions'])) {
+        if (isset($this->state['block_extensions'])) {
             $this->state['block_extensions'] = preg_replace('/\s*,\s*/', ',', $this->state['block_extensions']);
         }
 
@@ -138,7 +154,7 @@ class HotlinkProtection extends Component implements HasForms, HasActions
             'redirect_to' => $this->state['redirect_to'],
         ]);
 
-        if($hotlinkProtectionModel->save()) {
+        if ($hotlinkProtectionModel->save()) {
             Notification::make()
                 ->title('Hotlink Protection settings configured.')
                 ->success()
@@ -151,7 +167,8 @@ class HotlinkProtection extends Component implements HasForms, HasActions
         }
     }
 
-    public function hasDublicateUrls(array $stateUrls): bool {
+    public function hasDublicateUrls(array $stateUrls): bool
+    {
         $urls = collect($stateUrls)
             ->pluck('url')
             ->filter()

@@ -31,6 +31,22 @@ class FileManager
     /**
      *
      * @param
+     * @return
+     */
+    public function storageInstance()
+    {
+        $hostingSubscription = Customer::getHostingSubscriptionSession();
+
+        return Storage::build([
+            'driver' => 'local',
+            'throw' => false,
+            'root' => '/home/' . $hostingSubscription->system_username,
+        ]);
+    }
+
+    /**
+     *
+     * @param
      * @return array
      */
     public function initialize(): array
@@ -341,11 +357,7 @@ class FileManager
     {
         $oldName = $request->input('oldName');
         $newName = $request->input('newName');
-
-        $directory = dirname($oldName);
-        $newFullName = $directory . '/' . $newName;
-
-        $this->storage->move($oldName, $newFullName);
+        $this->storage->move($oldName, $newName);
 
         return [
             'result' => [
@@ -465,21 +477,5 @@ class FileManager
     {
         return $this->zipService->extract($request);
 
-    }
-
-    /**
-     *
-     * @param
-     * @return
-     */
-    public function storageInstance()
-    {
-        $hostingSubscription = Customer::getHostingSubscriptionSession();
-
-        return Storage::build([
-            'driver' => 'local',
-            'throw' => false,
-            'root' => '/home/' . $hostingSubscription->system_username,
-        ]);
     }
 }

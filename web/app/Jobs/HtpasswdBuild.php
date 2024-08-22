@@ -2,7 +2,7 @@
 
 namespace App\Jobs;
 
-use App\HtaccessBuildTrait;
+use App\Jobs\Traits\HtaccessBuildTrait;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -42,8 +42,8 @@ class HtpasswdBuild implements ShouldQueue
                     $htPasswdRecords[] = $line;
                 }
             }
-
         }
+
         if ($model) {
             $htPasswdRecords[] = "{$model->username}:{$model->password}";
         }
@@ -67,23 +67,4 @@ class HtpasswdBuild implements ShouldQueue
 
         return $htpasswdContent;
     }
-
-//    public function getAuthorizedUsers()
-//    {
-//        $directoryPrivacyData['authorized_users'] = '';
-//        if (file_exists($directoryRealPath . '/.htpasswd')) {
-//            $htpasswdContent = file_get_contents($directoryRealPath . '/.htpasswd');
-//            $lines = explode(PHP_EOL, $htpasswdContent);
-//
-//            foreach ($lines as $line) {
-//                if (trim($line) !== '' && strpos($line, '#') !== 0) {
-//                    $username = strstr($line, ':', true);
-//
-//                    if ($username) {
-//                        $directoryPrivacyData['authorized_users'] .= ',' . $username;
-//                    }
-//                }
-//            }
-//        }
-//    }
 }

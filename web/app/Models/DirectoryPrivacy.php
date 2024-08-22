@@ -21,10 +21,10 @@ class DirectoryPrivacy extends Model
     protected static function boot()
     {
         parent::boot();
-        static::DirectoryPrivacyBoot();
+        static::directoryPrivacyBoot();
     }
 
-    public static function DirectoryPrivacyBoot()
+    public static function directoryPrivacyBoot()
     {
         $hostingSubscription = Customer::getHostingSubscriptionSession();
         static::creating(function ($model) use ($hostingSubscription) {

@@ -2,8 +2,8 @@
 
 namespace App\Models;
 
-use App\DirectoryTreeBuildTrate;
 use App\Jobs\HtaccessBuildDirectoryPrivacy;
+use App\Models\Traits\HasDirectoryTreeBuild;
 use Illuminate\Contracts\Filesystem\Filesystem as FilesystemContract;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -14,7 +14,7 @@ use Sushi\Sushi;
 
 class DirectoryPrivacyListFolder extends Model
 {
-    use HasFactory, DirectoryTreeBuildTrate;
+    use HasFactory, HasDirectoryTreeBuild;
 
     use Sushi;
 

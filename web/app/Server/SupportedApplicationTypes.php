@@ -314,7 +314,7 @@ class SupportedApplicationTypes
         ];
 
         foreach ($pages as $page) {
-            $errorPages[$page] = $page;
+            $errorPages[] = $page;
         }
 
         return $errorPages;
@@ -325,16 +325,16 @@ class SupportedApplicationTypes
 
         $errorTags = [];
         $tags = [
-            'Referring URL' => '<!--#echo var="HTTP_REFERER" -->',
-            'Visitor`s IP Address' => '<!--#echo var="REMOTE_ADDR" -->',
-            'Requested URL' => '<!--#echo var="REQUEST_URI" -->',
-            'Server Name' => '<!--#echo var="HTTP_HOST" -->',
-            'Visitor`s Browser' => '<!--#echo var="HTTP_USER_AGENT" -->',
-            'Redirect Status Code' => '<!--#echo var="REDIRECT_STATUS" -->'
+            'Referring URL' => '#echo var="HTTP_REFERER"',
+            'Visitor`s IP Address' => '#echo var="REMOTE_ADDR"',
+            'Requested URL' => '#echo var="REQUEST_URI"',
+            'Server Name' => '#echo var="HTTP_HOST"',
+            'Visitor`s Browser' => '#echo var="HTTP_USER_AGENT"',
+            'Redirect Status Code' => '#echo var="REDIRECT_STATUS"'
         ];
 
         foreach ($tags as $tagName => $tag) {
-            $errorTags[$tagName] = $tag;
+            $errorTags[$tag] = $tagName;
         }
 
         return $errorTags;

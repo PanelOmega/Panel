@@ -2,7 +2,7 @@
 
 namespace App\Jobs;
 
-use App\HtaccessBuildTrait;
+use App\Jobs\Traits\HtaccessBuildTrait;
 use App\Models\HostingSubscription;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;

@@ -220,7 +220,7 @@ class DirectoryPrivacyPage extends Page implements HasTable
         $this->sections = $this->getSections();
     }
 
-    public function getSections()
+    public function getSections(): array
     {
         return [
             'section' => [

@@ -497,7 +497,7 @@ class CustomerDashboard extends Page
                         [
                             'title' => 'Error Pages',
                             'icon' => 'omega_customer-advanced-error',
-                            'link' => '#'
+                            'link' => route('filament.customer.pages.error-page')
                         ],
 //                        [
 //                            'title'=>'Apache Handlers',

@@ -1,10 +1,10 @@
 <?php
 
-namespace App;
+namespace App\Models\Traits;
 
 use App\Models\Customer;
 
-trait DirectoryTreeBuildTrate
+trait HasDirectoryTreeBuild
 {
     public static function buildDirectoryTree()
     {

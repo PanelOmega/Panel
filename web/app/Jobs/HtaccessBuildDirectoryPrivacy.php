@@ -55,12 +55,16 @@ class HtaccessBuildDirectoryPrivacy implements ShouldQueue
 
     public function getHtAccessFileConfig($label, $htPasswdFilePath, $protected)
     {
+        $dPrivacyContent = [
+            'authType' => 'AuthType Basic',
+            'authName' => "AuthName {$label}",
+            'authUserFile' => "AuthUserFile {$htPasswdFilePath}",
+            'protected' => $protected,
+            'requireUser' => 'Require valid-user'
+        ];
+        
         $htaccessContent = view('server.samples.apache.php.directory-privacy-htaccess', [
-            'dPrivacyContent' => [
-                'auth_name' => $label,
-                'auth_user_file' => $htPasswdFilePath,
-                'protected' => $protected
-            ],
+            'dPrivacyContent' => $dPrivacyContent
         ])->render();
 
         $htaccessContent = preg_replace_callback(

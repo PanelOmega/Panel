@@ -40,23 +40,12 @@ class Index extends Model
     {
         $hostingSubscription = Customer::getHostingSubscriptionSession();
 
-        static::creating(function ($model) use ($hostingSubscription) {
-            $model->hosting_subscription_id = $hostingSubscription->id;
-        });
-
         $callback = function ($model) use ($hostingSubscription) {
             $htaccessBuild = new HtaccessBuildIndexes(false, $model, $hostingSubscription);
             $htaccessBuild->handle();
         };
 
-        static::created($callback);
         static::updated($callback);
-
-        static::deleted(function ($model) use ($hostingSubscription) {
-            $htaccessBuild = new HtaccessBuildIndexes(false, $model, $hostingSubscription);
-            $htaccessBuild->isDeleted(true);
-            $htaccessBuild->handle();
-        });
     }
 
     public static function queryForDiskAndPath(string $rootPath = 'public', string $path = ''): Builder

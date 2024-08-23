@@ -58,17 +58,16 @@ class HtaccessBuildIndexes implements ShouldQueue
 
         $indexConfigArr = match ($this->model->index_type) {
             'No Indexing' => [
-                'Indexes' => '-',
+                'options' => 'Options -Indexes',
+                'indexOptions' => ''
             ],
             'Filename Only' => [
-                'Indexes' => '+',
-                'HTMLTable' => '-',
-                'FancyIndexing' => '-',
+                'options' => 'Options +Indexes',
+                'indexOptions' => 'IndexOptions -HTMLTable -FancyIndexing'
             ],
             'Filename And Description' => [
-                'Indexes' => '+',
-                'HTMLTable' => '+',
-                'FancyIndexing' => '+',
+                'options' => 'Options +Indexes',
+                'indexOptions' => 'IndexOptions +HTMLTable +FancyIndexing'
             ],
             default => []
         };

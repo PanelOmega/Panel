@@ -27,8 +27,8 @@ class HtaccessBuildErrorPage
     public function handle($model)
     {
         $this->addErrorPageToSystem($model);
-        $errorCodes = $this->getAllErrorCodes();
-        $htaccessView = $this->getHtaccessErrorCodesConfig($errorCodes);
+        $errorDocuments = $this->getAllErrorDocuments();
+        $htaccessView = $this->getHtaccessErrorCodesConfig($errorDocuments);
         $htaccessSystemPath = $this->errorPagePath . '/.htaccess';
         $this->updateSystemFile($htaccessSystemPath, $htaccessView);
     }
@@ -56,7 +56,7 @@ class HtaccessBuildErrorPage
         return trim($content);
     }
 
-    public function getAllErrorCodes(): array
+    public function getAllErrorDocuments(): array
     {
         $errorCodes = [];
         foreach (scandir($this->errorPagePath) as $page) {
@@ -64,14 +64,18 @@ class HtaccessBuildErrorPage
                 $errorCodes[] = pathinfo($page, PATHINFO_FILENAME);
             }
         }
-        return $errorCodes;
+
+        $errorDocuments = [];
+        foreach($errorCodes as $error) {
+            $errorDocuments[] = "ErrorDocument {$error} {$this->errorPagePath}/{$error}.shtml";
+        }
+        return $errorDocuments;
     }
 
-    public function getHtaccessErrorCodesConfig($errorCodes)
+    public function getHtaccessErrorCodesConfig($errorDocuments)
     {
         $htaccessErrorCodesContent = view('server.samples.apache.php.error-page-htaccess', [
-            'errorCodes' => $errorCodes,
-            'errorPagePath' => $this->errorPagePath,
+            'errorDocuments' => $errorDocuments,
         ])->render();
 
         $htaccessErrorCodesContent = preg_replace_callback(

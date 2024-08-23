@@ -28,7 +28,6 @@ class HtaccessBuildHotlinkProtection implements ShouldQueue
     public function handle()
     {
         $hostingSubscription = HostingSubscription::where('id', $this->model->hosting_subscription_id)->first();
-
         $htAccessFilePath = '/public_html/.htaccess';
         $hotlinkData = $this->getHotlinkData($hostingSubscription->hotlinkProtection);
         $htAccessView = $this->getHtAccessFileConfig($hotlinkData);
@@ -39,7 +38,6 @@ class HtaccessBuildHotlinkProtection implements ShouldQueue
     public function getHotlinkData($hotlinkProtectionData)
     {
         if ($hotlinkProtectionData) {
-
             $urlAllowAccessArray = explode(',', $hotlinkProtectionData->url_allow_access);
             $urls = array_map(function ($url) {
                 $url = trim($url);
@@ -47,21 +45,38 @@ class HtaccessBuildHotlinkProtection implements ShouldQueue
 
                 return [
                     'protocol' => $parsedUrl['scheme'] ?? 'http',
-                    'subdomain' => isset($parsedUrl['host']) ? explode('.', $parsedUrl['host'])[0] : '',
+                    'subdomain' => isset($parsedUrl['host']) ? explode('.', $parsedUrl['host'])[0] : 'www',
                     'domain' => isset($parsedUrl['host']) ? implode('.', array_slice(explode('.', $parsedUrl['host']), -2)) : '',
                     'full_url' => $url,
                 ];
             }, $urlAllowAccessArray);
 
+            $rewriteEngine = 'RewriteEngine on';
+            $rewriteCond = 'RewriteCond %{HTTP_REFERER} !^$';
+
+            $allowedUrls = [];
+            foreach ($urls as $url) {
+                $allowedUrls[] = "RewriteCond %{HTTP_REFERER} !^{$url['protocol']}://{$url['subdomain']}.{$url['domain']}/?$ [NC]";
+                $allowedUrls[] = "RewriteCond %{HTTP_REFERER} !^{$url['protocol']}://{$url['subdomain']}.{$url['domain']}/?.* [NC]";
+
+                if (empty($url['subdomain']) || $url['subdomain'] === 'www') {
+                    $allowedUrls[] = "RewriteCond %{HTTP_REFERER} !^{$url['protocol']}://www.{$url['domain']}/?$ [NC]";
+                    $allowedUrls[] = "RewriteCond %{HTTP_REFERER} !^{$url['protocol']}://www.{$url['domain']}/?.* [NC]";
+                }
+            }
+
             $blockedExtensions = rtrim(preg_replace('/\s+/', '', $hotlinkProtectionData->block_extensions), ',');
+            $blockedExtensionsFormatted = str_replace(',', '|', trim($blockedExtensions, ','));
             $redirectTo = $hotlinkProtectionData->redirect_to;
+            $rewriteRule = "RewriteRule .*\\.({$blockedExtensionsFormatted})$ {$redirectTo} [R,NC]";
 
             return [
                 'enabled' => $hotlinkProtectionData->enabled,
-                'allow_direct_requests' => $hotlinkProtectionData->allow_direct_requests ? true : false,
-                'url_allow_access' => $urls,
-                'block_extensions' => $blockedExtensions,
-                'redirect_to' => $redirectTo
+                'rewriteEngine' => $rewriteEngine ?? '',
+                'allowDirectRequests' => $hotlinkProtectionData->allow_direct_requests ? true : false,
+                'rewriteCond' => $rewriteCond ?? '',
+                'urlAllowAccess' => $allowedUrls,
+                'rewriteRule' => $rewriteRule,
             ];
         }
         return [];

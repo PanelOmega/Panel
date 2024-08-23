@@ -1,5 +1,5 @@
-@if(isset($errorCodes) && !empty($errorCodes))
-    @foreach($errorCodes as $error)
-        ErrorDocument {{ $error }} @if(!empty($errorPagePath)) {{ $errorPagePath }}/{{ $error }}.shtml @endif {{ PHP_EOL }}
+@if(isset($errorDocuments) && !empty($errorDocuments))
+    @foreach($errorDocuments as $error)
+        {{ $error }}
     @endforeach
 @endif

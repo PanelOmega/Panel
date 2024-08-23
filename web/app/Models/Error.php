@@ -2,13 +2,13 @@
 
 namespace App\Models;
 
-use App\Jobs\ErrorPageBuild;
+use App\Jobs\HtaccessBuildErrorPage;
 use App\Server\SupportedApplicationTypes;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Sushi\Sushi;
 
-class ErrorPage extends Model
+class Error extends Model
 {
     use HasFactory;
     use Sushi;
@@ -37,7 +37,7 @@ class ErrorPage extends Model
         static::updating(function ($model) {
             $hostingSubscription = Customer::getHostingSubscriptionSession();
             $errorPagePath = "/home/{$hostingSubscription->system_username}/public_html";
-            $errorPageBuild = new ErrorPageBuild(false, $errorPagePath);
+            $errorPageBuild = new HtaccessBuildErrorPage(false, $errorPagePath);
             $errorPageBuild->handle($model);
         });
     }
@@ -47,7 +47,7 @@ class ErrorPage extends Model
         $errorPages = SupportedApplicationTypes::getErrorPages();
         $hostingSubscription = Customer::getHostingSubscriptionSession();
         $errorPagePath = "/home/{$hostingSubscription->system_username}/public_html";
-        $errorPageBuild = new ErrorPageBuild(false, $errorPagePath);
+        $errorPageBuild = new HtaccessBuildErrorPage(false, $errorPagePath);
         return array_map(function ($errorPage, $index) use ($errorPagePath, $errorPageBuild) {
             return [
                 'id' => $index + 1,

@@ -18,7 +18,6 @@ use Filament\Tables\Table;
 
 class ErrorPage extends Page implements HasTable
 {
-
     use InteractsWithTable;
 
     protected static bool $shouldRegisterNavigation = false;
@@ -119,12 +118,12 @@ class ErrorPage extends Page implements HasTable
 
     protected function getAllQuery()
     {
-        return \App\Models\ErrorPage::query();
+        return \App\Models\Error::query();
     }
 
     protected function getCommonQuery()
     {
-        return \App\Models\ErrorPage::query()
+        return \App\Models\Error::query()
             ->whereIn('name', [
                 '400 (Bad request)',
                 '401 (Authorization required)',

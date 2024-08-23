@@ -321,11 +321,11 @@ class CustomerDashboard extends Page
                             'icon' => 'omega_customer-domains-domain',
                             'link' => '#'
                         ],
-//                        [
-//                            'title'=>'Redirects',
-//                            'icon'=>'omega_customer-domains-redirect',
-//                            'link'=>'#'
-//                        ],
+                        [
+                            'title' => 'Redirects',
+                            'icon' => 'omega_customer-domains-redirect',
+                            'link' => route('filament.customer.pages.redirects-page')
+                        ],
 //                        [
 //                            'title'=>'Zone Editor',
 //                            'icon'=>'omega_customer-domains-zone',

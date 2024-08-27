@@ -405,11 +405,11 @@ class CustomerDashboard extends Page
 //                            'icon'=>'omega_customer-security-ssh',
 //                            'link'=>'#'
 //                        ],
-//                        [
-//                            'title'=>'IP Blockers',
-//                            'icon'=>'omega_customer-security-block',
-//                            'link'=>'#'
-//                        ],
+                        [
+                            'title'=>'IP Blockers',
+                            'icon'=>'omega_customer-security-block',
+                            'link'=>route('filament.customer.pages.ip-blockers-page')
+                        ],
                         [
                             'title' => 'SSL/TLS',
                             'icon' => 'omega_customer-security-ssl-tls',

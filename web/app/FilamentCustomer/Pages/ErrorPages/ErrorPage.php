@@ -3,7 +3,7 @@
 namespace App\FilamentCustomer\Pages\ErrorPages;
 
 use App\Models\Customer;
-use App\Server\SupportedApplicationTypes;
+use App\Models\Error;
 use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
@@ -76,7 +76,7 @@ class ErrorPage extends Page implements HasTable
                                 Select::make('tags')
                                     ->label('Select Tag to Insert')
                                     ->reactive()
-                                    ->options(SupportedApplicationTypes::getErrorPagesTags())
+                                    ->options(Error::getErrorPagesTags())
                                     ->afterStateUpdated(function ($state, $set, $get) {
                                         $currentContent = $get('content');
                                         $formattedTag = htmlspecialchars("<!-- $state -->", ENT_QUOTES, 'UTF-8');

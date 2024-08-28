@@ -7,7 +7,7 @@ use App\Models\Customer;
 use App\Models\Domain;
 use App\Models\HostingPlan;
 use App\Models\HostingSubscription;
-use App\Server\SupportedApplicationTypes;
+use App\Server\Fail2ban;
 use Tests\TestCase;
 
 class PerformanceTest extends TestCase
@@ -27,7 +27,7 @@ class PerformanceTest extends TestCase
             $this->assertDatabaseHas('customers', ['username' => $customerUsername]);
 
 
-            $supportedPHPVersions = SupportedApplicationTypes::getPHPVersions();
+            $supportedPHPVersions = Fail2ban::getPHPVersions();
             foreach ($supportedPHPVersions as $phpVersion => $phpVersionName) {
 
                 $createHostingPlan = new HostingPlan();

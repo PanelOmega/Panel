@@ -3,12 +3,13 @@
 namespace App\Models;
 
 use App\Jobs\HtaccessBuildRedirects;
+use App\Models\Traits\RedirectTrait;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Redirect extends Model
 {
-    use HasFactory;
+    use HasFactory, RedirectTrait;
 
     protected $fillable = [
         'hosting_subscription_id',

@@ -3,7 +3,6 @@
 namespace App\FilamentCustomer\Pages\Redirects;
 
 use App\Models\Redirect;
-use App\Server\SupportedApplicationTypes;
 use Filament\Actions\Action;
 use Filament\Forms\Components\Actions;
 use Filament\Forms\Components\Checkbox;
@@ -149,13 +148,13 @@ class RedirectsPage extends Page implements HasTable
                         Select::make('state.type')
                             ->label('Type')
                             ->required()
-                            ->options(SupportedApplicationTypes::getRedirectTypes()),
+                            ->options(Redirect::getRedirectTypes()),
 
                         Select::make('state.domain')
                             ->label('https?://(www.)?')
                             ->required()
                             ->live()
-                            ->options(SupportedApplicationTypes::getDomains())
+                            ->options(Redirect::getRedirectDomains())
                             ->afterStateUpdated(function ($state, callable $set) {
                                 if ($state === 'all_public_domains') {
                                     $set('state.match_www', 'redirectwithorwithoutwww');
@@ -178,7 +177,7 @@ class RedirectsPage extends Page implements HasTable
                                     ->label('www. redirection')
                                     ->required()
                                     ->live()
-                                    ->options(SupportedApplicationTypes::getWwwRedirects())
+                                    ->options(Redirect::getWwwRedirects())
                                     ->afterStateUpdated(function ($state, callable $set, $get) {
                                         if ($get('state.domain') === 'all_public_domains') {
                                             $set('state.match_www', 'redirectwithorwithoutwww');

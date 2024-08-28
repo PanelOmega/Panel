@@ -5,24 +5,17 @@ namespace App\Livewire;
 
 use App\Filament\Enums\ServerApplicationType;
 use App\Models\Admin;
-use App\Models\User;
-use App\Server\SupportedApplicationTypes;
+use App\Server\Fail2ban;
 use Filament\Forms\Components\CheckboxList;
-use Filament\Forms\Components\Field;
-use Filament\Forms\Components\Radio;
 use Filament\Forms\Components\Section;
-use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
-use Filament\Forms\Components\Toggle;
 use Filament\Forms\Components\Wizard;
 use Filament\Forms\Form;
 use Filament\Forms\Get;
 use Filament\Pages\Page;
-use Filament\Support\Exceptions\Halt;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\HtmlString;
 use JaOcero\RadioDeck\Forms\Components\RadioDeck;
-use Livewire\Component;
 
 class Installer extends Page
 {
@@ -72,7 +65,7 @@ class Installer extends Page
         }
 
         if (empty($this->server_php_modules)) {
-            $this->server_php_modules = array_keys(SupportedApplicationTypes::getPHPModules());
+            $this->server_php_modules = array_keys(Fail2ban::getPHPModules());
         }
 
         $step1 = [
@@ -151,7 +144,7 @@ class Installer extends Page
                                     '8.2'
                                 ])
                                 ->label('PHP Version')
-                                ->options(SupportedApplicationTypes::getPHPVersions())
+                                ->options(Fail2ban::getPHPVersions())
                                 ->columns(5)
                                 ->required(),
 
@@ -161,7 +154,7 @@ class Installer extends Page
                                 })
                                 ->label('PHP Modules')
                                 ->columns(5)
-                                ->options(SupportedApplicationTypes::getPHPModules()),
+                                ->options(Fail2ban::getPHPModules()),
                             // End of PHP Configuration
 
                             // Node.js Configuration
@@ -173,7 +166,7 @@ class Installer extends Page
                                 ->default([
                                     '14'
                                 ])
-                                ->options(SupportedApplicationTypes::getNodeJsVersions())
+                                ->options(Fail2ban::getNodeJsVersions())
                                 ->columns(6)
                                 ->required(),
 
@@ -189,7 +182,7 @@ class Installer extends Page
                                 ->default([
                                     '3.10'
                                 ])
-                                ->options(SupportedApplicationTypes::getPythonVersions())
+                                ->options(Fail2ban::getPythonVersions())
                                 ->columns(6)
                                 ->required(),
 
@@ -205,7 +198,7 @@ class Installer extends Page
                                 ->default([
                                     '3.4'
                                 ])
-                                ->options(SupportedApplicationTypes::getRubyVersions())
+                                ->options(Fail2ban::getRubyVersions())
                                 ->columns(6)
                                 ->required(),
 

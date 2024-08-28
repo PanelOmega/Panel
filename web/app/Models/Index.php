@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Jobs\HtaccessBuildIndexes;
+use App\Models\Traits\IndexTrait;
 use Illuminate\Contracts\Filesystem\Filesystem as FilesystemContract;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
@@ -12,7 +13,7 @@ use Sushi\Sushi;
 
 class Index extends Model
 {
-    use Sushi;
+    use Sushi, IndexTrait;
 
     protected static string $rootPath;
 

@@ -2,10 +2,9 @@
 
 namespace App\Filament\Clusters\Fail2Ban\Pages\Settings;
 
-use App\Filament\Clusters\Fail2Ban\Fail2Ban;
 use App\Filament\BasePages\BaseSettings;
+use App\Filament\Clusters\Fail2Ban\Fail2Ban;
 use App\Jobs\Fail2BanConfigBuild;
-use App\Server\SupportedApplicationTypes;
 use CodeWithDennis\SimpleAlert\Components\Forms\SimpleAlert;
 use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\Group;
@@ -92,7 +91,7 @@ class Fail2BanSettings extends BaseSettings
                                                     ->helperText('Set the length of time an IP address will be banned by all active jails after an attack is detected.')
                                                     ->select(function () {
                                                         return Select::make('fail2ban.config.general.bantime_unit')
-                                                            ->options(SupportedApplicationTypes::getFail2BanTimeUnits())
+                                                            ->options(\App\Server\Helpers\Fail2Ban::getFail2BanTimeUnits())
                                                             ->default('h');
                                                     }),
 
@@ -101,7 +100,7 @@ class Fail2BanSettings extends BaseSettings
                                                     ->helperText('A host will be banned by all active jails if it has exceeded the \'maxretry\' limit within the specified \'findtime\' period.')
                                                     ->select(function () {
                                                         return Select::make('fail2ban.config.general.findtime_unit')
-                                                            ->options(SupportedApplicationTypes::getFail2BanTimeUnits())
+                                                            ->options(\App\Server\Helpers\Fail2Ban::getFail2BanTimeUnits())
                                                             ->default('h');
                                                     }),
 
@@ -124,7 +123,7 @@ class Fail2BanSettings extends BaseSettings
                                                     ->label('Backend')
                                                     ->helperText('Choose the backend used to monitor file modifications.
                                             This setting can also be customized individually for each jail.')
-                                                    ->options(SupportedApplicationTypes::getFial2BanGeneralBackend())
+                                                    ->options(\App\Server\Helpers\Fail2Ban::getFial2BanGeneralBackend())
                                                     ->default('auto'),
                                             ])
                                             ->columns(2),
@@ -133,14 +132,14 @@ class Fail2BanSettings extends BaseSettings
                                                 Select::make('fail2ban.config.general.usedns')
                                                     ->label('Usedns')
                                                     ->helperText('Choose whether the jails should trust and use hostnames found in logs, provide a warning when performing DNS lookups, or ignore all hostnames in logs.')
-                                                    ->options(SupportedApplicationTypes::getFail2BanGeneralUsedns())
+                                                    ->options(\App\Server\Helpers\Fail2Ban::getFail2BanGeneralUsedns())
                                                     ->default('warn'),
 
 
                                                 Select::make('fail2ban.config.general.logencoding')
                                                     ->label('Log Encoding')
                                                     ->helperText('The "logencoding" setting determines the type of text encoding used for the log files that the jail processes.')
-                                                    ->options(SupportedApplicationTypes::getFail2BanGeneralLogencoding())
+                                                    ->options(\App\Server\Helpers\Fail2Ban::getFail2BanGeneralLogencoding())
                                                     ->default('auto'),
                                             ])
                                             ->columns(2),
@@ -172,13 +171,13 @@ class Fail2BanSettings extends BaseSettings
                                             Select::make('fail2ban.config.action.mta')
                                                 ->label('MTA')
                                                 ->helperText('Specify the email sending method for Fail2Ban: use sendmail for the default option, or switch to mail to use a traditional email system.')
-                                                ->options(SupportedApplicationTypes::getFail2BanActionsMta())
+                                                ->options(\App\Server\Helpers\Fail2Ban::getFail2BanActionsMta())
                                                 ->default('sendmail'),
 
                                             Select::make('fail2ban.config.action.protocol')
                                                 ->label('Protocol')
                                                 ->helperText('Specify the communication protocol used by Fail2Ban for its actions; by default, it uses TCP for reliable data transmission.')
-                                                ->options(SupportedApplicationTypes::getFail2BanActionsProtocol())
+                                                ->options(\App\Server\Helpers\Fail2Ban::getFail2BanActionsProtocol())
                                                 ->default('tcp'),
 
                                             TextInput::make('fail2ban.config.action.port')
@@ -189,7 +188,7 @@ class Fail2BanSettings extends BaseSettings
                                             Select::make('fail2ban.config.action.banaction')
                                                 ->label('Ban Action')
                                                 ->helperText('Sets the default action for banning, which can be customized globally or for individual sections in the jail.local file.')
-                                                ->options(SupportedApplicationTypes::getFail2BanBanactions())
+                                                ->options(\App\Server\Helpers\Fail2Ban::getFail2BanBanactions())
                                                 ->default('iptables-multiport')
                                         ])
                                         ->columns(2),
@@ -215,7 +214,7 @@ class Fail2BanSettings extends BaseSettings
 //                                        Select::make('fail2ban.config.jails.sshd.filter')
 //                                            ->label('Filter')
 //                                            ->helperText('The \'filter\' sets the criteria used by the jail to identify malicious activity.')
-//                                            ->options(SupportedApplicationTypes::getFail2BanJailFilters('sshd'))
+//                                            ->options(\App\Server\Helpers\Fail2Ban::getFail2BanJailFilters('sshd'))
 //                                            ->default('sshd'),
 
                                         TextInputSelectAffix::make('fail2ban.config.jails.sshd.findtime')
@@ -224,7 +223,7 @@ class Fail2BanSettings extends BaseSettings
                                             ->helperText('Set the time period in which a host must exceed the maximum number of failed login attempts to trigger a ban.')
                                             ->select(function () {
                                                 return Select::make('fail2ban.config.jails.sshd.findtime_unit')
-                                                    ->options(SupportedApplicationTypes::getFail2BanTimeUnits())
+                                                    ->options(\App\Server\Helpers\Fail2Ban::getFail2BanTimeUnits())
                                                     ->default('m');
                                             }),
 
@@ -234,14 +233,14 @@ class Fail2BanSettings extends BaseSettings
                                             ->helperText('Set the length of time an IP address will be banned by the jail after an attack is detected.')
                                             ->select(function () {
                                                 return Select::make('fail2ban.config.jails.sshd.bantime_unit')
-                                                    ->options(SupportedApplicationTypes::getFail2BanTimeUnits())
+                                                    ->options(\App\Server\Helpers\Fail2Ban::getFail2BanTimeUnits())
                                                     ->default('m');
                                             }),
 
                                         Select::make('fail2ban.config.jails.sshd.banaction')
                                             ->label('Ban Action')
                                             ->helperText('Set the default method for blocking an IP address when a ban is triggered.')
-                                            ->options(SupportedApplicationTypes::getFail2BanBanactions())
+                                            ->options(\App\Server\Helpers\Fail2Ban::getFail2BanBanactions())
                                             ->default('iptables'),
 
                                         TextInput::make('fail2ban.config.jails.sshd.maxretry')
@@ -257,7 +256,7 @@ class Fail2BanSettings extends BaseSettings
 //                                        Select::make('fail2ban.config.jails.sshd.protocol')
 //                                            ->label('Protocol')
 //                                            ->helperText('')
-//                                            ->options(SupportedApplicationTypes::getFail2BanProtocols())
+//                                            ->options(\App\Server\Helpers\Fail2Ban::getFail2BanProtocols())
 //                                            ->default('tcp'),
                                     ])
                                         ->hidden(function (Get $get) {
@@ -285,7 +284,7 @@ class Fail2BanSettings extends BaseSettings
 //                                        Select::make('fail2ban.config.jails.apache.filter')
 //                                            ->label('Filter')
 //                                            ->helperText('The \'filter\' sets the criteria used by the jail to identify malicious activity.')
-//                                            ->options(SupportedApplicationTypes::getFail2BanJailFilters('apache'))
+//                                            ->options(\App\Server\Helpers\Fail2Ban::getFail2BanJailFilters('apache'))
 //                                            ->default('apache-auth'),
 
                                         TextInputSelectAffix::make('fail2ban.config.jails.apache.findtime')
@@ -294,7 +293,7 @@ class Fail2BanSettings extends BaseSettings
                                             ->helperText('Set the time period in which a host must exceed the maximum number of failed login attempts to trigger a ban.')
                                             ->select(function () {
                                                 return Select::make('fail2ban.config.jails.apache.findtime_unit')
-                                                    ->options(SupportedApplicationTypes::getFail2BanTimeUnits())
+                                                    ->options(\App\Server\Helpers\Fail2Ban::getFail2BanTimeUnits())
                                                     ->default('m');
                                             }),
 
@@ -304,14 +303,14 @@ class Fail2BanSettings extends BaseSettings
                                             ->helperText('Set the length of time an IP address will be banned by the jail after an attack is detected.')
                                             ->select(function () {
                                                 return Select::make('fail2ban.config.jails.apache.bantime_unit')
-                                                    ->options(SupportedApplicationTypes::getFail2BanTimeUnits())
+                                                    ->options(\App\Server\Helpers\Fail2Ban::getFail2BanTimeUnits())
                                                     ->default('m');
                                             }),
 
 //                                        Select::make('fail2ban.config.jails.apache.banaction')
 //                                            ->label('Ban Action')
 //                                            ->helperText('Set the default method for blocking an IP address when a ban is triggered.')
-//                                            ->options(SupportedApplicationTypes::getFail2BanBanactions())
+//                                            ->options(\App\Server\Helpers\Fail2Ban::getFail2BanBanactions())
 //                                            ->default('iptables'),
 
                                         TextInput::make('fail2ban.config.jails.apache.maxretry')
@@ -327,7 +326,7 @@ class Fail2BanSettings extends BaseSettings
 //                                        Select::make('fail2ban.config.jails.apache.protocol')
 //                                            ->label('Protocol')
 //                                            ->helperText('')
-//                                            ->options(SupportedApplicationTypes::getFail2BanProtocols())
+//                                            ->options(\App\Server\Helpers\Fail2Ban::getFail2BanProtocols())
 //                                            ->default('tcp'),
 
                                     ])
@@ -356,7 +355,7 @@ class Fail2BanSettings extends BaseSettings
 //                                        Select::make('fail2ban.config.jails.vsftpd.filter')
 //                                            ->label('Filter')
 //                                            ->helperText('The \'filter\' sets the criteria used by the jail to identify malicious activity.')
-//                                            ->options(SupportedApplicationTypes::getFail2BanJailFilters('vsftpd'))
+//                                            ->options(\App\Server\Helpers\Fail2Ban::getFail2BanJailFilters('vsftpd'))
 //                                            ->default('vsftpd'),
 
                                         TextInputSelectAffix::make('fail2ban.config.jails.vsftpd.findtime')
@@ -365,7 +364,7 @@ class Fail2BanSettings extends BaseSettings
                                             ->helperText('Set the time period in which a host must exceed the maximum number of failed login attempts to trigger a ban.')
                                             ->select(function () {
                                                 return Select::make('fail2ban.config.jails.vsftpd.findtime_unit')
-                                                    ->options(SupportedApplicationTypes::getFail2BanTimeUnits())
+                                                    ->options(\App\Server\Helpers\Fail2Ban::getFail2BanTimeUnits())
                                                     ->default('m');
                                             }),
 
@@ -375,14 +374,14 @@ class Fail2BanSettings extends BaseSettings
                                             ->helperText('Set the length of time an IP address will be banned by the jail after an attack is detected.')
                                             ->select(function () {
                                                 return Select::make('fail2ban.config.jails.vsftpd.bantime_unit')
-                                                    ->options(SupportedApplicationTypes::getFail2BanTimeUnits())
+                                                    ->options(\App\Server\Helpers\Fail2Ban::getFail2BanTimeUnits())
                                                     ->default('m');
                                             }),
 
 //                                        Select::make('fail2ban.config.jails.vsftpd.banaction')
 //                                            ->label('Ban Action options')
 //                                            ->helperText('Set the default method for blocking an IP address when a ban is triggered.')
-//                                            ->options(SupportedApplicationTypes::getFail2BanBanactions())
+//                                            ->options(\App\Server\Helpers\Fail2Ban::getFail2BanBanactions())
 //                                            ->default('iptables'),
 
                                         TextInput::make('fail2ban.config.jails.vsftpd.maxretry')
@@ -398,7 +397,7 @@ class Fail2BanSettings extends BaseSettings
 //                                        Select::make('fail2ban.config.jails.vsftpd.protocol')
 //                                            ->label('Protocol')
 //                                            ->helperText('')
-//                                            ->options(SupportedApplicationTypes::getFail2BanProtocols())
+//                                            ->options(\App\Server\Helpers\Fail2Ban::getFail2BanProtocols())
 //                                            ->default('tcp'),
 
                                     ])

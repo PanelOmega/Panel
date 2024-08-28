@@ -3,15 +3,14 @@
 namespace App\Models;
 
 use App\Jobs\HtaccessBuildErrorPage;
-use App\Server\SupportedApplicationTypes;
+use App\Models\Traits\ErrorPageTrait;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Sushi\Sushi;
 
 class Error extends Model
 {
-    use HasFactory;
-    use Sushi;
+    use HasFactory, Sushi, ErrorPageTrait;
 
     protected $fillable = [
         'name',
@@ -44,7 +43,7 @@ class Error extends Model
 
     public function getRows(): array
     {
-        $errorPages = SupportedApplicationTypes::getErrorPages();
+        $errorPages = self::getErrorPages();
         $hostingSubscription = Customer::getHostingSubscriptionSession();
         $errorPagePath = "/home/{$hostingSubscription->system_username}/public_html";
         $errorPageBuild = new HtaccessBuildErrorPage(false, $errorPagePath);

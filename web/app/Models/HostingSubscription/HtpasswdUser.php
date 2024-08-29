@@ -1,8 +1,9 @@
 <?php
 
-namespace App\Models;
+namespace App\Models\HostingSubscription;
 
 use App\Jobs\HtpasswdBuild;
+use App\Models\Customer;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -56,7 +57,7 @@ class HtpasswdUser extends Model
             $callback();
         });
     }
-    
+
     public function directoryPrivacy()
     {
         return $this->belongsTo(DirectoryPrivacy::class, 'directory', 'directory');

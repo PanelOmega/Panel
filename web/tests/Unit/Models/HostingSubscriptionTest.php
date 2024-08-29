@@ -59,7 +59,7 @@ class HostingSubscriptionTest extends TestCase
 
         // Test domain php version
 //        shell_exec('sudo echo "0.0.0.0 '.$findDomain->domain_public.'" | sudo tee -a /etc/hosts');
-/*        file_put_contents($findDomain->domain_public . '/index.php', '<?php echo "site-is-ok, "; echo phpversion(); ?>');*/
+        /*        file_put_contents($findDomain->domain_public . '/index.php', '<?php echo "site-is-ok, "; echo phpversion(); ?>');*/
 //        $domainHomePageContent = file_get_contents('http://' . $hostingSubscription->domain);
 //        $this->assertTrue(Str::contains($domainHomePageContent, 'site-is-ok, 5.6'));
 
@@ -67,7 +67,7 @@ class HostingSubscriptionTest extends TestCase
 
     public function testHostingSubscriptionDeletion(): void
     {
-        $hostingSubscription = HostingSubscription::where('id',static::$lastCreatedHostingSubscriptionId)->first();
+        $hostingSubscription = HostingSubscription::where('id', static::$lastCreatedHostingSubscriptionId)->first();
         $hostingSubscription->delete();
         $this->assertDatabaseMissing('hosting_subscriptions', ['id' => static::$lastCreatedHostingSubscriptionId]);
     }
@@ -86,7 +86,7 @@ class HostingSubscriptionTest extends TestCase
 
 
         $supportedPHPVersions = SupportedApplicationTypes::getPHPVersions();
-        foreach($supportedPHPVersions as $phpVersion=>$phpVersionName) {
+        foreach ($supportedPHPVersions as $phpVersion => $phpVersionName) {
 
             $createHostingPlan = new HostingPlan();
             $createHostingPlan->name = 'test' . rand(1000, 9999);
@@ -115,7 +115,7 @@ class HostingSubscriptionTest extends TestCase
 
             // Test domain php version
 //            shell_exec('sudo echo "0.0.0.0 '.$findDomain->domain_public.'" | sudo tee -a /etc/hosts');
-/*            file_put_contents($findDomain->domain_public . '/index.php', '<?php echo "site-is-ok, "; echo phpversion(); ?>');*/
+            /*            file_put_contents($findDomain->domain_public . '/index.php', '<?php echo "site-is-ok, "; echo phpversion(); ?>');*/
 //            $domainHomePageContent = file_get_contents('http://' . $hostingSubscription->domain);
 //            $this->assertTrue(strpos($domainHomePageContent, 'site-is-ok, '.$phpVersion) !== false);
 

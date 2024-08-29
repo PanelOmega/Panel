@@ -6,7 +6,7 @@ use App\FilamentCustomer\Resources\FtpAccountResource\Pages;
 use App\FilamentCustomer\Resources\FtpAccountResource\RelationManagers;
 use App\Models\Customer;
 use App\Models\Domain;
-use App\Models\HostingSubscriptionFtpAccount;
+use App\Models\HostingSubscription\FtpAccount;
 use App\Models\Scopes\CustomerScope;
 use Filament\Forms;
 use Filament\Forms\Components\Radio;
@@ -27,7 +27,7 @@ class FtpAccountResource extends Resource
 
     protected static ?string $navigationLabel = 'FTP Accounts';
 
-    protected static ?string $model = HostingSubscriptionFtpAccount::class;
+    protected static ?string $model = FtpAccount::class;
 
     protected static ?string $navigationIcon = 'omega_customer-file-ftp';
 

@@ -1,15 +1,16 @@
 <?php
 
-namespace App\Models;
+namespace App\Models\HostingSubscription;
 
 use App\Jobs\UpdateVsftpdUserlist;
-use App\Server\Helpers\FtpAccount;
+use App\Models\Customer;
+use App\Models\HostingSubscription;
 use App\Server\Helpers\LinuxUser;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
 
-class HostingSubscriptionFtpAccount extends Model
+class FtpAccount extends Model
 {
     use HasFactory;
 
@@ -23,6 +24,8 @@ class HostingSubscriptionFtpAccount extends Model
         'ftp_quota',
         'ftp_quota_type',
     ];
+
+    protected $table = 'hosting_subscription_ftp_accounts';
 
     public static function boot()
     {
@@ -69,11 +72,6 @@ class HostingSubscriptionFtpAccount extends Model
 
     }
 
-    public function hostingSubscription()
-    {
-        return $this->belongsTo(HostingSubscription::class);
-    }
-
     /**
      * @param
      * @return array
@@ -95,7 +93,7 @@ class HostingSubscriptionFtpAccount extends Model
                 'message' => 'Ftp account already exists.'
             ];
         }
-        
+
         $hostingSubscriptionId = $hostingSubscription->id;
         $ftpUsername = Str::slug($this->ftp_username, '_');
         $ftpUsernamePrefix = $hostingSubscription->system_username . '_';
@@ -152,7 +150,7 @@ class HostingSubscriptionFtpAccount extends Model
      */
     private function _getFtpAccountByUsername(string $username)
     {
-        $accountData = HostingSubscriptionFtpAccount::where('ftp_username', $username)->first();
+        $accountData = FtpAccount::where('ftp_username', $username)->first();
         if ($accountData) {
             return $accountData;
         }
@@ -185,6 +183,11 @@ class HostingSubscriptionFtpAccount extends Model
         return [
             'success' => 'User deleted successfully',
         ];
+    }
+
+    public function hostingSubscription()
+    {
+        return $this->belongsTo(HostingSubscription::class);
     }
 
     /**

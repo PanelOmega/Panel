@@ -3,7 +3,7 @@
 namespace App\FilamentCustomer\Pages\ErrorPages;
 
 use App\Models\Customer;
-use App\Models\Error;
+use App\Models\HostingSubscription\ErrorPageBrowse;
 use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
@@ -76,7 +76,7 @@ class ErrorPage extends Page implements HasTable
                                 Select::make('tags')
                                     ->label('Select Tag to Insert')
                                     ->reactive()
-                                    ->options(Error::getErrorPagesTags())
+                                    ->options(ErrorPageBrowse::getErrorPagesTags())
                                     ->afterStateUpdated(function ($state, $set, $get) {
                                         $currentContent = $get('content');
                                         $formattedTag = htmlspecialchars("<!-- $state -->", ENT_QUOTES, 'UTF-8');
@@ -118,12 +118,12 @@ class ErrorPage extends Page implements HasTable
 
     protected function getAllQuery()
     {
-        return \App\Models\Error::query();
+        return \App\Models\HostingSubscription\ErrorPageBrowse::query();
     }
 
     protected function getCommonQuery()
     {
-        return \App\Models\Error::query()
+        return \App\Models\HostingSubscription\ErrorPageBrowse::query()
             ->whereIn('name', [
                 '400 (Bad request)',
                 '401 (Authorization required)',

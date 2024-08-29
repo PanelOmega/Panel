@@ -3,12 +3,11 @@
 namespace Database\Seeders\HostingSubscription;
 
 use App\Models\Customer;
+use App\Models\HostingPlan;
 use App\Models\HostingSubscription;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use Carbon\Carbon;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Str;
-use Carbon\Carbon;
-use App\Models\HostingPlan;
 
 class HostingSubscriptionSeeder extends Seeder
 {
@@ -21,7 +20,7 @@ class HostingSubscriptionSeeder extends Seeder
         $customers = Customer::all();
         $hostingPlans = HostingPlan::all();
 
-        foreach($customers as $customer){
+        foreach ($customers as $customer) {
 
             $hostingPlan = $hostingPlans->random();
 

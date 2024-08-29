@@ -5,14 +5,14 @@ namespace App\Models;
 use App\Actions\CreateLinuxWebUser;
 use App\Actions\GetLinuxUser;
 use App\Jobs\ApacheBuild;
+use App\Models\HostingSubscription\FtpAccount;
+use App\Models\HostingSubscription\HotlinkProtection;
 use App\OmegaConfig;
-use App\Server\Helpers\FtpAccount;
 use App\Server\Helpers\LinuxUser;
 use App\UniversalDatabaseExecutor;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Str;
 
 class HostingSubscription extends Model
 {
@@ -31,6 +31,8 @@ class HostingSubscription extends Model
         'renewal_date',
     ];
 
+    protected $table = 'hosting_subscriptions';
+
     public static function boot()
     {
         parent::boot();
@@ -46,7 +48,7 @@ class HostingSubscription extends Model
                 throw new \Exception('System username not found');
             }
 
-            $getFptUser = HostingSubscriptionFtpAccount::where('ftp_username', $model->system_username)->get();
+            $getFptUser = FtpAccount::where('ftp_username', $model->system_username)->get();
 
             if (!$getFptUser->isEmpty()) {
                 $getFptUser->delete();
@@ -139,7 +141,7 @@ class HostingSubscription extends Model
 
     public function ftpAccounts()
     {
-        return $this->hasMany(HostingSubscriptionFtpAccount::class);
+        return $this->hasMany(FtpAccount::class);
     }
 
     public function hotlinkProtection()

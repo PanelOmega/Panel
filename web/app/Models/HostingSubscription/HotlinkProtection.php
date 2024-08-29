@@ -1,8 +1,9 @@
 <?php
 
-namespace App\Models;
+namespace App\Models\HostingSubscription;
 
 use App\Jobs\HtaccessBuildHotlinkProtection;
+use App\Models\Customer;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -27,8 +28,10 @@ class HotlinkProtection extends Model
 
     public static function hotlinkProtectionBoot()
     {
-        $callback = function ($model) {
-            $hotlinkProtection = new HtaccessBuildHotlinkProtection(false, $model);
+        $hostingSubscription = Customer::getHostingSubscriptionSession();
+
+        $callback = function ($model) use ($hostingSubscription) {
+            $hotlinkProtection = new HtaccessBuildHotlinkProtection(false, $hostingSubscription);
             $hotlinkProtection->handle();
         };
         static::saved($callback);

@@ -1,9 +1,9 @@
 <?php
 
-namespace App\Models;
+namespace App\Models\HostingSubscription;
 
 use App\Jobs\HtaccessBuildIndexes;
-use App\Models\Traits\IndexTrait;
+use App\Models\Customer;
 use Illuminate\Contracts\Filesystem\Filesystem as FilesystemContract;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
@@ -11,9 +11,9 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Sushi\Sushi;
 
-class Index extends Model
+class IndexBrowse extends Model
 {
-    use Sushi, IndexTrait;
+    use Sushi;
 
     protected static string $rootPath;
 
@@ -34,16 +34,31 @@ class Index extends Model
     public static function boot()
     {
         parent::boot();
-        static::IndexesBoot();
+        static::HostingSubscriptionIndexBrowseBoot();
     }
 
-    public static function IndexesBoot()
+    public static function HostingSubscriptionIndexBrowseBoot()
     {
         $hostingSubscription = Customer::getHostingSubscriptionSession();
 
         $callback = function ($model) use ($hostingSubscription) {
-            $htaccessBuild = new HtaccessBuildIndexes(false, $model, $hostingSubscription);
-            $htaccessBuild->handle();
+
+            $hostingSubscriptionIndex = Index::where('hosting_subscription_id', $hostingSubscription->id)
+                ->where('directory_real_path', $model->directory_real_path)->first();
+
+            if ($hostingSubscriptionIndex) {
+                $hostingSubscriptionIndex->update([
+                    'index_type' => $model->index_type,
+                ]);
+            } else {
+                Index::create([
+                    'hosting_subscription_id' => $hostingSubscription->id,
+                    'directory' => $model->directory,
+                    'directory_real_path' => $model->directory_real_path,
+                    'directory_type' => $model->type,
+                    'index_type' => $model->index_type,
+                ]);
+            }
         };
 
         static::updated($callback);
@@ -109,13 +124,13 @@ class Index extends Model
                 $indexType = 'inherit';
                 $private = 'public';
 
-                $directoryRealPath = $storage->path($directory);
-                $indexType = HtaccessBuildIndexes::getIndexType($directoryRealPath);
+                $hostingSubsctipion = Customer::getHostingSubscriptionSession();
+                $indexType = HtaccessBuildIndexes::getIndexType($hostingSubsctipion->id, $directory);
 
                 return [
                     'directory' => Str::remove(self::$path . '/', $directory),
                     'directory_real_path' => $directory,
-                    'index_type' => $indexType,
+                    'index_type' => empty($indexType) ? 'Inherit' : $indexType[0],
                     'type' => 'Folder',
                     'path' => $directory,
                 ];

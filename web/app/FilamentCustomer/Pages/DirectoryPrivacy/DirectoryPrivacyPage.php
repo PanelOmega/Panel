@@ -3,8 +3,8 @@
 namespace App\FilamentCustomer\Pages\DirectoryPrivacy;
 
 use App\Models\Customer;
-use App\Models\DirectoryPrivacy;
-use App\Models\DirectoryPrivacyListFolder;
+use App\Models\HostingSubscription\DirectoryPrivacy;
+use App\Models\HostingSubscription\DirectoryPrivacyBrowse;
 use Filament\Forms\Components\Checkbox;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Section;
@@ -51,7 +51,7 @@ class DirectoryPrivacyPage extends Page implements HasTable
         return $table
             ->heading($this->path ?: 'Root')
             ->query(
-                DirectoryPrivacyListFolder::queryForDiskAndPath($this->disk, $this->path)
+                DirectoryPrivacyBrowse::queryForDiskAndPath($this->disk, $this->path)
             )
             ->paginated(false)
             ->columns([
@@ -64,7 +64,7 @@ class DirectoryPrivacyPage extends Page implements HasTable
                         'Folder' => 'warning',
                         default => 'gray',
                     })
-                    ->action(function (DirectoryPrivacyListFolder $record) {
+                    ->action(function (DirectoryPrivacyBrowse $record) {
                         if ($record->isFolder()) {
                             $this->path = $record->path;
 
@@ -181,11 +181,11 @@ class DirectoryPrivacyPage extends Page implements HasTable
                     ->successNotificationTitle('Files deleted')
                     ->deselectRecordsAfterCompletion()
                     ->action(function (Collection $records, BulkAction $action) {
-                        $records->each(fn(DirectoryPrivacyListFolder $record) => $record->delete());
+                        $records->each(fn(DirectoryPrivacyBrowse $record) => $record->delete());
                         $action->sendSuccessNotification();
                     }),
             ])
-            ->checkIfRecordIsSelectableUsing(fn(DirectoryPrivacyListFolder $record): bool => !$record->isPreviousPath())
+            ->checkIfRecordIsSelectableUsing(fn(DirectoryPrivacyBrowse $record): bool => !$record->isPreviousPath())
             ->headerActions([
                 Action::make('home')
                     ->label('Home')

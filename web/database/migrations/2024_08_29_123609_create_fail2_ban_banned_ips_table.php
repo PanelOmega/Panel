@@ -10,10 +10,15 @@ return new class extends Migration {
      */
     public function up(): void
     {
-        Schema::create('fail2_ban_whitelisted_ips', function (Blueprint $table) {
+        Schema::create('fail2_ban_banned_ips', function (Blueprint $table) {
             $table->id();
+            $table->unsignedBigInteger('hosting_subscription_id')->nullable();
             $table->string('ip')->nullable();
-            $table->longText('comment')->nullable();
+            $table->string('status')->nullable();
+            $table->string('service')->nullable();
+            $table->string('ban_count')->nullable();
+            $table->string('ban_date')->nullable();
+            $table->string('ban_time')->nullable();
             $table->timestamps();
         });
     }
@@ -23,6 +28,6 @@ return new class extends Migration {
      */
     public function down(): void
     {
-        Schema::dropIfExists('fail2_ban_whitelisted_ips');
+        Schema::dropIfExists('fail2_ban_banned_ips');
     }
 };

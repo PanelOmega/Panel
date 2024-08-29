@@ -2,27 +2,16 @@
 
 namespace App\FilamentCustomer\Resources;
 
-use App\Filament\Enums\ServerApplicationType;
-use App\Models\Domain;
-use App\Models\Scopes\CustomerScope;
-use App\Server\SupportedApplicationTypes;
-use Filament\Forms\Components\Actions;
-use Filament\Forms\Components\KeyValue;
-use Filament\Forms\Components\Select;
-use Filament\Forms\Components\Tabs;
-use Filament\Forms\Components\TextInput;
-use Filament\Forms\Get;
-use JaOcero\RadioDeck\Forms\Components\RadioDeck;
 use App\FilamentCustomer\Resources\DomainResource\Pages;
 use App\FilamentCustomer\Resources\DomainResource\RelationManagers;
-
-use Filament\Forms;
+use App\Models\Domain;
+use App\Models\Scopes\CustomerScope;
+use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class DomainResource extends Resource
 {

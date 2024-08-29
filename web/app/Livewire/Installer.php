@@ -5,24 +5,17 @@ namespace App\Livewire;
 
 use App\Filament\Enums\ServerApplicationType;
 use App\Models\Admin;
-use App\Models\User;
 use App\Server\SupportedApplicationTypes;
 use Filament\Forms\Components\CheckboxList;
-use Filament\Forms\Components\Field;
-use Filament\Forms\Components\Radio;
 use Filament\Forms\Components\Section;
-use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
-use Filament\Forms\Components\Toggle;
 use Filament\Forms\Components\Wizard;
 use Filament\Forms\Form;
 use Filament\Forms\Get;
 use Filament\Pages\Page;
-use Filament\Support\Exceptions\Halt;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\HtmlString;
 use JaOcero\RadioDeck\Forms\Components\RadioDeck;
-use Livewire\Component;
 
 class Installer extends Page
 {

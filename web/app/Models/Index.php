@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Jobs\HtaccessBuildIndexes;
+use App\Models\Traits\IndexTrait;
 use Illuminate\Contracts\Filesystem\Filesystem as FilesystemContract;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
@@ -12,7 +13,7 @@ use Sushi\Sushi;
 
 class Index extends Model
 {
-    use Sushi;
+    use Sushi, IndexTrait;
 
     protected static string $rootPath;
 
@@ -40,23 +41,12 @@ class Index extends Model
     {
         $hostingSubscription = Customer::getHostingSubscriptionSession();
 
-        static::creating(function ($model) use ($hostingSubscription) {
-            $model->hosting_subscription_id = $hostingSubscription->id;
-        });
-
         $callback = function ($model) use ($hostingSubscription) {
             $htaccessBuild = new HtaccessBuildIndexes(false, $model, $hostingSubscription);
             $htaccessBuild->handle();
         };
 
-        static::created($callback);
         static::updated($callback);
-
-        static::deleted(function ($model) use ($hostingSubscription) {
-            $htaccessBuild = new HtaccessBuildIndexes(false, $model, $hostingSubscription);
-            $htaccessBuild->isDeleted(true);
-            $htaccessBuild->handle();
-        });
     }
 
     public static function queryForDiskAndPath(string $rootPath = 'public', string $path = ''): Builder

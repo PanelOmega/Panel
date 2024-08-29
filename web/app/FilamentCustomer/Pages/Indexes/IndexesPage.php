@@ -4,7 +4,6 @@ namespace App\FilamentCustomer\Pages\Indexes;
 
 use App\Models\Customer;
 use App\Models\Index;
-use App\Server\SupportedApplicationTypes;
 use Filament\Forms\Components\Radio;
 use Filament\Pages\Page;
 use Filament\Tables\Actions\Action;
@@ -100,7 +99,7 @@ class IndexesPage extends Page implements HasTable
 
                         Radio::make('index_type')
                             ->label('Set Indexing Settings for all directories.')
-                            ->options(SupportedApplicationTypes::getIndexesIndexTypes())
+                            ->options(Index::getIndexesIndexTypes())
                             ->default(function (Index $record) {
                                 return $record->index_type;
                             })

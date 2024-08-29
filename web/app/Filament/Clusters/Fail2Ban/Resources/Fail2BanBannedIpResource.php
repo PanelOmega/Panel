@@ -6,7 +6,6 @@ use App\Filament\Clusters\Fail2Ban\Fail2Ban;
 use App\Filament\Clusters\Fail2Ban\Fail2Ban\Resources\Fail2BanBannedIpResource\Pages;
 use App\Filament\Clusters\Fail2Ban\Fail2Ban\Resources\Fail2BanBannedIpResource\RelationManagers;
 use App\Models\Fail2BanBannedIp;
-use App\Server\SupportedApplicationTypes;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
@@ -43,7 +42,7 @@ class Fail2BanBannedIpResource extends Resource
                     ->required()
                     ->columnSpanFull()
                     ->options(
-                        SupportedApplicationTypes::getFail2BanAvailableJails()
+                        \App\Server\Helpers\Fail2Ban::getFail2BanAvailableJails()
                     )
             ]);
     }

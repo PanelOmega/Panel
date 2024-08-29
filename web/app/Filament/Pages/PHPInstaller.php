@@ -3,7 +3,7 @@
 namespace App\Filament\Pages;
 
 use App\Livewire\Installer;
-use App\Server\Fail2ban;
+use App\Server\SupportedApplicationTypes;
 use Filament\Forms\Components\CheckboxList;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Wizard;
@@ -47,14 +47,14 @@ class PHPInstaller extends Installer
                                     '8.2'
                                 ])
                                 ->label('PHP Version')
-                                ->options(Fail2ban::getPHPVersions())
+                                ->options(SupportedApplicationTypes::getPHPVersions())
                                 ->columns(5)
                                 ->required(),
 
                             CheckboxList::make('server_php_modules')
                                 ->label('PHP Modules')
                                 ->columns(5)
-                                ->options(Fail2ban::getPHPModules()),
+                                ->options(SupportedApplicationTypes::getPHPModules()),
 
                         ])->afterValidation(function () {
 

@@ -2,7 +2,7 @@
 
 namespace App\Server;
 
-class Fail2ban
+class SupportedApplicationTypes
 {
     public static function getNodeJsVersions()
     {

@@ -5,7 +5,7 @@ namespace App\Livewire;
 
 use App\Filament\Enums\ServerApplicationType;
 use App\Models\Admin;
-use App\Server\Fail2ban;
+use App\Server\SupportedApplicationTypes;
 use Filament\Forms\Components\CheckboxList;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\TextInput;
@@ -65,7 +65,7 @@ class Installer extends Page
         }
 
         if (empty($this->server_php_modules)) {
-            $this->server_php_modules = array_keys(Fail2ban::getPHPModules());
+            $this->server_php_modules = array_keys(SupportedApplicationTypes::getPHPModules());
         }
 
         $step1 = [
@@ -144,7 +144,7 @@ class Installer extends Page
                                     '8.2'
                                 ])
                                 ->label('PHP Version')
-                                ->options(Fail2ban::getPHPVersions())
+                                ->options(SupportedApplicationTypes::getPHPVersions())
                                 ->columns(5)
                                 ->required(),
 
@@ -154,7 +154,7 @@ class Installer extends Page
                                 })
                                 ->label('PHP Modules')
                                 ->columns(5)
-                                ->options(Fail2ban::getPHPModules()),
+                                ->options(SupportedApplicationTypes::getPHPModules()),
                             // End of PHP Configuration
 
                             // Node.js Configuration
@@ -166,7 +166,7 @@ class Installer extends Page
                                 ->default([
                                     '14'
                                 ])
-                                ->options(Fail2ban::getNodeJsVersions())
+                                ->options(SupportedApplicationTypes::getNodeJsVersions())
                                 ->columns(6)
                                 ->required(),
 
@@ -182,7 +182,7 @@ class Installer extends Page
                                 ->default([
                                     '3.10'
                                 ])
-                                ->options(Fail2ban::getPythonVersions())
+                                ->options(SupportedApplicationTypes::getPythonVersions())
                                 ->columns(6)
                                 ->required(),
 
@@ -198,7 +198,7 @@ class Installer extends Page
                                 ->default([
                                     '3.4'
                                 ])
-                                ->options(Fail2ban::getRubyVersions())
+                                ->options(SupportedApplicationTypes::getRubyVersions())
                                 ->columns(6)
                                 ->required(),
 

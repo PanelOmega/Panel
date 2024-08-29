@@ -5,7 +5,7 @@ namespace App\Filament\Resources;
 use App\Filament\Enums\ServerApplicationType;
 use App\Filament\Resources\HostingPlanResource\Pages;
 use App\Models\HostingPlan;
-use App\Server\Fail2ban;
+use App\Server\SupportedApplicationTypes;
 use Filament\Forms;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Form;
@@ -53,7 +53,7 @@ class HostingPlanResource extends Resource
                                                     })
                                                     ->default('8.3')
                                                     ->label('PHP Version')
-                                                    ->options(Fail2ban::getPHPVersions())
+                                                    ->options(SupportedApplicationTypes::getPHPVersions())
                                                     ->columns(5)
                                                     ->required(),
 

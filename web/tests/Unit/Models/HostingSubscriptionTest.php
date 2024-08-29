@@ -7,7 +7,7 @@ use App\Models\Customer;
 use App\Models\Domain;
 use App\Models\HostingPlan;
 use App\Models\HostingSubscription;
-use App\Server\Fail2ban;
+use App\Server\SupportedApplicationTypes;
 use Tests\TestCase;
 use Tests\Unit\Traits\HasDocker;
 
@@ -85,7 +85,7 @@ class HostingSubscriptionTest extends TestCase
         $this->assertDatabaseHas('customers', ['username' => $customerUsername]);
 
 
-        $supportedPHPVersions = Fail2ban::getPHPVersions();
+        $supportedPHPVersions = SupportedApplicationTypes::getPHPVersions();
         foreach($supportedPHPVersions as $phpVersion=>$phpVersionName) {
 
             $createHostingPlan = new HostingPlan();

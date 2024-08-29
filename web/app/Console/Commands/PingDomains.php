@@ -12,7 +12,7 @@ class PingDomains extends Command
      *
      * @var string
      */
-    protected $signature = 'phyre:ping-domains';
+    protected $signature = 'omega:ping-domains';
 
     /**
      * The console command description.

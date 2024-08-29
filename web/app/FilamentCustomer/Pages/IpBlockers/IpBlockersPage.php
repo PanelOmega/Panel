@@ -11,7 +11,8 @@ use Filament\Forms\Concerns\InteractsWithForms;
 use Filament\Forms\Form;
 use Filament\Notifications\Notification;
 use Filament\Pages\Page;
-use Filament\Tables\Actions\BulkAction;
+use Filament\Tables\Actions\BulkActionGroup;
+use Filament\Tables\Actions\DeleteBulkAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Concerns\InteractsWithTable;
 use Filament\Tables\Contracts\HasTable;
@@ -55,12 +56,12 @@ class IpBlockersPage extends Page implements HasTable
                     'single_ip_address' => [
                         'Single IP Address',
                         '192.168.0.1',
-                        '2001:db8::1'
+//                        '2001:db8::1'
                     ],
                     'range' => [
                         'Range',
                         '192.168.0.1-192.168.0.40',
-                        '2001:db8::1-2001:db8::3'
+//                        '2001:db8::1-2001:db8::3'
                     ],
                     'implied_range' => [
                         'Implied Range',
@@ -69,7 +70,7 @@ class IpBlockersPage extends Page implements HasTable
                     'cidr_format' => [
                         'CIDR Format',
                         '192.168.0.1/32',
-                        '2001:db8::/32'
+//                        '2001:db8::/32'
                     ],
                     'implies_*' => [
                         'Implies 192.*.*.*',
@@ -110,21 +111,17 @@ class IpBlockersPage extends Page implements HasTable
                     ->action(function ($record) {
                         if ($record->delete()) {
                             Notification::make()
-                                ->title('Redirect Deleted')
-                                ->body('The redirect has been successfully deleted.')
+                                ->title('IP Unblocked')
+                                ->body('The IP has been successfully unblocked.')
                                 ->danger()
                                 ->send();
                         }
                     })
             ])
             ->bulkActions([
-                BulkAction::make('delete')
-                    ->label('Delete Selected')
-                    ->action(function ($records) {
-                        foreach ($records as $record) {
-                            $record->delete();
-                        }
-                    })
+                BulkActionGroup::make([
+                    DeleteBulkAction::make(),
+                ]),
             ]);
     }
 
@@ -148,7 +145,7 @@ class IpBlockersPage extends Page implements HasTable
                             ->rule([
                                 'unique:ip_blockers,blocked_ip',
                             ])
-//                        ->regex('\'/^\d{1,3}\.$/\'')
+                            ->regex('/^(\d{1,3}\.){1,3}(\d{1,3})?(-(\d{1,3}\.){0,3}\d{1,3}|\d{1,3})?(\/\d{1,2})?$/')
                     ])
                     ->maxWidth('2xl'),
 

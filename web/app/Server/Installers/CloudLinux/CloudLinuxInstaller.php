@@ -106,12 +106,14 @@ class CloudLinuxInstaller
 
     public static function isCloudLinuxInstalled(): array
     {
-        $cloudLinuxVersion = file_get_contents('/etc/redhat-release');
-        if (str_contains($cloudLinuxVersion, 'CloudLinux')) {
-            return [
-                'status' => 'success',
-                'message' => 'CloudLinux is installed.',
-            ];
+        if (is_file('/etc/redhat-release')) {
+            $cloudLinuxVersion = file_get_contents('/etc/redhat-release');
+            if (str_contains($cloudLinuxVersion, 'CloudLinux')) {
+                return [
+                    'status'  => 'success',
+                    'message' => 'CloudLinux is installed.',
+                ];
+            }
         }
 
         return [

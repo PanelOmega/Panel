@@ -12,6 +12,7 @@
         "php": "^8.2",
         "calebporzio/sushi": "^2.5",
         "codewithdennis/filament-simple-alert": "^3.0",
+        "epifrin/rector-custom-rules": "^0.5.1",
         "filament/filament": "^3.2",
         "intervention/image-laravel": "^1.3",
         "jaocero/radio-deck": "^1.2",
@@ -34,6 +35,7 @@
         "nunomaduro/collision": "^8.0",
         "phpstan/phpstan": "^1.12",
         "phpunit/phpunit": "^11.0.1",
+        "rector/rector": "^1.2",
         "spatie/laravel-ignition": "^2.4",
         "squizlabs/php_codesniffer": "^3.10"
     },

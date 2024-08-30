@@ -3,7 +3,6 @@
 namespace tests\Unit\Models;
 
 use App\Models\HostingSubscription\FtpAccount;
-use App\Server\Helpers\FtpAccount;
 use Tests\TestCase;
 
 class HostingSubscriptionFtpAccountTest extends TestCase

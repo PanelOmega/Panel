@@ -9,7 +9,7 @@ include __DIR__ . '/rector/ConvertPrivateMethodsNameToCamelCaseRector.php';
 
 return RectorConfig::configure()
     ->withPaths([
-        __DIR__ . '/app',
+        __DIR__ . '/app/UniversalDatabaseExecutor.php',
 //        __DIR__ . '/app/Models/Fail2BanWhitelistedIp.php',
 //        __DIR__ . '/bootstrap',
 //        __DIR__ . '/config',
@@ -25,7 +25,7 @@ return RectorConfig::configure()
         ->withRules([
         ConvertProtectedMethodsNameToCamelCaseRector::class,
         ConvertPrivateMethodsNameToCamelCaseRector::class,
-        \Epifrin\RectorCustomRules\RectorRules\ConvertLocalVariablesNameToCamelCaseRector::class,
+        ConvertLocalVariablesNameToCamelCaseRector::class,
 
     ]);
 

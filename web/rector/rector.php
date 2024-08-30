@@ -8,6 +8,7 @@ include __DIR__ . '/ConvertProtectedMethodsNameToCamelCaseRector.php';
 include __DIR__ . '/ConvertPrivateMethodsNameToCamelCaseRector.php';
 include __DIR__ . '/ConvertPublicMethodsNameToCamelCaseRector.php';
 include __DIR__ . '/ConvertLocalVariablesNameToCamelCaseRector.php';
+include __DIR__ . '/ConvertVariablesNameToCamelCaseRector.php';
 
 $dirRoot = dirname(__DIR__);
 
@@ -43,6 +44,7 @@ return RectorConfig::configure()
         ConvertPrivateMethodsNameToCamelCaseRector::class,
         ConvertPublicMethodsNameToCamelCaseRector::class,
         ConvertLocalVariablesNameToCamelCaseRector::class,
+        ConvertVariablesNameToCamelCaseRector::class,
 
     ]);
 

@@ -21,7 +21,7 @@ class Fail2BanWhitelistedIp extends Model
     protected static function boot()
     {
         parent::boot();
-        static::Fail2BanBoot();
+        static::fail2BanBoot();
     }
 
     protected static function fail2BanBoot()

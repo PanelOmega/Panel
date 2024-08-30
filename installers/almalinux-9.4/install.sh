@@ -7,6 +7,7 @@ INSTALL_DIR="/omega/install"
 
 yum update -y
 dnf -y install sudo wget
+export NON_INT=1
 sudo wget -q -O - http://www.atomicorp.com/installers/atomic | sh
 dnf install epel-release -y
 dnf config-manager --set-enabled epel

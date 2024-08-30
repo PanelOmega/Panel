@@ -7,9 +7,7 @@ use App\Services\RemoteDatabaseService;
 use App\UniversalDatabaseExecutor;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Str;
-use Illuminate\Database\Eloquent\Builder;
 
 class Database extends Model
 {
@@ -87,7 +85,7 @@ class Database extends Model
 
         });
 
-        static::deleting(function($model) {
+        static::deleting(function ($model) {
 
             if ($model->is_remote_database_server == 1) {
 

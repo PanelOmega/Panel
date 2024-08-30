@@ -10,7 +10,7 @@ return new class extends Migration {
      */
     public function up(): void
     {
-        Schema::create('hotlink_protections', function (Blueprint $table) {
+        Schema::create('hosting_subscription_hotlink_protections', function (Blueprint $table) {
             $table->id();
             $table->unsignedInteger('hosting_subscription_id')->nullable();
             $table->string('url_allow_access')->nullable();
@@ -27,6 +27,6 @@ return new class extends Migration {
      */
     public function down(): void
     {
-        Schema::dropIfExists('hotlink_protections');
+        Schema::dropIfExists('hosting_subscription_hotlink_protections');
     }
 };

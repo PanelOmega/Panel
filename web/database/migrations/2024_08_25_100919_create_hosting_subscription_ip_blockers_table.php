@@ -10,10 +10,12 @@ return new class extends Migration {
      */
     public function up(): void
     {
-        Schema::create('fail2_ban_whitelisted_ips', function (Blueprint $table) {
+        Schema::create('hosting_subscription_ip_blockers', function (Blueprint $table) {
             $table->id();
-            $table->string('ip')->nullable();
-            $table->longText('comment')->nullable();
+            $table->unsignedBigInteger('hosting_subscription_id')->nullable();
+            $table->string('blocked_ip')->nullable();
+            $table->string('beginning_ip')->nullable();
+            $table->string('ending_ip')->nullable();
             $table->timestamps();
         });
     }
@@ -23,6 +25,6 @@ return new class extends Migration {
      */
     public function down(): void
     {
-        Schema::dropIfExists('fail2_ban_whitelisted_ips');
+        Schema::dropIfExists('hosting_subscription_ip_blockers');
     }
 };

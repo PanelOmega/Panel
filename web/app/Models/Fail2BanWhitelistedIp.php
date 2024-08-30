@@ -13,6 +13,7 @@ class Fail2BanWhitelistedIp extends Model
     use HasFactory;
 
     protected $fillable = [
+        'hosting_subscription_id',
         'ip',
         'comment'
     ];
@@ -23,9 +24,14 @@ class Fail2BanWhitelistedIp extends Model
         static::fail2BanBoot();
     }
 
-    protected static function fail2BanBoot() {
+    protected static function fail2BanBoot()
+    {
+        $hostingSubscription = Customer::getHostingSubscriptionSession();
+        static::creating(function ($model) use ($hostingSubscription) {
+            $model->hosting_subscription_id = $hostingSubscription->id;
+        });
 
-        $callback = function($model) {
+        $callback = function ($model) {
             $fail2banConfig = new Fail2BanConfigBuild();
             $fail2banConfig->handle();
         };

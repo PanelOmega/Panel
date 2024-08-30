@@ -1,8 +1,9 @@
 <?php
 
-namespace App\Models;
+namespace App\Models\HostingSubscription;
 
 use App\Jobs\HtpasswdBuild;
+use App\Models\Customer;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -19,10 +20,10 @@ class HtpasswdUser extends Model
     public static function boot()
     {
         parent::boot();
-        static::HtpasswdUserBoot();
+        static::htpasswdUserBoot();
     }
 
-    public static function HtpasswdUserBoot()
+    public static function htpasswdUserBoot()
     {
         $hostingSubscription = Customer::getHostingSubscriptionSession();
         $directoryRealPath = "/home/{$hostingSubscription->system_username}/.htpasswd";
@@ -56,7 +57,7 @@ class HtpasswdUser extends Model
             $callback();
         });
     }
-    
+
     public function directoryPrivacy()
     {
         return $this->belongsTo(DirectoryPrivacy::class, 'directory', 'directory');

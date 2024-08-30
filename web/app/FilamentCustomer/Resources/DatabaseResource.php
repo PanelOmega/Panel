@@ -6,8 +6,6 @@ use App\FilamentCustomer\Resources\DatabaseResource\Pages;
 use App\FilamentCustomer\Resources\DatabaseResource\RelationManagers;
 use App\Models\Customer;
 use App\Models\Database;
-use App\Models\HostingSubscription;
-use App\Models\RemoteDatabaseServer;
 use App\Models\Scopes\CustomerScope;
 use Filament\Forms;
 use Filament\Forms\Components\TextInput;
@@ -16,7 +14,6 @@ use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class DatabaseResource extends Resource
 {
@@ -53,14 +50,14 @@ class DatabaseResource extends Resource
 //                    ),
 
                 Forms\Components\TextInput::make('database_name')
-                    ->prefix(function ($record) use($systemUsername) {
+                    ->prefix(function ($record) use ($systemUsername) {
                         if ($record) {
                             return $record->database_name_prefix;
                         }
                         if (!$systemUsername) {
                             return false;
                         }
-                        return $systemUsername.'_';
+                        return $systemUsername . '_';
                     })
                     ->disabled(function ($record) {
                         return $record;
@@ -76,14 +73,14 @@ class DatabaseResource extends Resource
                             ->disabled(function ($record) {
                                 return $record;
                             })
-                            ->prefix(function ($record) use($systemUsername) {
+                            ->prefix(function ($record) use ($systemUsername) {
                                 if ($record) {
                                     return $record->username_prefix;
                                 }
                                 if (!$systemUsername) {
                                     return false;
                                 }
-                                return $systemUsername.'_';
+                                return $systemUsername . '_';
                             })
 //                            ->required()
                         ,

@@ -3,7 +3,7 @@
 namespace App\FilamentCustomer\Pages\IpBlockers;
 
 use App\Models\Customer;
-use App\Models\IpBlocker;
+use App\Models\HostingSubscription\IpBlocker;
 use Filament\Forms\Components\Actions;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\TextInput;

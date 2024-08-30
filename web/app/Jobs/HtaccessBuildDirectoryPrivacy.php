@@ -62,7 +62,7 @@ class HtaccessBuildDirectoryPrivacy implements ShouldQueue
             'protected' => $protected,
             'requireUser' => 'Require valid-user'
         ];
-        
+
         $htaccessContent = view('server.samples.apache.php.directory-privacy-htaccess', [
             'dPrivacyContent' => $dPrivacyContent
         ])->render();

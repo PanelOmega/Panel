@@ -10,7 +10,7 @@ return new class extends Migration {
      */
     public function up(): void
     {
-        Schema::create('redirects', function (Blueprint $table) {
+        Schema::create('hosting_subscription_redirects', function (Blueprint $table) {
             $table->id();
             $table->string('hosting_subscription_id')->nullable();
             $table->string('status_code')->nullable();
@@ -30,6 +30,6 @@ return new class extends Migration {
      */
     public function down(): void
     {
-        Schema::dropIfExists('redirects');
+        Schema::dropIfExists('hosting_subscription_redirects');
     }
 };

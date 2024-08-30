@@ -2,10 +2,9 @@
 
 namespace App\FilamentCustomer\Resources;
 
-use App\Models\CronJob;
-use App\Models\HostingSubscription;
 use App\FilamentCustomer\Resources\CronJobResource\Pages;
 use App\FilamentCustomer\Resources\CronJobResource\RelationManagers;
+use App\Models\CronJob;
 use App\Models\Scopes\CustomerScope;
 use Filament\Forms;
 use Filament\Forms\Form;
@@ -13,7 +12,6 @@ use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class CronJobResource extends Resource
 {

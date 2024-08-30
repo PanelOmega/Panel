@@ -2,10 +2,9 @@
 
 namespace tests\Unit\Models;
 
-use Tests\TestCase;
-use App\Models\HostingSubscriptionFtpAccount;
+use App\Models\HostingSubscription\FtpAccount;
 use App\Server\Helpers\FtpAccount;
-use App\Jobs\UpdateVsftpdUserlist;
+use Tests\TestCase;
 
 class HostingSubscriptionFtpAccountTest extends TestCase
 {
@@ -15,7 +14,7 @@ class HostingSubscriptionFtpAccountTest extends TestCase
         $testFtpUsername = 'test' . rand(1000, 9999);
         $testFtpUsernamePrefix = 'testprefix' . rand(1000, 9999) . '_';
 
-        $testFtpAccount = new HostingSubscriptionFtpAccount();
+        $testFtpAccount = new FtpAccount();
         $testFtpAccount->hosting_subscription_id = rand(1000, 9999);
         $testFtpAccount->ftp_username = $testFtpUsername;
         $testFtpAccount->ftp_username_prefix = $testFtpUsernamePrefix;
@@ -24,7 +23,7 @@ class HostingSubscriptionFtpAccountTest extends TestCase
         $testFtpAccount->ftp_quota = 100;
         $testFtpAccount->save();
 
-        $createdAccount = HostingSubscriptionFtpAccount::where('ftp_username', $testFtpUsername)->first();
+        $createdAccount = FtpAccount::where('ftp_username', $testFtpUsername)->first();
         $this->assertNotNull($createdAccount);
         $this->assertEquals($testFtpUsername, $createdAccount->ftp_username);
         $this->assertEquals('/home/test.com', $createdAccount->ftp_path);
@@ -32,7 +31,7 @@ class HostingSubscriptionFtpAccountTest extends TestCase
         $this->assertEquals(0, $createdAccount->ftp_quota_type);
 
         $createdAccount->delete();
-        $this->assertNull(HostingSubscriptionFtpAccount::where('ftp_username', $testFtpUsername)->first());
+        $this->assertNull(FtpAccount::where('ftp_username', $testFtpUsername)->first());
 
     }
 
@@ -42,7 +41,7 @@ class HostingSubscriptionFtpAccountTest extends TestCase
         $testFtpUsername = 'test' . rand(1000, 9999);
         $testFtpUsernamePrefix = 'testprefix' . rand(1000, 9999) . '_';
 
-        $testFtpAccount = new HostingSubscriptionFtpAccount();
+        $testFtpAccount = new FtpAccount();
         $testFtpAccount->hosting_subscription_id = rand(1000, 9999);
         $testFtpAccount->ftp_username = $testFtpUsername;
         $testFtpAccount->ftp_username_prefix = $testFtpUsernamePrefix;
@@ -52,7 +51,7 @@ class HostingSubscriptionFtpAccountTest extends TestCase
         $testFtpAccount->save();
 
         $testFtpAccount->delete();
-        $this->assertNull(HostingSubscriptionFtpAccount::where('ftp_username', $testFtpUsername)->first());
+        $this->assertNull(FtpAccount::where('ftp_username', $testFtpUsername)->first());
 
     }
 
@@ -62,7 +61,7 @@ class HostingSubscriptionFtpAccountTest extends TestCase
         $testFtpUsernamePrefix = 'testprefix' . rand(1000, 9999) . '_';
         $testHostingSubscriptionId = rand(1000, 9999);
 
-        $existingAccount = new HostingSubscriptionFtpAccount();
+        $existingAccount = new FtpAccount();
         $existingAccount->hosting_subscription_id = $testHostingSubscriptionId;
         $existingAccount->ftp_username = $testFtpUsername;
         $existingAccount->ftp_username_prefix = $testFtpUsernamePrefix;
@@ -71,10 +70,10 @@ class HostingSubscriptionFtpAccountTest extends TestCase
         $existingAccount->ftp_quota = 100;
         $existingAccount->save();
 
-        $createdAccount = HostingSubscriptionFtpAccount::where('ftp_username', $testFtpUsername)->first();
+        $createdAccount = FtpAccount::where('ftp_username', $testFtpUsername)->first();
         $this->assertNotNull($createdAccount);
 
-        $newFtpAccount = new HostingSubscriptionFtpAccount();
+        $newFtpAccount = new FtpAccount();
         $newFtpAccount->hosting_subscription_id = $testHostingSubscriptionId;
         $newFtpAccount->ftp_username = $testFtpUsername;
         $newFtpAccount->ftp_username_prefix = $testFtpUsernamePrefix;
@@ -88,7 +87,7 @@ class HostingSubscriptionFtpAccountTest extends TestCase
         $this->assertEquals('Ftp account already exists.', $createResult['message']);
 
         $existingAccount->delete();
-        $this->assertNull(HostingSubscriptionFtpAccount::where('ftp_username', $testFtpUsername)->first());
+        $this->assertNull(FtpAccount::where('ftp_username', $testFtpUsername)->first());
 
     }
 
@@ -98,7 +97,7 @@ class HostingSubscriptionFtpAccountTest extends TestCase
         $testFtpUsername = 'test' . rand(1000, 9999);
         $testFtpUsernamePrefix = 'testprefix' . rand(1000, 9999) . '_';
 
-        $ftpAccount = new HostingSubscriptionFtpAccount();
+        $ftpAccount = new FtpAccount();
         $ftpAccount->ftp_username = $testFtpUsername;
         $ftpAccount->ftp_username_prefix = $testFtpUsernamePrefix;
         $ftpAccount->ftp_quota = 100;
@@ -109,7 +108,7 @@ class HostingSubscriptionFtpAccountTest extends TestCase
         $this->assertEquals(100, $ftpQuotaText);
 
         $ftpAccount->delete();
-        $this->assertNull(HostingSubscriptionFtpAccount::where('ftp_username', $testFtpUsername)->first());
+        $this->assertNull(FtpAccount::where('ftp_username', $testFtpUsername)->first());
 
     }
 
@@ -119,7 +118,7 @@ class HostingSubscriptionFtpAccountTest extends TestCase
         $testFtpUsername = 'test' . rand(1000, 9999);
         $testFtpUsernamePrefix = 'testprefix' . rand(1000, 9999) . '_';
 
-        $ftpAccount = new HostingSubscriptionFtpAccount();
+        $ftpAccount = new FtpAccount();
         $ftpAccount->ftp_username = $testFtpUsername;
         $ftpAccount->ftp_username_prefix = $testFtpUsernamePrefix;
         $ftpAccount->ftp_quota_type = 'Unlimited';
@@ -131,7 +130,7 @@ class HostingSubscriptionFtpAccountTest extends TestCase
         $this->assertEquals('Unlimited', $ftpQuotaText);
 
         $ftpAccount->delete();
-        $this->assertNull(HostingSubscriptionFtpAccount::where('ftp_username', $testFtpUsername)->first());
+        $this->assertNull(FtpAccount::where('ftp_username', $testFtpUsername)->first());
 
     }
 
@@ -141,7 +140,7 @@ class HostingSubscriptionFtpAccountTest extends TestCase
         $testFtpUsername = 'test' . rand(1000, 9999);
         $testFtpUsernamePrefix = 'testprefix' . rand(1000, 9999) . '_';
 
-        $ftpAccount = new HostingSubscriptionFtpAccount();
+        $ftpAccount = new FtpAccount();
         $ftpAccount->ftp_username = $testFtpUsername;
         $ftpAccount->ftp_username_prefix = $testFtpUsernamePrefix;
 
@@ -154,6 +153,6 @@ class HostingSubscriptionFtpAccountTest extends TestCase
         $this->assertEquals($expectedUsernameWithPrefix, $ftpUsernameWithPrefix);
 
         $ftpAccount->delete();
-        $this->assertNull(HostingSubscriptionFtpAccount::where('ftp_username', $testFtpUsername)->first());
+        $this->assertNull(FtpAccount::where('ftp_username', $testFtpUsername)->first());
     }
 }

@@ -1,12 +1,12 @@
 <?php
 
-namespace App\Models;
+namespace App\Models\HostingSubscription;
 
 use App\Services\FtpConnections\FtpConnectionsService;
 use Illuminate\Database\Eloquent\Model;
 use Sushi\Sushi;
 
-class HostingSubscriptionFtpConnection extends Model
+class FtpConnection extends Model
 {
     use Sushi;
 
@@ -30,7 +30,7 @@ class HostingSubscriptionFtpConnection extends Model
     public function getRows()
     {
         $ftpConnections = FtpConnectionsService::getCurrentFtpConnections();
-        
+
         return array_map(function ($ftpConnection, $index) {
             return [
                 'id' => $index + 1,

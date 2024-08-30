@@ -4,6 +4,7 @@ namespace App\Jobs;
 
 use App\Jobs\Traits\ErrorCodeDefaultContentTrait;
 use App\Jobs\Traits\HtaccessBuildTrait;
+use App\Models\HostingSubscription\ErrorPage;
 use Illuminate\Bus\Queueable;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
@@ -14,39 +15,32 @@ class HtaccessBuildErrorPage
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels, HtaccessBuildTrait, ErrorCodeDefaultContentTrait;
 
     public $fixPermissions = false;
-    public $errorPagePath;
     public $startComment = '# Section managed by Panel Omega: Error Pages, do not edit';
     public $endComment = '# End section managed by Panel Omega: Error Pages';
 
-    public function __construct($fixPermissions = false, $errorPagePath)
+    public $hostingSubscription;
+
+    public function __construct($fixPermissions = false, $hostingSubscription)
     {
         $this->fixPermissions = $fixPermissions;
-        $this->errorPagePath = $errorPagePath;
+        $this->hostingSubscription = $hostingSubscription;
     }
 
     public function handle($model)
     {
         $this->addErrorPageToSystem($model);
-        $errorDocuments = $this->getAllErrorDocuments();
+        $errorDocuments = $this->getAllErrorDocuments($this->hostingSubscription->id, $model->path);
         $htaccessView = $this->getHtaccessErrorCodesConfig($errorDocuments);
-        $htaccessSystemPath = $this->errorPagePath . '/.htaccess';
+        $htaccessSystemPath = $model->path . '/.htaccess';
         $this->updateSystemFile($htaccessSystemPath, $htaccessView);
     }
 
     public function addErrorPageToSystem($model)
     {
-        $errorCode = $this->getErrorCode($model->name);
-        $errorPagePath = "{$this->errorPagePath}/{$errorCode}.shtml";
+        $errorCode = $model->error_code;
+        $errorPagePath = "{$model->path}/{$errorCode}.shtml";
         $errorPageContent = $this->trimContent($model->content);
         file_put_contents($errorPagePath, $errorPageContent);
-    }
-
-    public function getErrorCode($errorPage)
-    {
-        if (preg_match('/^\d+/', $errorPage, $matches)) {
-            return $matches[0];
-        }
-        throw new \Exception("Error page \"{$errorPage}\" does not exist.");
     }
 
     public function trimContent($content)
@@ -56,18 +50,14 @@ class HtaccessBuildErrorPage
         return trim($content);
     }
 
-    public function getAllErrorDocuments(): array
+    public function getAllErrorDocuments($hostingSubscriptionId, $errorPagePath): array
     {
-        $errorCodes = [];
-        foreach (scandir($this->errorPagePath) as $page) {
-            if (preg_match('/^\d+$/', pathinfo($page, PATHINFO_FILENAME)) && pathinfo($page, PATHINFO_EXTENSION) === 'shtml') {
-                $errorCodes[] = pathinfo($page, PATHINFO_FILENAME);
-            }
-        }
+        $errorCodes = ErrorPage::where('hosting_subscription_id', $hostingSubscriptionId)
+            ->pluck('error_code');
 
         $errorDocuments = [];
-        foreach($errorCodes as $error) {
-            $errorDocuments[] = "ErrorDocument {$error} {$this->errorPagePath}/{$error}.shtml";
+        foreach ($errorCodes as $error) {
+            $errorDocuments[] = "ErrorDocument {$error} {$errorPagePath}/{$error}.shtml";
         }
         return $errorDocuments;
     }
@@ -89,18 +79,22 @@ class HtaccessBuildErrorPage
         return $htaccessErrorCodesContent;
     }
 
-    public function getErrorPageContent($errorPage)
+    public function getErrorPageContent($errorPage, $hostingSubscription)
     {
-        $errorCode = $this->getErrorCode($errorPage);
+        $getErrorCode = function ($pageName) {
+            if (preg_match('/^\d+/', $pageName, $matches)) {
+                return $matches[0];
+            }
+            return null;
+        };
 
-        $errorPagePath = "{$this->errorPagePath}/{$errorCode}.shtml";
-        $content = null;
-        if (file_exists($errorPagePath)) {
-            $content = file_get_contents($errorPagePath);
-        }
-        if (empty($content) || $content == '') {
-            $content = $this->getErrorCodeDefaultContent($errorCode);
-        }
-        return $content;
+        $errorCode = $getErrorCode($errorPage);
+
+        $hostingSubscriptionErrorPage = ErrorPage::where('hosting_subscription_id', $hostingSubscription->id)
+            ->where('name', $errorPage)
+            ->first();
+
+        $content = $hostingSubscriptionErrorPage ? $hostingSubscriptionErrorPage->content : null;
+        return !empty($content) ? $content : $this->getErrorCodeDefaultContent($errorCode);
     }
 }

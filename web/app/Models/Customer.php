@@ -39,29 +39,6 @@ class Customer extends Authenticatable
         'remember_token',
     ];
 
-    /**
-     * Get the attributes that should be cast.
-     *
-     * @return array<string, string>
-     */
-    protected function casts(): array
-    {
-        return [
-            'email_verified_at' => 'datetime',
-            'password' => 'hashed',
-        ];
-    }
-
-    public function hostingSubscriptions()
-    {
-        return $this->hasMany(HostingSubscription::class);
-    }
-
-    public function canBeImpersonated()
-    {
-        return true;
-    }
-
     public static function getHostingSubscriptionSession()
     {
         $hostingSubscriptionId = Session::get('hosting_subscription_id');
@@ -78,5 +55,28 @@ class Customer extends Authenticatable
         }
 
         return $findHostingSubscription;
+    }
+
+    public function hostingSubscriptions()
+    {
+        return $this->hasMany(HostingSubscription::class);
+    }
+
+    public function canBeImpersonated()
+    {
+        return true;
+    }
+
+    /**
+     * Get the attributes that should be cast.
+     *
+     * @return array<string, string>
+     */
+    protected function casts(): array
+    {
+        return [
+            'email_verified_at' => 'datetime',
+            'password' => 'hashed',
+        ];
     }
 }

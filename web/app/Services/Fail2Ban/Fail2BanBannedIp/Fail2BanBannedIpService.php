@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\DB;
 
 class Fail2BanBannedIpService
 {
-    public static function getIps()
+    public static function getBannedIp()
     {
         $connection = DB::connectUsing('fail2ban', [
             'driver' => 'sqlite',
@@ -15,20 +15,22 @@ class Fail2BanBannedIpService
         ]);
 
         $getJails = $connection->table('bips')->get();
-        $getJails = json_decode(json_encode($getJails), true);
+        $latestBan = $connection->table('bips')
+            ->orderBy('timeofban', 'desc')
+            ->first();
 
-        $bannedIps = [];
-        foreach ($getJails as $jail) {
-            $bannedIps[] = [
-                'ip' => $jail['ip'],
-                'status' => 'BANNED',
-                'service' => $jail['jail'],
-                'ban_date' => Carbon::createFromTimestamp($jail['timeofban']),
-                'ban_time' => $jail['bantime'],
-                'ban_count' => $jail['bancount'],
-            ];
-        }
-        return $bannedIps;
+        $latestBan = json_decode(json_encode($latestBan), true);
+
+        $latestBannedIp = [
+            'ip' => $latestBan['ip'],
+            'status' => 'BANNED',
+            'service' => $latestBan['jail'],
+            'ban_count' => $latestBan['bancount'],
+            'ban_date' => Carbon::createFromTimestamp($latestBan['timeofban']),
+            'ban_time' => $latestBan['bantime'],
+        ];
+
+        return $latestBannedIp;
     }
 
     public static function unBanIP(string $ip, string $service): bool

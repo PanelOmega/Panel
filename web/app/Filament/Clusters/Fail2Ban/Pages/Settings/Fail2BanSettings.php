@@ -28,10 +28,10 @@ class Fail2BanSettings extends BaseSettings
     protected static ?string $navigationIcon = 'heroicon-o-cog';
 
     protected static ?int $navigationSort = 3;
-    public array $apache_server_extensions = [];
-    public array $nginx_server_extensions = [];
-    public array $wordpress_server_extensions = [];
-    public array $fail2ban_jails = [
+    public array $apacheServerExtensions = [];
+    public array $nginxServerExtensions = [];
+    public array $wordpressServerExtensions = [];
+    public array $fail2banJails = [
         'sshd' => false,
         'apache' => false,
         'vsftpd' => false,

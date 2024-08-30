@@ -107,7 +107,16 @@ final class ConvertProtectedMethodsNameToCamelCaseRector extends AbstractRector
 //            return null;
 //        }
 
-        $newMethodCallName = StringHelper::toCamelCase($methodCallName);
+        // check is all uppercase
+        if (strtoupper($methodCallName) === $methodCallName) {
+            $newMethodCallName = strtolower($methodCallName);
+        } else {
+            $newMethodCallName = StringHelper::toCamelCase($methodCallName);
+            // start with underscore
+           if (str_starts_with($methodCallName, '_')) {
+               return null;
+           }
+        }
 
         if ($methodCallName === $newMethodCallName) {
             return null; // Skip if the name is already in camelCase
@@ -153,5 +162,14 @@ class MyClass
 CODE_SAMPLE
             ),
         ]);
+    }
+
+    public function addUnderscore($string): string
+    {
+        if (strpos($string, '_') !== false) {
+            return $string;
+        }
+
+        return '_' . $string;
     }
 }

@@ -32,30 +32,30 @@ class Installer extends Page
 
     public $password;
 
-    public $password_confirmation;
+    public $passwordConfirmation;
 
     public $livewire = true;
 
-    public $install_log_file_path = 'logs/installer.log';
-    public $install_log = 'Loading...';
+    public $installLogFilePath = 'logs/installer.log';
+    public $installLog = 'Loading...';
 
-    public $server_application_type = 'apache_php';
-    public $server_php_modules = [];
-    public $server_php_versions = [];
+    public $serverApplicationType = 'apache_php';
+    public $serverPhpModules = [];
+    public $serverPhpVersions = [];
 
-    public $server_nodejs_versions = [
+    public $serverNodejsVersions = [
         '20'
     ];
 
-    public $server_python_versions = [
+    public $serverPythonVersions = [
         '3.10'
     ];
 
-    public $server_ruby_versions = [
+    public $serverRubyVersions = [
         '3.4'
     ];
 
-    public $enable_email_server = true;
+    public $enableEmailServer = true;
 
     public function form(Form $form): Form
     {

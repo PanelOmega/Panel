@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectTasksOptions">
     <TaskOptions isEnabled="true">
-      <option name="arguments" value="-d memory_limit=4G ./vendor/bin/rector process --config=./rector/rector.php --file=$FilePath$" />
+      <option name="arguments" value="-d memory_limit=4G $ContentRoot$/web/vendor/bin/rector process --config=$ContentRoot$/web/rector/rector.php --file=$FilePath$" />
       <option name="checkSyntaxErrors" value="true" />
       <option name="description" />
       <option name="exitCodeBehavior" value="ERROR" />

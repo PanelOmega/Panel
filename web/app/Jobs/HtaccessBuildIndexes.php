@@ -47,10 +47,10 @@ class HtaccessBuildIndexes implements ShouldQueue
         $this->updateSystemFile($htAccessFileRealPath, $htAccessView);
     }
 
-    public function getIndexConfig($index_type)
+    public function getIndexConfig($indexType)
     {
 
-        $indexConfigArr = match ($index_type) {
+        $indexConfigArr = match ($indexType) {
             'No Indexing' => [
                 'options' => 'Options -Indexes',
                 'indexOptions' => ''

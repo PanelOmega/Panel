@@ -12,14 +12,13 @@ $dirRoot = dirname(__DIR__);
 
 return RectorConfig::configure()
     ->withPaths([
-        $dirRoot . '/app/UniversalDatabaseExecutor.php',
-//        $dirRoot . '/app/Models',
-//        $dirRoot . '/bootstrap',
-//        $dirRoot . '/config',
-//        $dirRoot . '/public',
-//        $dirRoot . '/resources',
-//        $dirRoot . '/routes',
-//        $dirRoot . '/tests',
+        $dirRoot . '/app',
+        $dirRoot . '/bootstrap',
+        $dirRoot . '/config',
+        $dirRoot . '/public',
+        $dirRoot . '/resources',
+        $dirRoot . '/routes',
+        $dirRoot . '/tests',
     ])
     // uncomment to reach your current PHP version
 

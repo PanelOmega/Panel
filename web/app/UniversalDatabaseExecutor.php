@@ -26,7 +26,7 @@ class UniversalDatabaseExecutor
         $this->database = $database;
     }
 
-    private function _get_database_connection()
+    private function _getDatabaseConnection()
     {
         $connectionParams = [
             'user' => $this->username,

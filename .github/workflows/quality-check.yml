@@ -25,5 +25,5 @@ jobs:
         run: |
           cd ./web
           composer install
-          chmod +x ./code-check.sh
-          ./code-check.sh
+          chmod +x ./rector/code-check.sh
+          ./rector/code-check.sh

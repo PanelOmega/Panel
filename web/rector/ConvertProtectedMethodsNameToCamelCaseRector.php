@@ -97,15 +97,15 @@ final class ConvertProtectedMethodsNameToCamelCaseRector extends AbstractRector
 
     private function refactorStaticCall(StaticCall $node): ?Node
     {
-        if (!($node->class instanceof Node\Name) || $node->class->toString() !== 'self') {
-            return null;
-        }
+//        if (!($node->class instanceof Node\Name) || $node->class->toString() !== 'self') {
+//            return null;
+//        }
 
         $methodCallName = $this->getName($node->name);
-
-        if (!in_array($methodCallName, $this->protectedMethods, true)) {
-            return null;
-        }
+//
+//        if (!in_array($methodCallName, $this->protectedMethods, true)) {
+//            return null;
+//        }
 
         $newMethodCallName = StringHelper::toCamelCase($methodCallName);
 

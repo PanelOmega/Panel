@@ -44,7 +44,7 @@ class FirewallRule extends Model
         });
     }
 
-    private static function _portAction($action, $portOrIp, $comment = '')
+    private static function portAction($action, $portOrIp, $comment = '')
     {
         $command = 'sudo ufw ';
         $command .= $action . ' ';

@@ -1,4 +1,4 @@
-name: Check Code Style
+name: Quality Check
 
 on: [push]
 
@@ -21,9 +21,9 @@ jobs:
           extensions: json, dom, curl, libxml, mbstring
           coverage: none
 
-      - name: Run Pint
+      - name: Run Pint and PHPStan
         run: |
           cd ./web
           composer install
-          ./vendor/bin/pint --test
           ./vendor/bin/phpstan analyse app config database routes tests
+          ./vendor/bin/pint --test

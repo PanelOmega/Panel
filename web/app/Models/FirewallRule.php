@@ -43,8 +43,8 @@ class FirewallRule extends Model
             unset($model->port_or_ip);
         });
     }
-
-    private static function portAction($action, $portOrIp, $comment = '')
+ 
+    private static function _portAction($action, $portOrIp, $comment = '')
     {
         $command = 'sudo ufw ';
         $command .= $action . ' ';

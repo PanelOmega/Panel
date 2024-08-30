@@ -3,7 +3,7 @@ name: Quality Check
 on: [push]
 
 jobs:
-  lint:
+  QualityCheck:
     runs-on: ubuntu-latest
     strategy:
       fail-fast: true

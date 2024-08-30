@@ -25,10 +25,19 @@ if (isset($_SERVER['argv']) && is_array($_SERVER['argv'])) {
     foreach ($_SERVER['argv'] as $argKey=>$argValue) {
         if (strpos($argValue, '--file=') !== false) {
             unset($_SERVER['argv'][$argKey]);
+            if (strpos($argValue, '/rector/') !== false) {
+                $paths = [];
+                continue;
+            }
             $paths = [str_replace('--file=', '', $argValue)];
         }
     }
 }
+
+if (empty($paths)) {
+    return;
+}
+
 
 return RectorConfig::configure()
     ->withPaths($paths)

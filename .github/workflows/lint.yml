@@ -23,6 +23,6 @@ jobs:
 
       - name: Run Pint
         run: |
-        cd ./web
-        composer install
-        ./vendor/bin/pint --test
+          cd ./web
+          composer install
+          ./vendor/bin/pint --test

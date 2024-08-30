@@ -34,10 +34,10 @@ class IndexBrowse extends Model
     public static function boot()
     {
         parent::boot();
-        static::HostingSubscriptionIndexBrowseBoot();
+        static::indexBrowseBoot();
     }
 
-    public static function HostingSubscriptionIndexBrowseBoot()
+    public static function indexBrowseBoot()
     {
         $hostingSubscription = Customer::getHostingSubscriptionSession();
 

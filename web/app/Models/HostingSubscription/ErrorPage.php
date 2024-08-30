@@ -19,15 +19,15 @@ class ErrorPage extends Model
         'path'
     ];
 
-    protected $table = 'error_pages';
+    protected $table = 'hosting_subscription_error_pages';
 
     public static function boot()
     {
         parent::boot();
-        static::hostingSubscriptionErrorPage();
+        static::errorPageBoot();
     }
 
-    public static function hostingSubscriptionErrorPage()
+    public static function errorPageBoot()
     {
         $hostingSubscription = Customer::getHostingSubscriptionSession();
 

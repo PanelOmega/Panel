@@ -20,10 +20,10 @@ class HtpasswdUser extends Model
     public static function boot()
     {
         parent::boot();
-        static::HtpasswdUserBoot();
+        static::htpasswdUserBoot();
     }
 
-    public static function HtpasswdUserBoot()
+    public static function htpasswdUserBoot()
     {
         $hostingSubscription = Customer::getHostingSubscriptionSession();
         $directoryRealPath = "/home/{$hostingSubscription->system_username}/.htpasswd";

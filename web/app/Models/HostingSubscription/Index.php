@@ -25,10 +25,10 @@ class Index extends Model
     public static function boot()
     {
         parent::boot();
-        static::HostingSubscriptionIndexesBoot();
+        static::indexBoot();
     }
 
-    public static function HostingSubscriptionIndexesBoot()
+    public static function indexBoot()
     {
         $hostingSubscription = Customer::getHostingSubscriptionSession();
 

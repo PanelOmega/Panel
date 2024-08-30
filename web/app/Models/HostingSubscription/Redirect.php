@@ -27,10 +27,10 @@ class Redirect extends Model
     protected static function boot()
     {
         parent::boot();
-        static::redirectsBoot();
+        static::redirectBoot();
     }
 
-    public static function redirectsBoot()
+    public static function redirectBoot()
     {
         $hostingSubscription = Customer::getHostingSubscriptionSession();
 

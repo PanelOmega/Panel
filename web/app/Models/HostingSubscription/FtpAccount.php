@@ -29,9 +29,12 @@ class FtpAccount extends Model
 
     public static function boot()
     {
-
         parent::boot();
+        static::ftpAccountBoot();
+    }
 
+    public static function ftpAccountBoot()
+    {
         static::creating(function ($model) {
 
             $create = $model->_createFtpAccount();
@@ -68,8 +71,6 @@ class FtpAccount extends Model
             $updateFtpUsers = new UpdateVsftpdUserlist();
             $updateFtpUsers->handle();
         });
-
-
     }
 
     /**

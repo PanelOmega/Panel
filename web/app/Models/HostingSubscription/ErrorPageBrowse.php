@@ -29,10 +29,10 @@ class ErrorPageBrowse extends Model
     protected static function boot()
     {
         parent::boot();
-        static::hostingSubscriptionErrorPageBrowseBoot();
+        static::errorPageBrowseBoot();
     }
 
-    public static function hostingSubscriptionErrorPageBrowseBoot()
+    public static function errorPageBrowseBoot()
     {
         static::updating(function ($model) {
             $hostingSubscription = Customer::getHostingSubscriptionSession();

@@ -46,10 +46,10 @@ class DirectoryPrivacyBrowse extends Model
     public static function boot()
     {
         parent::boot();
-        static::DirectoryPrivacyListFolderBoot();
+        static::directoryPrivacyBrowseBoot();
     }
 
-    public static function DirectoryPrivacyListFolderBoot()
+    public static function directoryPrivacyBrowseBoot()
     {
         $hostingSubscription = Customer::getHostingSubscriptionSession();
 

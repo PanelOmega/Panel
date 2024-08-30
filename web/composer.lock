@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "38a77208b2c07e5df22a7f4e80e68914",
+    "content-hash": "910e6e7d9319d4a12547b4b0bab38237",
     "packages": [
         {
             "name": "anourvalar/eloquent-serialize",
@@ -1108,6 +1108,52 @@
                 }
             ],
             "time": "2023-10-06T06:47:41+00:00"
+        },
+        {
+            "name": "epifrin/rector-custom-rules",
+            "version": "0.5.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/epifrin/rector-custom-rules.git",
+                "reference": "662e98e993027940fcf9f51d42d9dd531876a0af"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/epifrin/rector-custom-rules/zipball/662e98e993027940fcf9f51d42d9dd531876a0af",
+                "reference": "662e98e993027940fcf9f51d42d9dd531876a0af",
+                "shasum": ""
+            },
+            "require": {
+                "php": "^8.0"
+            },
+            "require-dev": {
+                "phpstan/phpstan": "^1.10",
+                "phpunit/phpunit": "^10.5.5",
+                "rector/rector": "^1.0.0",
+                "squizlabs/php_codesniffer": "^3.8"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Epifrin\\RectorCustomRules\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "epifrin",
+                    "email": "epifrin@users.noreply.github.com"
+                }
+            ],
+            "description": "These are three rector rules to convert private method name, to convert local variable name to camel case and to replace double quotes with single quotes in string literals.",
+            "support": {
+                "issues": "https://github.com/epifrin/rector-custom-rules/issues",
+                "source": "https://github.com/epifrin/rector-custom-rules/tree/0.5.1"
+            },
+            "time": "2024-02-09T15:55:27+00:00"
         },
         {
             "name": "filament/actions",
@@ -8892,6 +8938,41 @@
             "time": "2024-05-06T16:37:16+00:00"
         },
         {
+            "name": "driftingly/rector-laravel",
+            "version": "1.2.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/driftingly/rector-laravel.git",
+                "reference": "849fe4e86ee6fc841a704a81393b59702108740e"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/driftingly/rector-laravel/zipball/849fe4e86ee6fc841a704a81393b59702108740e",
+                "reference": "849fe4e86ee6fc841a704a81393b59702108740e",
+                "shasum": ""
+            },
+            "require": {
+                "php": "^7.2 || ^8.0",
+                "rector/rector": "^1.0"
+            },
+            "type": "rector-extension",
+            "autoload": {
+                "psr-4": {
+                    "RectorLaravel\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "description": "Rector upgrades rules for Laravel Framework",
+            "support": {
+                "issues": "https://github.com/driftingly/rector-laravel/issues",
+                "source": "https://github.com/driftingly/rector-laravel/tree/1.2.1"
+            },
+            "time": "2024-07-30T17:02:47+00:00"
+        },
+        {
             "name": "evenement/evenement",
             "version": "v3.0.2",
             "source": {
@@ -10718,6 +10799,65 @@
                 }
             ],
             "time": "2024-06-11T12:45:25+00:00"
+        },
+        {
+            "name": "rector/rector",
+            "version": "1.2.4",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/rectorphp/rector.git",
+                "reference": "42a4aa23b48b4cfc8ebfeac2b570364e27744381"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/rectorphp/rector/zipball/42a4aa23b48b4cfc8ebfeac2b570364e27744381",
+                "reference": "42a4aa23b48b4cfc8ebfeac2b570364e27744381",
+                "shasum": ""
+            },
+            "require": {
+                "php": "^7.2|^8.0",
+                "phpstan/phpstan": "^1.11.11"
+            },
+            "conflict": {
+                "rector/rector-doctrine": "*",
+                "rector/rector-downgrade-php": "*",
+                "rector/rector-phpunit": "*",
+                "rector/rector-symfony": "*"
+            },
+            "suggest": {
+                "ext-dom": "To manipulate phpunit.xml via the custom-rule command"
+            },
+            "bin": [
+                "bin/rector"
+            ],
+            "type": "library",
+            "autoload": {
+                "files": [
+                    "bootstrap.php"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "description": "Instant Upgrade and Automated Refactoring of any PHP code",
+            "keywords": [
+                "automation",
+                "dev",
+                "migration",
+                "refactoring"
+            ],
+            "support": {
+                "issues": "https://github.com/rectorphp/rector/issues",
+                "source": "https://github.com/rectorphp/rector/tree/1.2.4"
+            },
+            "funding": [
+                {
+                    "url": "https://github.com/tomasvotruba",
+                    "type": "github"
+                }
+            ],
+            "time": "2024-08-23T09:03:01+00:00"
         },
         {
             "name": "sebastian/cli-parser",

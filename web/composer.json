@@ -28,6 +28,7 @@
         "stechstudio/filament-impersonate": "^3.8"
     },
     "require-dev": {
+        "driftingly/rector-laravel": "^1.2",
         "fakerphp/faker": "^1.23",
         "friendsofphp/php-cs-fixer": "^3.63",
         "laravel/sail": "^1.26",

@@ -326,11 +326,11 @@ class CustomerDashboard extends Page
                             'icon' => 'omega_customer-domains-redirect',
                             'link' => route('filament.customer.pages.redirects-page')
                         ],
-//                        [
-//                            'title'=>'Zone Editor',
-//                            'icon'=>'omega_customer-domains-zone',
-//                            'link'=>'#'
-//                        ],
+                        [
+                            'title' => 'Zone Editor',
+                            'icon' => 'omega_customer-domains-zone',
+                            'link' => route('filament.customer.pages.zone-editor-page')
+                        ],
 //                        [
 //                            'title'=>'Dynamic DNS',
 //                            'icon'=>'omega_customer-domains-dynamic',
@@ -406,9 +406,9 @@ class CustomerDashboard extends Page
 //                            'link'=>'#'
 //                        ],
                         [
-                            'title'=>'IP Blockers',
-                            'icon'=>'omega_customer-security-block',
-                            'link'=>route('filament.customer.pages.ip-blockers-page')
+                            'title' => 'IP Blockers',
+                            'icon' => 'omega_customer-security-block',
+                            'link' => route('filament.customer.pages.ip-blockers-page')
                         ],
                         [
                             'title' => 'SSL/TLS',

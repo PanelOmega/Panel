@@ -61,6 +61,9 @@ final class ConvertPublicMethodsNameToCamelCaseRector extends AbstractRector
         if ($oldName === '__construct') {
             return null;
         }
+        if ($oldName === '__destruct') {
+            return null;
+        }
 
         $newName = StringHelper::toCamelCase($oldName);
 

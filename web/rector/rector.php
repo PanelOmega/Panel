@@ -10,18 +10,28 @@ include __DIR__ . '/ConvertLocalVariablesNameToCamelCaseRector.php';
 
 $dirRoot = dirname(__DIR__);
 
-return RectorConfig::configure()
-    ->withPaths([
-        $dirRoot . '/app',
-        $dirRoot . '/bootstrap',
-        $dirRoot . '/config',
-        $dirRoot . '/public',
-        $dirRoot . '/resources',
-        $dirRoot . '/routes',
-        $dirRoot . '/tests',
-    ])
-    // uncomment to reach your current PHP version
 
+$paths = [
+    $dirRoot . '/app',
+    $dirRoot . '/bootstrap',
+    $dirRoot . '/config',
+    $dirRoot . '/public',
+    $dirRoot . '/resources',
+    $dirRoot . '/routes',
+    $dirRoot . '/tests',
+];
+if (isset($_SERVER['argv']) && is_array($_SERVER['argv'])) {
+    foreach ($_SERVER['argv'] as $argKey=>$argValue) {
+        if (strpos($argValue, '--file=') !== false) {
+            unset($_SERVER['argv'][$argKey]);
+            $paths = [str_replace('--file=', '', $argValue)];
+        }
+    }
+}
+
+return RectorConfig::configure()
+    ->withPaths($paths)
+    // uncomment to reach your current PHP version
 
     ->withSets([
         \RectorLaravel\Set\LaravelSetList::LARAVEL_CODE_QUALITY

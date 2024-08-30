@@ -25,5 +25,5 @@ jobs:
         run: |
           cd ./web
           composer install
-          
-          ./vendor/bin/phpstan analyse app config database routes tests
+          chmod +x ./code-check.sh
+          ./code-check.sh

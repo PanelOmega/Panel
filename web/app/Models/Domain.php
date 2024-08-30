@@ -3,14 +3,9 @@
 namespace App\Models;
 
 use App\Jobs\ApacheBuild;
-use App\Jobs\HtaccessBuildPHPVersions;
-use App\Server\Helpers\PHP;
-use App\Server\VirtualHosts\DTO\ApacheVirtualHostSettings;
 use App\Services\Domain\DomainService;
-use App\Virtualization\Docker\DockerClient;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Str;
 use Modules\Docker\App\Models\DockerContainer;
 
 class Domain extends Model
@@ -73,14 +68,14 @@ class Domain extends Model
 
             if ($model->is_main == 1) {
                 //  $allDomainsRoot = '/home/'.$this->user.'/public_html';
-                $model->domain_root = '/home/'.$findHostingSubscription->system_username;
-                $model->domain_public = '/home/'.$findHostingSubscription->system_username.'/public_html';
-                $model->home_root = '/home/'.$findHostingSubscription->system_username;
+                $model->domain_root = '/home/' . $findHostingSubscription->system_username;
+                $model->domain_public = '/home/' . $findHostingSubscription->system_username . '/public_html';
+                $model->home_root = '/home/' . $findHostingSubscription->system_username;
             } else {
                 //   $allDomainsRoot = '/home/'.$model->user.'/domains';
-                $model->domain_root = '/home/'.$findHostingSubscription->system_username.'/domains/'.$model->domain;
-                $model->domain_public = $model->domain_root.'/public_html';
-                $model->home_root = '/home/'.$findHostingSubscription->user;
+                $model->domain_root = '/home/' . $findHostingSubscription->system_username . '/domains/' . $model->domain;
+                $model->domain_public = $model->domain_root . '/public_html';
+                $model->home_root = '/home/' . $findHostingSubscription->user;
             }
             $model->saveQuietly();
 
@@ -100,10 +95,10 @@ class Domain extends Model
         });
         static::updated(function ($model) {
 
-           $domainService = new DomainService();
-           $domainService->configureHtaccess($model->id);
+            $domainService = new DomainService();
+            $domainService->configureHtaccess($model->id);
 
-           ApacheBuild::dispatch();
+            ApacheBuild::dispatch();
 
         });
 

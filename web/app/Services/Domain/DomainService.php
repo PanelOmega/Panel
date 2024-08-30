@@ -94,7 +94,6 @@ class DomainService
         $webUserGroup = $findHostingSubscription->system_username;
 
 
-
         $appType = 'php';
         $appVersion = '8.3';
 
@@ -178,11 +177,11 @@ class DomainService
                         $fcgiPort = $domain->id + 9000;
 
                         $fpmPoolPath = $getCurrentPHPVersion['fpmPoolPath'];
-                        if (is_file($fpmPoolPath.'/www.conf')) {
-                            unlink($fpmPoolPath.'/www.conf');
+                        if (is_file($fpmPoolPath . '/www.conf')) {
+                            unlink($fpmPoolPath . '/www.conf');
                         }
 
-                        $domainFpmPoolPath = $fpmPoolPath.'/'.$domain->domain.'.conf';
+                        $domainFpmPoolPath = $fpmPoolPath . '/' . $domain->domain . '.conf';
 
                         $fpmPoolContent = view('server.samples.php-fpm.domain-pool-conf', [
                             'username' => $findHostingSubscription->system_username,
@@ -194,7 +193,7 @@ class DomainService
 
                         $getSupportedPHPVersions = PHP::getInstalledPHPVersions();
                         // Scan old pool files and remove them
-                        $allPoolFiles = shell_exec('find /etc/opt/remi/*/php-fpm.d/'.$domain->domain.'.conf');
+                        $allPoolFiles = shell_exec('find /etc/opt/remi/*/php-fpm.d/' . $domain->domain . '.conf');
                         $allPoolFiles = explode("\n", $allPoolFiles);
                         if (!empty($allPoolFiles)) {
                             foreach ($allPoolFiles as $poolFile) {
@@ -214,7 +213,7 @@ class DomainService
                         }
                         if (!empty($restartFpmServices)) {
                             foreach ($restartFpmServices as $service) {
-                                shell_exec('systemctl restart '.$service);
+                                shell_exec('systemctl restart ' . $service);
                             }
                         }
 
@@ -439,22 +438,22 @@ class DomainService
         $dockerImage = 'php:8.2-fpm';
 
         if (isset($domain->server_application_settings['php_version'])) {
-            $dockerImage = 'php:'.$domain->server_application_settings['php_version'].'-fpm';
+            $dockerImage = 'php:' . $domain->server_application_settings['php_version'] . '-fpm';
         }
 
         $dockerClient->pullImage($dockerImage);
-        $dockerContainerName =  Str::slug($dockerImage . $domain->domain);
+        $dockerContainerName = Str::slug($dockerImage . $domain->domain);
         $createDocker = $dockerClient->createContainer($dockerContainerName, [
             'Image' => $dockerImage,
-            'HostConfig'=>[
-                'Binds'=>[
-                    $domain->domain_public . ':'.$domain->domain_public
+            'HostConfig' => [
+                'Binds' => [
+                    $domain->domain_public . ':' . $domain->domain_public
                 ]
             ]
         ]);
 
         if (!isset($createDocker['response']['Id'])) {
-            throw new \Exception('Docker container not created. Error: '.json_encode($createDocker) ?? 'Unknown error');
+            throw new \Exception('Docker container not created. Error: ' . json_encode($createDocker) ?? 'Unknown error');
         }
 
         $startDockerContainer = $dockerClient->startContainer($createDocker['response']['Id']);

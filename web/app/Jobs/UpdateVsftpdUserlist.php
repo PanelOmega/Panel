@@ -2,12 +2,12 @@
 
 namespace App\Jobs;
 
+use App\Models\HostingSubscription\FtpAccount;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use App\Models\HostingSubscriptionFtpAccount;
 
 class UpdateVsftpdUserlist implements ShouldQueue
 {
@@ -18,7 +18,7 @@ class UpdateVsftpdUserlist implements ShouldQueue
 
         try {
 
-            $ftpAccounts = HostingSubscriptionFtpAccount::all();
+            $ftpAccounts = FtpAccount::all();
 
             $updateVsfpdUserlist = view('server.samples.vsftpd.vsftpd-userlist-conf', [
                 'ftpAccounts' => $ftpAccounts

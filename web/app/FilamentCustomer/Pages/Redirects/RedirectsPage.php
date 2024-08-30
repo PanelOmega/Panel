@@ -2,7 +2,7 @@
 
 namespace App\FilamentCustomer\Pages\Redirects;
 
-use App\Models\Redirect;
+use App\Models\HostingSubscription\Redirect;
 use Filament\Actions\Action;
 use Filament\Forms\Components\Actions;
 use Filament\Forms\Components\Checkbox;

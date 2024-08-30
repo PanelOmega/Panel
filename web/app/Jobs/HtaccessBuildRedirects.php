@@ -3,7 +3,7 @@
 namespace App\Jobs;
 
 use App\Jobs\Traits\HtaccessBuildTrait;
-use App\Models\Redirect;
+use App\Models\HostingSubscription\Redirect;
 use Illuminate\Bus\Queueable;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;

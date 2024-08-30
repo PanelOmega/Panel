@@ -1,8 +1,9 @@
 <?php
 
-namespace App\Models;
+namespace App\Models\HostingSubscription;
 
 use App\Jobs\HtaccessBuildDirectoryPrivacy;
+use App\Models\Customer;
 use App\Models\Traits\HasDirectoryTreeBuild;
 use Illuminate\Contracts\Filesystem\Filesystem as FilesystemContract;
 use Illuminate\Database\Eloquent\Builder;
@@ -12,7 +13,7 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Sushi\Sushi;
 
-class DirectoryPrivacyListFolder extends Model
+class DirectoryPrivacyBrowse extends Model
 {
     use HasFactory, HasDirectoryTreeBuild;
 
@@ -45,10 +46,10 @@ class DirectoryPrivacyListFolder extends Model
     public static function boot()
     {
         parent::boot();
-        static::DirectoryPrivacyListFolderBoot();
+        static::directoryPrivacyBrowseBoot();
     }
 
-    public static function DirectoryPrivacyListFolderBoot()
+    public static function directoryPrivacyBrowseBoot()
     {
         $hostingSubscription = Customer::getHostingSubscriptionSession();
 
@@ -61,14 +62,14 @@ class DirectoryPrivacyListFolder extends Model
                 ]);
             } else {
                 if (!empty($model->username)) {
-                    $directoryPrivacy = new DirectoryPrivacy();
-                    $directoryPrivacy->directory = $model->directory;
-                    $directoryPrivacy->username = $model->username;
-                    $directoryPrivacy->password = $model->password;
-                    $directoryPrivacy->protected = $model->protected;
-                    $directoryPrivacy->label = $model->label;
-                    $directoryPrivacy->path = $model->path;
-                    $directoryPrivacy->save();
+                    DirectoryPrivacy::create([
+                        'directory' => $model->directory,
+                        'username' => $model->username,
+                        'password' => $model->password,
+                        'protected' => $model->protected,
+                        'label' => $model->label,
+                        'path' => $model->path,
+                    ]);
                 }
             }
         });

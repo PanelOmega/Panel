@@ -29,10 +29,10 @@ class HotlinkProtection extends Page
     public function mount(): void
     {
         $subscriptionAccount = Customer::getHostingSubscriptionSession();
-        $hotlinkProtection = \App\Models\HotlinkProtection::where('hosting_subscription_id', $subscriptionAccount->id)->first() ?? null;
+        $hotlinkProtection = \App\Models\HostingSubscription\HotlinkProtection::where('hosting_subscription_id', $subscriptionAccount->id)->first() ?? null;
 
         if (!$hotlinkProtection) {
-            $hotlinkProtection = new \App\Models\HotlinkProtection();
+            $hotlinkProtection = new \App\Models\HostingSubscription\HotlinkProtection();
             $hotlinkProtection->hosting_subscription_id = $subscriptionAccount->id;
             $hotlinkProtection->enabled = 'disabled';
             $hotlinkProtection->save();
@@ -107,7 +107,7 @@ class HotlinkProtection extends Page
             ->requiresConfirmation()
             ->label($this->state['enabled'] === 'enabled' ? 'Disable' : 'Enable')
             ->action(function () {
-                $hotlinkProtectionModel = \App\Models\HotlinkProtection::where('hosting_subscription_id', $this->state['hosting_subscription_id'])->first();
+                $hotlinkProtectionModel = \App\Models\HostingSubscription\HotlinkProtection::where('hosting_subscription_id', $this->state['hosting_subscription_id'])->first();
                 $hotlinkProtectionModel->enabled = $this->state['enabled'] === 'enabled' ? 'disabled' : 'enabled';
                 $hotlinkProtectionModel->save();
                 $this->state['enabled'] = $this->state['enabled'] === 'enabled' ? 'disabled' : 'enabled';
@@ -146,7 +146,7 @@ class HotlinkProtection extends Page
             $this->state['block_extensions'] = preg_replace('/\s*,\s*/', ',', $this->state['block_extensions']);
         }
 
-        $hotlinkProtectionModel = \App\Models\HotlinkProtection::where('hosting_subscription_id', $this->state['hosting_subscription_id'])->first();
+        $hotlinkProtectionModel = \App\Models\HostingSubscription\HotlinkProtection::where('hosting_subscription_id', $this->state['hosting_subscription_id'])->first();
         $hotlinkProtectionModel->update([
             'url_allow_access' => $this->state['url_allow_access'],
             'block_extensions' => $this->state['block_extensions'],

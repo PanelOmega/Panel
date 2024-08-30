@@ -10,12 +10,15 @@ return new class extends Migration {
      */
     public function up(): void
     {
-        Schema::create('htpasswd_users', function (Blueprint $table) {
+        Schema::create('hosting_subscription_directory_privacies', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('hosting_subscription_id')->nullable();
             $table->string('directory')->nullable();
             $table->string('username')->nullable();
             $table->string('password')->nullable();
+            $table->string('protected')->nullable();
+            $table->string('label')->nullable();
+            $table->string('path')->nullable();
             $table->timestamps();
         });
     }
@@ -25,6 +28,6 @@ return new class extends Migration {
      */
     public function down(): void
     {
-        Schema::dropIfExists('htpasswd_users');
+        Schema::dropIfExists('hosting_subscription_directory_privacies');
     }
 };

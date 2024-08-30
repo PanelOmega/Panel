@@ -1,8 +1,9 @@
 <?php
 
-namespace App\Models;
+namespace App\Models\HostingSubscription;
 
 use App\Jobs\HtaccessBuildRedirects;
+use App\Models\Customer;
 use App\Models\Traits\RedirectTrait;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -26,10 +27,10 @@ class Redirect extends Model
     protected static function boot()
     {
         parent::boot();
-        static::redirectsBoot();
+        static::redirectBoot();
     }
 
-    public static function redirectsBoot()
+    public static function redirectBoot()
     {
         $hostingSubscription = Customer::getHostingSubscriptionSession();
 

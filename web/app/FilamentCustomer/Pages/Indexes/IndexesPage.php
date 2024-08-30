@@ -3,7 +3,8 @@
 namespace App\FilamentCustomer\Pages\Indexes;
 
 use App\Models\Customer;
-use App\Models\Index;
+use App\Models\HostingSubscription\Index;
+use App\Models\HostingSubscription\IndexBrowse;
 use Filament\Forms\Components\Radio;
 use Filament\Pages\Page;
 use Filament\Tables\Actions\Action;
@@ -65,7 +66,7 @@ class IndexesPage extends Page implements HasTable
         return $table
             ->heading($this->path ?: 'Root')
             ->query(
-                Index::queryForDiskAndPath($this->disk, $this->path)
+                IndexBrowse::queryForDiskAndPath($this->disk, $this->path)
             )
             ->paginated(false)
             ->columns([
@@ -78,7 +79,7 @@ class IndexesPage extends Page implements HasTable
                         'Folder' => 'warning',
                         default => 'gray',
                     })
-                    ->action(function (Index $record) {
+                    ->action(function (IndexBrowse $record) {
                         if ($record->isFolder()) {
                             $this->path = $record->path;
 
@@ -100,7 +101,7 @@ class IndexesPage extends Page implements HasTable
                         Radio::make('index_type')
                             ->label('Set Indexing Settings for all directories.')
                             ->options(Index::getIndexesIndexTypes())
-                            ->default(function (Index $record) {
+                            ->default(function (IndexBrowse $record) {
                                 return $record->index_type;
                             })
                             ->live()
@@ -126,11 +127,11 @@ class IndexesPage extends Page implements HasTable
                     ->successNotificationTitle('Files deleted')
                     ->deselectRecordsAfterCompletion()
                     ->action(function (Collection $records, BulkAction $action) {
-                        $records->each(fn(Index $record) => $record->delete());
+                        $records->each(fn(IndexBrowse $record) => $record->delete());
                         $action->sendSuccessNotification();
                     }),
             ])
-            ->checkIfRecordIsSelectableUsing(fn(Index $record): bool => !$record->isPreviousPath())
+            ->checkIfRecordIsSelectableUsing(fn(IndexBrowse $record): bool => !$record->isPreviousPath())
             ->headerActions([
                 Action::make('home')
                     ->label('Home')

@@ -2,7 +2,7 @@
 
 namespace tests\Unit;
 
-use App\Models\HostingSubscriptionFtpAccount;
+use App\Models\HostingSubscription\FtpAccount;
 use Tests\TestCase;
 
 class UpdateVsftpdUserlistTest extends TestCase
@@ -19,7 +19,7 @@ class UpdateVsftpdUserlistTest extends TestCase
         $testFtpUsername = 'test' . rand(1000, 9999);
         $testFtpUsernamePrefix = 'testprefix' . rand(1000, 9999) . '_';
 
-        $testFtpAccount = new HostingSubscriptionFtpAccount();
+        $testFtpAccount = new FtpAccount();
         $testFtpAccount->hosting_subscription_id = rand(1000, 9999);
         $testFtpAccount->ftp_username = $testFtpUsername;
         $testFtpAccount->ftp_username_prefix = $testFtpUsernamePrefix;
@@ -28,7 +28,7 @@ class UpdateVsftpdUserlistTest extends TestCase
         $testFtpAccount->ftp_quota = 100;
         $testFtpAccount->save();
 
-        $createdAccount = HostingSubscriptionFtpAccount::where('ftp_username', $testFtpUsername)->first();
+        $createdAccount = FtpAccount::where('ftp_username', $testFtpUsername)->first();
         $this->assertNotNull($createdAccount);
 
 
@@ -43,11 +43,11 @@ class UpdateVsftpdUserlistTest extends TestCase
 
         $this->assertEquals($expectedViewRendered, trim($lastLine));
 
-        $this->assertTrue(HostingSubscriptionFtpAccount::where('ftp_username', $testFtpAccount->ftp_username)
+        $this->assertTrue(FtpAccount::where('ftp_username', $testFtpAccount->ftp_username)
             ->exists());
 
         $createdAccount->delete();
-        $this->assertNull(HostingSubscriptionFtpAccount::where('ftp_username', $testFtpUsername)->first());
+        $this->assertNull(FtpAccount::where('ftp_username', $testFtpUsername)->first());
 
     }
 

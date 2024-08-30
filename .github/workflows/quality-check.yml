@@ -1,0 +1,29 @@
+name: Quality Check
+
+on: [push]
+
+jobs:
+  QualityCheck:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: true
+      matrix:
+        php: [8.3]
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          extensions: json, dom, curl, libxml, mbstring
+          coverage: none
+
+      - name: Run Pint and PHPStan
+        run: |
+          cd ./web
+          composer install
+          ./vendor/bin/phpstan analyse app config database routes tests
+          ./vendor/bin/pint --test

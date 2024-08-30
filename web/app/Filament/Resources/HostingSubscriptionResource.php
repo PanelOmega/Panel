@@ -3,12 +3,8 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\HostingSubscriptionResource\Pages;
-use app\Filament\Resources\HostingSubscriptionResource\Pages\ManageHostingSubscriptionFileManager;
-use app\Filament\Resources\HostingSubscriptionResource\Pages\ManageHostingSubscriptionFtpAccounts;
 use App\Models\Customer;
-use App\Models\Domain;
 use App\Models\HostingSubscription;
-use Filament\Actions\Action;
 use Filament\Forms;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Form;
@@ -19,7 +15,6 @@ use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\HtmlString;
 
 class HostingSubscriptionResource extends Resource
 {
@@ -138,7 +133,7 @@ class HostingSubscriptionResource extends Resource
 //                    ->searchable()
 //                    ->sortable(),
 
-            Tables\Columns\TextColumn::make('created_at')
+                Tables\Columns\TextColumn::make('created_at')
 
 
             ])
@@ -148,15 +143,15 @@ class HostingSubscriptionResource extends Resource
                     ->attribute('id')
                     ->label('Domain')
                     ->searchable()
-                    ->options(fn (): array => HostingSubscription::query()->pluck('domain', 'id')->all()),
+                    ->options(fn(): array => HostingSubscription::query()->pluck('domain', 'id')->all()),
                 Tables\Filters\SelectFilter::make('customer_id')
                     ->searchable()
-                    ->options(fn (): array => Customer::query()->pluck('name', 'id')->all()),
+                    ->options(fn(): array => Customer::query()->pluck('name', 'id')->all()),
                 Tables\Filters\SelectFilter::make('system_username')
                     ->attribute('id')
                     ->label('System Username')
                     ->searchable()
-                    ->options(fn (): array => HostingSubscription::query()->pluck('system_username', 'id')->all())
+                    ->options(fn(): array => HostingSubscription::query()->pluck('system_username', 'id')->all())
             ])
             ->actions([
                 Tables\Actions\ActionGroup::make([
@@ -178,12 +173,12 @@ class HostingSubscriptionResource extends Resource
     public static function getRecordSubNavigation(Page $page): array
     {
         return $page->generateNavigationItems([
-         //   Pages\ViewHos::class,
+            //   Pages\ViewHos::class,
             Pages\EditHostingSubscription::class,
-         //   Pages\ManageHostingSubscriptionDatabases::class,
-           // Pages\ManageHostingSubscriptionBackups::class,
+            //   Pages\ManageHostingSubscriptionDatabases::class,
+            // Pages\ManageHostingSubscriptionBackups::class,
             //Pages\ManageHostingSubscriptionFtpAccounts::class,
-          //  Pages\ManageHostingSubscriptionFileManager::class
+            //  Pages\ManageHostingSubscriptionFileManager::class
         ]);
     }
 
@@ -200,11 +195,11 @@ class HostingSubscriptionResource extends Resource
             // 'index' => Pages\ManageHostingSubscriptions::route('/'),
             'index' => Pages\ListHostingSubscriptions::route('/'),
 //            'edit' => Pages\EditHostingSubscription::route('/{record}/edit'),
-          //  'view' => Pages\ViewHostingSubscription::route('/{record}'),
-           // 'databases' => Pages\ManageHostingSubscriptionDatabases::route('/{record}/databases'),
-          //  'backups' => Pages\ManageHostingSubscriptionBackups::route('/{record}/backups'),
-          //  'ftp-accounts' => Pages\ManageHostingSubscriptionFtpAccounts::route('/{record}/ftp-accounts'),
-        //    'file-manager' => Pages\ManageHostingSubscriptionFileManager::route('/{record}/file-manager'),
+            //  'view' => Pages\ViewHostingSubscription::route('/{record}'),
+            // 'databases' => Pages\ManageHostingSubscriptionDatabases::route('/{record}/databases'),
+            //  'backups' => Pages\ManageHostingSubscriptionBackups::route('/{record}/backups'),
+            //  'ftp-accounts' => Pages\ManageHostingSubscriptionFtpAccounts::route('/{record}/ftp-accounts'),
+            //    'file-manager' => Pages\ManageHostingSubscriptionFileManager::route('/{record}/file-manager'),
         ];
     }
 

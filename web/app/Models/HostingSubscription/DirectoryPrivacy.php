@@ -1,8 +1,9 @@
 <?php
 
-namespace App\Models;
+namespace App\Models\HostingSubscription;
 
 use App\Jobs\HtaccessBuildDirectoryPrivacy;
+use App\Models\Customer;
 use Illuminate\Database\Eloquent\Model;
 
 class DirectoryPrivacy extends Model
@@ -29,13 +30,11 @@ class DirectoryPrivacy extends Model
         $hostingSubscription = Customer::getHostingSubscriptionSession();
         static::creating(function ($model) use ($hostingSubscription) {
             $model->hosting_subscription_id = $hostingSubscription->id;
-            $htpasswdUser = new HtpasswdUser();
-            $htpasswdUser->hosting_subscription_id = $hostingSubscription->id;
-            $htpasswdUser->directory = $model->directory;
-            $htpasswdUser->username = $model->username;
-            $htpasswdUser->password = $model->password;
-            $htpasswdUser->save();
-
+            HtpasswdUser::create([
+                'directory' => $model->directory,
+                'username' => $model->username,
+                'password' => $model->password,
+            ]);
         });
         $callback = function ($model) use ($hostingSubscription) {
             $directoryRealPath = "/home/{$hostingSubscription->system_username}/public_html/{$model->path}";

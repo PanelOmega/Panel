@@ -15,23 +15,24 @@ class HtaccessBuildHotlinkProtection implements ShouldQueue
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels, HtaccessBuildTrait;
 
     public $fixPermissions = false;
-    public $model;
+
+    public $hostingSubscription;
     public $startComment = '# Section managed by Panel Omega: Hotlink Protection, do not edit';
     public $endComment = '# End section managed by Panel Omega: Hotlink Protection';
 
-    public function __construct($fixPermissions = false, $model)
+    public function __construct($fixPermissions = false, $hostingSubscription)
     {
         $this->fixPermissions = $fixPermissions;
-        $this->model = $model;
+        $this->hostingSubscription = $hostingSubscription;
     }
 
     public function handle()
     {
-        $hostingSubscription = HostingSubscription::where('id', $this->model->hosting_subscription_id)->first();
+        $subscription = HostingSubscription::where('id', $this->hostingSubscription->id)->first();
         $htAccessFilePath = '/public_html/.htaccess';
-        $hotlinkData = $this->getHotlinkData($hostingSubscription->hotlinkProtection);
+        $hotlinkData = $this->getHotlinkData($subscription->hotlinkProtection);
         $htAccessView = $this->getHtAccessFileConfig($hotlinkData);
-        $htAccessFileRealPath = '/home/' . $hostingSubscription->system_username . $htAccessFilePath;
+        $htAccessFileRealPath = '/home/' . $subscription->system_username . $htAccessFilePath;
         $this->updateSystemFile($htAccessFileRealPath, $htAccessView);
     }
 

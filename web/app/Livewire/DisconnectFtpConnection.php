@@ -9,9 +9,7 @@ class DisconnectFtpConnection extends Component
 {
 
     public $pid;
-
-//    public $statusMessage;
-
+    
     public function disconnect()
     {
         if (FtpConnectionsService::disconnectFtpConnection($this->pid)) {

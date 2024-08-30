@@ -67,7 +67,7 @@ class PHPInstaller extends Installer
                             $phpInstaller->setPHPVersions($this->server_php_versions);
                             $phpInstaller->setPHPModules($this->server_php_modules);
                             $phpInstaller->setLogFilePath(storage_path($this->install_log_file_path));
-                            $phpInstaller->install();
+                            $phpInstaller->run();
 
                         }),
 

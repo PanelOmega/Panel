@@ -37,7 +37,7 @@ class UniversalDatabaseExecutor
         ];
 
         $connection = DriverManager::getConnection($connectionParams);
-        $connection->connect();
+
         if (!$connection->isConnected()) {
             throw new \Exception('Could not connect to database');
         }

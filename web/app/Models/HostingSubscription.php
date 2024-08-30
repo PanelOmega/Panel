@@ -40,12 +40,13 @@ class HostingSubscription extends Model
         static::deleting(function ($model) {
 
             if (empty($model->system_username)) {
-                throw new \Exception('System username is empty');
+                return;
+//                throw new \Exception('System username is empty');
             }
 
             $getLinuxUserStatus = LinuxUser::getUser($model->system_username);
             if (empty($getLinuxUserStatus)) {
-                throw new \Exception('System username not found');
+               // throw new \Exception('System username not found');
             }
 
             $getFptUser = FtpAccount::where('ftp_username', $model->system_username)->get();
@@ -75,21 +76,27 @@ class HostingSubscription extends Model
                     $database->delete();
                 }
             }
-            // Delete main database user
-            $universalDatabaseExecutor = new UniversalDatabaseExecutor(
-                OmegaConfig::get('MYSQL_HOST', '127.0.0.1'),
-                OmegaConfig::get('MYSQL_PORT', 3306),
-                OmegaConfig::get('MYSQL_ROOT_USERNAME'),
-                OmegaConfig::get('MYSQL_ROOT_PASSWORD'),
-            );
 
-            // Check main database user exists
-            $mainDatabaseUser = $universalDatabaseExecutor->getUserByUsername($model->system_username);
-            if (!$mainDatabaseUser) {
-                $deleteMainDatabaseUser = $universalDatabaseExecutor->deleteUserByUsername($model->system_username);
-                if (!isset($deleteMainDatabaseUser['success'])) {
-                    //throw new \Exception($deleteMainDatabaseUser['message']);
+            // Delete main database user
+            try {
+                $universalDatabaseExecutor = new UniversalDatabaseExecutor(
+                    OmegaConfig::get('MYSQL_HOST', '127.0.0.1'),
+                    OmegaConfig::get('MYSQL_PORT', 3306),
+                    OmegaConfig::get('MYSQL_ROOT_USERNAME'),
+                    OmegaConfig::get('MYSQL_ROOT_PASSWORD'),
+                );
+
+                // Check main database user exists
+                $mainDatabaseUser = $universalDatabaseExecutor->getUserByUsername($model->system_username);
+                if (!$mainDatabaseUser) {
+                    $deleteMainDatabaseUser
+                        = $universalDatabaseExecutor->deleteUserByUsername($model->system_username);
+                    if (!isset($deleteMainDatabaseUser['success'])) {
+                        //throw new \Exception($deleteMainDatabaseUser['message']);
+                    }
                 }
+            } catch (\Exception $e) {
+                //throw new \Exception($e->getMessage());
             }
 
             // Delete linux user

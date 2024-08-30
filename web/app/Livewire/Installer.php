@@ -218,22 +218,22 @@ class Installer extends Page
                                 $phpInstaller->setPHPVersions($this->server_php_versions);
                                 $phpInstaller->setPHPModules($this->server_php_modules);
                                 $phpInstaller->setLogFilePath(storage_path($this->install_log_file_path));
-                                $phpInstaller->install();
+                                $phpInstaller->run();
                             } else if ($this->server_application_type == 'apache_nodejs') {
                                 $nodeJsInstaller = new NodeJsInstaller();
                                 $nodeJsInstaller->setNodeJsVersions($this->server_nodejs_versions);
                                 $nodeJsInstaller->setLogFilePath(storage_path($this->install_log_file_path));
-                                $nodeJsInstaller->install();
+                                $nodeJsInstaller->run();
                             }elseif ($this->server_application_type == 'apache_python') {
                                 $pythonInstaller = new PythonInstaller();
                                 $pythonInstaller->setPythonVersions($this->server_python_versions);
                                 $pythonInstaller->setLogFilePath(storage_path($this->install_log_file_path));
-                                $pythonInstaller->install();
+                                $pythonInstaller->run();
                             }elseif ($this->server_application_type == 'apache_ruby') {
                                 $rubyInstaller = new RubyInstaller();
                                 $rubyInstaller->setRubyVersions($this->server_ruby_versions);
                                 $rubyInstaller->setLogFilePath(storage_path($this->install_log_file_path));
-                                $rubyInstaller->install();
+                                $rubyInstaller->run();
                             }
 
                         }),

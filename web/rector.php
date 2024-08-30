@@ -6,10 +6,11 @@ use Rector\Config\RectorConfig;
 
 include __DIR__ . '/rector/ConvertProtectedMethodsNameToCamelCaseRector.php';
 include __DIR__ . '/rector/ConvertPrivateMethodsNameToCamelCaseRector.php';
+include __DIR__ . '/rector/ConvertLocalVariablesNameToCamelCaseRector.php';
 
 return RectorConfig::configure()
     ->withPaths([
-        __DIR__ . '/app/UniversalDatabaseExecutor.php',
+        __DIR__ . '/app',
 //        __DIR__ . '/app/Models/Fail2BanWhitelistedIp.php',
 //        __DIR__ . '/bootstrap',
 //        __DIR__ . '/config',

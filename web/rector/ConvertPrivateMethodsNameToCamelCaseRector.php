@@ -87,6 +87,7 @@ final class ConvertPrivateMethodsNameToCamelCaseRector extends AbstractRector
         }
 
         $newMethodCallName = StringHelper::toCamelCase($methodCallName);
+        $newMethodCallName = $this->addUnderscore($newMethodCallName);
 
         if ($methodCallName === $newMethodCallName) {
             return null; // Skip if the name is already in camelCase
@@ -145,10 +146,10 @@ class MyClass
 {
     public function do()
     {
-        return $this->isSnakeCase();
+        return $this->_isSnakeCase();
     }
 
-    private function isSnakeCase()
+    private function _isSnakeCase()
     {
         // Some code here
     }

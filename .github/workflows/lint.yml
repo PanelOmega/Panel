@@ -26,3 +26,4 @@ jobs:
           cd ./web
           composer install
           ./vendor/bin/pint --test
+          ./vendor/bin/phpstan analyse app config database routes tests

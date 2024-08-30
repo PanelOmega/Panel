@@ -12,7 +12,7 @@ $dirRoot = dirname(__DIR__);
 
 return RectorConfig::configure()
     ->withPaths([
-        $dirRoot . '/app',
+        $dirRoot . '/app/UniversalDatabaseExecutor.php',
 //        $dirRoot . '/app/Models',
 //        $dirRoot . '/bootstrap',
 //        $dirRoot . '/config',

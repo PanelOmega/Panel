@@ -1,9 +1,6 @@
 {
-    "preset": "laravel",
+    "preset": "empty",
     "rules": {
-        "binary_operator_spaces": false,
-        "unary_operator_spaces": false,
-        "not_operator_with_space": false,
-        "new_with_braces": true
+
     }
 }

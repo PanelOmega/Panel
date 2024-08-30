@@ -4,7 +4,9 @@ namespace App\Console\Commands;
 
 use App\Models\HostingPlan;
 use App\Models\HostingSubscription;
+use App\Server\Helpers\LinuxUser;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Hash;
 use Symfony\Component\Console\Input\ArgvInput;
 use Symfony\Component\Console\Input\InputDefinition;
 use Symfony\Component\Console\Input\InputOption;
@@ -72,46 +74,70 @@ class CloudLinuxApi extends Command
 
     }
 
-    public function panelInfo()
+
+    public function php($jsonOptions)
     {
-        $panelInfo = [
-            'data' => [
-                'name' => 'PanelOmega',
-                'version' => '1.0.0',
-                'user_login_url' => '',
-                'supported_cl_features' => [
-                    'php_selector' => true,
-                    'ruby_selector' => true,
-                    'python_selector' => true,
-                    'nodejs_selector' => true,
-                    'mod_lsapi' => true,
-                    'mysql_governor' => true,
-                    'cagefs' => true,
-                    'reseller_limits' => true,
-                    'xray' => false,
-                    'accelerate_wp' => false,
-                    'autotracing' => true
-                ]
-            ],
-            'metadata' => [
-                'result' => 'ok'
-            ]
-        ];
-        echo json_encode($panelInfo, JSON_PRETTY_PRINT);
+         echo '{
+  "data": [
+    {
+      "identifier":  "alt-php74",
+      "version": "7.4",
+      "modules_dir":  "/opt/alt/php74/usr/lib64/modules",
+      "dir": "/opt/alt/php74/",
+      "bin":  "/opt/alt/php74/usr/bin/php",
+      "ini": "/opt/alt/php74/link/conf/default.ini"
+    },
+    {
+      "identifier":  "ea-php74",
+      "version": "7.4",
+      "modules_dir":  "/opt/cpanel/ea-php74/usr/lib64/modules",
+      "dir": "/opt/cpanel/ea-php74/",
+      "bin":  "/opt/cpanel/ea-php74/usr/bin/php",
+      "ini": "/opt/cpanel/ea-php74/etc/php.ini"
+    }
+  ],
+  "metadata": {
+    "result": "ok"
+  }
+}';
     }
 
-    public function uiUserInfo()
+    public function domains($jsonOptions)
     {
-        $uiUserInfo = [
-            'userName' => 'user1',
-            'userId' => 1000,
-            'userType' => 'user',
-            'baseUri' => '/user2/lvemanager/',
-            'assetsUri' => '/userdata/assets/lvemanager',
-            'lang' => 'en',
-            'userDomain' => 'current-user-domain.com'
-        ];
-        echo json_encode($uiUserInfo, JSON_PRETTY_PRINT);
+        echo '{
+  "data": {
+    "domain.com": {
+      "owner": "username",
+      "document_root": "/home/username/public_html/",
+      "is_main": true
+    },
+    "subdomain.domain.com": {
+      "owner": "username",
+      "document_root": "/home/username/public_html/subdomain/",
+      "is_main": false
+    }
+  },
+  "metadata": {
+    "result": "ok"
+  }
+}';
+    }
+
+    public function resellers($jsonOptions)
+    {
+        echo '{
+  "data": [
+    {
+      "name": "reseller",
+      "locale_code": "EN_us",
+      "email": "reseller@domain.zone",
+      "id": 10001
+    }
+  ],
+  "metadata": {
+    "result": "ok"
+  }
+}';
     }
 
     public function users($jsonOptions)
@@ -165,33 +191,6 @@ class CloudLinuxApi extends Command
 
     }
 
-    public function admins($jsonOptions)
-    {
-//        $input = new ArgvInput($jsonOptions, new InputDefinition(array(
-//            new InputOption('name', 'n', InputOption::VALUE_OPTIONAL),
-//            new InputOption('is-main', 'm', InputOption::VALUE_OPTIONAL)
-//        )));
-//        $options = $input->getOptions();
-
-        echo '
-{
-   "data":[
-      {
-         "name":"root",
-         "unix_user":"root",
-         "locale_code":"EN_us",
-         "email":"admin1@domain.zone",
-         "is_main":true
-      }
-   ],
-   "metadata":{
-      "result":"ok"
-   }
-}
-';
-
-    }
-
     public function packages($jsonOptions)
     {
 //        $input = new ArgvInput($jsonOptions, new InputDefinition(array(
@@ -221,68 +220,72 @@ class CloudLinuxApi extends Command
 
     }
 
-    public function resellers($jsonOptions)
+    public function admins($jsonOptions)
     {
-        echo '{
-  "data": [
-    {
-      "name": "reseller",
-      "locale_code": "EN_us",
-      "email": "reseller@domain.zone",
-      "id": 10001
-    }
-  ],
-  "metadata": {
-    "result": "ok"
-  }
-}';
+//        $input = new ArgvInput($jsonOptions, new InputDefinition(array(
+//            new InputOption('name', 'n', InputOption::VALUE_OPTIONAL),
+//            new InputOption('is-main', 'm', InputOption::VALUE_OPTIONAL)
+//        )));
+//        $options = $input->getOptions();
+
+        echo '
+{
+   "data":[
+      {
+         "name":"root",
+         "unix_user":"root",
+         "locale_code":"EN_us",
+         "email":"admin1@domain.zone",
+         "is_main":true
+      }
+   ],
+   "metadata":{
+      "result":"ok"
+   }
+}
+';
+
     }
 
-    public function domains($jsonOptions)
+    public function uiUserInfo()
     {
-        echo '{
-  "data": {
-    "domain.com": {
-      "owner": "username",
-      "document_root": "/home/username/public_html/",
-      "is_main": true
-    },
-    "subdomain.domain.com": {
-      "owner": "username",
-      "document_root": "/home/username/public_html/subdomain/",
-      "is_main": false
-    }
-  },
-  "metadata": {
-    "result": "ok"
-  }
-}';
+        $uiUserInfo = [
+            'userName' => 'user1',
+            'userId' => 1000,
+            'userType' => 'user',
+            'baseUri' => '/user2/lvemanager/',
+            'assetsUri' => '/userdata/assets/lvemanager',
+            'lang' => 'en',
+            'userDomain' => 'current-user-domain.com'
+        ];
+        echo json_encode($uiUserInfo, JSON_PRETTY_PRINT);
     }
 
-    public function php($jsonOptions)
+    public function panelInfo()
     {
-        echo '{
-  "data": [
-    {
-      "identifier":  "alt-php74",
-      "version": "7.4",
-      "modules_dir":  "/opt/alt/php74/usr/lib64/modules",
-      "dir": "/opt/alt/php74/",
-      "bin":  "/opt/alt/php74/usr/bin/php",
-      "ini": "/opt/alt/php74/link/conf/default.ini"
-    },
-    {
-      "identifier":  "ea-php74",
-      "version": "7.4",
-      "modules_dir":  "/opt/cpanel/ea-php74/usr/lib64/modules",
-      "dir": "/opt/cpanel/ea-php74/",
-      "bin":  "/opt/cpanel/ea-php74/usr/bin/php",
-      "ini": "/opt/cpanel/ea-php74/etc/php.ini"
-    }
-  ],
-  "metadata": {
-    "result": "ok"
-  }
-}';
+        $panelInfo = [
+            'data' => [
+                'name' => 'PanelOmega',
+                'version' => '1.0.0',
+                'user_login_url' => '',
+                'supported_cl_features' => [
+                    'php_selector' => true,
+                    'ruby_selector' => true,
+                    'python_selector' => true,
+                    'nodejs_selector' => true,
+                    'mod_lsapi' => true,
+                    'mysql_governor' => true,
+                    'cagefs' => true,
+                    'reseller_limits' => true,
+                    'xray' => false,
+                    'accelerate_wp' => false,
+                    'autotracing' => true
+                ]
+            ],
+            'metadata' => [
+                'result' => 'ok'
+            ]
+        ];
+        echo json_encode($panelInfo, JSON_PRETTY_PRINT);
     }
 }

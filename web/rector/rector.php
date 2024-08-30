@@ -40,6 +40,7 @@ return RectorConfig::configure()
         \RectorLaravel\Set\LaravelSetList::LARAVEL_CODE_QUALITY
     ])
         ->withRules([
+
         ConvertProtectedMethodsNameToCamelCaseRector::class,
         ConvertPrivateMethodsNameToCamelCaseRector::class,
         ConvertPublicMethodsNameToCamelCaseRector::class,

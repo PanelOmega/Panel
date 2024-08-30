@@ -28,7 +28,7 @@
     },
     "require-dev": {
         "fakerphp/faker": "^1.23",
-        "laravel/pint": "^1.17",
+        "friendsofphp/php-cs-fixer": "^3.63",
         "laravel/sail": "^1.26",
         "mockery/mockery": "^1.6",
         "nunomaduro/collision": "^8.0",
@@ -49,9 +49,6 @@
         }
     },
     "scripts": {
-        "pint": [
-            "./vendor/bin/pint"
-        ],
         "test": [
             "sudo omega-php artisan test"
         ],

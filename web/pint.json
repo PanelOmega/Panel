@@ -1,11 +1,9 @@
 {
     "preset": "laravel",
     "rules": {
-        "simplified_null_return": true,
-        "braces": false,
-        "new_with_braces": {
-            "anonymous_class": false,
-            "named_class": false
-        }
+        "binary_operator_spaces": false,
+        "unary_operator_spaces": false,
+        "not_operator_with_space": false,
+        "new_with_braces": true
     }
 }

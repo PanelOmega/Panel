@@ -11,7 +11,7 @@ jobs:
     strategy:
       max-parallel: 1
       matrix:
-        os: ["Ubuntu-22.04", "AlmaLinux-9.4"]
+        os: ["AlmaLinux-9.4"]
 
     steps:
       - name: Checkout Repository

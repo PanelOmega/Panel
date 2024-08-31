@@ -77,7 +77,6 @@ class HostingSubscriptionTest extends TestCase
 
             $this->assertTrue(Str::contains($domainHomePageContent, 'site-is-ok, ' . $phpVersion['full']));
 
-            break;
         }
     }
 

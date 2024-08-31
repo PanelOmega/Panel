@@ -82,7 +82,7 @@ class PHP
     private static function _getRemiPHP()
     {
 
-        return Cache::remember('getRemiPHP', 600, function () {
+//        return Cache::remember('getRemiPHP', 600, function () {
 
             $phpVersions = [];
 
@@ -137,7 +137,7 @@ class PHP
             }
 
             return $phpVersions;
-        });
+      //  });
 
     }
 }

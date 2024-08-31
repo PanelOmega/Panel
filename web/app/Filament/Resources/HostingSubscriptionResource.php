@@ -114,6 +114,12 @@ class HostingSubscriptionResource extends Resource
 
     public static function table(Table $table): Table
     {
+        $bulkActions = [];
+
+        if (setting('panel_settings.bulk_delete_on_all_resources')) {
+            $bulkActions[] = Tables\Actions\DeleteBulkAction::make();
+        }
+
         return $table
             ->columns([
 
@@ -165,9 +171,7 @@ class HostingSubscriptionResource extends Resource
                     Tables\Actions\DeleteAction::make(),
                 ])
             ])
-            ->bulkActions([
-
-            ]);
+            ->bulkActions($bulkActions);
     }
 
     public static function getRecordSubNavigation(Page $page): array

@@ -14,6 +14,24 @@ Route::get('/customer/file-manager', function () {
     return view('customer.pages.file-manager');
 });
 
+Route::get('/hosting-subscription/visit-local', function () {
+
+    $domain = request()->get('domain');
+    $findDomain = \App\Models\Domain::where('domain', $domain)->first();
+    if (!$findDomain) {
+        return response()->json(['error' => 'Domain not found'], 404);
+    }
+    $etcHosts = file_get_contents('/etc/hosts');
+    if (!Str::contains($etcHosts, $findDomain->domain)) {
+        shell_exec('sudo echo "0.0.0.0 '.$findDomain->domain.'" | sudo tee -a /etc/hosts');
+    }
+
+    $websiteContent = shell_exec('curl -s http://'.$findDomain->domain);
+
+    echo $websiteContent;
+
+})->name('hosting-subscription.visit-local');
+
 
 Route::get('/login', function () {
     return redirect('/');

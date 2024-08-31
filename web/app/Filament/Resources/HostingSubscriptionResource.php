@@ -167,6 +167,13 @@ class HostingSubscriptionResource extends Resource
                         ->icon('heroicon-m-arrow-top-right-on-square')
                         ->color('gray')
                         ->url(fn($record): string => 'http://' . $record->domain, true),
+                    Tables\Actions\Action::make('visit_local')
+                        ->label('Open website (local)')
+                        ->icon('heroicon-m-arrow-top-right-on-square')
+                        ->color('gray')
+                        ->url(function ($record) {
+                            return route('hosting-subscription.visit-local', ['domain' => $record->domain]);
+                        }, true),
                     Tables\Actions\EditAction::make(),
                     Tables\Actions\DeleteAction::make(),
                 ])

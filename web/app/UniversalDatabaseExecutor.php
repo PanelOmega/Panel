@@ -36,13 +36,8 @@ class UniversalDatabaseExecutor
             'driver' => 'pdo_mysql',
         ];
 
-        $connection = DriverManager::getConnection($connectionParams);
+        return DriverManager::getConnection($connectionParams);
 
-        if (!$connection->isConnected()) {
-            throw new \Exception('Could not connect to database');
-        }
-
-        return $connection;
     }
 
     public function createDatabase($databaseName)

@@ -131,7 +131,7 @@ class HostingSubscriptionTest extends TestCase
 //            $this->assertDatabaseHas('domains', ['domain' => $findDomain->domain]);
 //
             // Test domain php version
-//            shell_exec('sudo echo "0.0.0.0 '.$findDomain->domain_public.'" | sudo tee -a /etc/hosts');
+//            shell_exec('sudo echo "0.0.0.0 '.$findDomain->domain.'" | sudo tee -a /etc/hosts');
             /*            file_put_contents($findDomain->domain_public . '/index.php', '<?php echo "site-is-ok, "; echo phpversion(); ?>');*/
 //            $domainHomePageContent = file_get_contents('http://' . $hostingSubscription->domain);
 //            $this->assertTrue(strpos($domainHomePageContent, 'site-is-ok, '.$phpVersion) !== false);

@@ -166,57 +166,11 @@ class DomainService
                 if (isset($domain->server_application_settings['enable_php_fpm'])
                     && $domain->server_application_settings['enable_php_fpm'] == true
                 ) {
-
                     $apacheVirtualHostBuilder->setAppType('php_proxy_fcgi');
                     $apacheVirtualHostBuilder->setAppVersion(null);
-
                     $getCurrentPHPVersion = PHP::getPHPVersion($domain->server_application_settings['php_version']);
-
                     if (isset($getCurrentPHPVersion['fpmPoolPath'])) {
-
                         $fcgiPort = $domain->id + 9000;
-
-                        $fpmPoolPath = $getCurrentPHPVersion['fpmPoolPath'];
-                        if (is_file($fpmPoolPath . '/www.conf')) {
-                            unlink($fpmPoolPath . '/www.conf');
-                        }
-
-                        $domainFpmPoolPath = $fpmPoolPath . '/' . $domain->domain . '.conf';
-
-                        $fpmPoolContent = view('server.samples.php-fpm.domain-pool-conf', [
-                            'username' => $findHostingSubscription->system_username,
-                            'port' => $fcgiPort,
-                            'poolName' => $domain->domain
-                        ])->render();
-
-                        $restartFpmServices = [];
-
-                        $getSupportedPHPVersions = PHP::getInstalledPHPVersions();
-                        // Scan old pool files and remove them
-                        $allPoolFiles = shell_exec('find /etc/opt/remi/*/php-fpm.d/' . $domain->domain . '.conf');
-                        $allPoolFiles = explode("\n", $allPoolFiles);
-                        if (!empty($allPoolFiles)) {
-                            foreach ($allPoolFiles as $poolFile) {
-                                foreach ($getSupportedPHPVersions as $version) {
-                                    if (str_contains($poolFile, $version['fpmPoolPath'])) {
-                                        $restartFpmServices[] = $version['fpmServiceName'];
-                                        unlink($poolFile);
-                                    }
-                                }
-                            }
-                        }
-
-                        file_put_contents($domainFpmPoolPath, $fpmPoolContent);
-
-                        if (isset($getCurrentPHPVersion['fpmServiceName'])) {
-                            $restartFpmServices[] = $getCurrentPHPVersion['fpmServiceName'];
-                        }
-                        if (!empty($restartFpmServices)) {
-                            foreach ($restartFpmServices as $service) {
-                                shell_exec('systemctl restart ' . $service);
-                            }
-                        }
-
                         $apacheVirtualHostBuilder->setFCGI('127.0.0.1:' . $fcgiPort);
                     }
                 }
@@ -336,6 +290,7 @@ class DomainService
         return [
             'virtualHostSettings' => $virtualHostSettings,
             //   'virtualHostSettingsWithSSL' => $virtualHostSettingsWithSSL,
+
         ];
 
     }

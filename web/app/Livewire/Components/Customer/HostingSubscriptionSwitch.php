@@ -3,23 +3,15 @@
 namespace App\Livewire\Components\Customer;
 
 use App\Models\HostingSubscription;
-use Exception;
-use Filament\Actions\Action;
-use Filament\Actions\ActionGroup;
 use Filament\Actions\Concerns\InteractsWithActions;
 use Filament\Actions\Contracts\HasActions;
-use Filament\Actions\CreateAction;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Concerns\InteractsWithForms;
 use Filament\Forms\Contracts\HasForms;
 use Filament\Forms\Form;
 use Illuminate\Contracts\View\View;
-use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Redirect;
-use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Session;
-use InvalidArgumentException;
 use Livewire\Component;
 
 class HostingSubscriptionSwitch extends Component implements HasForms, HasActions
@@ -64,7 +56,7 @@ class HostingSubscriptionSwitch extends Component implements HasForms, HasAction
             ->statePath('state')
             ->schema([
                 Select::make('hosting_subscription_id')
-                     ->label('Hosting Subscription')
+                    ->label('Hosting Subscription')
                     ->hiddenLabel()
                     ->columnSpanFull()
                     ->live()

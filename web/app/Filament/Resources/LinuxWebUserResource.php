@@ -52,7 +52,7 @@ class LinuxWebUserResource extends Resource
                 }),
             ])
             ->bulkActions([
-
+                Tables\Actions\DeleteBulkAction::make()
             ]);
     }
 

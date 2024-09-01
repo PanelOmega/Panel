@@ -5,14 +5,14 @@ namespace App\Models;
 use App\Actions\CreateLinuxWebUser;
 use App\Actions\GetLinuxUser;
 use App\Jobs\ApacheBuild;
+use App\Models\HostingSubscription\FtpAccount;
+use App\Models\HostingSubscription\HotlinkProtection;
 use App\OmegaConfig;
-use App\Server\Helpers\FtpAccount;
 use App\Server\Helpers\LinuxUser;
 use App\UniversalDatabaseExecutor;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Str;
 
 class HostingSubscription extends Model
 {
@@ -31,6 +31,8 @@ class HostingSubscription extends Model
         'renewal_date',
     ];
 
+    protected $table = 'hosting_subscriptions';
+
     public static function boot()
     {
         parent::boot();
@@ -38,15 +40,16 @@ class HostingSubscription extends Model
         static::deleting(function ($model) {
 
             if (empty($model->system_username)) {
-                throw new \Exception('System username is empty');
+                return;
+//                throw new \Exception('System username is empty');
             }
 
             $getLinuxUserStatus = LinuxUser::getUser($model->system_username);
             if (empty($getLinuxUserStatus)) {
-                throw new \Exception('System username not found');
+               // throw new \Exception('System username not found');
             }
 
-            $getFptUser = HostingSubscriptionFtpAccount::where('ftp_username', $model->system_username)->get();
+            $getFptUser = FtpAccount::where('ftp_username', $model->system_username)->get();
 
             if (!$getFptUser->isEmpty()) {
                 $getFptUser->delete();
@@ -73,21 +76,27 @@ class HostingSubscription extends Model
                     $database->delete();
                 }
             }
-            // Delete main database user
-            $universalDatabaseExecutor = new UniversalDatabaseExecutor(
-                OmegaConfig::get('MYSQL_HOST', '127.0.0.1'),
-                OmegaConfig::get('MYSQL_PORT', 3306),
-                OmegaConfig::get('MYSQL_ROOT_USERNAME'),
-                OmegaConfig::get('MYSQL_ROOT_PASSWORD'),
-            );
 
-            // Check main database user exists
-            $mainDatabaseUser = $universalDatabaseExecutor->getUserByUsername($model->system_username);
-            if (!$mainDatabaseUser) {
-                $deleteMainDatabaseUser = $universalDatabaseExecutor->deleteUserByUsername($model->system_username);
-                if (!isset($deleteMainDatabaseUser['success'])) {
-                    //throw new \Exception($deleteMainDatabaseUser['message']);
+            // Delete main database user
+            try {
+                $universalDatabaseExecutor = new UniversalDatabaseExecutor(
+                    OmegaConfig::get('MYSQL_HOST', '127.0.0.1'),
+                    OmegaConfig::get('MYSQL_PORT', 3306),
+                    OmegaConfig::get('MYSQL_ROOT_USERNAME'),
+                    OmegaConfig::get('MYSQL_ROOT_PASSWORD'),
+                );
+
+                // Check main database user exists
+                $mainDatabaseUser = $universalDatabaseExecutor->getUserByUsername($model->system_username);
+                if (!$mainDatabaseUser) {
+                    $deleteMainDatabaseUser
+                        = $universalDatabaseExecutor->deleteUserByUsername($model->system_username);
+                    if (!isset($deleteMainDatabaseUser['success'])) {
+                        //throw new \Exception($deleteMainDatabaseUser['message']);
+                    }
                 }
+            } catch (\Exception $e) {
+                //throw new \Exception($e->getMessage());
             }
 
             // Delete linux user
@@ -139,7 +148,7 @@ class HostingSubscription extends Model
 
     public function ftpAccounts()
     {
-        return $this->hasMany(HostingSubscriptionFtpAccount::class);
+        return $this->hasMany(FtpAccount::class);
     }
 
     public function hotlinkProtection()

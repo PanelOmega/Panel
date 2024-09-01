@@ -4,8 +4,7 @@ namespace App\FilamentCustomer\Resources;
 
 use App\FilamentCustomer\Resources\FtpConnectionsResource\Pages;
 use App\FilamentCustomer\Resources\FtpConnectionsResource\RelationManagers;
-use App\Models\FtpConnection;
-use App\Models\HostingSubscriptionFtpConnection;
+use App\Models\HostingSubscription\FtpConnection;
 use App\Services\FtpConnections\FtpConnectionsService;
 use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
@@ -16,7 +15,7 @@ class FtpConnectionsResource extends Resource
 {
     protected static ?string $label = 'FTP Connections';
 
-    protected static ?string $model = HostingSubscriptionFtpConnection::class;
+    protected static ?string $model = FtpConnection::class;
 
     public static function shouldRegisterNavigation(): bool
     {
@@ -60,7 +59,7 @@ class FtpConnectionsResource extends Resource
                 Tables\Actions\Action::make('disconnect')
                     ->label('Disconnect')
                     ->icon('heroicon-o-trash')
-                    ->action(function (HostingSubscriptionFtpConnection $record) {
+                    ->action(function (FtpConnection $record) {
                         $result = FtpConnectionsService::disconnectFtpConnection($record->process_id);
                         if ($result) {
                             Notification::make()

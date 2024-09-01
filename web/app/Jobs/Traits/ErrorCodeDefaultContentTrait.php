@@ -5,7 +5,7 @@ namespace App\Jobs\Traits;
 trait ErrorCodeDefaultContentTrait
 {
 
-    public function getErrorCodeDefaultContent(int $errorCode)
+    public function getErrorCodeDefaultContent($errorCode)
     {
         $method = "getError{$errorCode}Content";
         if (method_exists($this, $method)) {

@@ -32,30 +32,30 @@ class Installer extends Page
 
     public $password;
 
-    public $password_confirmation;
+    public $passwordConfirmation;
 
     public $livewire = true;
 
-    public $install_log_file_path = 'logs/installer.log';
-    public $install_log = 'Loading...';
+    public $installLogFilePath = 'logs/installer.log';
+    public $installLog = 'Loading...';
 
-    public $server_application_type = 'apache_php';
-    public $server_php_modules = [];
-    public $server_php_versions = [];
+    public $serverApplicationType = 'apache_php';
+    public $serverPhpModules = [];
+    public $serverPhpVersions = [];
 
-    public $server_nodejs_versions = [
+    public $serverNodejsVersions = [
         '20'
     ];
 
-    public $server_python_versions = [
+    public $serverPythonVersions = [
         '3.10'
     ];
 
-    public $server_ruby_versions = [
+    public $serverRubyVersions = [
         '3.4'
     ];
 
-    public $enable_email_server = true;
+    public $enableEmailServer = true;
 
     public function form(Form $form): Form
     {
@@ -218,22 +218,22 @@ class Installer extends Page
                                 $phpInstaller->setPHPVersions($this->server_php_versions);
                                 $phpInstaller->setPHPModules($this->server_php_modules);
                                 $phpInstaller->setLogFilePath(storage_path($this->install_log_file_path));
-                                $phpInstaller->install();
+                                $phpInstaller->run();
                             } else if ($this->server_application_type == 'apache_nodejs') {
                                 $nodeJsInstaller = new NodeJsInstaller();
                                 $nodeJsInstaller->setNodeJsVersions($this->server_nodejs_versions);
                                 $nodeJsInstaller->setLogFilePath(storage_path($this->install_log_file_path));
-                                $nodeJsInstaller->install();
+                                $nodeJsInstaller->run();
                             }elseif ($this->server_application_type == 'apache_python') {
                                 $pythonInstaller = new PythonInstaller();
                                 $pythonInstaller->setPythonVersions($this->server_python_versions);
                                 $pythonInstaller->setLogFilePath(storage_path($this->install_log_file_path));
-                                $pythonInstaller->install();
+                                $pythonInstaller->run();
                             }elseif ($this->server_application_type == 'apache_ruby') {
                                 $rubyInstaller = new RubyInstaller();
                                 $rubyInstaller->setRubyVersions($this->server_ruby_versions);
                                 $rubyInstaller->setLogFilePath(storage_path($this->install_log_file_path));
-                                $rubyInstaller->install();
+                                $rubyInstaller->run();
                             }
 
                         }),

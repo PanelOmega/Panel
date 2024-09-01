@@ -60,7 +60,7 @@ class PHPMyAdminController extends Controller
 
         return response()->json([
             'success' => true,
-            'databaseLoginDetails'=>[
+            'databaseLoginDetails' => [
                 'host' => '127.0.0.1',
                 'username' => $hostingSubscription->system_username,
                 'password' => $hostingSubscription->system_password,

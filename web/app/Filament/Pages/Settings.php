@@ -188,10 +188,10 @@ class Settings extends Page
 //                    ]
 //                ]
 //            ],
-//            'Omega Apperance'=> [
-//                'title'=>'Omega Apperance',
-//                'icon'=>'heroicon-o-paint-brush',
-//                'links'=> [
+            'Omega Settings'=> [
+                'title'=>'Omega Settings',
+                'icon'=>'heroicon-o-paint-brush',
+                'links'=> [
 //                    [
 //                        'title'=>'Omega Logo',
 //                        'icon'=>'heroicon-o-photograph',
@@ -202,8 +202,13 @@ class Settings extends Page
 //                        'icon'=>'heroicon-o-color-swatch',
 //                        'url'=> route('filament.admin.pages.omega-apperance')
 //                    ],
-//                ]
-//            ]
+                    [
+                        'title'=>'Panel Settings',
+                        'icon'=>'heroicon-o-photograph',
+                        'url'=> route('filament.admin.pages.panel-settings')
+                    ],
+                ]
+            ]
         ];
 
         return [

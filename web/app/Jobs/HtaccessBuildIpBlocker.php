@@ -4,7 +4,7 @@ namespace App\Jobs;
 
 use App\Jobs\Traits\ErrorCodeDefaultContentTrait;
 use App\Jobs\Traits\HtaccessBuildTrait;
-use App\Models\IpBlocker;
+use App\Models\HostingSubscription\IpBlocker;
 use Illuminate\Bus\Queueable;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
@@ -38,7 +38,7 @@ class HtaccessBuildIpBlocker
     {
         $blockedIps = [];
         $ips = IpBlocker::where('hosting_subscription_id', $this->hostingSubscriptionId)->pluck('blocked_ip');
-        foreach($ips as $ip) {
+        foreach ($ips as $ip) {
             $blockedIps[] = "Deny from {$ip}";
         }
         return $blockedIps;

@@ -27,7 +27,8 @@ class HtaccessBuildPHPVersions implements ShouldQueue
         $this->phpVersion = $phpVersion;
     }
 
-    public function handle() {
+    public function handle()
+    {
 
         $hostingSubscription = HostingSubscription::where('id', $this->hostingSubscriptionId)->first();
         $htAccessFilePath = '/public_html/.htaccess';

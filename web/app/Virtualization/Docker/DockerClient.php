@@ -14,7 +14,7 @@ class DockerClient
         $this->socket = curl_init();
     }
 
-    private function request($method, $endpoint, $data = null): array
+    private function _request($method, $endpoint, $data = null): array
     {
         $url = "http://localhost$endpoint";
 
@@ -51,47 +51,47 @@ class DockerClient
 
     public function listContainers(): array
     {
-        return $this->request('GET', '/containers/json');
+        return $this->_request('GET', '/containers/json');
     }
 
     public function createContainer($containerName, $containerConfig): array
     {
-        return $this->request('POST', '/containers/create?name='.$containerName, $containerConfig);
+        return $this->_request('POST', '/containers/create?name='.$containerName, $containerConfig);
     }
 
     public function startContainer($containerId, $containerConfig = null): array
     {
-        return $this->request('POST', "/containers/$containerId/start", $containerConfig);
+        return $this->_request('POST', "/containers/$containerId/start", $containerConfig);
     }
 
     public function stopContainer($containerId): array
     {
-        return $this->request('POST', "/containers/$containerId/stop");
+        return $this->_request('POST', "/containers/$containerId/stop");
     }
 
     public function restartContainer($containerId): array
     {
-        return $this->request('POST', "/containers/$containerId/restart");
+        return $this->_request('POST', "/containers/$containerId/restart");
     }
 
     public function getContainer($containerId): array
     {
-        return $this->request('GET', "/containers/$containerId/json");
+        return $this->_request('GET', "/containers/$containerId/json");
     }
 
     public function deleteContainer($containerId): array
     {
-        return $this->request('DELETE', "/containers/$containerId");
+        return $this->_request('DELETE', "/containers/$containerId");
     }
 
     public function pullImage($imageName): array
     {
-        return $this->request('POST', "/images/create?fromImage=$imageName");
+        return $this->_request('POST', "/images/create?fromImage=$imageName");
     }
 
     public function removeImage($imageName): array
     {
-        return $this->request('DELETE', "/images/$imageName");
+        return $this->_request('DELETE', "/images/$imageName");
     }
 
     public function __destruct()

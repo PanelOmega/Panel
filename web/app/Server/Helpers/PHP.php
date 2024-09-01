@@ -82,7 +82,7 @@ class PHP
     private static function _getRemiPHP()
     {
 
-        return Cache::remember('getRemiPHP', 600, function () {
+//        return Cache::remember('getRemiPHP', 600, function () {
 
             $phpVersions = [];
 
@@ -130,6 +130,8 @@ class PHP
                         'fileExtensions' => $fileExtensions,
                         'full' => $checkPHPVersionFull,
                         'action' => $fileType . ' /cgi-sys/remi-php' . $shortWithoutDot . '-cgi',
+                        'fpmPath'=>'/etc/opt/remi/php' . $shortWithoutDot,
+                        'fpmConfRealpath'=>'/etc/opt/remi/php' . $shortWithoutDot . '/php-fpm.conf',
                         'fpmPoolPath'=>'/etc/opt/remi/php' . $shortWithoutDot . '/php-fpm.d',
                         'fpmServiceName'=>'php' . $shortWithoutDot . '-php-fpm'
                     ];
@@ -137,7 +139,7 @@ class PHP
             }
 
             return $phpVersions;
-        });
+      //  });
 
     }
 }

@@ -22,10 +22,10 @@ class CloudLinuxInstaller  extends Installer
 
     protected static bool $shouldRegisterNavigation = false;
 
-    public string $activation_key;
-    public bool $install_php_selector = true;
-    public bool $install_nodejs_selector = true;
-    public bool $install_python_selector = true;
+    public string $activationKey;
+    public bool $installPhpSelector = true;
+    public bool $installNodejsSelector = true;
+    public bool $installPythonSelector = true;
 
 
     public function form(Form $form): Form

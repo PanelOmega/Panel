@@ -25,7 +25,7 @@ class PHPInstaller
         $this->logFilePath = $path;
     }
 
-    public function install()
+    public function run()
     {
 
         $os = OS::getDistro();
@@ -106,6 +106,8 @@ class PHPInstaller
             }
         }
 
+        $commands[] = 'omega-shell cache:clear';
+
         $shellFileContent = '';
         foreach ($commands as $command) {
             $shellFileContent .= $command . PHP_EOL;
@@ -117,6 +119,12 @@ class PHPInstaller
         file_put_contents('/tmp/php-installer.sh', $shellFileContent);
         shell_exec('bash /tmp/php-installer.sh >> ' . $this->logFilePath . ' &');
 
+
+        return [
+            'status' => 'Install job is running in the background.',
+            'message' => 'PHP versions is being installed in the background. Please check the log file for more details.',
+            'logPath' => $this->logFilePath,
+        ];
     }
 
     public function installIonCube()

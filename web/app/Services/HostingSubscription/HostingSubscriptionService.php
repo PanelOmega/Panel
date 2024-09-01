@@ -7,7 +7,6 @@ use App\Models\Domain;
 use App\Models\HostingPlan;
 use App\Models\HostingSubscription;
 use App\Server\Helpers\LinuxUser;
-use Filament\Notifications\Notification;
 use Illuminate\Support\Str;
 
 class HostingSubscriptionService
@@ -100,12 +99,6 @@ class HostingSubscriptionService
         throw new \Exception('Failed to create hosting subscription');
     }
 
-
-    private function _startsWithNumber($string)
-    {
-        return strlen($string) > 0 && ctype_digit(substr($string, 0, 1));
-    }
-
     private function _generateUsername($string)
     {
         $removedMultispace = preg_replace('/\s+/', ' ', $string);
@@ -121,5 +114,10 @@ class HostingSubscriptionService
         $username = strtolower($username);
 
         return $username;
+    }
+
+    private function _startsWithNumber($string)
+    {
+        return strlen($string) > 0 && ctype_digit(substr($string, 0, 1));
     }
 }

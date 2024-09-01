@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class LinuxWebUser extends Model
@@ -15,12 +14,12 @@ class LinuxWebUser extends Model
     ];
 
     protected $schema = [
-        'id'=>'integer',
-        'username'=>'string',
-        'password'=>'string',
-        'home_dir'=>'string',
-        'hosting_subscription'=>'string',
-        'can_be_deleted'=>'boolean'
+        'id' => 'integer',
+        'username' => 'string',
+        'password' => 'string',
+        'home_dir' => 'string',
+        'hosting_subscription' => 'string',
+        'can_be_deleted' => 'boolean'
     ];
 
     public static function boot()
@@ -32,10 +31,21 @@ class LinuxWebUser extends Model
             if (!$canBeDeleted) {
                 throw new \Exception('Cannot delete this user');
             }
-            shell_exec('userdel -r '.$model->username);
-            shell_exec('rm -rf /home/'.$model->username);
+            shell_exec('userdel -r ' . $model->username);
+            shell_exec('rm -rf /home/' . $model->username);
         });
 
+    }
+
+    private function _canBeDeleted($username, $userId)
+    {
+        if ($username == 'root') {
+            return false;
+        }
+        if ($userId == 0) {
+            return false;
+        }
+        return true;
     }
 
     public function getRows()
@@ -79,16 +89,6 @@ class LinuxWebUser extends Model
         return $users;
     }
 
-    private function _canBeDeleted($username, $userId)
-    {
-        if ($username == 'root') {
-            return false;
-        }
-        if ($userId == 0) {
-            return false;
-        }
-        return true;
-    }
     private function _getLinuxUserIdByUsername($username)
     {
         $output = shell_exec('id -u ' . $username);

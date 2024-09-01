@@ -8,7 +8,6 @@ use Tests\TestCase;
 class LinuxUserTest extends TestCase
 {
     public static $lastCreatedUser;
-
     public function testCreateLinuxUser(): void
     {
         $username = 'testuser'.rand(1, 1000);

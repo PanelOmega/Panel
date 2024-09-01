@@ -47,7 +47,7 @@ trait HasDirectoryTreeBuild
         return $tree;
     }
 
-    private static function formatTree(array $tree)
+    private static function _formatTree(array $tree)
     {
         $formatted = [];
         foreach ($tree as $node) {

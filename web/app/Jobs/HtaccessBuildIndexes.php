@@ -3,6 +3,7 @@
 namespace App\Jobs;
 
 use App\Jobs\Traits\HtaccessBuildTrait;
+use App\Models\HostingSubscription\Index;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -14,49 +15,42 @@ class HtaccessBuildIndexes implements ShouldQueue
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels, HtaccessBuildTrait;
 
     public $fixPermissions = false;
-    public $model;
+
     public $hostingSubscription;
     public $startComment = '# Section managed by Panel Omega: Indexing, do not edit';
     public $endComment = '# End section managed by Panel Omega: Indexing Privacy';
 
     public $isDeleted = false;
 
-    public function __construct($fixPermissions = false, $model = null, $hostingSubscription)
+    public function __construct($fixPermissions = false, $hostingSubscription)
     {
         $this->fixPermissions = $fixPermissions;
-        $this->model = $model;
         $this->hostingSubscription = $hostingSubscription;
     }
 
-    public static function getIndexType($directoryRealPath)
+    public static function getIndexType($hostingSubscriptionId, $directoryPath)
     {
-        $indexType = 'Inherit';
-        if (file_exists($directoryRealPath . '/.htaccess')) {
-            $htaccessContent = file_get_contents($directoryRealPath . '/.htaccess');
-            if (strpos($htaccessContent, '-Indexes') !== false) {
-                $indexType = 'No Indexing';
-            } elseif (strpos($htaccessContent, '+HTMLTable +FancyIndexing') !== false) {
-                $indexType = 'Filename And Description';
-            } elseif (strpos($htaccessContent, '-HTMLTable -FancyIndexing') !== false) {
-                $indexType = 'Filename Only';
-            }
-        }
+        $indexType = Index::where('hosting_subscription_id', $hostingSubscriptionId)
+            ->where('directory_real_path', $directoryPath)
+            ->pluck('index_type')
+            ->toArray();
+
         return $indexType;
     }
 
-    public function handle()
+    public function handle($model)
     {
-        $htAccessFilePath = ($this->model->directory === '/') ? "{$this->model->directory_real_path}.htaccess" : "{$this->model->directory_real_path}/.htaccess";
-        $indexContent = $this->isDeleted ? [] : $this->getIndexConfig();
+        $htAccessFilePath = "{$model->directory_real_path}/.htaccess";
+        $indexContent = $this->isDeleted ? [] : $this->getIndexConfig($model->index_type);
         $htAccessView = $this->getHtAccessFileConfig($indexContent);
         $htAccessFileRealPath = "/home/{$this->hostingSubscription->system_username}/public_html/{$htAccessFilePath}";
         $this->updateSystemFile($htAccessFileRealPath, $htAccessView);
     }
 
-    public function getIndexConfig()
+    public function getIndexConfig($indexType)
     {
 
-        $indexConfigArr = match ($this->model->index_type) {
+        $indexConfigArr = match ($indexType) {
             'No Indexing' => [
                 'options' => 'Options -Indexes',
                 'indexOptions' => ''
@@ -89,10 +83,5 @@ class HtaccessBuildIndexes implements ShouldQueue
             $htaccessContent
         );
         return $htaccessContent;
-    }
-
-    public function isDeleted($isDeleted = false)
-    {
-        $this->isDeleted = $isDeleted;
     }
 }

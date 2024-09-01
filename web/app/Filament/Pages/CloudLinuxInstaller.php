@@ -59,11 +59,11 @@ class CloudLinuxInstaller  extends Installer
 
                         ])->afterValidation(function () {
 
-                            $this->install_log = 'Prepare installation...';
+                            $this->installLog = 'Prepare installation...';
 
                             $cloudLinuxInstaller = new \App\Server\Installers\CloudLinux\CloudLinuxInstaller();
                             $cloudLinuxInstaller->setActivationKey($this->activation_key);
-                            $cloudLinuxInstaller->setLogPath(storage_path($this->install_log_file_path));
+                            $cloudLinuxInstaller->setLogPath(storage_path($this->installLogFilePath));
                             $cloudLinuxInstaller->run();
 
                         }),

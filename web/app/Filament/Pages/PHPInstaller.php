@@ -58,15 +58,15 @@ class PHPInstaller extends Installer
 
                         ])->afterValidation(function () {
 
-                            $this->install_log = 'Prepare installation...';
+                            $this->installLog = 'Prepare installation...';
                             if (is_file(storage_path('server-app-configuration.json'))) {
                                 unlink(storage_path('server-app-configuration.json'));
                             }
 
                             $phpInstaller = new \App\Server\Installers\Web\PHPInstaller();
-                            $phpInstaller->setPHPVersions($this->server_php_versions);
-                            $phpInstaller->setPHPModules($this->server_php_modules);
-                            $phpInstaller->setLogFilePath(storage_path($this->install_log_file_path));
+                            $phpInstaller->setPHPVersions($this->serverPhpVersions);
+                            $phpInstaller->setPHPModules($this->serverPhpModules);
+                            $phpInstaller->setLogFilePath(storage_path($this->installLogFilePath));
                             $phpInstaller->run();
 
                         }),

@@ -46,13 +46,13 @@ class Fail2BanServiceInstaller extends Installer
 
                         ])
                         ->afterValidation(function () {
-                            $this->install_log = 'Prepare installation...';
+                            $this->installLog = 'Prepare installation...';
                             if (is_file(storage_path('server-app-configuration.json'))) {
                                 unlink(storage_path('server-app-configuration.json'));
                             }
 
                             $fail2BanInstaller = new Fail2BanInstaller();
-                            $fail2BanInstaller->setLogFilePath(storage_path($this->install_log_file_path));
+                            $fail2BanInstaller->setLogFilePath(storage_path($this->installLogFilePath));
                             $fail2BanInstaller->run();
                         }),
                     Wizard\Step::make('Step 2')

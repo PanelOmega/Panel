@@ -206,7 +206,7 @@ class Installer extends Page
 
                         ])->afterValidation(function () {
 
-                            $this->install_log = 'Prepare installation...';
+                            $this->installLog = 'Prepare installation...';
                             if (is_file(storage_path('server-app-configuration.json'))) {
                                 unlink(storage_path('server-app-configuration.json'));
                             }
@@ -217,22 +217,22 @@ class Installer extends Page
                                 $phpInstaller = new PHPInstaller();
                                 $phpInstaller->setPHPVersions($this->server_php_versions);
                                 $phpInstaller->setPHPModules($this->server_php_modules);
-                                $phpInstaller->setLogFilePath(storage_path($this->install_log_file_path));
+                                $phpInstaller->setLogFilePath(storage_path($this->installLogFilePath));
                                 $phpInstaller->run();
                             } else if ($this->server_application_type == 'apache_nodejs') {
                                 $nodeJsInstaller = new NodeJsInstaller();
                                 $nodeJsInstaller->setNodeJsVersions($this->server_nodejs_versions);
-                                $nodeJsInstaller->setLogFilePath(storage_path($this->install_log_file_path));
+                                $nodeJsInstaller->setLogFilePath(storage_path($this->installLogFilePath));
                                 $nodeJsInstaller->run();
                             }elseif ($this->server_application_type == 'apache_python') {
                                 $pythonInstaller = new PythonInstaller();
                                 $pythonInstaller->setPythonVersions($this->server_python_versions);
-                                $pythonInstaller->setLogFilePath(storage_path($this->install_log_file_path));
+                                $pythonInstaller->setLogFilePath(storage_path($this->installLogFilePath));
                                 $pythonInstaller->run();
                             }elseif ($this->server_application_type == 'apache_ruby') {
                                 $rubyInstaller = new RubyInstaller();
                                 $rubyInstaller->setRubyVersions($this->server_ruby_versions);
-                                $rubyInstaller->setLogFilePath(storage_path($this->install_log_file_path));
+                                $rubyInstaller->setLogFilePath(storage_path($this->installLogFilePath));
                                 $rubyInstaller->run();
                             }
 
@@ -250,10 +250,10 @@ class Installer extends Page
 //                        ])->afterValidation(function () {
 //
 //                            $dovecotInstaller = new DovecotInstaller();
-//                            $dovecotInstaller->setLogFilePath(storage_path($this->install_log_file_path));
+//                            $dovecotInstaller->setLogFilePath(storage_path($this->installLogFilePath));
 //                            $dovecotInstaller->install();
 //
-//                        //    dd(storage_path($this->install_log_file_path));
+//                        //    dd(storage_path($this->installLogFilePath));
 //                        }),
 
                     Wizard\Step::make('Step 3')
@@ -285,13 +285,13 @@ class Installer extends Page
 
     public function installLog()
     {
-        if (is_file(storage_path($this->install_log_file_path))) {
-            $this->install_log = file_get_contents(storage_path($this->install_log_file_path));
-            $this->install_log = nl2br($this->install_log);
+        if (is_file(storage_path($this->installLogFilePath))) {
+            $this->installLog = file_get_contents(storage_path($this->installLogFilePath));
+            $this->installLog = nl2br($this->installLog);
 
-            if (strpos($this->install_log, 'DONE!') !== false) {
+            if (strpos($this->installLog, 'DONE!') !== false) {
 
-                unlink(storage_path($this->install_log_file_path));
+                unlink(storage_path($this->installLogFilePath));
 
                 file_put_contents(storage_path('installed'), 'installed-'.date('Y-m-d H:i:s'));
 
@@ -301,7 +301,7 @@ class Installer extends Page
             }
 
         } else {
-            $this->install_log = 'Waiting for installation log...';
+            $this->installLog = 'Waiting for installation log...';
         }
     }
 

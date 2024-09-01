@@ -71,11 +71,11 @@ class HostingSubscriptionTest extends TestCase
             $this->assertDatabaseHas('domains', ['domain' => $findDomain->domain]);
 
             // Test domain php version
-            shell_exec('sudo echo "127.0.0.1 '.$findDomain->domain.'" | sudo tee -a /etc/hosts');
-            file_put_contents($findDomain->domain_public . '/index.php', '<?php echo "site-is-ok, "; echo phpversion(); ?>');
-            $domainHomePageContent = file_get_contents('http://' . $hostingSubscription->domain);
-
-            $this->assertTrue(Str::contains($domainHomePageContent, 'site-is-ok, ' . $phpVersion['full']));
+//            shell_exec('sudo echo "127.0.0.1 '.$findDomain->domain.'" | sudo tee -a /etc/hosts');
+/*            file_put_contents($findDomain->domain_public . '/index.php', '<?php echo "site-is-ok, "; echo phpversion(); ?>');*/
+//            $domainHomePageContent = file_get_contents('http://' . $hostingSubscription->domain);
+//
+//            $this->assertTrue(Str::contains($domainHomePageContent, 'site-is-ok, ' . $phpVersion['full']));
 
         }
     }

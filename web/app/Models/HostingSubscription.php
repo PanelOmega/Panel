@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Actions\CreateLinuxWebUser;
 use App\Actions\GetLinuxUser;
 use App\Jobs\ApacheBuild;
+use App\Jobs\WebServerBuild;
 use App\Models\HostingSubscription\FtpAccount;
 use App\Models\HostingSubscription\HotlinkProtection;
 use App\OmegaConfig;
@@ -103,8 +104,8 @@ class HostingSubscription extends Model
             LinuxUser::deleteUser($model->system_username);
 
             // This must be in background
-            $apacheBuild = new ApacheBuild();
-            $apacheBuild->handle();
+            $wsb = new WebServerBuild();
+            $wsb->handle();
 
         });
 

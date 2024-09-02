@@ -47,8 +47,8 @@ class PerformanceTest extends TestCase
                 $hostingSubscription->save();
                 $this->assertDatabaseHas('hosting_subscriptions', ['domain' => $hostingSubscription->domain]);
 
-                $apacheBuild = new ApacheBuild();
-                $apacheBuild->handle();
+                $wsb = new WebServerBuild();
+                $wsb->handle();
 
                 $findDomain = Domain::where('hosting_subscription_id', $hostingSubscription->id)->first();
                 $this->assertDatabaseHas('domains', ['domain' => $findDomain->domain]);

@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Jobs\ApacheBuild;
+use App\Jobs\WebServerBuild;
 use App\Services\Domain\DomainService;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -89,8 +90,8 @@ class Domain extends Model
 //            }
 //
             // This must be in background
-            $apacheBuild = new ApacheBuild();
-            $apacheBuild->handle();
+            $wsb = new WebServerBuild();
+            $wsb->handle();
 
         });
         static::updated(function ($model) {
@@ -98,7 +99,7 @@ class Domain extends Model
             $domainService = new DomainService();
             $domainService->configureHtaccess($model->id);
 
-            ApacheBuild::dispatch();
+            WebServerBuild::dispatch();
 
         });
 
@@ -115,8 +116,8 @@ class Domain extends Model
 //                }
 //            }
 //
-//            $apacheBuild = new ApacheBuild();
-//            $apacheBuild->handle();
+//        $wsb = new WebServerBuild();
+//        $wsb->handle();
 
         });
     }

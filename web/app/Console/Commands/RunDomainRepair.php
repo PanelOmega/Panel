@@ -3,6 +3,7 @@
 namespace App\Console\Commands;
 
 use App\Jobs\ApacheBuild;
+use App\Jobs\WebServerBuild;
 use App\Models\Domain;
 use App\Services\Domain\DomainService;
 use Illuminate\Console\Command;
@@ -45,7 +46,7 @@ class RunDomainRepair extends Command
 
         $this->info('Rebuilding Apache configuration');
 
-        $apacheBuild = new ApacheBuild();
-        $apacheBuild->handle();
+        $wsb = new WebServerBuild();
+        $wsb->handle();
     }
 }

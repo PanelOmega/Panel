@@ -14,19 +14,17 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Bus;
 
-class ApacheBuild implements ShouldQueue
+class WebServerBuild implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     public $fixPermissions = false;
-    public $domains = [];
 
     /**
      * Create a new job instance.
      */
-    public function __construct($domains, $fixPermissions = false)
+    public function __construct($fixPermissions = false)
     {
-        $this->domains = $domains;
         $this->fixPermissions = $fixPermissions;
     }
 
@@ -36,16 +34,20 @@ class ApacheBuild implements ShouldQueue
     public function handle(): void
     {
 
-
-
-
-        dd(4);
-
         $virtualHosts = [];
         $domainsFPMs = [];
 
         $domainService = new DomainService();
+        $getAllDomains = Domain::whereNot('status','<=>', 'broken')->get();
 
+
+        Bus::chain([
+            new DomainPHPFPMBuild($getAllDomains),
+            new WebServerBuild($getAllDomains)
+        ])->dispatch();
+
+
+        dd(4);
         foreach ($getAllDomains as $domain) {
             try {
                 $virtualHostSettings = $domainService->configureVirtualHost($domain->id);

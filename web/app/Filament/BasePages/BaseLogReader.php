@@ -28,6 +28,12 @@ class BaseLogReader extends Page
 
     public function pullLog()
     {
+        if (!is_file($this->logFile)) {
+            $this->log = $this->emptyLogMessage;
+            $this->loading = false;
+            return;
+        }
+
         $getContent = file_get_contents($this->logFile);
         if ($getContent) {
             $this->log = $getContent;

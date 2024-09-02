@@ -38,13 +38,13 @@ class FtpServerInstaller extends Installer
                         ])
                         ->afterValidation(function () {
 
-                            $this->install_log = 'Prepare installation...';
+                            $this->installLog = 'Prepare installation...';
                             if (is_file(storage_path('server-app-configuration.json'))) {
                                 unlink(storage_path('server-app-configuration.json'));
                             }
 
                             $ftpInstaller = new \App\Server\Installers\FtpServers\FtpServerInstaller();
-                            $ftpInstaller->setLogFilePath(storage_path($this->install_log_file_path));
+                            $ftpInstaller->setLogFilePath(storage_path($this->installLogFilePath));
                             $ftpInstaller->run();
 
                         }),

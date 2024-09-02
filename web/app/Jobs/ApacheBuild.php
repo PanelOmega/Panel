@@ -12,18 +12,21 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Bus;
 
 class ApacheBuild implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     public $fixPermissions = false;
+    public $domains = [];
 
     /**
      * Create a new job instance.
      */
-    public function __construct($fixPermissions = false)
+    public function __construct($domains, $fixPermissions = false)
     {
+        $this->domains = $domains;
         $this->fixPermissions = $fixPermissions;
     }
 
@@ -34,12 +37,9 @@ class ApacheBuild implements ShouldQueue
     {
 
         $virtualHosts = [];
-        $domainsFPMs = [];
-
         $domainService = new DomainService();
-        $getAllDomains = Domain::whereNot('status','<=>', 'broken')->get();
 
-        foreach ($getAllDomains as $domain) {
+        foreach ($this->domains as $domain) {
             try {
                 $virtualHostSettings = $domainService->configureVirtualHost($domain->id);
                 if (isset($virtualHostSettings['virtualHostSettings'])) {
@@ -50,12 +50,6 @@ class ApacheBuild implements ShouldQueue
                 }
             } catch (\Exception $e) {
            //     echo $e->getMessage();
-            }
-            if ($domain->server_application_type == 'apache_php') {
-                if (isset($domain->server_application_settings['php_version'])) {
-                    $phpVersion = $domain->server_application_settings['php_version'];
-                    $domainsFPMs[$phpVersion][] = $domain;
-                }
             }
         }
 
@@ -88,45 +82,6 @@ class ApacheBuild implements ShouldQueue
 //        }
 
         $os = OS::getDistro();
-
-        // Build PHP FPM configuration
-        $phpVersions = PHP::getInstalledPHPVersions();
-        if (empty($domainsFPMs)) {
-            // No PHP FPMs
-        } else {
-            $restartFPMServices = [];
-            foreach ($domainsFPMs as $domainPHPVersion=>$domainsFPM) {
-                $getCurrentPHPVersion = PHP::getPHPVersion($domainPHPVersion);
-                if (isset($getCurrentPHPVersion['fpmConfRealpath'])) {
-
-                    $fpmDomainsSettings = [];
-                    foreach ($domainsFPM as $domainFPM) {
-                        $fcgiPort = $domainFPM->id + 9000;
-                        $fpmDomainsSettings[] = [
-                            'fcgiPort' => $fcgiPort,
-                            'poolName' => $domainFPM->domain,
-                            'username' => $domainFPM->hostingSubscription->system_username,
-                        ];
-                    }
-
-                    $fpmConfigContent = view('server.samples.php-fpm.php-fpm-conf', [
-                        'os' => $os,
-                        'phpVersion'=> [
-                            'shortWithDot' => $getCurrentPHPVersion['shortWithoutDot'],
-                        ],
-                        'domains' => $fpmDomainsSettings,
-                    ])->render();
-
-                    file_put_contents($getCurrentPHPVersion['fpmConfRealpath'], $fpmConfigContent);
-                    $restartFPMServices[] = $getCurrentPHPVersion['fpmServiceName'];
-                }
-            }
-            if (!empty($restartFPMServices)) {
-                foreach ($restartFPMServices as $service) {
-                    shell_exec('systemctl restart '.$service);
-                }
-            }
-        }
 
         // Build Apache2 configuration
         $apache2 = view('server.samples.configs.apache2-conf-build', [

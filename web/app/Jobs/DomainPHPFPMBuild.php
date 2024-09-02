@@ -90,6 +90,5 @@ class DomainPHPFPMBuild implements ShouldQueue
             }
         }
 
-        echo 555;
     }
 }

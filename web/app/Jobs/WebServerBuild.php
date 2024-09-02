@@ -33,11 +33,11 @@ class WebServerBuild implements ShouldQueue
      */
     public function handle(): void
     {
-        $getDomains = Domain::whereNot('status','<=>', 'broken')->get();
+        $domains = Domain::whereNot('status','<=>', 'broken')->get();
 
         Bus::chain([
-            new DomainPHPFPMBuild($getDomains),
-            new ApacheBuild($getDomains, $this->fixPermissions),
+            new DomainPHPFPMBuild($domains),
+            new ApacheBuild($domains, $this->fixPermissions),
         ])->dispatch();
 
     }

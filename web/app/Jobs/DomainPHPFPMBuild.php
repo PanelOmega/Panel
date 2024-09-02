@@ -43,12 +43,11 @@ class DomainPHPFPMBuild implements ShouldQueue
 
         // Build PHP FPM configuration
         $phpVersions = PHP::getInstalledPHPVersions();
-        if (empty($domainsFPMs)) {
-            // No PHP FPMs
-        } else {
+        if (!empty($phpVersions)) {
+
             $restartFPMServices = [];
-            foreach ($domainsFPMs as $domainPHPVersion=>$domainsFPM) {
-                $getCurrentPHPVersion = PHP::getPHPVersion($domainPHPVersion);
+            foreach ($fpms as $phpVersion=>$domainsFPM) {
+                $getCurrentPHPVersion = PHP::getPHPVersion($phpVersion);
                 if (isset($getCurrentPHPVersion['fpmConfRealpath'])) {
 
                     $fpmDomainsSettings = [];
@@ -73,6 +72,17 @@ class DomainPHPFPMBuild implements ShouldQueue
                     $restartFPMServices[] = $getCurrentPHPVersion['fpmServiceName'];
                 }
             }
+
+            // Stop FPMS that are not in use
+            foreach ($phpVersions as $phpVersion) {
+                if (!isset($fpms[$phpVersion['full']])) {
+                    echo 'FPM with version '.$phpVersion['full'].' is not in use. Stopping service' . PHP_EOL;
+                    if (isset($phpVersion['fpmServiceName'])) {
+                        shell_exec('systemctl stop '.$phpVersion['fpmServiceName']);
+                    }
+                }
+            }
+
             if (!empty($restartFPMServices)) {
                 foreach ($restartFPMServices as $service) {
                     shell_exec('systemctl restart '.$service);

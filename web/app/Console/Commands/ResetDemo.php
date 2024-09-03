@@ -10,7 +10,7 @@ use App\Models\DatabaseUser;
 use App\Models\Domain;
 use App\Models\HostingPlan;
 use App\Models\HostingSubscription;
-use App\Models\HostingSubscriptionFtpAccount;
+use App\Models\HostingSubscription\FtpAccount;
 use App\Models\User;
 use App\OmegaConfig;
 use App\Server\Helpers\CloudLinux\CloudLinuxPHPHelper;
@@ -78,7 +78,7 @@ class ResetDemo extends Command
         foreach ($findHostingPlans as $hostingPlan) {
             $hostingPlan->delete();
         }
-        $ftpAccounts = HostingSubscriptionFtpAccount::all();
+        $ftpAccounts = FtpAccount::all();
         foreach ($ftpAccounts as $ftpAccount) {
             $ftpAccount->delete();
         }

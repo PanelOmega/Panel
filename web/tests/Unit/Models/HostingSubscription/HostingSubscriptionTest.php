@@ -10,6 +10,8 @@ use App\Models\HostingSubscription;
 use App\Server\Helpers\PHP;
 use App\Server\SupportedApplicationTypes;
 use App\Services\HostingSubscription\HostingSubscriptionService;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Str;
 use Illuminate\Testing\Fluent\Concerns\Has;
 use Tests\TestCase;
@@ -69,6 +71,20 @@ class HostingSubscriptionTest extends TestCase
 
             $findDomain = Domain::where('hosting_subscription_id', $hostingSubscription->id)->first();
             $this->assertDatabaseHas('domains', ['domain' => $findDomain->domain]);
+
+            Auth::guard('customer')->login($createCustomer);
+
+            $hostingSubscriptionSession = Customer::getHostingSubscriptionSession();
+
+            $hostingSubscriptionId = Session::get('hosting_subscription_id');
+
+            $this->assertNotNull($hostingSubscriptionId);
+//            $this->assertSame($hostingSubscription->id, $hostingSubscriptionSession->id);
+
+//            $this->assertSessionHas('hosting_subscription_id', $hostingSubscription->id);
+//            $this->assertSame($hostingSubscription->id, $hostingSubscriptionSession->id);
+//            $this->assertSame($hostingSubscription->domain, $hostingSubscriptionSession->domain);
+
 
             // Test domain php version
 //            shell_exec('sudo echo "127.0.0.1 '.$findDomain->domain.'" | sudo tee -a /etc/hosts');

@@ -24,6 +24,8 @@ class Redirect extends Model
         'wildcard'
     ];
 
+    protected $table = 'hosting_subscription_redirects';
+
     protected static function boot()
     {
         parent::boot();
@@ -32,9 +34,8 @@ class Redirect extends Model
 
     public static function redirectBoot()
     {
-        $hostingSubscription = Customer::getHostingSubscriptionSession();
-
-        static::creating(function ($model) use ($hostingSubscription) {
+        static::creating(function ($model) {
+            $hostingSubscription = Customer::getHostingSubscriptionSession();
             $model->hosting_subscription_id = $hostingSubscription->id;
             $pattern = '/^(\w+)_(\d+)$/';
             if (preg_match($pattern, $model->type, $matches)) {
@@ -48,7 +49,8 @@ class Redirect extends Model
             $model->directory === null ? $model->directory = '/' : '';
         });
 
-        $callback = function () use ($hostingSubscription) {
+        $callback = function () {
+            $hostingSubscription = Customer::getHostingSubscriptionSession();
             $redirectionsPath = "/home/{$hostingSubscription->system_username}/public_html/.htaccess";
             $redirectionsBuild = new HtaccessBuildRedirects(false, $redirectionsPath, $hostingSubscription->id);
             $redirectionsBuild->handle();

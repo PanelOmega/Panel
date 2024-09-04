@@ -29,11 +29,15 @@ class ErrorPage extends Model
 
     public static function errorPageBoot()
     {
-        $hostingSubscription = Customer::getHostingSubscriptionSession();
-
-        $callback = function ($model) use ($hostingSubscription) {
-            $errorPageBuild = new HtaccessBuildErrorPage(false, $hostingSubscription);
-            $errorPageBuild->handle($model);
+        $callback = function ($model) {
+            $hostingSubscription = Customer::getHostingSubscriptionSession();
+            $errorPageData = [
+                'error_code' => $model->error_code,
+                'path' => $model->path,
+                'content' => $model->content,
+            ];
+            $errorPageBuild = new HtaccessBuildErrorPage(false, $hostingSubscription, $errorPageData);
+            $errorPageBuild->handle();
         };
 
         static::created($callback);

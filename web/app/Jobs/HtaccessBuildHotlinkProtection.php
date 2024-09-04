@@ -85,17 +85,10 @@ class HtaccessBuildHotlinkProtection implements ShouldQueue
 
     public function getHtAccessFileConfig($hotlinkData)
     {
-        $htaccessContent = view('server.samples.apache.php.hotlink-protection-htaccess', [
+        $htaccessContent = view('server.samples.apache.htaccess.hotlink-protection-htaccess', [
             'hotlinkData' => $hotlinkData
         ])->render();
 
-        $htaccessContent = preg_replace_callback(
-            '/(^\s*)(Rewrite.*|$)/m',
-            function ($matches) {
-                return str_repeat(' ', 4) . trim($matches[0]);
-            },
-            $htaccessContent
-        );
         return $htaccessContent;
     }
 }

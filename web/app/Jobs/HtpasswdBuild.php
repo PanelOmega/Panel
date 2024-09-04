@@ -53,17 +53,9 @@ class HtpasswdBuild implements ShouldQueue
 
     public function getHtPasswdFileConfig($htPasswdRecords)
     {
-        $htpasswdContent = view('server.samples.apache.php.directory-privacy-htpasswd', [
+        $htpasswdContent = view('server.samples.apache.htaccess.directory-privacy-htpasswd', [
             'htPasswdRecords' => $htPasswdRecords
         ])->render();
-
-        $htpasswdContent = preg_replace_callback(
-            '/(^\s*)(Rewrite.*|$)/m',
-            function ($matches) {
-                return str_repeat(' ', 4) . trim($matches[0]);
-            },
-            $htpasswdContent
-        );
 
         return $htpasswdContent;
     }

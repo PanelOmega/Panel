@@ -63,17 +63,10 @@ class HtaccessBuildDirectoryPrivacy implements ShouldQueue
             'requireUser' => 'Require valid-user'
         ];
 
-        $htaccessContent = view('server.samples.apache.php.directory-privacy-htaccess', [
+        $htaccessContent = view('server.samples.apache.htaccess.directory-privacy-htaccess', [
             'dPrivacyContent' => $dPrivacyContent
         ])->render();
 
-        $htaccessContent = preg_replace_callback(
-            '/(^\s*)(Rewrite.*|$)/m',
-            function ($matches) {
-                return str_repeat(' ', 4) . trim($matches[0]);
-            },
-            $htaccessContent
-        );
         return $htaccessContent;
     }
 }

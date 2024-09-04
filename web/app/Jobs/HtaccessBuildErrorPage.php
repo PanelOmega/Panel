@@ -64,18 +64,10 @@ class HtaccessBuildErrorPage
 
     public function getHtaccessErrorCodesConfig($errorDocuments)
     {
-        $htaccessErrorCodesContent = view('server.samples.apache.php.error-page-htaccess', [
+        $htaccessErrorCodesContent = view('server.samples.apache.htaccess.error-page-htaccess', [
             'errorDocuments' => $errorDocuments,
         ])->render();
 
-        $htaccessErrorCodesContent = preg_replace_callback(
-            '/^.*$/m',
-            function ($matches) {
-                return preg_replace('/\s+/', ' ', trim($matches[0]));
-            },
-            $htaccessErrorCodesContent
-        );
-        $htaccessErrorCodesContent = preg_replace('/^\s*[\r\n]/m', '', $htaccessErrorCodesContent);
         return $htaccessErrorCodesContent;
     }
 

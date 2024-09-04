@@ -16,19 +16,19 @@ class HtaccessBuildHotlinkProtection implements ShouldQueue
 
     public $fixPermissions = false;
 
-    public $hostingSubscription;
+    public $hostingSubscriptionId;
     public $startComment = '# Section managed by Panel Omega: Hotlink Protection, do not edit';
     public $endComment = '# End section managed by Panel Omega: Hotlink Protection';
 
-    public function __construct($fixPermissions = false, $hostingSubscription)
+    public function __construct($fixPermissions = false, $hostingSubscriptionId)
     {
         $this->fixPermissions = $fixPermissions;
-        $this->hostingSubscription = $hostingSubscription;
+        $this->hostingSubscriptionId = $hostingSubscriptionId;
     }
 
     public function handle()
     {
-        $subscription = HostingSubscription::where('id', $this->hostingSubscription->id)->first();
+        $subscription = HostingSubscription::where('id', $this->hostingSubscriptionId)->first();
         $htAccessFilePath = '/public_html/.htaccess';
         $hotlinkData = $this->getHotlinkData($subscription->hotlinkProtection);
         $htAccessView = $this->getHtAccessFileConfig($hotlinkData);

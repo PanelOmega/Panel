@@ -2,7 +2,6 @@
 
 namespace tests\Unit\Models\HostingSubscription;
 
-use App\Jobs\HtaccessBuildIndexes;
 use App\Jobs\HtaccessBuildRedirects;
 use App\Models\Customer;
 use App\Models\HostingPlan;
@@ -123,7 +122,12 @@ class RedirectTest extends TestCase
         }
 
         foreach($testCreateRedirectObj as $obj) {
+            $testCreateRedirectId = $obj->id;
             $obj->delete();
+            $this->assertDatabaseMissing('hosting_subscription_redirects', [
+                'hosting_subscription_id' => $testHostingSubscription->id,
+                'id' => $testCreateRedirectId
+            ]);
         }
         $testCreateHostingPlan->delete();
         Session::forget('hosting_subscription_id');
@@ -185,6 +189,7 @@ class RedirectTest extends TestCase
         $testCreateRedirect->match_www = 'redirectwithorwithoutwww';
         $testCreateRedirect->wildcard = true;
         $testCreateRedirect->save();
+        $testCreateRedirectId = $testCreateRedirect->id;
 
         $this->assertIsObject($testCreateRedirect);
         $this->assertDatabaseHas('hosting_subscription_redirects', [
@@ -199,6 +204,10 @@ class RedirectTest extends TestCase
         ]);
 
         $testCreateRedirect->delete();
+        $this->assertDatabaseMissing('hosting_subscription_redirects', [
+            'hosting_subscription_id' => $testHostingSubscription->id,
+            'id' => $testCreateRedirectId
+        ]);
         $testHtaccessBuildRedirects = new HtaccessBuildRedirects(false, $testRedirectionsPath, $testHostingSubscription->id);
         $testGetRedirectionsData = $testHtaccessBuildRedirects->getRedirectsData();
         $this->assertEmpty($testGetRedirectionsData);

@@ -109,6 +109,8 @@ class IndexTest extends TestCase
 
         $testHtaccessBuildIndexes = new HtaccessBuildIndexes(false, $testHostingSubscription->id);
         foreach($testIndexCreateObjects as $obj) {
+            $testIndexCreateId = $obj->id;
+
             $testIndexContent = $testHtaccessBuildIndexes->getIndexConfig($obj->index_type);
             if($obj->index_type == 'No Indexing') {
                 $this->assertEquals([
@@ -135,6 +137,10 @@ class IndexTest extends TestCase
 
             $this->assertTrue(str_contains($testSystemFileContent, trim($testHtAccessView)));
             $obj->delete();
+            $this->assertDatabaseMissing('hosting_subscription_indices', [
+                'hosting_subscription_id' => $testHostingSubscription->id,
+                'id' => $testIndexCreateId
+            ]);
         }
         $testCreateHostingPlan->delete();
         Session::forget('hosting_subscription_id');
@@ -215,6 +221,7 @@ class IndexTest extends TestCase
         $testIndexCreate->directory_type = $testDirectoryType;
         $testIndexCreate->index_type = 'Inherit';
         $testIndexCreate->save();
+        $testIndexCreateId = $testIndexCreate->id;
 
         $this->assertIsObject($testIndexCreate);
         $this->assertDatabaseHas('hosting_subscription_indices', [
@@ -233,9 +240,9 @@ class IndexTest extends TestCase
         $testHtaccessBuildIndexes = new HtaccessBuildIndexes(false, $testHostingSubscription->id);
 
         foreach($testIndexTypes as $testIndexType) {
-            $testIndexCreate->update(
-                ['index_type' => $testIndexType]
-            );
+            $testIndexCreate->update([
+                    'index_type' => $testIndexType
+                ]);
 
             $testIndexContent = $testHtaccessBuildIndexes->getIndexConfig($testIndexType);
 
@@ -265,6 +272,11 @@ class IndexTest extends TestCase
             $this->assertStringContainsString(trim($testHtaccessView), trim($systemFileContent));
         }
 
+        $testIndexCreate->delete();
+        $this->assertDatabaseMissing('hosting_subscription_indices', [
+            'hosting_subscription_id' => $testHostingSubscription->id,
+            'id' => $testIndexCreateId
+        ]);
         $testCreateHostingPlan->delete();
         Session::forget('hosting_subscription_id');
         $this->assertTrue(!Session::has('hosting_subscription_id'));

@@ -20,6 +20,8 @@ class HotlinkProtection extends Model
         'enabled'
     ];
 
+    protected $table = 'hosting_subscription_hotlink_protections';
+
     public static function boot()
     {
         parent::boot();
@@ -28,10 +30,9 @@ class HotlinkProtection extends Model
 
     public static function hotlinkProtectionBoot()
     {
-        $hostingSubscription = Customer::getHostingSubscriptionSession();
-
-        $callback = function ($model) use ($hostingSubscription) {
-            $hotlinkProtection = new HtaccessBuildHotlinkProtection(false, $hostingSubscription);
+        $callback = function ($model) {
+            $hostingSubscription = Customer::getHostingSubscriptionSession();
+            $hotlinkProtection = new HtaccessBuildHotlinkProtection(false, $hostingSubscription->id);
             $hotlinkProtection->handle();
         };
         static::saved($callback);

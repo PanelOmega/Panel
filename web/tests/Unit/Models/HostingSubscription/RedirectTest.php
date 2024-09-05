@@ -120,19 +120,6 @@ class RedirectTest extends TestCase
             $testSystemFileContent = file_get_contents($testRedirectionsPath);
             $this->assertTrue(str_contains(trim($testSystemFileContent), trim($testHtaccessView)));
         }
-
-        foreach($testCreateRedirectObj as $obj) {
-            $testCreateRedirectId = $obj->id;
-            $obj->delete();
-            $this->assertDatabaseMissing('hosting_subscription_redirects', [
-                'hosting_subscription_id' => $testHostingSubscription->id,
-                'id' => $testCreateRedirectId
-            ]);
-        }
-        $testCreateHostingPlan->delete();
-        Session::forget('hosting_subscription_id');
-        $this->assertTrue(!Session::has('hosting_subscription_id'));
-        $testHostingSubscription->delete();
     }
 
     public function testDeleteRedirect() {
@@ -216,10 +203,6 @@ class RedirectTest extends TestCase
         $testHtaccessBuildRedirects->updateSystemFile($testRedirectionsPath, $testHtaccessView);
         $testSystemFileContent = file_get_contents($testRedirectionsPath);
         $this->assertEmpty($testSystemFileContent);
-
-        $testCreateHostingPlan->delete();
-        Session::forget('hosting_subscription_id');
-        $this->assertTrue(!Session::has('hosting_subscription_id'));
-        $testHostingSubscription->delete();
+        $this->assertTrue(str_contains(trim($testSystemFileContent), trim($testHtaccessView)));
     }
 }

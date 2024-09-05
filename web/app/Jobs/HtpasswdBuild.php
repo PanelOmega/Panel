@@ -15,22 +15,27 @@ class HtpasswdBuild implements ShouldQueue
 
     public $fixPermissions = false;
     public $directoryRealPath;
-    public $hostingSubscriptionId;
+    public $htPasswdData = [];
 
-    public $startComment = null;
-    public $endComment = null;
+    public $startComment = '# Section managed by Panel Omega: Directory Privacy, do not edit';
+    public $endComment = '# End section managed by Panel Omega: Directory Privacy';
 
-    public function __construct($fixPermissions = false, $directoryRealPath, $hostingSubscriptionId, $startComment, $endComment)
+    public function __construct($fixPermissions = false, $directoryRealPath, $htPasswdData = [])
     {
         $this->fixPermissions = $fixPermissions;
         $this->directoryRealPath = $directoryRealPath;
-        $this->hostingSubscriptionId = $hostingSubscriptionId;
-        $this->startComment = $startComment;
-        $this->endComment = $endComment;
+        $this->htPasswdData = $htPasswdData;
     }
 
-    public function handle($model)
+    public function handle()
     {
+
+        $htPasswdRecords = $this->getHtPasswdRecords($this->htPasswdData);
+        $htPasswdView = $this->getHtPasswdFileConfig($htPasswdRecords);
+        $this->updateSystemFile($this->directoryRealPath, $htPasswdView);
+    }
+
+    public function getHtPasswdRecords($htPasswdData) {
         $htPasswdRecords = [];
 
         if (file_exists($this->directoryRealPath)) {
@@ -44,11 +49,11 @@ class HtpasswdBuild implements ShouldQueue
             }
         }
 
-        if ($model) {
-            $htPasswdRecords[] = "{$model->username}:{$model->password}";
+        if (isset($htPasswdData['username']) && isset($htPasswdData['password'])) {
+            $htPasswdRecords[] = "{$htPasswdData['username']}:{$htPasswdData['password']}";
         }
-        $htPasswdView = $this->getHtPasswdFileConfig($htPasswdRecords);
-        $this->updateSystemFile($this->directoryRealPath, $htPasswdView);
+
+        return $htPasswdRecords;
     }
 
     public function getHtPasswdFileConfig($htPasswdRecords)

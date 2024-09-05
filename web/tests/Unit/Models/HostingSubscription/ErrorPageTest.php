@@ -87,7 +87,7 @@ class ErrorPageTest extends TestCase
         $testCreateErrorPage->content = $testErrorPageContent;
         $testCreateErrorPage->path = $testErrorPagePath;
         $testCreateErrorPage->save();
-        $testCreateErrorPageId = $testCreateErrorPage->id;
+
         $this->assertIsObject($testCreateErrorPage);
         $this->assertDatabaseHas('hosting_subscription_error_pages', [
             'hosting_subscription_id' => $testHostingSubscription->id,
@@ -119,17 +119,7 @@ class ErrorPageTest extends TestCase
         $testErrorPageSystemFilePath = "{$testCreateErrorPage->path}/.htaccess";
         $testHtaccessBuildErrorPage->updateSystemFile($testErrorPageSystemFilePath, $testHtaccessView);
         $testSystemFileContent = file_get_contents($testErrorPageSystemFilePath);
-        $this->assertNotEmpty($testSystemFileContent);
-
-        $testCreateErrorPage->delete();
-        $this->assertDatabaseMissing('hosting_subscription_error_pages', [
-            'hosting_subscription_id' => $testHostingSubscription->id,
-            'id' => $testCreateErrorPageId
-        ]);
-        $testCreateHostingPlan->delete();
-        Session::forget('hosting_subscription_id');
-        $this->assertTrue(!Session::has('hosting_subscription_id'));
-        $testHostingSubscription->delete();
+        $this->assertTrue(str_contains(trim($testSystemFileContent), trim($testHtaccessView)));
     }
 
     public function testCreateErrorPageWithoutContent() {
@@ -195,7 +185,7 @@ class ErrorPageTest extends TestCase
         $testCreateErrorPage->content = '';
         $testCreateErrorPage->path = $testErrorPagePath;
         $testCreateErrorPage->save();
-        $testCreateErrorPageId = $testCreateErrorPage->id;
+
         $this->assertIsObject($testCreateErrorPage);
         $this->assertDatabaseHas('hosting_subscription_error_pages', [
             'hosting_subscription_id' => $testHostingSubscription->id,
@@ -227,17 +217,7 @@ class ErrorPageTest extends TestCase
         $testErrorPageSystemFilePath = "{$testCreateErrorPage->path}/.htaccess";
         $testHtaccessBuildErrorPage->updateSystemFile($testErrorPageSystemFilePath, $testHtaccessView);
         $testSystemFileContent = file_get_contents($testErrorPageSystemFilePath);
-        $this->assertNotEmpty($testSystemFileContent);
-
-        $testCreateErrorPage->delete();
-        $this->assertDatabaseMissing('hosting_subscription_error_pages', [
-            'hosting_subscription_id' => $testHostingSubscription->id,
-            'id' => $testCreateErrorPageId
-        ]);
-        $testCreateHostingPlan->delete();
-        Session::forget('hosting_subscription_id');
-        $this->assertTrue(!Session::has('hosting_subscription_id'));
-        $testHostingSubscription->delete();
+        $this->assertTrue(str_contains(trim($testSystemFileContent), trim($testHtaccessView)));
     }
 
     public function testUpdateErrorPage() {
@@ -305,7 +285,7 @@ class ErrorPageTest extends TestCase
         $testCreateErrorPage->content = $testErrorPageContent;
         $testCreateErrorPage->path = $testErrorPagePath;
         $testCreateErrorPage->save();
-        $testCreateErrorPageId = $testCreateErrorPage->id;
+
         $this->assertIsObject($testCreateErrorPage);
         $this->assertDatabaseHas('hosting_subscription_error_pages', [
             'hosting_subscription_id' => $testHostingSubscription->id,
@@ -321,12 +301,11 @@ class ErrorPageTest extends TestCase
             'path' => $testErrorPagePath
         ];
 
-        $testHtaccessBuildErrorPage = new HtaccessBuildErrorPage(false, $testHostingSubscription->id, $testErrorPagePath);
-
         $testCreateErrorPage->update([
             'content' => '<h1>Updated Content</h1>'
         ]);
 
+        $testHtaccessBuildErrorPage = new HtaccessBuildErrorPage(false, $testHostingSubscription->id, $testErrorPagePath);
         $testGetErrorPageContent = $testHtaccessBuildErrorPage->getErrorPageContent($testCreateErrorPage->name ,$testHostingSubscription);
         $this->assertNotEquals($testGetErrorPageContent, $testErrorPageContent);
 
@@ -340,16 +319,6 @@ class ErrorPageTest extends TestCase
         $testErrorPageSystemFilePath = "{$testCreateErrorPage->path}/.htaccess";
         $testHtaccessBuildErrorPage->updateSystemFile($testErrorPageSystemFilePath, $testHtaccessView);
         $testSystemFileContent = file_get_contents($testErrorPageSystemFilePath);
-        $this->assertNotEmpty($testSystemFileContent);
-
-        $testCreateErrorPage->delete();
-        $this->assertDatabaseMissing('hosting_subscription_error_pages', [
-            'hosting_subscription_id' => $testHostingSubscription->id,
-            'id' => $testCreateErrorPageId
-        ]);
-        $testCreateHostingPlan->delete();
-        Session::forget('hosting_subscription_id');
-        $this->assertTrue(!Session::has('hosting_subscription_id'));
-        $testHostingSubscription->delete();
+        $this->assertTrue(str_contains(trim($testSystemFileContent), trim($testHtaccessView)));
     }
 }

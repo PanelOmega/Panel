@@ -135,8 +135,8 @@ class DirectoryPrivacyBrowse extends Model
             ->sort()
             ->map(function (string $directory) use ($storage) {
 
-                $directoryRealPath = $storage->path($directory);
-                $directoryPrivacyData = HtaccessBuildDirectoryPrivacy::getDirectoryPrivacyData($directoryRealPath);
+                $directoryFileRealPath = "{$storage->path($directory)}/.htaccess";
+                $directoryPrivacyData = HtaccessBuildDirectoryPrivacy::getDirectoryPrivacyData($directoryFileRealPath);
 
                 return [
                     'directory' => Str::remove(self::$path . '/', $directory),

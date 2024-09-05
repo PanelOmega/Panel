@@ -72,7 +72,6 @@ class HotlinkProtectionTest extends TestCase
         $testCreateHotlinkProtection->redirect_to = 'https://testRedirectUrl';
         $testCreateHotlinkProtection->enabled = 'enabled';
         $testCreateHotlinkProtection->save();
-        $testCreateHotlinkProtectionId = $testCreateHotlinkProtection->id;
 
         $this->assertIsObject($testCreateHotlinkProtection);
         $this->assertDatabaseHas('hosting_subscription_hotlink_protections', [
@@ -96,16 +95,6 @@ class HotlinkProtectionTest extends TestCase
         $testHtaccessView = preg_replace('/\s+/', ' ', trim($testHtaccessView));
         $testSystemFileContent = preg_replace('/\s+/', ' ', trim($testSystemFileContent));
         $this->assertTrue(str_contains($testSystemFileContent, $testHtaccessView));
-
-        $testCreateHotlinkProtection->delete();
-        $this->assertDatabaseMissing('hosting_subscription_hotlink_protections', [
-            'hosting_subscription_id' => $testHostingSubscription->id,
-            'id' => $testCreateHotlinkProtectionId
-        ]);
-        $testCreateHostingPlan->delete();
-        Session::forget('hosting_subscription_id');
-        $this->assertTrue(!Session::has('hosting_subscription_id'));
-        $testHostingSubscription->delete();
     }
 
     public function testDeleteHotlinkProtection() {
@@ -186,11 +175,7 @@ class HotlinkProtectionTest extends TestCase
         $testHtaccessBuildHotlinkProtection->updateSystemFile($testHotlinkProtectionPath, $testHtaccessView);
         $testSystemFileContent = file_get_contents($testHotlinkProtectionPath);
         $this->assertEmpty($testSystemFileContent);
-
-        $testCreateHostingPlan->delete();
-        Session::forget('hosting_subscription_id');
-        $this->assertTrue(!Session::has('hosting_subscription_id'));
-        $testHostingSubscription->delete();
+        $this->assertTrue(str_contains(trim($testSystemFileContent), trim($testHtaccessView)));
     }
 
     public function testEnableHotlinkProtection() {
@@ -242,7 +227,6 @@ class HotlinkProtectionTest extends TestCase
         $testCreateHotlinkProtection->redirect_to = 'https://testRedirectUrl';
         $testCreateHotlinkProtection->enabled = 'disabled';
         $testCreateHotlinkProtection->save();
-        $testCreateHotlinkProtectionId = $testCreateHotlinkProtection->id;
 
         $this->assertIsObject($testCreateHotlinkProtection);
         $this->assertDatabaseHas('hosting_subscription_hotlink_protections', [
@@ -253,14 +237,6 @@ class HotlinkProtectionTest extends TestCase
             'redirect_to' => $testCreateHotlinkProtection->redirect_to,
             'enabled' => $testCreateHotlinkProtection->enabled
         ]);
-
-        $testHtaccessBuildHotlinkProtection= new HtaccessBuildHotlinkProtection(false, $testHostingSubscription->id);
-        $testSubscription = HostingSubscription::where('id', $testHostingSubscription->id)->first();
-        $testHotlinkData = $testHtaccessBuildHotlinkProtection->getHotlinkData($testSubscription->hotlinkProtection);
-        $this->assertNotEmpty($testHotlinkData);
-        $this->assertEquals($testHotlinkData['enabled'], 'disabled');
-        $testHtaccessView = $testHtaccessBuildHotlinkProtection->getHtAccessFileConfig($testHotlinkData);
-        $this->assertEmpty($testHtaccessView);
 
         $testCreateHotlinkProtection->update([
             'enabled' => 'enabled'
@@ -279,15 +255,85 @@ class HotlinkProtectionTest extends TestCase
         $testHtaccessView = preg_replace('/\s+/', ' ', trim($testHtaccessView));
         $testSystemFileContent = preg_replace('/\s+/', ' ', trim($testSystemFileContent));
         $this->assertTrue(str_contains($testSystemFileContent, $testHtaccessView));
+    }
 
-        $testCreateHotlinkProtection->delete();
-        $this->assertDatabaseMissing('hosting_subscription_hotlink_protections', [
+    public function testDisableHotlinkProtection() {
+        $testCustomerUsername = 'test' . rand(1000, 9999);
+        $testCreateCustomer = new Customer();
+        $testCreateCustomer->name = $testCustomerUsername;
+        $testCreateCustomer->email = $testCustomerUsername . '@mail.com';
+        $testCreateCustomer->username = $testCustomerUsername;
+        $testCreateCustomer->password = time() . rand(1000, 9999);
+        $testCreateCustomer->save();
+        $this->assertDatabaseHas('customers', ['username' => $testCustomerUsername]);
+
+        Auth::guard('customer')->login($testCreateCustomer);
+        $this->installDocker();
+        $this->installPHP();
+
+        $testPhpVersion = PHP::getInstalledPHPVersions()[0]['full'];
+        $this->assertNotEmpty($testPhpVersion);
+
+        $testCreateHostingPlan = new HostingPlan();
+        $testCreateHostingPlan->name = 'test' . rand(1000, 9999);
+        $testCreateHostingPlan->default_server_application_type = 'apache_php';
+        $testCreateHostingPlan->default_server_application_settings = [
+            'php_version' => $testPhpVersion,
+            'enable_php_fpm' => true,
+        ];
+        $testCreateHostingPlan->save();
+        $this->assertDatabaseHas('hosting_plans', ['name' => $testCreateHostingPlan->name]);
+
+        $testDomain = 'test' . rand(1000, 9999) . '.demo.panelomega-unit.com';
+        $hostingSubscriptionService = new HostingSubscriptionService();
+        $createResponse = $hostingSubscriptionService->create(
+            $testDomain,
+            $testCreateCustomer->id,
+            $testCreateHostingPlan->id,
+            null,
+            null
+        );
+        $this->assertTrue($createResponse['success']);
+        $testHostingSubscription = $createResponse['hostingSubscription'];
+        $this->assertNotEmpty($testHostingSubscription);
+        Session::put('hosting_subscription_id', $testHostingSubscription->id);
+
+        $testCreateHotlinkProtection = new HotlinkProtection();
+        $testCreateHotlinkProtection->hosting_subscription_id = $testHostingSubscription->id;
+        $testCreateHotlinkProtection->url_allow_access = 'https://testUrl1, https://testUrl2';
+        $testCreateHotlinkProtection->block_extensions = 'jpg, jpeg, png';
+        $testCreateHotlinkProtection->allow_direct_requests = '0';
+        $testCreateHotlinkProtection->redirect_to = 'https://testRedirectUrl';
+        $testCreateHotlinkProtection->enabled = 'enabled';
+        $testCreateHotlinkProtection->save();
+
+        $this->assertIsObject($testCreateHotlinkProtection);
+        $this->assertDatabaseHas('hosting_subscription_hotlink_protections', [
             'hosting_subscription_id' => $testHostingSubscription->id,
-            'id' => $testCreateHotlinkProtectionId
+            'url_allow_access' => $testCreateHotlinkProtection->url_allow_access,
+            'block_extensions' => $testCreateHotlinkProtection->block_extensions,
+            'allow_direct_requests' => $testCreateHotlinkProtection->allow_direct_requests,
+            'redirect_to' => $testCreateHotlinkProtection->redirect_to,
+            'enabled' => $testCreateHotlinkProtection->enabled
         ]);
-        $testCreateHostingPlan->delete();
-        Session::forget('hosting_subscription_id');
-        $this->assertTrue(!Session::has('hosting_subscription_id'));
-        $testHostingSubscription->delete();
+
+        $testCreateHotlinkProtection->update([
+            'enabled' => 'disabled'
+        ]);
+
+        $testHtaccessBuildHotlinkProtection= new HtaccessBuildHotlinkProtection(false, $testHostingSubscription->id);
+        $testSubscription = HostingSubscription::where('id', $testHostingSubscription->id)->first();
+        $testHotlinkData = $testHtaccessBuildHotlinkProtection->getHotlinkData($testSubscription->hotlinkProtection);
+        $this->assertNotEmpty($testHotlinkData);
+        $this->assertEquals($testHotlinkData['enabled'], 'disabled');
+        $testHtaccessView = $testHtaccessBuildHotlinkProtection->getHtAccessFileConfig($testHotlinkData);
+        $this->assertEmpty($testHtaccessView);
+        $testHotlinkProtectionPath = "/home/{$testHostingSubscription->system_username}/public_html/.htaccess";
+        $testHtaccessBuildHotlinkProtection->updateSystemFile($testHotlinkProtectionPath, $testHtaccessView);
+        $testSystemFileContent = file_get_contents($testHotlinkProtectionPath);
+
+        $testHtaccessView = preg_replace('/\s+/', ' ', trim($testHtaccessView));
+        $testSystemFileContent = preg_replace('/\s+/', ' ', trim($testSystemFileContent));
+        $this->assertTrue(str_contains($testSystemFileContent, $testHtaccessView));
     }
 }

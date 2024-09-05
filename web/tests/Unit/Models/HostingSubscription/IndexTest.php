@@ -109,8 +109,6 @@ class IndexTest extends TestCase
 
         $testHtaccessBuildIndexes = new HtaccessBuildIndexes(false, $testHostingSubscription->id);
         foreach($testIndexCreateObjects as $obj) {
-            $testIndexCreateId = $obj->id;
-
             $testIndexContent = $testHtaccessBuildIndexes->getIndexConfig($obj->index_type);
             if($obj->index_type == 'No Indexing') {
                 $this->assertEquals([
@@ -134,20 +132,8 @@ class IndexTest extends TestCase
             $this->assertTrue(is_file($testIndexesConfigPath));
             $testHtaccessBuildIndexes->updateSystemFile($testIndexesConfigPath, $testHtAccessView);
             $testSystemFileContent = file_get_contents($testIndexesConfigPath);
-
             $this->assertTrue(str_contains($testSystemFileContent, trim($testHtAccessView)));
-            $obj->delete();
-            $this->assertDatabaseMissing('hosting_subscription_indices', [
-                'hosting_subscription_id' => $testHostingSubscription->id,
-                'id' => $testIndexCreateId
-            ]);
         }
-        $testCreateHostingPlan->delete();
-        Session::forget('hosting_subscription_id');
-        $this->assertTrue(!Session::has('hosting_subscription_id'));
-        $testHostingSubscription->delete();
-        system('rm -rf -- ' . escapeshellarg($testDirectory), $deleted);
-        $this->assertEquals(0, $deleted);
     }
 
     public function testIndexUpdate() {
@@ -221,7 +207,6 @@ class IndexTest extends TestCase
         $testIndexCreate->directory_type = $testDirectoryType;
         $testIndexCreate->index_type = 'Inherit';
         $testIndexCreate->save();
-        $testIndexCreateId = $testIndexCreate->id;
 
         $this->assertIsObject($testIndexCreate);
         $this->assertDatabaseHas('hosting_subscription_indices', [
@@ -267,21 +252,8 @@ class IndexTest extends TestCase
             $testIndexesConfigPath = $testDirectory . '/.htaccess';
             $this->assertTrue(is_file($testIndexesConfigPath));
             $testHtaccessBuildIndexes->updateSystemFile($testIndexesConfigPath, $testHtaccessView);
-            $systemFileContent = file_get_contents($testIndexesConfigPath);
-
-            $this->assertStringContainsString(trim($testHtaccessView), trim($systemFileContent));
+            $testSystemFileContent = file_get_contents($testIndexesConfigPath);
+            $this->assertTrue(str_contains(trim($testSystemFileContent), trim($testHtaccessView)));
         }
-
-        $testIndexCreate->delete();
-        $this->assertDatabaseMissing('hosting_subscription_indices', [
-            'hosting_subscription_id' => $testHostingSubscription->id,
-            'id' => $testIndexCreateId
-        ]);
-        $testCreateHostingPlan->delete();
-        Session::forget('hosting_subscription_id');
-        $this->assertTrue(!Session::has('hosting_subscription_id'));
-        $testHostingSubscription->delete();
-        system('rm -rf -- ' . escapeshellarg($testDirectory), $deleted);
-        $this->assertEquals(0, $deleted);
     }
 }

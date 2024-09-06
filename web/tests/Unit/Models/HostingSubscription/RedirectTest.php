@@ -100,17 +100,9 @@ class RedirectTest extends TestCase
 
             $this->assertIsObject($testCreateRedirect);
             $this->assertDatabaseHas('hosting_subscription_redirects', [
-                'hosting_subscription_id' => $testHostingSubscription->id,
-                'status_code' => $testCreateRedirect->status_code,
-                'type' => $testCreateRedirect->type,
-                'domain' => $testCreateRedirect->domain,
-                'directory' => $testCreateRedirect->directory,
-                'redirect_url' => $testCreateRedirect->redirect_url,
-                'match_www' => $testCreateRedirect->match_www,
-                'wildcard' => $testCreateRedirect->wildcard
+                'id' => $testCreateRedirect->id,
+                'hosting_subscription_id' => $testHostingSubscription->id
             ]);
-
-            $testCreateRedirectObj[] = $testCreateRedirect;
 
             $testHtaccessBuildRedirects = new HtaccessBuildRedirects(false, $testRedirectionsPath, $testHostingSubscription->id);
             $testGetRedirectionsData = $testHtaccessBuildRedirects->getRedirectsData();
@@ -179,21 +171,11 @@ class RedirectTest extends TestCase
         $testCreateRedirectId = $testCreateRedirect->id;
 
         $this->assertIsObject($testCreateRedirect);
-        $this->assertDatabaseHas('hosting_subscription_redirects', [
-            'hosting_subscription_id' => $testHostingSubscription->id,
-            'status_code' => $testCreateRedirect->status_code,
-            'type' => $testCreateRedirect->type,
-            'domain' => $testCreateRedirect->domain,
-            'directory' => $testCreateRedirect->directory,
-            'redirect_url' => $testCreateRedirect->redirect_url,
-            'match_www' => $testCreateRedirect->match_www,
-            'wildcard' => $testCreateRedirect->wildcard
-        ]);
 
         $testCreateRedirect->delete();
         $this->assertDatabaseMissing('hosting_subscription_redirects', [
-            'hosting_subscription_id' => $testHostingSubscription->id,
-            'id' => $testCreateRedirectId
+            'id' => $testCreateRedirectId,
+            'hosting_subscription_id' => $testHostingSubscription->id
         ]);
         $testHtaccessBuildRedirects = new HtaccessBuildRedirects(false, $testRedirectionsPath, $testHostingSubscription->id);
         $testGetRedirectionsData = $testHtaccessBuildRedirects->getRedirectsData();

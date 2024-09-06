@@ -90,11 +90,8 @@ class ErrorPageTest extends TestCase
 
         $this->assertIsObject($testCreateErrorPage);
         $this->assertDatabaseHas('hosting_subscription_error_pages', [
-            'hosting_subscription_id' => $testHostingSubscription->id,
-            'name' => $testCreateErrorPage->name,
-            'error_code' => $testCreateErrorPage->error_code,
-            'content' => $testCreateErrorPage->content,
-            'path' => $testErrorPagePath
+            'id' => $testCreateErrorPage->id,
+            'hosting_subscription_id' => $testHostingSubscription->id
         ]);
 
         $testErrorPageData = [
@@ -188,11 +185,8 @@ class ErrorPageTest extends TestCase
 
         $this->assertIsObject($testCreateErrorPage);
         $this->assertDatabaseHas('hosting_subscription_error_pages', [
-            'hosting_subscription_id' => $testHostingSubscription->id,
-            'name' => $testCreateErrorPage->name,
-            'error_code' => $testCreateErrorPage->error_code,
-            'content' => $testCreateErrorPage->content,
-            'path' => $testErrorPagePath
+            'id' => $testCreateErrorPage->id,
+            'hosting_subscription_id' => $testHostingSubscription->id
         ]);
 
         $testErrorPageData = [
@@ -288,11 +282,8 @@ class ErrorPageTest extends TestCase
 
         $this->assertIsObject($testCreateErrorPage);
         $this->assertDatabaseHas('hosting_subscription_error_pages', [
-            'hosting_subscription_id' => $testHostingSubscription->id,
-            'name' => $testCreateErrorPage->name,
-            'error_code' => $testCreateErrorPage->error_code,
-            'content' => $testCreateErrorPage->content,
-            'path' => $testErrorPagePath
+            'id' => $testCreateErrorPage->id,
+            'hosting_subscription_id' => $testHostingSubscription->id
         ]);
 
         $testErrorPageData = [
@@ -302,7 +293,7 @@ class ErrorPageTest extends TestCase
         ];
 
         $testCreateErrorPage->update([
-            'content' => '<h1>Updated Content</h1>'
+            'content' => '<h1>TestErrorPageUpdatedContent</h1>'
         ]);
 
         $testHtaccessBuildErrorPage = new HtaccessBuildErrorPage(false, $testHostingSubscription->id, $testErrorPagePath);

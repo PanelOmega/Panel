@@ -46,30 +46,23 @@ class FtpAccount extends Model
             $model->ftp_username = $create['ftp_username'];
             $model->ftp_username_prefix = $create['ftp_username_prefix'];
             $model->hosting_subscription_id = $create['hosting_subscription_id'];
-
         });
 
-        static::created(function ($model) {
+        $callback = function () {
             $updateFtpUsers = new UpdateVsftpdUserlist();
             $updateFtpUsers->handle();
-        });
+        };
 
-        static::updated(function ($model) {
+        static::created($callback);
 
-            $updateFtpUsers = new UpdateVsftpdUserlist();
-            $updateFtpUsers->handle();
-        });
+//        static::updated($callback);
 
-        static::deleting(function ($model) {
-
+        static::deleting(function ($model) use ($callback) {
             $deleteFtpAccount = $model->_deleteFtpAccount();
-
             if (isset($deleteFtpAccount['error'])) {
                 throw new \Exception($deleteFtpAccount['message']);
             }
-
-            $updateFtpUsers = new UpdateVsftpdUserlist();
-            $updateFtpUsers->handle();
+            $callback();
         });
     }
 
@@ -157,7 +150,6 @@ class FtpAccount extends Model
         }
 
         return null;
-
     }
 
     /**
@@ -198,7 +190,7 @@ class FtpAccount extends Model
     public function getFtpQuotaTextAttribute(): string
     {
 
-        return $this->ftp_quota ?? $this->ftp_quota_type;
+        return ucfirst($this->ftp_quota) ?? ucfirst($this->ftp_quota_type);
     }
 
     public function getFtpPathTextAttribute()

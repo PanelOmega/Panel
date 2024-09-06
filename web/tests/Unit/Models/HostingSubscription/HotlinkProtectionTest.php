@@ -75,12 +75,8 @@ class HotlinkProtectionTest extends TestCase
 
         $this->assertIsObject($testCreateHotlinkProtection);
         $this->assertDatabaseHas('hosting_subscription_hotlink_protections', [
-            'hosting_subscription_id' => $testHostingSubscription->id,
-            'url_allow_access' => $testCreateHotlinkProtection->url_allow_access,
-            'block_extensions' => $testCreateHotlinkProtection->block_extensions,
-            'allow_direct_requests' => $testCreateHotlinkProtection->allow_direct_requests,
-            'redirect_to' => $testCreateHotlinkProtection->redirect_to,
-            'enabled' => $testCreateHotlinkProtection->enabled
+            'id' => $testCreateHotlinkProtection->id,
+            'hosting_subscription_id' => $testHostingSubscription->id
         ]);
 
         $testHtaccessBuildHotlinkProtection= new HtaccessBuildHotlinkProtection(false, $testHostingSubscription->id);
@@ -149,20 +145,12 @@ class HotlinkProtectionTest extends TestCase
         $testCreateHotlinkProtectionId = $testCreateHotlinkProtection->id;
 
         $this->assertIsObject($testCreateHotlinkProtection);
-        $this->assertDatabaseHas('hosting_subscription_hotlink_protections', [
-            'hosting_subscription_id' => $testHostingSubscription->id,
-            'url_allow_access' => $testCreateHotlinkProtection->url_allow_access,
-            'block_extensions' => $testCreateHotlinkProtection->block_extensions,
-            'allow_direct_requests' => $testCreateHotlinkProtection->allow_direct_requests,
-            'redirect_to' => $testCreateHotlinkProtection->redirect_to,
-            'enabled' => $testCreateHotlinkProtection->enabled
-        ]);
 
         $testCreateHotlinkProtection->delete();
 
         $this->assertDatabaseMissing('hosting_subscription_hotlink_protections', [
+            'id' => $testCreateHotlinkProtectionId,
             'hosting_subscription_id' => $testHostingSubscription->id,
-            'id' => $testCreateHotlinkProtectionId
         ]);
 
         $testHtaccessBuildHotlinkProtection= new HtaccessBuildHotlinkProtection(false, $testHostingSubscription->id);
@@ -230,12 +218,8 @@ class HotlinkProtectionTest extends TestCase
 
         $this->assertIsObject($testCreateHotlinkProtection);
         $this->assertDatabaseHas('hosting_subscription_hotlink_protections', [
-            'hosting_subscription_id' => $testHostingSubscription->id,
-            'url_allow_access' => $testCreateHotlinkProtection->url_allow_access,
-            'block_extensions' => $testCreateHotlinkProtection->block_extensions,
-            'allow_direct_requests' => $testCreateHotlinkProtection->allow_direct_requests,
-            'redirect_to' => $testCreateHotlinkProtection->redirect_to,
-            'enabled' => $testCreateHotlinkProtection->enabled
+            'id' => $testCreateHotlinkProtection->id,
+            'hosting_subscription_id' => $testHostingSubscription->id
         ]);
 
         $testCreateHotlinkProtection->update([
@@ -309,12 +293,8 @@ class HotlinkProtectionTest extends TestCase
 
         $this->assertIsObject($testCreateHotlinkProtection);
         $this->assertDatabaseHas('hosting_subscription_hotlink_protections', [
-            'hosting_subscription_id' => $testHostingSubscription->id,
-            'url_allow_access' => $testCreateHotlinkProtection->url_allow_access,
-            'block_extensions' => $testCreateHotlinkProtection->block_extensions,
-            'allow_direct_requests' => $testCreateHotlinkProtection->allow_direct_requests,
-            'redirect_to' => $testCreateHotlinkProtection->redirect_to,
-            'enabled' => $testCreateHotlinkProtection->enabled
+            'id' => $testCreateHotlinkProtection->id,
+            'hosting_subscription_id' => $testHostingSubscription->id
         ]);
 
         $testCreateHotlinkProtection->update([

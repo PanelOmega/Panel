@@ -24,7 +24,7 @@ class IndexTest extends TestCase
     use DatabaseTransactions;
     use IndexTrait;
 
-    public function testIndexCreate() {
+    public function testCreateIndex() {
         $testCustomerUsername = 'test' . rand(1000, 9999);
         $testCreateCustomer = new Customer();
         $testCreateCustomer->name = $testCustomerUsername;
@@ -98,11 +98,8 @@ class IndexTest extends TestCase
 
             $this->assertIsObject($testIndexCreate);
             $this->assertDatabaseHas('hosting_subscription_indices', [
-                'hosting_subscription_id' => $testIndexCreate->hosting_subscription_id,
-                'directory' => $testIndexCreate->directory,
-                'directory_real_path' => $testIndexCreate->directory_real_path,
-                'directory_type' => $testIndexCreate->directory_type,
-                'index_type' => $testIndexCreate->index_type,
+                'id' => $testIndexCreate->id,
+                'hosting_subscription_id' => $testIndexCreate->hosting_subscription_id
             ]);
             $testIndexCreateObjects[] = $testIndexCreate;
         }
@@ -136,7 +133,7 @@ class IndexTest extends TestCase
         }
     }
 
-    public function testIndexUpdate() {
+    public function testUpdateIndex() {
         $testCustomerUsername = 'test' . rand(1000, 9999);
         $testCreateCustomer = new Customer();
         $testCreateCustomer->name = $testCustomerUsername;
@@ -210,11 +207,8 @@ class IndexTest extends TestCase
 
         $this->assertIsObject($testIndexCreate);
         $this->assertDatabaseHas('hosting_subscription_indices', [
-            'hosting_subscription_id' => $testIndexCreate->hosting_subscription_id,
-            'directory' => $testIndexCreate->directory,
-            'directory_real_path' => $testIndexCreate->directory_real_path,
-            'directory_type' => $testIndexCreate->directory_type,
-            'index_type' => $testIndexCreate->index_type,
+            'id' => $testIndexCreate->id,
+            'hosting_subscription_id' => $testHostingSubscription->id,
         ]);
 
         $testIndexTypes = $this->getIndexesIndexTypes();

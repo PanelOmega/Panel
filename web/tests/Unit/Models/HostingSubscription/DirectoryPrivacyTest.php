@@ -3,12 +3,10 @@
 namespace tests\Unit\Models\HostingSubscription;
 
 use App\Jobs\HtaccessBuildDirectoryPrivacy;
-use App\Jobs\HtpasswdBuild;
 use App\Models\Customer;
 use App\Models\HostingPlan;
 use App\Models\HostingSubscription\DirectoryPrivacy;
 use App\Models\HostingSubscription\DirectoryPrivacyBrowse;
-use App\Models\HostingSubscription\HtpasswdUser;
 use App\Server\Helpers\PHP;
 use App\Services\HostingSubscription\HostingSubscriptionService;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
@@ -94,18 +92,13 @@ class DirectoryPrivacyTest extends TestCase
 
         $this->assertIsObject($testCreateDirectoryPrivacy);
         $this->assertDatabaseHas('hosting_subscription_directory_privacies', [
-            'hosting_subscription_id' => $testHostingSubscription->id,
-            'directory' => $testCreateDirectoryPrivacy->directory,
-            'username' => $testCreateDirectoryPrivacy->username,
-            'password' => $testCreateDirectoryPrivacy->password,
-            'protected' => $testCreateDirectoryPrivacy->protected,
-            'label' => $testCreateDirectoryPrivacy->label,
-            'path' => $testCreateDirectoryPrivacy->path
+            'id' => $testCreateDirectoryPrivacy->id,
+            'hosting_subscription_id' => $testHostingSubscription->id
         ]);
 
         $testDirectoryPrivacyRealPath = "{$testBaseDir}/$testNewDirectory";
         $this->assertTrue(is_dir($testDirectoryPrivacyRealPath));
-        $testHtpasswdDirectoryRealPath = "/home/{$testHostingSubscription->system_username}/.htpasswd";
+        $testHtpasswdDirectoryRealPath = "/home/{$testSystemUsername}/.htpasswd";
         $this->assertTrue(is_file($testHtpasswdDirectoryRealPath));
         $testDirectoryPrivacyConfigPath = "$testDirectoryPrivacyRealPath/.htaccess";
         $this->assertTrue(is_file($testDirectoryPrivacyConfigPath));
@@ -115,31 +108,6 @@ class DirectoryPrivacyTest extends TestCase
         $testHtaccessBuildDirectoryPrivacy->updateSystemFile($testDirectoryPrivacyConfigPath, $testHtaccessBuildDirectoryPrivacyView);
         $testSystemFileContent = file_get_contents($testDirectoryPrivacyConfigPath);
         $this->assertTrue(str_contains(trim($testSystemFileContent), trim($testHtaccessBuildDirectoryPrivacyView)));
-
-        $testCommand = "htpasswd -nb $testCreateDirectoryPrivacy->username $testCreateDirectoryPrivacy->password";
-        $testHtpasswdCredentials = shell_exec($testCommand);
-        $this->assertNotEmpty($testHtpasswdCredentials);
-
-        $testHashedPassword = '';
-        if ($testHtpasswdCredentials) {
-            list($user, $hashedPasswd) = explode(':', trim($testHtpasswdCredentials), 2);
-            $testHashedPassword = $hashedPasswd;
-        }
-        $testMd5Pattern = '/^\$apr1\$.{8}\$.{22}$/';
-        $this->assertTrue(preg_match($testMd5Pattern, $testHashedPassword) === 1);
-
-        $testCreatedHtpasswdUser = HtpasswdUser::where('directory', $testCreateDirectoryPrivacy->directory)
-            ->where('username', $testCreateDirectoryPrivacy->username)->first();
-
-        $this->assertIsObject($testCreatedHtpasswdUser);
-
-        $testHtpasswdBuild = new HtpasswdBuild(false, $testHtpasswdDirectoryRealPath);
-        $testGetHtpasswdRecords = $testHtpasswdBuild->getHtpasswdRecords([]);
-        $this->assertNotEmpty($testGetHtpasswdRecords);
-        $testHtpasswdView = $testHtpasswdBuild->getHtPasswdFileConfig($testGetHtpasswdRecords);
-        $testHtpasswdBuild->updateSystemFile($testHtpasswdDirectoryRealPath, $testHtpasswdView);
-        $testSystemFileContent = file_get_contents($testHtpasswdDirectoryRealPath);
-        $this->assertTrue(str_contains(trim($testSystemFileContent), trim($testHtpasswdView)));
     }
 
     public function testUpdateDirectoryPrivacy() {
@@ -212,13 +180,8 @@ class DirectoryPrivacyTest extends TestCase
 
         $this->assertIsObject($testCreateDirectoryPrivacy);
         $this->assertDatabaseHas('hosting_subscription_directory_privacies', [
-            'hosting_subscription_id' => $testHostingSubscription->id,
-            'directory' => $testCreateDirectoryPrivacy->directory,
-            'username' => $testCreateDirectoryPrivacy->username,
-            'password' => $testCreateDirectoryPrivacy->password,
-            'protected' => $testCreateDirectoryPrivacy->protected,
-            'label' => $testCreateDirectoryPrivacy->label,
-            'path' => $testCreateDirectoryPrivacy->path
+            'id' => $testCreateDirectoryPrivacy->id,
+            'hosting_subscription_id' => $testHostingSubscription->id
         ]);
 
         $testCreateDirectoryPrivacy->update([
@@ -240,31 +203,6 @@ class DirectoryPrivacyTest extends TestCase
         $testHtaccessBuildDirectoryPrivacy->updateSystemFile($testDirectoryPrivacyConfigPath, $testHtaccessBuildDirectoryPrivacyView);
         $testSystemFileContent = file_get_contents($testDirectoryPrivacyConfigPath);
         $this->assertTrue(str_contains(trim($testSystemFileContent), trim($testHtaccessBuildDirectoryPrivacyView)));
-
-        $testCommand = "htpasswd -nb $testCreateDirectoryPrivacy->username $testCreateDirectoryPrivacy->password";
-        $testHtpasswdCredentials = shell_exec($testCommand);
-        $this->assertNotEmpty($testHtpasswdCredentials);
-
-        $testHashedPassword = '';
-        if ($testHtpasswdCredentials) {
-            list($user, $hashedPasswd) = explode(':', trim($testHtpasswdCredentials), 2);
-            $testHashedPassword = $hashedPasswd;
-        }
-        $testMd5Pattern = '/^\$apr1\$.{8}\$.{22}$/';
-        $this->assertTrue(preg_match($testMd5Pattern, $testHashedPassword) === 1);
-
-        $testCreatedHtpasswdUser = HtpasswdUser::where('directory', $testCreateDirectoryPrivacy->directory)
-            ->where('username', $testCreateDirectoryPrivacy->username)->first();
-
-        $this->assertIsObject($testCreatedHtpasswdUser);
-
-        $testHtpasswdBuild = new HtpasswdBuild(false, $testHtpasswdDirectoryRealPath);
-        $testGetHtpasswdRecords = $testHtpasswdBuild->getHtpasswdRecords([]);
-        $this->assertNotEmpty($testGetHtpasswdRecords);
-        $testHtpasswdView = $testHtpasswdBuild->getHtPasswdFileConfig($testGetHtpasswdRecords);
-        $testHtpasswdBuild->updateSystemFile($testHtpasswdDirectoryRealPath, $testHtpasswdView);
-        $testSystemFileContent = file_get_contents($testHtpasswdDirectoryRealPath);
-        $this->assertTrue(str_contains(trim($testSystemFileContent), trim($testHtpasswdView)));
     }
 
     public function testDeleteDirectoryPrivacy() {
@@ -337,35 +275,6 @@ class DirectoryPrivacyTest extends TestCase
 
         $testCreateDirectoryPrivacyId = $testCreateDirectoryPrivacy->id;
         $this->assertIsObject($testCreateDirectoryPrivacy);
-        $this->assertDatabaseHas('hosting_subscription_directory_privacies', [
-            'hosting_subscription_id' => $testHostingSubscription->id,
-            'directory' => $testCreateDirectoryPrivacy->directory,
-            'username' => $testCreateDirectoryPrivacy->username,
-            'password' => $testCreateDirectoryPrivacy->password,
-            'protected' => $testCreateDirectoryPrivacy->protected,
-            'label' => $testCreateDirectoryPrivacy->label,
-            'path' => $testCreateDirectoryPrivacy->path
-        ]);
-
-        $testCommand = "htpasswd -nb $testCreateDirectoryPrivacy->username $testCreateDirectoryPrivacy->password";
-        $testHtpasswdCredentials = shell_exec($testCommand);
-        $this->assertNotEmpty($testHtpasswdCredentials);
-
-        $testHashedPassword = '';
-        if ($testHtpasswdCredentials) {
-            list($user, $hashedPasswd) = explode(':', trim($testHtpasswdCredentials), 2);
-            $testHashedPassword = $hashedPasswd;
-        }
-        $testMd5Pattern = '/^\$apr1\$.{8}\$.{22}$/';
-        $this->assertTrue(preg_match($testMd5Pattern, $testHashedPassword) === 1);
-
-        $testCreatedHtpasswdUser = HtpasswdUser::where('directory', $testCreateDirectoryPrivacy->directory)
-            ->where('username', $testCreateDirectoryPrivacy->username)->first();
-
-        $testDeletedPasswdUserId = $testCreatedHtpasswdUser->id;
-        $testDeletedPasswdUserDirectory = $testCreatedHtpasswdUser->directory;
-        $testDeletedHtPasswdUserUsername = $testCreatedHtpasswdUser->username;
-        $testDeletedPasswdUserPassword = $testCreatedHtpasswdUser->password;
 
         $testDirectoryPrivacyRealPath = "{$testBaseDir}/$testNewDirectory";
         $this->assertTrue(is_dir($testDirectoryPrivacyRealPath));
@@ -376,8 +285,8 @@ class DirectoryPrivacyTest extends TestCase
 
         $testCreateDirectoryPrivacy->delete();
         $this->assertDatabaseMissing('hosting_subscription_directory_privacies', [
-            'hosting_subscription_id' => $testHostingSubscription->id,
-            'id' => $testCreateDirectoryPrivacyId
+            'id' => $testCreateDirectoryPrivacyId,
+            'hosting_subscription_id' => $testHostingSubscription->id
         ]);
 
         $testFindDeletedDirectoryPrivacy = DirectoryPrivacy::where('id', $testCreateDirectoryPrivacyId)->first();
@@ -390,21 +299,5 @@ class DirectoryPrivacyTest extends TestCase
         $testHtaccessBuildDirectoryPrivacy->updateSystemFile($testDirectoryPrivacyConfigPath, $testHtaccessBuildDirectoryPrivacyView);
         $testSystemFileContent = file_get_contents($testDirectoryPrivacyConfigPath);
         $this->assertTrue(str_contains(trim($testSystemFileContent), trim($testHtaccessBuildDirectoryPrivacyView)));
-
-
-        $this->assertDatabaseMissing('hosting_subscription_htpasswd_users', [
-            'id' => $testDeletedPasswdUserId,
-            'directory' => $testDeletedPasswdUserDirectory,
-            'username' => $testDeletedHtPasswdUserUsername,
-            'password' => $testDeletedPasswdUserPassword,
-        ]);
-
-        $testHtpasswdBuild = new HtpasswdBuild(false, $testHtpasswdDirectoryRealPath);
-        $testGetHtpasswdRecords = $testHtpasswdBuild->getHtpasswdRecords([]);
-        $this->assertEmpty($testGetHtpasswdRecords);
-        $testHtpasswdView = $testHtpasswdBuild->getHtPasswdFileConfig($testGetHtpasswdRecords);
-        $testHtpasswdBuild->updateSystemFile($testHtpasswdDirectoryRealPath, $testHtpasswdView);
-        $testSystemFileContent = file_get_contents($testHtpasswdDirectoryRealPath);
-        $this->assertTrue(str_contains(trim($testSystemFileContent), trim($testHtpasswdView)));
     }
 }

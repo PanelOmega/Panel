@@ -12,7 +12,7 @@ class CodeCoverageTest extends BaseTest
             $this->sshExec('dnf -y install git rpm-build gcc make', true);
             $this->sshExec('dnf group install "Development Tools" -y', true);
             $this->sshExec('dnf install tar -y', true);
-            $this->sshExec('dnf install python3 python3-dev -y', true);
+            $this->sshExec('dnf install python3 python3-devel -y', true);
         } else {
             $this->sshExec('apt-get install autoconf build-essential -y', true);
         }

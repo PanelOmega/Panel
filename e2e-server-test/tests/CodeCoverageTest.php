@@ -9,7 +9,8 @@ class CodeCoverageTest extends BaseTest
             $this->sshExec('export NON_INT=1', true, 8000);
             $this->sshExec('wget -q -O - http://www.atomicorp.com/installers/atomic | sh', true, 8000);
 
-            $this->sshExec('dnf -y install git rpm-build gcc make autoconf build-essential', true);
+            $this->sshExec('dnf -y install git rpm-build gcc make', true);
+            $this->sshExec('dnf group install "Development Tools" -y', true);
             $this->sshExec('dnf install tar -y', true);
         } else {
             $this->sshExec('apt-get install autoconf build-essential -y', true);

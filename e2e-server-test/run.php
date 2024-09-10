@@ -153,17 +153,17 @@ $application->register('test')
         ];
 
         $passStages = [];
-        $commitTest = new CommitTest($testParams);
-        $testStatus = $commitTest->runTest();
-        if (isset($testStatus['testPassed']) && $testStatus['testPassed'] === true) {
-            $passStages[] = 'Commit Test';
-        }
-
-//        $commitTest = new CodeCoverageTest($testParams);
-//        $codecovStatus = $commitTest->runTest();
-//        if (isset($codecovStatus['testPassed']) && $codecovStatus['testPassed'] === true) {
-//            $passStages[] = 'Code Coverage Test';
+//        $commitTest = new CommitTest($testParams);
+//        $testStatus = $commitTest->runTest();
+//        if (isset($testStatus['testPassed']) && $testStatus['testPassed'] === true) {
+//            $passStages[] = 'Commit Test';
 //        }
+
+        $commitTest = new CodeCoverageTest($testParams);
+        $codecovStatus = $commitTest->runTest();
+        if (isset($codecovStatus['testPassed']) && $codecovStatus['testPassed'] === true) {
+            $passStages[] = 'Code Coverage Test';
+        }
 
         if (count($passStages) === 1) {
             return Command::SUCCESS;

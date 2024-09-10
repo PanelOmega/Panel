@@ -51,6 +51,7 @@ class CodeCoverageTest extends BaseTest
         $this->sshExec('pip install codecov-cli', true);
 
         $this->sshExec("cd /usr/local/omega/web/ \n omega-php artisan omega:set-ini-settings APP_ENV 'local'", true);
+        echo("cd /usr/local/omega/web/ \n composer test-coverage");
         $this->sshExec("cd /usr/local/omega/web/ \n composer test-coverage", true);
 
         $this->sshExec('mv /usr/local/omega/web/clover.xml Panel/clover.xml', true);

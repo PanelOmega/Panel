@@ -5,7 +5,7 @@ class CodeCoverageTest extends BaseTest
     public function runTest()
     {
         if ($this->os == 'AlmaLinux-9.4') {
-            $this->sshExec('dnf install autoconf build-essential -y', true);
+            $this->sshExec('dnf -y install git rpm-build gcc make autoconf build-essential', true);
             $this->sshExec('dnf install tar -y', true);
         } else {
             $this->sshExec('apt-get install autoconf build-essential -y', true);
@@ -51,7 +51,7 @@ class CodeCoverageTest extends BaseTest
         } else {
             $this->sshExec('apt-get install -yq python3-pip', true);
         }
-        
+
         $this->sshExec('pip install codecov-cli', true);
 
         $this->sshExec("cd Panel \n codecovcli --verbose upload-process -t $this->codecovToken", true);

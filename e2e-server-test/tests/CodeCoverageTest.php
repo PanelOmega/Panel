@@ -6,6 +6,7 @@ class CodeCoverageTest extends BaseTest
     {
         if ($this->os == 'AlmaLinux-9.4') {
             $this->sshExec('dnf install autoconf build-essential -y', true);
+            $this->sshExec('dnf install tar -y', true);
         } else {
             $this->sshExec('apt-get install autoconf build-essential -y', true);
         }
@@ -32,14 +33,25 @@ class CodeCoverageTest extends BaseTest
         $this->sshExec('omega-php -v', true);
 
         $this->sshExec('chmod -R 777 /usr/local/omega/web/vendor', true);
-        $this->sshExec('apt-get install composer -y', true);
+
+        if ($this->os == 'AlmaLinux-9.4') {
+            $this->sshExec('dnf install composer -y', true);
+        } else {
+            $this->sshExec('apt-get install composer -y', true);
+        }
+
         $this->sshExec("cd /usr/local/omega/web/ \n omega-php artisan omega:set-ini-settings APP_ENV 'local'", true);
         $this->sshExec("cd /usr/local/omega/web/ \n composer test-coverage", true);
 
         $this->sshExec('mv /usr/local/omega/web/clover.xml Panel/clover.xml', true);
         $this->sshExec('mv /usr/local/omega/web/coverage.xml Panel/coverage.xml', true);
 
-        $this->sshExec('apt-get install -yq pip', true);
+        if ($this->os == 'AlmaLinux-9.4') {
+            $this->sshExec('dnf install -yq python3-pip', true);
+        } else {
+            $this->sshExec('apt-get install -yq python3-pip', true);
+        }
+        
         $this->sshExec('pip install codecov-cli', true);
 
         $this->sshExec("cd Panel \n codecovcli --verbose upload-process -t $this->codecovToken", true);

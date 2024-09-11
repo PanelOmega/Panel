@@ -21,8 +21,8 @@ class IpBlockerTest extends TestCase
     use HasPHP;
     use DatabaseTransactions;
 
-    public function testPrepareIpBlockerRecordsSingleIpPartial() {
-
+    public function testPrepareIpBlockerRecordsSingleIpPartial()
+    {
         $testCustomerUsername = 'test' . rand(1000, 9999);
         $testCreateCustomer = new Customer();
         $testCreateCustomer->name = $testCustomerUsername;
@@ -76,42 +76,40 @@ class IpBlockerTest extends TestCase
         $this->assertEquals($result[0]['beginning_ip'], $record['blocked_ip'] . '0.0.0');
         $this->assertEquals($result[0]['ending_ip'], $record['blocked_ip'] . '255.255.255');
 
-        foreach($result as $key => $ipBlock) {
-            $testCreateIpBlockerRecord = new IpBlocker();
-            $testCreateIpBlockerRecord->hosting_subscription_id = $testHostingSubscription->id;
-            $testCreateIpBlockerRecord->blocked_ip = $ipBlock['blocked_ip'];
-            $testCreateIpBlockerRecord->beginning_ip = $ipBlock['beginning_ip'];
-            $testCreateIpBlockerRecord->ending_ip = $ipBlock['ending_ip'];
-            $testCreateIpBlockerRecord->save();
-        }
+        $testCreateIpBlockerRecord = new IpBlocker();
+        $testCreateIpBlockerRecord->hosting_subscription_id = $testHostingSubscription->id;
+        $testCreateIpBlockerRecord->blocked_ip = $result[0]['blocked_ip'];
+        $testCreateIpBlockerRecord->beginning_ip = $result[0]['beginning_ip'];
+        $testCreateIpBlockerRecord->ending_ip = $result[0]['ending_ip'];
+        $testCreateIpBlockerRecord->save();
+
+        $this->assertIsObject($testCreateIpBlockerRecord);
+        $this->assertDatabaseHas('hosting_subscription_ip_blockers', [
+            'id' => $testCreateIpBlockerRecord->id,
+            'hosting_subscription_id' => $testHostingSubscription->id,
+        ]);
 
         $testSystemUsername = $testHostingSubscription->system_username;
         $testIpBlockedPath = "/home/{$testSystemUsername}/public_html/.htaccess";
-        $this->assertTrue(is_file($testIpBlockedPath));
+        $this->assertTrue(file_exists($testIpBlockedPath));
 
         $testHtAccessBuild = new HtaccessBuildIpBlocker(false, $testIpBlockedPath, $testHostingSubscription->id);
 
         $testBlockedIps = $testHtAccessBuild->getAllBlockedIps();
         $this->assertNotEmpty($testBlockedIps);
         $testHtAccessView = $testHtAccessBuild->getHtaccessIpBlockerConfig($testBlockedIps);
-        foreach($testBlockedIps as $testBlockedIp) {
+        foreach ($testBlockedIps as $testBlockedIp) {
             $this->assertNotEmpty($testBlockedIp);
             $this->assertTrue(str_contains($testHtAccessView, $testBlockedIp));
         }
 
-        $testHtAccessBuild->updateSystemFile($testIpBlockedPath, $testHtAccessView);
         $testSystemFileContent = file_get_contents($testIpBlockedPath);
         $this->assertNotEmpty($testSystemFileContent);
         $this->assertNotFalse($this->assertStringContainsString($testHtAccessView, $testSystemFileContent, false));
-
-        $testCreateCustomer->delete();
-        $testCreateHostingPlan->delete();
-        $testCreateIpBlockerRecord->delete();
-        $testHostingSubscription->delete();
     }
 
-    public function testPrepareIpBlockerRecordsSingleIp() {
-
+    public function testPrepareIpBlockerRecordsSingleIp()
+    {
         $testCustomerUsername = 'test' . rand(1000, 9999);
         $testCreateCustomer = new Customer();
         $testCreateCustomer->name = $testCustomerUsername;
@@ -164,42 +162,39 @@ class IpBlockerTest extends TestCase
         $this->assertEquals($result[0]['beginning_ip'], $record['blocked_ip']);
         $this->assertEquals($result[0]['ending_ip'], $record['blocked_ip']);
 
-        foreach($result as $key => $ipBlock) {
-            $testCreateIpBlockerRecord = new IpBlocker();
-            $testCreateIpBlockerRecord->hosting_subscription_id = $testHostingSubscription->id;
-            $testCreateIpBlockerRecord->blocked_ip = $ipBlock['blocked_ip'];
-            $testCreateIpBlockerRecord->beginning_ip = $ipBlock['beginning_ip'];
-            $testCreateIpBlockerRecord->ending_ip = $ipBlock['ending_ip'];
-            $testCreateIpBlockerRecord->save();
-        }
+        $testCreateIpBlockerRecord = new IpBlocker();
+        $testCreateIpBlockerRecord->hosting_subscription_id = $testHostingSubscription->id;
+        $testCreateIpBlockerRecord->blocked_ip = $result[0]['blocked_ip'];
+        $testCreateIpBlockerRecord->beginning_ip = $result[0]['beginning_ip'];
+        $testCreateIpBlockerRecord->ending_ip = $result[0]['ending_ip'];
+        $testCreateIpBlockerRecord->save();
 
+        $this->assertIsObject($testCreateIpBlockerRecord);
+        $this->assertDatabaseHas('hosting_subscription_ip_blockers', [
+            'id' => $testCreateIpBlockerRecord->id,
+            'hosting_subscription_id' => $testHostingSubscription->id,
+        ]);
         $testSystemUsername = $testHostingSubscription->system_username;
         $testIpBlockedPath = "/home/{$testSystemUsername}/public_html/.htaccess";
-        $this->assertTrue(is_file($testIpBlockedPath));
+        $this->assertTrue(file_exists($testIpBlockedPath));
 
         $testHtAccessBuild = new HtaccessBuildIpBlocker(false, $testIpBlockedPath, $testHostingSubscription->id);
 
         $testBlockedIps = $testHtAccessBuild->getAllBlockedIps();
         $this->assertNotEmpty($testBlockedIps);
         $testHtAccessView = $testHtAccessBuild->getHtaccessIpBlockerConfig($testBlockedIps);
-        foreach($testBlockedIps as $testBlockedIp) {
+        foreach ($testBlockedIps as $testBlockedIp) {
             $this->assertNotEmpty($testBlockedIp);
             $this->assertTrue(str_contains($testHtAccessView, $testBlockedIp));
         }
 
-        $testHtAccessBuild->updateSystemFile($testIpBlockedPath, $testHtAccessView);
         $testSystemFileContent = file_get_contents($testIpBlockedPath);
         $this->assertNotEmpty($testSystemFileContent);
         $this->assertNotFalse($this->assertStringContainsString($testHtAccessView, $testSystemFileContent, false));
-
-        $testCreateCustomer->delete();
-        $testCreateHostingPlan->delete();
-        $testCreateIpBlockerRecord->delete();
-        $testHostingSubscription->delete();
     }
 
-    public function testPrepareIpBlockerRecordsIpRange() {
-
+    public function testPrepareIpBlockerRecordsIpRange()
+    {
         $testCustomerUsername = 'test' . rand(1000, 9999);
         $testCreateCustomer = new Customer();
         $testCreateCustomer->name = $testCustomerUsername;
@@ -244,9 +239,7 @@ class IpBlockerTest extends TestCase
         $record = ['blocked_ip' => '192.168.1.1-192.255.255.255'];
         $result = \App\Models\HostingSubscription\IpBlocker::prepareIpBlockerRecords($record, $testHostingSubscription->id);
 
-        $this->assertNotEmpty($result);
-        $testCreatedIpBlockerIds = [];
-        foreach($result as $key => $ip) {
+        foreach ($result as $key => $ip) {
             $this->assertArrayHasKey('hosting_subscription_id', $ip);
             $this->assertArrayHasKey('blocked_ip', $ip);
             $this->assertArrayHasKey('beginning_ip', $ip);
@@ -262,38 +255,35 @@ class IpBlockerTest extends TestCase
             $testCreateIpBlockerRecord->beginning_ip = $ip['beginning_ip'];
             $testCreateIpBlockerRecord->ending_ip = $ip['ending_ip'];
             $testCreateIpBlockerRecord->save();
-            $testCreatedIpBlockerIds[] = $testCreateIpBlockerRecord->id;
+
+            $this->assertIsObject($testCreateIpBlockerRecord);
+            $this->assertDatabaseHas('hosting_subscription_ip_blockers', [
+                'id' => $testCreateIpBlockerRecord->id,
+                'hosting_subscription_id' => $testHostingSubscription->id
+            ]);
         }
 
         $testSystemUsername = $testHostingSubscription->system_username;
         $testIpBlockedPath = "/home/{$testSystemUsername}/public_html/.htaccess";
-        $this->assertTrue(is_file($testIpBlockedPath));
+        $this->assertTrue(file_exists($testIpBlockedPath));
 
         $testHtAccessBuild = new HtaccessBuildIpBlocker(false, $testIpBlockedPath, $testHostingSubscription->id);
 
         $testBlockedIps = $testHtAccessBuild->getAllBlockedIps();
         $this->assertNotEmpty($testBlockedIps);
         $testHtAccessView = $testHtAccessBuild->getHtaccessIpBlockerConfig($testBlockedIps);
-        foreach($testBlockedIps as $testBlockedIp) {
+        foreach ($testBlockedIps as $testBlockedIp) {
             $this->assertNotEmpty($testBlockedIp);
             $this->assertTrue(str_contains($testHtAccessView, $testBlockedIp));
         }
 
-        $testHtAccessBuild->updateSystemFile($testIpBlockedPath, $testHtAccessView);
         $testSystemFileContent = file_get_contents($testIpBlockedPath);
         $this->assertNotEmpty($testSystemFileContent);
         $this->assertNotFalse($this->assertStringContainsString($testHtAccessView, $testSystemFileContent, false));
-
-        $testCreateCustomer->delete();
-        $testCreateHostingPlan->delete();
-        foreach($testCreatedIpBlockerIds as $id) {
-            IpBlocker::where('id', $id)->delete();
-        }
-        $testHostingSubscription->delete();
     }
 
-    public function testPrepareIpBlockerRecordsIpCidrBlock() {
-
+    public function testPrepareIpBlockerRecordsIpCidrBlock()
+    {
         $testCustomerUsername = 'test' . rand(1000, 9999);
         $testCreateCustomer = new Customer();
         $testCreateCustomer->name = $testCustomerUsername;
@@ -338,10 +328,7 @@ class IpBlockerTest extends TestCase
         $record = ['blocked_ip' => '192.168.1.1/24'];
         $result = \App\Models\HostingSubscription\IpBlocker::prepareIpBlockerRecords($record, $testHostingSubscription->id);
 
-        $this->assertNotEmpty($result);
-
-        $testCreatedIpBlockerIds = [];
-        foreach($result as $key => $ip) {
+        foreach ($result as $key => $ip) {
             $this->assertArrayHasKey('hosting_subscription_id', $ip);
             $this->assertArrayHasKey('blocked_ip', $ip);
             $this->assertArrayHasKey('beginning_ip', $ip);
@@ -357,7 +344,12 @@ class IpBlockerTest extends TestCase
             $testCreateIpBlockerRecord->beginning_ip = $ip['beginning_ip'];
             $testCreateIpBlockerRecord->ending_ip = $ip['ending_ip'];
             $testCreateIpBlockerRecord->save();
-            $testCreatedIpBlockerIds[] = $testCreateIpBlockerRecord->id;
+
+            $this->assertIsObject($testCreateIpBlockerRecord);
+            $this->assertDatabaseHas('hosting_subscription_ip_blockers', [
+                'id' => $testCreateIpBlockerRecord->id,
+                'hosting_subscription_id' => $testHostingSubscription->id,
+            ]);
         }
 
         $testSystemUsername = $testHostingSubscription->system_username;
@@ -369,21 +361,13 @@ class IpBlockerTest extends TestCase
         $testBlockedIps = $testHtAccessBuild->getAllBlockedIps();
         $this->assertNotEmpty($testBlockedIps);
         $testHtAccessView = $testHtAccessBuild->getHtaccessIpBlockerConfig($testBlockedIps);
-        foreach($testBlockedIps as $testBlockedIp) {
+        foreach ($testBlockedIps as $testBlockedIp) {
             $this->assertNotEmpty($testBlockedIp);
             $this->assertTrue(str_contains($testHtAccessView, $testBlockedIp));
         }
 
-        $testHtAccessBuild->updateSystemFile($testIpBlockedPath, $testHtAccessView);
         $testSystemFileContent = file_get_contents($testIpBlockedPath);
         $this->assertNotEmpty($testSystemFileContent);
         $this->assertNotFalse($this->assertStringContainsString($testHtAccessView, $testSystemFileContent, false));
-
-        $testCreateCustomer->delete();
-        $testCreateHostingPlan->delete();
-        foreach($testCreatedIpBlockerIds as $id) {
-            IpBlocker::where('id', $id)->delete();
-        }
-        $testHostingSubscription->delete();
     }
 }

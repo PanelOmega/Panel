@@ -85,9 +85,8 @@ class HotlinkProtectionTest extends TestCase
         $this->assertNotEmpty($testHotlinkData);
         $testHtaccessView = $testHtaccessBuildHotlinkProtection->getHtAccessFileConfig($testHotlinkData);
         $testHotlinkProtectionPath = "/home/{$testHostingSubscription->system_username}/public_html/.htaccess";
-        $testHtaccessBuildHotlinkProtection->updateSystemFile($testHotlinkProtectionPath, $testHtaccessView);
+        $this->assertTrue(file_exists($testHotlinkProtectionPath));
         $testSystemFileContent = file_get_contents($testHotlinkProtectionPath);
-
         $testHtaccessView = preg_replace('/\s+/', ' ', trim($testHtaccessView));
         $testSystemFileContent = preg_replace('/\s+/', ' ', trim($testSystemFileContent));
         $this->assertTrue(str_contains($testSystemFileContent, $testHtaccessView));
@@ -142,14 +141,13 @@ class HotlinkProtectionTest extends TestCase
         $testCreateHotlinkProtection->redirect_to = 'https://testRedirectUrl';
         $testCreateHotlinkProtection->enabled = 'enabled';
         $testCreateHotlinkProtection->save();
-        $testCreateHotlinkProtectionId = $testCreateHotlinkProtection->id;
 
         $this->assertIsObject($testCreateHotlinkProtection);
 
         $testCreateHotlinkProtection->delete();
 
         $this->assertDatabaseMissing('hosting_subscription_hotlink_protections', [
-            'id' => $testCreateHotlinkProtectionId,
+            'id' => $testCreateHotlinkProtection->id,
             'hosting_subscription_id' => $testHostingSubscription->id,
         ]);
 
@@ -160,7 +158,7 @@ class HotlinkProtectionTest extends TestCase
         $testHtaccessView = $testHtaccessBuildHotlinkProtection->getHtAccessFileConfig($testHotlinkData);
         $this->assertEmpty($testHtaccessView);
         $testHotlinkProtectionPath = "/home/{$testHostingSubscription->system_username}/public_html/.htaccess";
-        $testHtaccessBuildHotlinkProtection->updateSystemFile($testHotlinkProtectionPath, $testHtaccessView);
+        $this->assertTrue(file_exists($testHotlinkProtectionPath));
         $testSystemFileContent = file_get_contents($testHotlinkProtectionPath);
         $this->assertEmpty($testSystemFileContent);
         $this->assertTrue(str_contains(trim($testSystemFileContent), trim($testHtaccessView)));
@@ -233,9 +231,8 @@ class HotlinkProtectionTest extends TestCase
         $this->assertEquals($testHotlinkData['enabled'], 'enabled');
         $testHtaccessView = $testHtaccessBuildHotlinkProtection->getHtAccessFileConfig($testHotlinkData);
         $testHotlinkProtectionPath = "/home/{$testHostingSubscription->system_username}/public_html/.htaccess";
-        $testHtaccessBuildHotlinkProtection->updateSystemFile($testHotlinkProtectionPath, $testHtaccessView);
+        $this->assertTrue(file_exists($testHotlinkProtectionPath));
         $testSystemFileContent = file_get_contents($testHotlinkProtectionPath);
-
         $testHtaccessView = preg_replace('/\s+/', ' ', trim($testHtaccessView));
         $testSystemFileContent = preg_replace('/\s+/', ' ', trim($testSystemFileContent));
         $this->assertTrue(str_contains($testSystemFileContent, $testHtaccessView));
@@ -309,9 +306,8 @@ class HotlinkProtectionTest extends TestCase
         $testHtaccessView = $testHtaccessBuildHotlinkProtection->getHtAccessFileConfig($testHotlinkData);
         $this->assertEmpty($testHtaccessView);
         $testHotlinkProtectionPath = "/home/{$testHostingSubscription->system_username}/public_html/.htaccess";
-        $testHtaccessBuildHotlinkProtection->updateSystemFile($testHotlinkProtectionPath, $testHtaccessView);
+        $this->assertTrue(file_exists($testHotlinkProtectionPath));
         $testSystemFileContent = file_get_contents($testHotlinkProtectionPath);
-
         $testHtaccessView = preg_replace('/\s+/', ' ', trim($testHtaccessView));
         $testSystemFileContent = preg_replace('/\s+/', ' ', trim($testSystemFileContent));
         $this->assertTrue(str_contains($testSystemFileContent, $testHtaccessView));

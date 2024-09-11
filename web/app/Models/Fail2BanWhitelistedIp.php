@@ -26,8 +26,8 @@ class Fail2BanWhitelistedIp extends Model
 
     protected static function fail2BanBoot()
     {
-        $hostingSubscription = Customer::getHostingSubscriptionSession();
-        static::creating(function ($model) use ($hostingSubscription) {
+        static::creating(function ($model) {
+            $hostingSubscription = Customer::getHostingSubscriptionSession();
             $model->hosting_subscription_id = $hostingSubscription->id;
         });
 

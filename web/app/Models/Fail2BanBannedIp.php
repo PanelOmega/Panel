@@ -49,7 +49,7 @@ class Fail2BanBannedIp extends Model
 
     public function getRows()
     {
-        $bannedIps = Fail2BanBannedIpService::getIps();
+        $bannedIps = Fail2BanBannedIpService::getBannedIp();
 
         return array_map(function ($bannedIps, $index) {
             return [

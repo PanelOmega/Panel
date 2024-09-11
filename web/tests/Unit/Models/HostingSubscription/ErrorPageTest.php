@@ -96,25 +96,22 @@ class ErrorPageTest extends TestCase
 
         $testErrorPageData = [
             'error_code' => $testCreateErrorPage->error_code,
-            'content' => $testCreateErrorPage->content,
-            'path' => $testErrorPagePath
+            'path' => $testErrorPagePath,
+            'content' => $testCreateErrorPage->content
         ];
 
-        $testHtaccessBuildErrorPage = new HtaccessBuildErrorPage(false, $testHostingSubscription->id, $testErrorPagePath);
+        $testHtaccessBuildErrorPage = new HtaccessBuildErrorPage(false, $testHostingSubscription->id, $testErrorPageData);
 
         $testGetErrorPageContent = $testHtaccessBuildErrorPage->getErrorPageContent($testCreateErrorPage->name ,$testHostingSubscription);
         $testErrorPageDefaultContent = $testHtaccessBuildErrorPage->getErrorCodeDefaultContent($testCreateErrorPage->error_code);
         $this->assertNotEquals($testErrorPageDefaultContent, $testGetErrorPageContent);
-
-        $testHtaccessBuildErrorPage->addErrorPageToSystem($testErrorPageData);
         $testErrorPageFilePath = "{$testCreateErrorPage->path}/{$testCreateErrorPage->error_code}.shtml";
-        $this->assertFileExists($testErrorPageFilePath);
+        $this->assertTrue(file_exists($testErrorPageFilePath));
         $testGetErrorDocuments = $testHtaccessBuildErrorPage->getAllErrorDocuments($testCreateErrorPage->hosting_subscription_id, $testCreateErrorPage->path);
         $this->assertNotEmpty($testGetErrorDocuments);
         $this->assertTrue(str_contains($testGetErrorDocuments[0], $testCreateErrorPage->error_code));
         $testHtaccessView = $testHtaccessBuildErrorPage->getHtaccessErrorCodesConfig($testGetErrorDocuments);
         $testErrorPageSystemFilePath = "{$testCreateErrorPage->path}/.htaccess";
-        $testHtaccessBuildErrorPage->updateSystemFile($testErrorPageSystemFilePath, $testHtaccessView);
         $testSystemFileContent = file_get_contents($testErrorPageSystemFilePath);
         $this->assertTrue(str_contains(trim($testSystemFileContent), trim($testHtaccessView)));
     }
@@ -191,11 +188,11 @@ class ErrorPageTest extends TestCase
 
         $testErrorPageData = [
             'error_code' => $testCreateErrorPage->error_code,
-            'content' => $testCreateErrorPage->content,
-            'path' => $testErrorPagePath
+            'path' => $testErrorPagePath,
+            'content' => $testCreateErrorPage->content
         ];
 
-        $testHtaccessBuildErrorPage = new HtaccessBuildErrorPage(false, $testHostingSubscription->id, $testErrorPagePath);
+        $testHtaccessBuildErrorPage = new HtaccessBuildErrorPage(false, $testHostingSubscription->id, $testErrorPageData);
 
         $testGetErrorPageContent = $testHtaccessBuildErrorPage->getErrorPageContent($testCreateErrorPage->name ,$testHostingSubscription);
         $testErrorPageDefaultContent = $testHtaccessBuildErrorPage->getErrorCodeDefaultContent($testCreateErrorPage->error_code);
@@ -203,13 +200,12 @@ class ErrorPageTest extends TestCase
 
         $testHtaccessBuildErrorPage->addErrorPageToSystem($testErrorPageData);
         $testErrorPageFilePath = "{$testCreateErrorPage->path}/{$testCreateErrorPage->error_code}.shtml";
-        $this->assertFileExists($testErrorPageFilePath);
+        $this->assertTrue(file_exists($testErrorPageFilePath));
         $testGetErrorDocuments = $testHtaccessBuildErrorPage->getAllErrorDocuments($testCreateErrorPage->hosting_subscription_id, $testCreateErrorPage->path);
         $this->assertNotEmpty($testGetErrorDocuments);
         $this->assertTrue(str_contains($testGetErrorDocuments[0], $testCreateErrorPage->error_code));
         $testHtaccessView = $testHtaccessBuildErrorPage->getHtaccessErrorCodesConfig($testGetErrorDocuments);
         $testErrorPageSystemFilePath = "{$testCreateErrorPage->path}/.htaccess";
-        $testHtaccessBuildErrorPage->updateSystemFile($testErrorPageSystemFilePath, $testHtaccessView);
         $testSystemFileContent = file_get_contents($testErrorPageSystemFilePath);
         $this->assertTrue(str_contains(trim($testSystemFileContent), trim($testHtaccessView)));
     }
@@ -288,27 +284,26 @@ class ErrorPageTest extends TestCase
 
         $testErrorPageData = [
             'error_code' => $testCreateErrorPage->error_code,
-            'content' => $testCreateErrorPage->content,
-            'path' => $testErrorPagePath
+            'path' => $testErrorPagePath,
+            'content' => $testCreateErrorPage->content
         ];
 
         $testCreateErrorPage->update([
             'content' => '<h1>TestErrorPageUpdatedContent</h1>'
         ]);
 
-        $testHtaccessBuildErrorPage = new HtaccessBuildErrorPage(false, $testHostingSubscription->id, $testErrorPagePath);
+        $testHtaccessBuildErrorPage = new HtaccessBuildErrorPage(false, $testHostingSubscription->id, $testErrorPageData);
         $testGetErrorPageContent = $testHtaccessBuildErrorPage->getErrorPageContent($testCreateErrorPage->name ,$testHostingSubscription);
         $this->assertNotEquals($testGetErrorPageContent, $testErrorPageContent);
 
         $testHtaccessBuildErrorPage->addErrorPageToSystem($testErrorPageData);
         $testErrorPageFilePath = "{$testCreateErrorPage->path}/{$testCreateErrorPage->error_code}.shtml";
-        $this->assertFileExists($testErrorPageFilePath);
+        $this->assertTrue(file_exists($testErrorPageFilePath));
         $testGetErrorDocuments = $testHtaccessBuildErrorPage->getAllErrorDocuments($testCreateErrorPage->hosting_subscription_id, $testCreateErrorPage->path);
         $this->assertNotEmpty($testGetErrorDocuments);
         $this->assertTrue(str_contains($testGetErrorDocuments[0], $testCreateErrorPage->error_code));
         $testHtaccessView = $testHtaccessBuildErrorPage->getHtaccessErrorCodesConfig($testGetErrorDocuments);
         $testErrorPageSystemFilePath = "{$testCreateErrorPage->path}/.htaccess";
-        $testHtaccessBuildErrorPage->updateSystemFile($testErrorPageSystemFilePath, $testHtaccessView);
         $testSystemFileContent = file_get_contents($testErrorPageSystemFilePath);
         $this->assertTrue(str_contains(trim($testSystemFileContent), trim($testHtaccessView)));
     }

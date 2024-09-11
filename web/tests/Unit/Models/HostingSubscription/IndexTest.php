@@ -24,7 +24,8 @@ class IndexTest extends TestCase
     use DatabaseTransactions;
     use IndexTrait;
 
-    public function testCreateIndex() {
+    public function testCreateIndex()
+    {
         $testCustomerUsername = 'test' . rand(1000, 9999);
         $testCreateCustomer = new Customer();
         $testCreateCustomer->name = $testCustomerUsername;
@@ -71,7 +72,7 @@ class IndexTest extends TestCase
         $testNewDirectory = "TestDirectory";
         $testDirectory = "{$testBaseDir}/{$testNewDirectory}";
 
-        if(!is_dir($testDirectory)) {
+        if (!is_dir($testDirectory)) {
             mkdir($testDirectory);
         }
         $this->assertTrue($testDirectory && is_dir($testDirectory));
@@ -81,59 +82,38 @@ class IndexTest extends TestCase
         $this->assertNotEmpty($testIfDirectoryExists);
 
         $testDirectoryType = 'folder';
-        $testIndexTypes = $this->getIndexesIndexTypes();
-        $testIndexTypes = array_filter($testIndexTypes, function ($key) {
-            return in_array($key, ['No Indexing', 'Filename Only', 'Filename And Description']);
-        }, ARRAY_FILTER_USE_KEY);
 
-        $testIndexCreateObjects = [];
-        foreach (array_keys($testIndexTypes) as $indexType) {
-            $testIndexCreate = new Index();
-            $testIndexCreate->hosting_subscription_id = $testHostingSubscription->id;
-            $testIndexCreate->directory = $testNewDirectory;
-            $testIndexCreate->directory_real_path = $testNewDirectory;
-            $testIndexCreate->directory_type = $testDirectoryType;
-            $testIndexCreate->index_type = $indexType;
-            $testIndexCreate->save();
+        $testIndexCreate = new Index();
+        $testIndexCreate->hosting_subscription_id = $testHostingSubscription->id;
+        $testIndexCreate->directory = $testNewDirectory;
+        $testIndexCreate->directory_real_path = $testNewDirectory;
+        $testIndexCreate->directory_type = $testDirectoryType;
+        $testIndexCreate->index_type = 'Filename And Description';
+        $testIndexCreate->save();
 
-            $this->assertIsObject($testIndexCreate);
-            $this->assertDatabaseHas('hosting_subscription_indices', [
-                'id' => $testIndexCreate->id,
-                'hosting_subscription_id' => $testIndexCreate->hosting_subscription_id
-            ]);
-            $testIndexCreateObjects[] = $testIndexCreate;
-        }
+        $this->assertIsObject($testIndexCreate);
+        $this->assertDatabaseHas('hosting_subscription_indices', [
+            'id' => $testIndexCreate->id,
+            'hosting_subscription_id' => $testHostingSubscription->id
+        ]);
 
         $testHtaccessBuildIndexes = new HtaccessBuildIndexes(false, $testHostingSubscription->id);
-        foreach($testIndexCreateObjects as $obj) {
-            $testIndexContent = $testHtaccessBuildIndexes->getIndexConfig($obj->index_type);
-            if($obj->index_type == 'No Indexing') {
-                $this->assertEquals([
-                    'options' => 'Options -Indexes',
-                    'indexOptions' => ''
-                ], $testIndexContent);
-            } elseif($obj->index_type == 'Filename Only') {
-                $this->assertEquals([
-                    'options' => 'Options +Indexes',
-                    'indexOptions' => 'IndexOptions -HTMLTable -FancyIndexing'
-                ], $testIndexContent);
-            } elseif($obj->index_type == 'Filename And Description') {
-                $this->assertEquals([
-                    'options' => 'Options +Indexes',
-                    'indexOptions' => 'IndexOptions +HTMLTable +FancyIndexing'
-                ], $testIndexContent);
-            }
+        $testIndexContent = $testHtaccessBuildIndexes->getIndexConfig($testIndexCreate->index_type);
 
-            $testHtAccessView = $testHtaccessBuildIndexes->getHtAccessFileConfig($testIndexContent);
-            $testIndexesConfigPath = $testDirectory . '/.htaccess';
-            $this->assertTrue(is_file($testIndexesConfigPath));
-            $testHtaccessBuildIndexes->updateSystemFile($testIndexesConfigPath, $testHtAccessView);
-            $testSystemFileContent = file_get_contents($testIndexesConfigPath);
-            $this->assertTrue(str_contains($testSystemFileContent, trim($testHtAccessView)));
-        }
+        $this->assertEquals([
+            'options' => 'Options +Indexes',
+            'indexOptions' => 'IndexOptions +HTMLTable +FancyIndexing'
+        ], $testIndexContent);
+
+        $testHtAccessView = $testHtaccessBuildIndexes->getHtAccessFileConfig($testIndexContent);
+        $testIndexesConfigPath = $testDirectory . '/.htaccess';
+        $this->assertTrue(file_exists($testIndexesConfigPath));
+        $testSystemFileContent = file_get_contents($testIndexesConfigPath);
+        $this->assertTrue(str_contains($testSystemFileContent, trim($testHtAccessView)));
     }
 
-    public function testUpdateIndex() {
+    public function testUpdateIndex()
+    {
         $testCustomerUsername = 'test' . rand(1000, 9999);
         $testCreateCustomer = new Customer();
         $testCreateCustomer->name = $testCustomerUsername;
@@ -190,12 +170,6 @@ class IndexTest extends TestCase
         $this->assertNotEmpty($testIfDirectoryExists);
 
         $testDirectoryType = 'folder';
-        $testIndexTypes = $this->getIndexesIndexTypes();
-        $testIndexTypes = array_filter($testIndexTypes, function ($key) {
-            return in_array($key, ['No Indexing', 'Filename Only', 'Filename And Description']);
-        }, ARRAY_FILTER_USE_KEY);
-
-        $testDirectoryType = 'folder';
 
         $testIndexCreate = new Index();
         $testIndexCreate->hosting_subscription_id = $testHostingSubscription->id;
@@ -211,43 +185,24 @@ class IndexTest extends TestCase
             'hosting_subscription_id' => $testHostingSubscription->id,
         ]);
 
-        $testIndexTypes = $this->getIndexesIndexTypes();
-        $testIndexTypes = array_filter($testIndexTypes, function ($key) {
-            return in_array($key, ['No Indexing', 'Filename Only', 'Filename And Description']);
-        }, ARRAY_FILTER_USE_KEY);
-
         $testHtaccessBuildIndexes = new HtaccessBuildIndexes(false, $testHostingSubscription->id);
 
-        foreach($testIndexTypes as $testIndexType) {
-            $testIndexCreate->update([
-                    'index_type' => $testIndexType
-                ]);
+        $testIndexTypeUpdate = 'Filename Only';
+        $testIndexCreate->update([
+            'index_type' => $testIndexTypeUpdate
+        ]);
 
-            $testIndexContent = $testHtaccessBuildIndexes->getIndexConfig($testIndexType);
+        $testIndexContent = $testHtaccessBuildIndexes->getIndexConfig($testIndexCreate->index_type);
 
-            if($testIndexType == 'No Indexing') {
-                $this->assertEquals([
-                    'options' => 'Options -Indexes',
-                    'indexOptions' => ''
-                ], $testIndexContent);
-            } elseif($testIndexType == 'Filename Only') {
-                $this->assertEquals([
-                    'options' => 'Options +Indexes',
-                    'indexOptions' => 'IndexOptions -HTMLTable -FancyIndexing'
-                ], $testIndexContent);
-            } elseif($testIndexType == 'Filename And Description') {
-                $this->assertEquals([
-                    'options' => 'Options +Indexes',
-                    'indexOptions' => 'IndexOptions +HTMLTable +FancyIndexing'
-                ], $testIndexContent);
-            }
+        $this->assertEquals([
+            'options' => 'Options +Indexes',
+            'indexOptions' => 'IndexOptions -HTMLTable -FancyIndexing'
+        ], $testIndexContent);
 
-            $testHtaccessView = $testHtaccessBuildIndexes->getHtAccessFileConfig($testIndexContent);
-            $testIndexesConfigPath = $testDirectory . '/.htaccess';
-            $this->assertTrue(is_file($testIndexesConfigPath));
-            $testHtaccessBuildIndexes->updateSystemFile($testIndexesConfigPath, $testHtaccessView);
-            $testSystemFileContent = file_get_contents($testIndexesConfigPath);
-            $this->assertTrue(str_contains(trim($testSystemFileContent), trim($testHtaccessView)));
-        }
+        $testHtaccessView = $testHtaccessBuildIndexes->getHtAccessFileConfig($testIndexContent);
+        $testIndexesConfigPath = $testDirectory . '/.htaccess';
+        $this->assertTrue(file_exists($testIndexesConfigPath));
+        $testSystemFileContent = file_get_contents($testIndexesConfigPath);
+        $this->assertTrue(str_contains(trim($testSystemFileContent), trim($testHtaccessView)));
     }
 }

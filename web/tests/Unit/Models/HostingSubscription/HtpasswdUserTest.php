@@ -101,11 +101,11 @@ class HtpasswdUserTest extends TestCase
             'password' => $testCreateHtpasswdUser->password
         ]);
 
+        $this->assertTrue(file_exists($testHtpasswdDirectoryRealPath));
         $testHtpasswdBuild = new HtpasswdBuild(false, $testHtpasswdDirectoryRealPath);
         $testGetHtpasswdRecords = $testHtpasswdBuild->getHtpasswdRecords([]);
         $this->assertNotEmpty($testGetHtpasswdRecords);
         $testHtpasswdView = $testHtpasswdBuild->getHtPasswdFileConfig($testGetHtpasswdRecords);
-        $testHtpasswdBuild->updateSystemFile($testHtpasswdDirectoryRealPath, $testHtpasswdView);
         $testSystemFileContent = file_get_contents($testHtpasswdDirectoryRealPath);
         $this->assertTrue(str_contains(trim($testSystemFileContent), trim($testHtpasswdView)));
     }
@@ -182,7 +182,6 @@ class HtpasswdUserTest extends TestCase
 
         $testCreateHtpasswdUser->password = $testHashedPassword;
         $testCreateHtpasswdUser->save();
-        $testCreateHtpasswdUserId = $testCreateHtpasswdUser->id;
 
         $this->assertIsObject($testCreateHtpasswdUser);
 
@@ -191,14 +190,14 @@ class HtpasswdUserTest extends TestCase
 
         $testCreateHtpasswdUser->delete();
         $this->assertDatabaseMissing('hosting_subscription_htpasswd_users', [
-            'id' => $testCreateHtpasswdUserId
+            'id' => $testCreateHtpasswdUser->id
         ]);
 
+        $this->assertTrue(file_exists($testHtpasswdDirectoryRealPath));
         $testHtpasswdBuild = new HtpasswdBuild(false, $testHtpasswdDirectoryRealPath);
         $testGetHtpasswdRecords = $testHtpasswdBuild->getHtpasswdRecords([]);
         $this->assertEmpty($testGetHtpasswdRecords);
         $testHtpasswdView = $testHtpasswdBuild->getHtPasswdFileConfig($testGetHtpasswdRecords);
-        $testHtpasswdBuild->updateSystemFile($testHtpasswdDirectoryRealPath, $testHtpasswdView);
         $testSystemFileContent = file_get_contents($testHtpasswdDirectoryRealPath);
         $this->assertTrue(str_contains(trim($testSystemFileContent), trim($testHtpasswdView)));
     }

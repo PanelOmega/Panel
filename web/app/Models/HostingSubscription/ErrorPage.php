@@ -36,7 +36,7 @@ class ErrorPage extends Model
                 'path' => $model->path,
                 'content' => $model->content,
             ];
-            $errorPageBuild = new HtaccessBuildErrorPage(false, $hostingSubscription, $errorPageData);
+            $errorPageBuild = new HtaccessBuildErrorPage(false, $hostingSubscription->id, $errorPageData);
             $errorPageBuild->handle();
         };
 

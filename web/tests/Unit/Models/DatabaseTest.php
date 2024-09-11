@@ -1,30 +1,30 @@
 <?php
 
-namespace tests\Unit\Models\HostingSubscription;
+namespace tests\Unit\Models;
 
-use App\Jobs\HtaccessBuildRedirects;
 use App\Models\Customer;
+use App\Models\Database;
 use App\Models\HostingPlan;
-use App\Models\HostingSubscription\Redirect;
-use App\Models\Traits\RedirectTrait;
+use App\OmegaConfig;
 use App\Server\Helpers\PHP;
 use App\Services\HostingSubscription\HostingSubscriptionService;
+use App\UniversalDatabaseExecutor;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Foundation\Testing\TestCase;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Str;
+use Mockery\Mock;
 use Tests\Unit\Traits\HasDocker;
 use Tests\Unit\Traits\HasPHP;
 
-class RedirectTest extends TestCase
+class DatabaseTest extends TestCase
 {
-    use HasDocker;
     use HasPHP;
+    use HasDocker;
     use DatabaseTransactions;
-    use RedirectTrait;
 
-    public function testCreateRedirect()
-    {
+    public function testCreateDatabase() {
         $testCustomerUsername = 'test' . rand(1000, 9999);
         $testCreateCustomer = new Customer();
         $testCreateCustomer->name = $testCustomerUsername;
@@ -39,8 +39,6 @@ class RedirectTest extends TestCase
         $this->installPHP();
 
         $testPhpVersion = PHP::getInstalledPHPVersions()[0]['full'];
-        $this->assertNotEmpty($testPhpVersion);
-
         $testCreateHostingPlan = new HostingPlan();
         $testCreateHostingPlan->name = 'test' . rand(1000, 9999);
         $testCreateHostingPlan->default_server_application_type = 'apache_php';
@@ -65,36 +63,53 @@ class RedirectTest extends TestCase
         $this->assertNotEmpty($testHostingSubscription);
         Session::put('hosting_subscription_id', $testHostingSubscription->id);
 
-        $testCreateRedirectDirectory = '/testDirectory';
-        $testCreateRedirectUrl = 'https://redirect_to_page.com';
-        $testRedirectionsPath = "/home/{$testHostingSubscription->system_username}/public_html/.htaccess";
+        $testDatabaseName = 'testDB' . rand(1000, 9999);
+        $testCreateDatabase = new Database();
+        $testCreateDatabase->hosting_subscription_id = $testHostingSubscription->id;
+        $testCreateDatabase->database_name = $testDatabaseName;
+        $testCreateDatabase->is_remote_database_server = 0;
+        $testCreateDatabase->remote_database_server_id = rand(1, 5);
+        $testCreateDatabase->save();
 
-        $testCreateRedirect = new Redirect();
-        $testCreateRedirect->type = 'permanent_301';
-        $testCreateRedirect->domain = 'all_public_domains';
-        $testCreateRedirect->match_www = 'redirectwithorwithoutwww';
-        $testCreateRedirect->wildcard = true;
-        $testCreateRedirect->directory = $testCreateRedirectDirectory;
-        $testCreateRedirect->regular_expression = '';
-        $testCreateRedirect->redirect_url = $testCreateRedirectUrl;
-        $testCreateRedirect->save();
+        $this->assertIsObject($testCreateDatabase);
 
-        $this->assertIsObject($testCreateRedirect);
-        $this->assertDatabaseHas('hosting_subscription_redirects', [
-            'id' => $testCreateRedirect->id,
-            'hosting_subscription_id' => $testHostingSubscription->id
+        $this->assertDatabaseHas('databases', [
+            'id' => $testCreateDatabase->id,
+            'hosting_subscription_id' => $testHostingSubscription->id,
         ]);
 
-        $this->assertTrue(file_exists($testRedirectionsPath));
-        $testHtaccessBuildRedirects = new HtaccessBuildRedirects(false, $testRedirectionsPath, $testHostingSubscription->id);
-        $testGetRedirectionsData = $testHtaccessBuildRedirects->getRedirectsData();
-        $this->assertNotEmpty($testGetRedirectionsData);
-        $testHtaccessView = $testHtaccessBuildRedirects->getHtAccessFileConfig($testGetRedirectionsData);
-        $testSystemFileContent = file_get_contents($testRedirectionsPath);
-        $this->assertTrue(str_contains(trim($testSystemFileContent), trim($testHtaccessView)));
+        $this->assertTrue($testCreateDatabase->database_name_prefix === $testHostingSubscription->system_username . '_');
+
+        $testUniversalDatabaseExecutor = new UniversalDatabaseExecutor(
+            OmegaConfig::get('MYSQL_HOST', '127.0.0.1'),
+            OmegaConfig::get('MYSQL_PORT', 3306),
+            OmegaConfig::get('MYSQL_ROOT_USERNAME'),
+            OmegaConfig::get('MYSQL_ROOT_PASSWORD'),
+        );
+
+        $this->assertInstanceOf(UniversalDatabaseExecutor::class, $testUniversalDatabaseExecutor);
+
+        $testDatabaseExecName = strtolower($testCreateDatabase->database_name_prefix . Str::slug($testCreateDatabase->database_name, '_'));
+        $testCreateDatabaseResponse = $testUniversalDatabaseExecutor->createDatabase($testDatabaseExecName);
+        $this->assertNotEmpty($testCreateDatabaseResponse);
+        $this->assertTrue(str_contains($testCreateDatabaseResponse['message'], 'database exists'));
+
+        $testReflectExecutor = new \ReflectionClass($testUniversalDatabaseExecutor);
+        $testReflectExecutorMethod = $testReflectExecutor->getMethod('_getDatabaseConnection');
+        $testReflectExecutorMethod->setAccessible(true);
+
+        $testConnection = $testReflectExecutorMethod->invoke($testUniversalDatabaseExecutor);
+
+        $stmt = $testConnection->executeQuery('SHOW GRANTS FOR '. $testHostingSubscription->system_username);
+        $testGrantsArr = $stmt->fetchAllAssociative();
+        $this->assertNotEmpty($testGrantsArr);
+        $testExpectedKey = "Grants for {$testHostingSubscription->system_username}@%";
+        $testExpectedValue = "GRANT ALL PRIVILEGES ON `{$testDatabaseExecName}`.* TO `{$testHostingSubscription->system_username}`@`%`";
+        $this->assertArrayHasKey($testExpectedKey, $testGrantsArr[1]);
+        $this->assertTrue(in_array($testExpectedValue, $testGrantsArr[1]));
     }
 
-    public function testDeleteRedirect() {
+    public function testDeleteDatabase() {
         $testCustomerUsername = 'test' . rand(1000, 9999);
         $testCreateCustomer = new Customer();
         $testCreateCustomer->name = $testCustomerUsername;
@@ -109,8 +124,6 @@ class RedirectTest extends TestCase
         $this->installPHP();
 
         $testPhpVersion = PHP::getInstalledPHPVersions()[0]['full'];
-        $this->assertNotEmpty($testPhpVersion);
-
         $testCreateHostingPlan = new HostingPlan();
         $testCreateHostingPlan->name = 'test' . rand(1000, 9999);
         $testCreateHostingPlan->default_server_application_type = 'apache_php';
@@ -135,35 +148,21 @@ class RedirectTest extends TestCase
         $this->assertNotEmpty($testHostingSubscription);
         Session::put('hosting_subscription_id', $testHostingSubscription->id);
 
-        $testCreateRedirectDirectory = '/testDirectory';
-        $testCreateRedirectUrl = 'https://redirect_to_page.com';
-        $testRedirectionsPath = "/home/{$testHostingSubscription->system_username}/public_html/.htaccess";
+        $testDatabaseName = 'testDB' . rand(1000, 9999);
+        $testCreateDatabase = new Database();
+        $testCreateDatabase->hosting_subscription_id = $testHostingSubscription->id;
+        $testCreateDatabase->database_name = $testDatabaseName;
+        $testCreateDatabase->is_remote_database_server = 0;
+        $testCreateDatabase->remote_database_server_id = rand(1, 5);
+        $testCreateDatabase->save();
 
-        $testCreateRedirect = new Redirect();
-        $testCreateRedirect->type = 'temporary_302';
-        $testCreateRedirect->domain = 'all_public_domains';
-        $testCreateRedirect->directory = $testCreateRedirectDirectory;
-        $testCreateRedirect->regular_expression = '';
-        $testCreateRedirect->redirect_url = $testCreateRedirectUrl;
-        $testCreateRedirect->match_www = 'redirectwithorwithoutwww';
-        $testCreateRedirect->wildcard = true;
-        $testCreateRedirect->save();
+        $this->assertIsObject($testCreateDatabase);
+        $this->assertTrue($testCreateDatabase->database_name_prefix === $testHostingSubscription->system_username . '_');
 
-        $this->assertIsObject($testCreateRedirect);
-
-        $testCreateRedirect->delete();
-        $this->assertDatabaseMissing('hosting_subscription_redirects', [
-            'id' => $testCreateRedirect->id,
-            'hosting_subscription_id' => $testHostingSubscription->id
+        $testCreateDatabase->delete();
+        $this->assertDatabaseMissing('databases', [
+            'id' => $testCreateDatabase->id,
+            'hosting_subscription_id' => $testHostingSubscription->id,
         ]);
-
-        $this->assertTrue(file_exists($testRedirectionsPath));
-        $testHtaccessBuildRedirects = new HtaccessBuildRedirects(false, $testRedirectionsPath, $testHostingSubscription->id);
-        $testGetRedirectionsData = $testHtaccessBuildRedirects->getRedirectsData();
-        $this->assertEmpty($testGetRedirectionsData);
-        $testHtaccessView = $testHtaccessBuildRedirects->getHtAccessFileConfig($testGetRedirectionsData);
-        $this->assertEmpty($testHtaccessView);
-        $testSystemFileContent = file_get_contents($testRedirectionsPath);
-        $this->assertEmpty($testSystemFileContent);
     }
 }

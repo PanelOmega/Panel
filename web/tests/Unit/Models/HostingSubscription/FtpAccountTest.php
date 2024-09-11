@@ -293,12 +293,11 @@ class FtpAccountTest extends TestCase
         ]);
 
         $testVsftpdSystemFilePath = '/etc/vsftpd/user_list';
-        $this->assertFileExists($testVsftpdSystemFilePath);
+        $this->assertTrue(file_exists($testVsftpdSystemFilePath));
 
         $testUpdateFtpUserList = new UpdateVsftpdUserlist();
         $testFtpAccounts = FtpAccount::all();
         $testVsftpdFileView = $testUpdateFtpUserList->getVsftpdFileConfig($testFtpAccounts);
-        $testUpdateFtpUserList->updateSystemFile($testVsftpdSystemFilePath, $testVsftpdFileView);
         $testSystemFileContent = file_get_contents($testVsftpdSystemFilePath);
         $this->assertTrue(str_contains(trim($testSystemFileContent), trim($testVsftpdFileView)));
     }
@@ -367,21 +366,19 @@ class FtpAccountTest extends TestCase
         $testCreateFtpAccount->ftp_quota = true;
         $testCreateFtpAccount->ftp_quota_type = 'unlimited';
         $testCreateFtpAccount->save();
-        $testCreateFtpAccountId = $testCreateFtpAccount->id;
 
         $testCreateFtpAccount->delete();
         $this->assertDatabaseMissing('hosting_subscription_ftp_accounts', [
-            'id' => $testCreateFtpAccountId,
+            'id' => $testCreateFtpAccount->id,
             'hosting_subscription_id' => $testHostingSubscription->id
         ]);
 
         $testVsftpdSystemFilePath = '/etc/vsftpd/user_list';
-        $this->assertFileExists($testVsftpdSystemFilePath);
+        $this->assertTrue(file_exists($testVsftpdSystemFilePath));
         $testUpdateFtpUserList = new UpdateVsftpdUserlist();
         $testFtpAccounts = FtpAccount::all();
         $this->assertEmpty($testFtpAccounts);
         $testVsftpdFileView = $testUpdateFtpUserList->getVsftpdFileConfig($testFtpAccounts);
-        $testUpdateFtpUserList->updateSystemFile($testVsftpdSystemFilePath, $testVsftpdFileView);
         $testSystemFileContent = file_get_contents($testVsftpdSystemFilePath);
         $this->assertTrue(str_contains(trim($testSystemFileContent), trim($testVsftpdFileView)));
     }

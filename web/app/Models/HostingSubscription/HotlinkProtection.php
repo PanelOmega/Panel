@@ -30,11 +30,13 @@ class HotlinkProtection extends Model
 
     public static function hotlinkProtectionBoot()
     {
-        $callback = function ($model) {
+        $callback = function () {
             $hostingSubscription = Customer::getHostingSubscriptionSession();
             $hotlinkProtection = new HtaccessBuildHotlinkProtection(false, $hostingSubscription->id);
             $hotlinkProtection->handle();
         };
-        static::saved($callback);
+        static::created($callback);
+        static::updated($callback);
+        static::deleted($callback);
     }
 }

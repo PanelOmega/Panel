@@ -99,13 +99,16 @@ class DirectoryPrivacyTest extends TestCase
         $testDirectoryPrivacyRealPath = "{$testBaseDir}/$testNewDirectory";
         $this->assertTrue(is_dir($testDirectoryPrivacyRealPath));
         $testHtpasswdDirectoryRealPath = "/home/{$testSystemUsername}/.htpasswd";
-        $this->assertTrue(is_file($testHtpasswdDirectoryRealPath));
+        $this->assertTrue(file_exists($testHtpasswdDirectoryRealPath));
         $testDirectoryPrivacyConfigPath = "$testDirectoryPrivacyRealPath/.htaccess";
-        $this->assertTrue(is_file($testDirectoryPrivacyConfigPath));
+        $this->assertTrue(file_exists($testDirectoryPrivacyConfigPath));
 
-        $testHtaccessBuildDirectoryPrivacy = new HtaccessBuildDirectoryPrivacy(false, $testDirectoryPrivacyRealPath, $testHostingSubscription->id);
+        $testDirectoryPrivacyData = [
+            'protected' => $testCreateDirectoryPrivacy->protected,
+            'label' => $testCreateDirectoryPrivacy->label,
+        ];
+        $testHtaccessBuildDirectoryPrivacy = new HtaccessBuildDirectoryPrivacy(false, $testDirectoryPrivacyRealPath, $testHostingSubscription->id, $testDirectoryPrivacyData);
         $testHtaccessBuildDirectoryPrivacyView = $testHtaccessBuildDirectoryPrivacy->getHtAccessFileConfig($testCreateDirectoryPrivacy->label, $testHtpasswdDirectoryRealPath, $testCreateDirectoryPrivacy->protected);
-        $testHtaccessBuildDirectoryPrivacy->updateSystemFile($testDirectoryPrivacyConfigPath, $testHtaccessBuildDirectoryPrivacyView);
         $testSystemFileContent = file_get_contents($testDirectoryPrivacyConfigPath);
         $this->assertTrue(str_contains(trim($testSystemFileContent), trim($testHtaccessBuildDirectoryPrivacyView)));
     }
@@ -193,14 +196,17 @@ class DirectoryPrivacyTest extends TestCase
         $testDirectoryPrivacyRealPath = "{$testBaseDir}/$testNewDirectory";
         $this->assertTrue(is_dir($testDirectoryPrivacyRealPath));
         $testHtpasswdDirectoryRealPath = "/home/{$testHostingSubscription->system_username}/.htpasswd";
-        $this->assertTrue(is_file($testHtpasswdDirectoryRealPath));
+        $this->assertTrue(file_exists($testHtpasswdDirectoryRealPath));
         $testDirectoryPrivacyConfigPath = "$testDirectoryPrivacyRealPath/.htaccess";
-        $this->assertTrue(is_file($testDirectoryPrivacyConfigPath));
+        $this->assertTrue(file_exists($testDirectoryPrivacyConfigPath));
 
-        $testHtaccessBuildDirectoryPrivacy = new HtaccessBuildDirectoryPrivacy(false, $testDirectoryPrivacyRealPath, $testHostingSubscription->id);
+        $testDirectoryPrivacyData = [
+            'protected' => $testCreateDirectoryPrivacy->protected,
+            'label' => $testCreateDirectoryPrivacy->label,
+        ];
+        $testHtaccessBuildDirectoryPrivacy = new HtaccessBuildDirectoryPrivacy(false, $testDirectoryPrivacyRealPath, $testHostingSubscription->id, $testDirectoryPrivacyData);
         $testHtaccessBuildDirectoryPrivacyView = $testHtaccessBuildDirectoryPrivacy->getHtAccessFileConfig($testCreateDirectoryPrivacy->label, $testHtpasswdDirectoryRealPath, $testCreateDirectoryPrivacy->protected);
         $this->assertEmpty($testHtaccessBuildDirectoryPrivacyView);
-        $testHtaccessBuildDirectoryPrivacy->updateSystemFile($testDirectoryPrivacyConfigPath, $testHtaccessBuildDirectoryPrivacyView);
         $testSystemFileContent = file_get_contents($testDirectoryPrivacyConfigPath);
         $this->assertTrue(str_contains(trim($testSystemFileContent), trim($testHtaccessBuildDirectoryPrivacyView)));
     }
@@ -273,30 +279,28 @@ class DirectoryPrivacyTest extends TestCase
         $testCreateDirectoryPrivacy->path = $testNewDirectory;
         $testCreateDirectoryPrivacy->save();
 
-        $testCreateDirectoryPrivacyId = $testCreateDirectoryPrivacy->id;
         $this->assertIsObject($testCreateDirectoryPrivacy);
 
         $testDirectoryPrivacyRealPath = "{$testBaseDir}/$testNewDirectory";
         $this->assertTrue(is_dir($testDirectoryPrivacyRealPath));
         $testHtpasswdDirectoryRealPath = "/home/{$testHostingSubscription->system_username}/.htpasswd";
-        $this->assertTrue(is_file($testHtpasswdDirectoryRealPath));
+        $this->assertTrue(file_exists($testHtpasswdDirectoryRealPath));
         $testDirectoryPrivacyConfigPath = "$testDirectoryPrivacyRealPath/.htaccess";
-        $this->assertTrue(is_file($testDirectoryPrivacyConfigPath));
+        $this->assertTrue(file_exists($testDirectoryPrivacyConfigPath));
 
         $testCreateDirectoryPrivacy->delete();
         $this->assertDatabaseMissing('hosting_subscription_directory_privacies', [
-            'id' => $testCreateDirectoryPrivacyId,
+            'id' => $testCreateDirectoryPrivacy->id,
             'hosting_subscription_id' => $testHostingSubscription->id
         ]);
 
-        $testFindDeletedDirectoryPrivacy = DirectoryPrivacy::where('id', $testCreateDirectoryPrivacyId)->first();
+        $testFindDeletedDirectoryPrivacy = DirectoryPrivacy::where('id', $testCreateDirectoryPrivacy->id)->first();
         $this->assertNull($testFindDeletedDirectoryPrivacy);
 
-        $testHtaccessBuildDirectoryPrivacy = new HtaccessBuildDirectoryPrivacy(false, $testDirectoryPrivacyRealPath, $testHostingSubscription->id);
+        $testHtaccessBuildDirectoryPrivacy = new HtaccessBuildDirectoryPrivacy(false, $testDirectoryPrivacyRealPath, $testHostingSubscription->id, []);
         $testLabel = $testFindDeletedDirectoryPrivacy->label ?? '';
         $testEnabled = $testFindDeletedDirectoryPrivacy->enabled ?? false;
         $testHtaccessBuildDirectoryPrivacyView = $testHtaccessBuildDirectoryPrivacy->getHtAccessFileConfig($testLabel, $testHtpasswdDirectoryRealPath, $testEnabled);
-        $testHtaccessBuildDirectoryPrivacy->updateSystemFile($testDirectoryPrivacyConfigPath, $testHtaccessBuildDirectoryPrivacyView);
         $testSystemFileContent = file_get_contents($testDirectoryPrivacyConfigPath);
         $this->assertTrue(str_contains(trim($testSystemFileContent), trim($testHtaccessBuildDirectoryPrivacyView)));
     }

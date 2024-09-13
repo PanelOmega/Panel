@@ -23,12 +23,12 @@ class DirectoryPrivacyTest extends TestCase
     use DatabaseTransactions;
 
     public function testCreateDirectoryPrivacy() {
-        $testCustomerUsername = 'test' . rand(1000, 9999);
+        $testCustomerUsername = 'test' . uniqid();
         $testCreateCustomer = new Customer();
         $testCreateCustomer->name = $testCustomerUsername;
         $testCreateCustomer->email = $testCustomerUsername . '@mail.com';
         $testCreateCustomer->username = $testCustomerUsername;
-        $testCreateCustomer->password = time() . rand(1000, 9999);
+        $testCreateCustomer->password = time() . uniqid();
         $testCreateCustomer->save();
         $this->assertDatabaseHas('customers', ['username' => $testCustomerUsername]);
 
@@ -38,7 +38,7 @@ class DirectoryPrivacyTest extends TestCase
 
         $testPhpVersion = PHP::getInstalledPHPVersions()[0]['full'];
         $testCreateHostingPlan = new HostingPlan();
-        $testCreateHostingPlan->name = 'test' . rand(1000, 9999);
+        $testCreateHostingPlan->name = 'test' . uniqid();
         $testCreateHostingPlan->default_server_application_type = 'apache_php';
         $testCreateHostingPlan->default_server_application_settings = [
             'php_version' => $testPhpVersion,
@@ -47,7 +47,7 @@ class DirectoryPrivacyTest extends TestCase
         $testCreateHostingPlan->save();
         $this->assertDatabaseHas('hosting_plans', ['name' => $testCreateHostingPlan->name]);
 
-        $testDomain = 'test' . rand(1000, 9999) . '.demo.panelomega-unit.com';
+        $testDomain = 'test' . uniqid() . '.demo.panelomega-unit.com';
         $hostingSubscriptionService = new HostingSubscriptionService();
         $createResponse = $hostingSubscriptionService->create(
             $testDomain,
@@ -76,9 +76,9 @@ class DirectoryPrivacyTest extends TestCase
         $testIfDirectoryExists = $testQuery->where('directory', $testNewDirectory)->first();
         $this->assertNotEmpty($testIfDirectoryExists);
 
-        $testUsername = 'testUsername' . rand(1000, 9999);
-        $testPassword = 'testPassword' . rand(1000, 9999);
-        $testLabel = 'testLabel' . rand(1000, 9999);
+        $testUsername = 'testUsername' . uniqid();
+        $testPassword = 'testPassword' . uniqid();
+        $testLabel = 'testLabel' . uniqid();
 
         $testCreateDirectoryPrivacy = new DirectoryPrivacy();
         $testCreateDirectoryPrivacy->hosting_subscription_id = $testHostingSubscription->id;
@@ -114,12 +114,12 @@ class DirectoryPrivacyTest extends TestCase
     }
 
     public function testUpdateDirectoryPrivacy() {
-        $testCustomerUsername = 'test' . rand(1000, 9999);
+        $testCustomerUsername = 'test' . uniqid();
         $testCreateCustomer = new Customer();
         $testCreateCustomer->name = $testCustomerUsername;
         $testCreateCustomer->email = $testCustomerUsername . '@mail.com';
         $testCreateCustomer->username = $testCustomerUsername;
-        $testCreateCustomer->password = time() . rand(1000, 9999);
+        $testCreateCustomer->password = time() . uniqid();
         $testCreateCustomer->save();
         $this->assertDatabaseHas('customers', ['username' => $testCustomerUsername]);
 
@@ -129,7 +129,7 @@ class DirectoryPrivacyTest extends TestCase
 
         $testPhpVersion = PHP::getInstalledPHPVersions()[0]['full'];
         $testCreateHostingPlan = new HostingPlan();
-        $testCreateHostingPlan->name = 'test' . rand(1000, 9999);
+        $testCreateHostingPlan->name = 'test' . uniqid();
         $testCreateHostingPlan->default_server_application_type = 'apache_php';
         $testCreateHostingPlan->default_server_application_settings = [
             'php_version' => $testPhpVersion,
@@ -138,7 +138,7 @@ class DirectoryPrivacyTest extends TestCase
         $testCreateHostingPlan->save();
         $this->assertDatabaseHas('hosting_plans', ['name' => $testCreateHostingPlan->name]);
 
-        $testDomain = 'test' . rand(1000, 9999) . '.demo.panelomega-unit.com';
+        $testDomain = 'test' . uniqid() . '.demo.panelomega-unit.com';
         $hostingSubscriptionService = new HostingSubscriptionService();
         $createResponse = $hostingSubscriptionService->create(
             $testDomain,
@@ -167,9 +167,9 @@ class DirectoryPrivacyTest extends TestCase
         $testIfDirectoryExists = $testQuery->where('directory', $testNewDirectory)->first();
         $this->assertNotEmpty($testIfDirectoryExists);
 
-        $testUsername = 'testUsername' . rand(1000, 9999);
-        $testPassword = 'testPassword' . rand(1000, 9999);
-        $testLabel = 'testLabel' . rand(1000, 9999);
+        $testUsername = 'testUsername' . uniqid();
+        $testPassword = 'testPassword' . uniqid();
+        $testLabel = 'testLabel' . uniqid();
 
         $testCreateDirectoryPrivacy = new DirectoryPrivacy();
         $testCreateDirectoryPrivacy->hosting_subscription_id = $testHostingSubscription->id;
@@ -212,12 +212,12 @@ class DirectoryPrivacyTest extends TestCase
     }
 
     public function testDeleteDirectoryPrivacy() {
-        $testCustomerUsername = 'test' . rand(1000, 9999);
+        $testCustomerUsername = 'test' . uniqid();
         $testCreateCustomer = new Customer();
         $testCreateCustomer->name = $testCustomerUsername;
         $testCreateCustomer->email = $testCustomerUsername . '@mail.com';
         $testCreateCustomer->username = $testCustomerUsername;
-        $testCreateCustomer->password = time() . rand(1000, 9999);
+        $testCreateCustomer->password = time() . uniqid();
         $testCreateCustomer->save();
         $this->assertDatabaseHas('customers', ['username' => $testCustomerUsername]);
 
@@ -227,7 +227,7 @@ class DirectoryPrivacyTest extends TestCase
 
         $testPhpVersion = PHP::getInstalledPHPVersions()[0]['full'];
         $testCreateHostingPlan = new HostingPlan();
-        $testCreateHostingPlan->name = 'test' . rand(1000, 9999);
+        $testCreateHostingPlan->name = 'test' . uniqid();
         $testCreateHostingPlan->default_server_application_type = 'apache_php';
         $testCreateHostingPlan->default_server_application_settings = [
             'php_version' => $testPhpVersion,
@@ -236,7 +236,7 @@ class DirectoryPrivacyTest extends TestCase
         $testCreateHostingPlan->save();
         $this->assertDatabaseHas('hosting_plans', ['name' => $testCreateHostingPlan->name]);
 
-        $testDomain = 'test' . rand(1000, 9999) . '.demo.panelomega-unit.com';
+        $testDomain = 'test' . uniqid() . '.demo.panelomega-unit.com';
         $hostingSubscriptionService = new HostingSubscriptionService();
         $createResponse = $hostingSubscriptionService->create(
             $testDomain,
@@ -265,9 +265,9 @@ class DirectoryPrivacyTest extends TestCase
         $testIfDirectoryExists = $testQuery->where('directory', $testNewDirectory)->first();
         $this->assertNotEmpty($testIfDirectoryExists);
 
-        $testUsername = 'testUsername' . rand(1000, 9999);
-        $testPassword = 'testPassword' . rand(1000, 9999);
-        $testLabel = 'testLabel' . rand(1000, 9999);
+        $testUsername = 'testUsername' . uniqid();
+        $testPassword = 'testPassword' . uniqid();
+        $testLabel = 'testLabel' . uniqid();
 
         $testCreateDirectoryPrivacy = new DirectoryPrivacy();
         $testCreateDirectoryPrivacy->hosting_subscription_id = $testHostingSubscription->id;

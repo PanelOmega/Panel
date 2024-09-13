@@ -4,6 +4,7 @@ namespace tests\Unit\Models;
 
 use App\Models\Customer;
 use App\Models\Database;
+use App\Models\DatabaseUser;
 use App\Models\HostingPlan;
 use App\OmegaConfig;
 use App\Server\Helpers\PHP;
@@ -17,13 +18,13 @@ use Illuminate\Support\Str;
 use Tests\Unit\Traits\HasDocker;
 use Tests\Unit\Traits\HasPHP;
 
-class DatabaseTest extends TestCase
+class DatabaseUserTest extends TestCase
 {
     use HasPHP;
     use HasDocker;
     use DatabaseTransactions;
 
-    public function testCreateDatabase() {
+    public function testCreateDatabaseUser() {
         $testCustomerUsername = 'test' . uniqid();
         $testCreateCustomer = new Customer();
         $testCreateCustomer->name = $testCustomerUsername;
@@ -62,7 +63,7 @@ class DatabaseTest extends TestCase
         $this->assertNotEmpty($testHostingSubscription);
         Session::put('hosting_subscription_id', $testHostingSubscription->id);
 
-        $testDatabaseName = 'testDB' . uniqid();
+        $testDatabaseName = 'testDB' . rand(1000, 9999);
         $testCreateDatabase = new Database();
         $testCreateDatabase->hosting_subscription_id = $testHostingSubscription->id;
         $testCreateDatabase->database_name = $testDatabaseName;
@@ -71,19 +72,33 @@ class DatabaseTest extends TestCase
         $testCreateDatabase->save();
 
         $this->assertIsObject($testCreateDatabase);
-
         $this->assertDatabaseHas('databases', [
             'id' => $testCreateDatabase->id,
             'hosting_subscription_id' => $testHostingSubscription->id,
         ]);
 
-        $this->assertEquals($testCreateDatabase->database_name_prefix, $testHostingSubscription->system_username . '_');
+        $testDatabaseUserName = 'testDBUser' . rand(1000, 9999) . '.test';
+        $testDatabaseUserPassword = 'testDBPassword' . rand(1000, 9999);
+        $testCreateDatabaseUser = new DatabaseUser();
+        $testCreateDatabaseUser->database_id = $testCreateDatabase->id;
+        $testCreateDatabaseUser->username = $testDatabaseUserName;
+        $testCreateDatabaseUser->password = $testDatabaseUserPassword;
+        $testCreateDatabaseUser->save();
+
+        $this->assertIsObject($testCreateDatabaseUser);
+        $this->assertDatabaseHas('database_users', [
+            'id' => $testCreateDatabaseUser->id,
+            'database_id' => $testCreateDatabase->id,
+        ]);
+
+        $this->assertEquals($testCreateDatabaseUser->username_prefix, $testHostingSubscription->system_username . '_');
 
         $testUniversalDatabaseExecutor = new UniversalDatabaseExecutor(
             OmegaConfig::get('MYSQL_HOST', '127.0.0.1'),
             OmegaConfig::get('MYSQL_PORT', 3306),
             OmegaConfig::get('MYSQL_ROOT_USERNAME'),
             OmegaConfig::get('MYSQL_ROOT_PASSWORD'),
+            $testCreateDatabaseUser->database->database_name_prefix . $testCreateDatabaseUser->database->database_name
         );
 
         $this->assertInstanceOf(UniversalDatabaseExecutor::class, $testUniversalDatabaseExecutor);
@@ -105,7 +120,7 @@ class DatabaseTest extends TestCase
         $this->assertTrue(in_array($testExpectedValue, $testGrantsArr[1]));
     }
 
-    public function testDeleteDatabase() {
+    public function testDeleteDatabaseUser() {
         $testCustomerUsername = 'test' . uniqid();
         $testCreateCustomer = new Customer();
         $testCreateCustomer->name = $testCustomerUsername;
@@ -144,7 +159,7 @@ class DatabaseTest extends TestCase
         $this->assertNotEmpty($testHostingSubscription);
         Session::put('hosting_subscription_id', $testHostingSubscription->id);
 
-        $testDatabaseName = 'testDB' . uniqid();
+        $testDatabaseName = 'testDB' . rand(1000, 9999);
         $testCreateDatabase = new Database();
         $testCreateDatabase->hosting_subscription_id = $testHostingSubscription->id;
         $testCreateDatabase->database_name = $testDatabaseName;
@@ -153,12 +168,25 @@ class DatabaseTest extends TestCase
         $testCreateDatabase->save();
 
         $this->assertIsObject($testCreateDatabase);
-        $this->assertTrue($testCreateDatabase->database_name_prefix === $testHostingSubscription->system_username . '_');
-
-        $testCreateDatabase->delete();
-        $this->assertDatabaseMissing('databases', [
+        $this->assertDatabaseHas('databases', [
             'id' => $testCreateDatabase->id,
             'hosting_subscription_id' => $testHostingSubscription->id,
+        ]);
+
+        $testDatabaseUserName = 'testDBUser' . rand(1000, 9999) . '.test';
+        $testDatabaseUserPassword = 'testDBPassword' . rand(1000, 9999);
+        $testCreateDatabaseUser = new DatabaseUser();
+        $testCreateDatabaseUser->database_id = $testCreateDatabase->id;
+        $testCreateDatabaseUser->username = $testDatabaseUserName;
+        $testCreateDatabaseUser->password = $testDatabaseUserPassword;
+        $testCreateDatabaseUser->save();
+
+        $this->assertIsObject($testCreateDatabaseUser);
+
+        $testCreateDatabaseUser->delete();
+        $this->assertDatabaseMissing('database_users', [
+            'id' => $testCreateDatabaseUser->id,
+            'database_id' => $testCreateDatabase->id,
         ]);
     }
 }

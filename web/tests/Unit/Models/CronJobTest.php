@@ -2,9 +2,8 @@
 
 namespace tests\Unit\Models;
 
-use App\Jobs\Fail2BanConfigBuild;
+use App\Models\CronJob;
 use App\Models\Customer;
-use App\Models\Fail2BanWhitelistedIp;
 use App\Models\HostingPlan;
 use App\Server\Helpers\PHP;
 use App\Services\HostingSubscription\HostingSubscriptionService;
@@ -15,13 +14,13 @@ use Illuminate\Support\Facades\Session;
 use Tests\Unit\Traits\HasDocker;
 use Tests\Unit\Traits\HasPHP;
 
-class Fail2BanWhitelistedIpTest extends TestCase
+class CronJobTest extends TestCase
 {
-    use HasDocker;
     use HasPHP;
+    use HasDocker;
     use DatabaseTransactions;
 
-    public function testCreateFail2BanWhitelistedIp() {
+    public function testCreateCronJob() {
         $testCustomerUsername = 'test' . uniqid();
         $testCreateCustomer = new Customer();
         $testCreateCustomer->name = $testCustomerUsername;
@@ -60,28 +59,31 @@ class Fail2BanWhitelistedIpTest extends TestCase
         $this->assertNotEmpty($testHostingSubscription);
         Session::put('hosting_subscription_id', $testHostingSubscription->id);
 
-        $testIp = '123.10.20.30';
-        $testComment = 'testComment';
+        $testSchedule = '0 0 1 * *';
+        $testCommand = '/usr/bin/php /var/www/html/project/scripts/test_script.php';
+        $testUsername = $testHostingSubscription->system_username;
 
-        $testCreateWhitelistIp = new Fail2BanWhitelistedIp();
-        $testCreateWhitelistIp->hosting_subscription_id = $testHostingSubscription->id;
-        $testCreateWhitelistIp->ip = $testIp;
-        $testCreateWhitelistIp->comment = $testComment;
-        $testCreateWhitelistIp->save();
+        $testCreateCronJob = new CronJob();
+        $testCreateCronJob->schedule = $testSchedule;
+        $testCreateCronJob->command = $testCommand;
+        $testCreateCronJob->user = $testUsername;
+        $testCreateCronJob->save();
 
-        $this->assertIsObject($testCreateWhitelistIp);
-        $this->assertDatabaseHas('fail2_ban_whitelisted_ips', [
-            'id' => $testCreateWhitelistIp->id,
-            'hosting_subscription_id' => $testHostingSubscription->id
+        $this->assertIsObject($testCreateCronJob);
+        $this->assertDatabaseHas('cron_jobs', [
+            'id' => $testCreateCronJob->id,
+            'hosting_subscription_id' => $testHostingSubscription->id,
         ]);
 
-        $testPathToJailLocal = '/etc/fail2ban/jail.local';
-        $this->assertTrue(file_exists($testPathToJailLocal));
-        $testSystemFileContent = file_get_contents($testPathToJailLocal);
-        $this->assertTrue(str_contains($testSystemFileContent, $testIp));
+        $testCommand = "crontab -u {$testCreateCronJob->user} -l";
+        $testCheckOnJob = shell_exec($testCommand);
+
+        $this->assertTrue(str_contains($testCheckOnJob, $testCreateCronJob->user));
+        $this->assertTrue(str_contains($testCheckOnJob, $testCreateCronJob->schedule));
+        $this->assertTrue(str_contains($testCheckOnJob, $testCreateCronJob->command));
     }
 
-    public function testUpdateFail2BanWhitelistedIp() {
+    public function testUpdateCronJob() {
         $testCustomerUsername = 'test' . uniqid();
         $testCreateCustomer = new Customer();
         $testCreateCustomer->name = $testCustomerUsername;
@@ -120,34 +122,38 @@ class Fail2BanWhitelistedIpTest extends TestCase
         $this->assertNotEmpty($testHostingSubscription);
         Session::put('hosting_subscription_id', $testHostingSubscription->id);
 
-        $testIp = '123.10.20.30';
-        $testComment = 'testComment';
+        $testSchedule = '0 0 1 * *';
+        $testCommand = '/usr/bin/php /var/www/html/project/scripts/test_script.php';
+        $testUsername = $testHostingSubscription->system_username;
 
-        $testCreateWhitelistIp = new Fail2BanWhitelistedIp();
-        $testCreateWhitelistIp->hosting_subscription_id = $testHostingSubscription->id;
-        $testCreateWhitelistIp->ip = $testIp;
-        $testCreateWhitelistIp->comment = $testComment;
-        $testCreateWhitelistIp->save();
+        $testCreateCronJob = new CronJob();
+        $testCreateCronJob->schedule = $testSchedule;
+        $testCreateCronJob->command = $testCommand;
+        $testCreateCronJob->user = $testUsername;
+        $testCreateCronJob->save();
 
-        $this->assertIsObject($testCreateWhitelistIp);
-        $this->assertDatabaseHas('fail2_ban_whitelisted_ips', [
-            'id' => $testCreateWhitelistIp->id,
-            'hosting_subscription_id' => $testHostingSubscription->id
+        $this->assertIsObject($testCreateCronJob);
+        $this->assertDatabaseHas('cron_jobs', [
+            'id' => $testCreateCronJob->id,
+            'hosting_subscription_id' => $testHostingSubscription->id,
         ]);
 
-        $testUpdateIp = '123.100.200.255';
-        $testCreateWhitelistIp->update([
-            'ip' => $testUpdateIp
+        $testScheduleUpdate = '* 9-17 * * 1-5';
+        $testCommandUpdate = '/usr/bin/php /var/www/html/project/scriptUpdate/test_script_update.php';
+        $testCreateCronJob->update([
+            'schedule' => $testScheduleUpdate,
+            'command' => $testCommandUpdate,
         ]);
 
-        $testPathToJailLocal = '/etc/fail2ban/jail.local';
-        $this->assertTrue(file_exists($testPathToJailLocal));
-        $testSystemFileContent = file_get_contents($testPathToJailLocal);
-        $this->assertTrue(str_contains($testSystemFileContent, $testUpdateIp));
-        $this->assertFalse(str_contains($testSystemFileContent, $testIp));
+        $testCommand = "crontab -u {$testCreateCronJob->user} -l";
+        $testCheckOnJob = shell_exec($testCommand);
+
+        $this->assertTrue(str_contains($testCheckOnJob, $testCreateCronJob->user));
+        $this->assertTrue(str_contains($testCheckOnJob, $testScheduleUpdate));
+        $this->assertTrue(str_contains($testCheckOnJob, $testCommandUpdate));
     }
 
-    public function testDeleteFail2BanWhitelistedIp() {
+    public function testDeleteCronJob() {
         $testCustomerUsername = 'test' . uniqid();
         $testCreateCustomer = new Customer();
         $testCreateCustomer->name = $testCustomerUsername;
@@ -186,26 +192,29 @@ class Fail2BanWhitelistedIpTest extends TestCase
         $this->assertNotEmpty($testHostingSubscription);
         Session::put('hosting_subscription_id', $testHostingSubscription->id);
 
-        $testIp = '123.10.20.30';
-        $testComment = 'testComment';
+        $testSchedule = '0 0 1 * *';
+        $testCommand = '/usr/bin/php /var/www/html/project/scripts/test_script.php';
+        $testUsername = $testHostingSubscription->system_username;
 
-        $testCreateWhitelistIp = new Fail2BanWhitelistedIp();
-        $testCreateWhitelistIp->hosting_subscription_id = $testHostingSubscription->id;
-        $testCreateWhitelistIp->ip = $testIp;
-        $testCreateWhitelistIp->comment = $testComment;
-        $testCreateWhitelistIp->save();
+        $testCreateCronJob = new CronJob();
+        $testCreateCronJob->schedule = $testSchedule;
+        $testCreateCronJob->command = $testCommand;
+        $testCreateCronJob->user = $testUsername;
+        $testCreateCronJob->save();
 
-        $this->assertIsObject($testCreateWhitelistIp);
-        $testCreateWhitelistIp->delete();
+        $this->assertIsObject($testCreateCronJob);
 
-        $this->assertDatabaseMissing('fail2_ban_whitelisted_ips', [
-            'id' => $testHostingSubscription->id,
-            'hosting_subscription_id' => $testHostingSubscription->id
+        $testCreateCronJob->delete();
+        $this->assertDatabaseMissing('cron_jobs', [
+            'id' => $testCreateCronJob->id,
+            'hosting_subscription_id' => $testHostingSubscription->id,
         ]);
 
-        $testPathToJailLocal = '/etc/fail2ban/jail.local';
-        $this->assertTrue(file_exists($testPathToJailLocal));
-        $testSystemFileContent = file_get_contents($testPathToJailLocal);
-        $this->assertFalse(str_contains($testSystemFileContent, $testIp));
+        $testCommand = "crontab -u {$testCreateCronJob->user} -l";
+        $testCheckOnJob = shell_exec($testCommand);
+
+        $this->assertTrue(str_contains($testCheckOnJob, $testCreateCronJob->user));
+        $this->assertFalse(str_contains($testCheckOnJob, $testCreateCronJob->schedule));
+        $this->assertFalse(str_contains($testCheckOnJob, $testCreateCronJob->command));
     }
 }

@@ -29,7 +29,7 @@ class HostingPlanTest extends TestCase
         ];
 
         $testCreateHostingPlan = new HostingPlan();
-        $testCreateHostingPlan->name = 'test' . rand(1000, 9999);
+        $testCreateHostingPlan->name = 'test' . uniqid();
         $testCreateHostingPlan->description = 'testDescription';
         $testCreateHostingPlan->disk_space = 1000;
         $testCreateHostingPlan->bandwidth = 1000;
@@ -80,7 +80,7 @@ class HostingPlanTest extends TestCase
         ];
 
         $testCreateHostingPlan = new HostingPlan();
-        $testCreateHostingPlan->name = 'test' . rand(1000, 9999);
+        $testCreateHostingPlan->name = 'test' . uniqid();
         $testCreateHostingPlan->description = 'testDescription';
         $testCreateHostingPlan->disk_space = 1000;
         $testCreateHostingPlan->bandwidth = 1000;
@@ -147,7 +147,7 @@ class HostingPlanTest extends TestCase
         ];
 
         $testCreateHostingPlan = new HostingPlan();
-        $testCreateHostingPlan->name = 'test' . rand(1000, 9999);
+        $testCreateHostingPlan->name = 'test' . uniqid();
         $testCreateHostingPlan->description = 'testDescription';
         $testCreateHostingPlan->disk_space = 1000;
         $testCreateHostingPlan->bandwidth = 1000;

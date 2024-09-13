@@ -25,12 +25,12 @@ class RedirectTest extends TestCase
 
     public function testCreateRedirect()
     {
-        $testCustomerUsername = 'test' . rand(1000, 9999);
+        $testCustomerUsername = 'test' . uniqid();
         $testCreateCustomer = new Customer();
         $testCreateCustomer->name = $testCustomerUsername;
         $testCreateCustomer->email = $testCustomerUsername . '@mail.com';
         $testCreateCustomer->username = $testCustomerUsername;
-        $testCreateCustomer->password = time() . rand(1000, 9999);
+        $testCreateCustomer->password = time() . uniqid();
         $testCreateCustomer->save();
         $this->assertDatabaseHas('customers', ['username' => $testCustomerUsername]);
 
@@ -42,7 +42,7 @@ class RedirectTest extends TestCase
         $this->assertNotEmpty($testPhpVersion);
 
         $testCreateHostingPlan = new HostingPlan();
-        $testCreateHostingPlan->name = 'test' . rand(1000, 9999);
+        $testCreateHostingPlan->name = 'test' . uniqid();
         $testCreateHostingPlan->default_server_application_type = 'apache_php';
         $testCreateHostingPlan->default_server_application_settings = [
             'php_version' => $testPhpVersion,
@@ -51,7 +51,7 @@ class RedirectTest extends TestCase
         $testCreateHostingPlan->save();
         $this->assertDatabaseHas('hosting_plans', ['name' => $testCreateHostingPlan->name]);
 
-        $testDomain = 'test' . rand(1000, 9999) . '.demo.panelomega-unit.com';
+        $testDomain = 'test' . uniqid() . '.demo.panelomega-unit.com';
         $hostingSubscriptionService = new HostingSubscriptionService();
         $createResponse = $hostingSubscriptionService->create(
             $testDomain,
@@ -95,12 +95,12 @@ class RedirectTest extends TestCase
     }
 
     public function testDeleteRedirect() {
-        $testCustomerUsername = 'test' . rand(1000, 9999);
+        $testCustomerUsername = 'test' . uniqid();
         $testCreateCustomer = new Customer();
         $testCreateCustomer->name = $testCustomerUsername;
         $testCreateCustomer->email = $testCustomerUsername . '@mail.com';
         $testCreateCustomer->username = $testCustomerUsername;
-        $testCreateCustomer->password = time() . rand(1000, 9999);
+        $testCreateCustomer->password = time() . uniqid();
         $testCreateCustomer->save();
         $this->assertDatabaseHas('customers', ['username' => $testCustomerUsername]);
 
@@ -112,7 +112,7 @@ class RedirectTest extends TestCase
         $this->assertNotEmpty($testPhpVersion);
 
         $testCreateHostingPlan = new HostingPlan();
-        $testCreateHostingPlan->name = 'test' . rand(1000, 9999);
+        $testCreateHostingPlan->name = 'test' . uniqid();
         $testCreateHostingPlan->default_server_application_type = 'apache_php';
         $testCreateHostingPlan->default_server_application_settings = [
             'php_version' => $testPhpVersion,
@@ -121,7 +121,7 @@ class RedirectTest extends TestCase
         $testCreateHostingPlan->save();
         $this->assertDatabaseHas('hosting_plans', ['name' => $testCreateHostingPlan->name]);
 
-        $testDomain = 'test' . rand(1000, 9999) . '.demo.panelomega-unit.com';
+        $testDomain = 'test' . uniqid() . '.demo.panelomega-unit.com';
         $hostingSubscriptionService = new HostingSubscriptionService();
         $createResponse = $hostingSubscriptionService->create(
             $testDomain,

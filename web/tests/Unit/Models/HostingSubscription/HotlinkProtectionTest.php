@@ -24,12 +24,12 @@ class HotlinkProtectionTest extends TestCase
     use DatabaseTransactions;
 
     public function testCreateHotlinkProtection() {
-        $testCustomerUsername = 'test' . rand(1000, 9999);
+        $testCustomerUsername = 'test' . uniqid();
         $testCreateCustomer = new Customer();
         $testCreateCustomer->name = $testCustomerUsername;
         $testCreateCustomer->email = $testCustomerUsername . '@mail.com';
         $testCreateCustomer->username = $testCustomerUsername;
-        $testCreateCustomer->password = time() . rand(1000, 9999);
+        $testCreateCustomer->password = time() . uniqid();
         $testCreateCustomer->save();
         $this->assertDatabaseHas('customers', ['username' => $testCustomerUsername]);
 
@@ -41,7 +41,7 @@ class HotlinkProtectionTest extends TestCase
         $this->assertNotEmpty($testPhpVersion);
 
         $testCreateHostingPlan = new HostingPlan();
-        $testCreateHostingPlan->name = 'test' . rand(1000, 9999);
+        $testCreateHostingPlan->name = 'test' . uniqid();
         $testCreateHostingPlan->default_server_application_type = 'apache_php';
         $testCreateHostingPlan->default_server_application_settings = [
             'php_version' => $testPhpVersion,
@@ -50,7 +50,7 @@ class HotlinkProtectionTest extends TestCase
         $testCreateHostingPlan->save();
         $this->assertDatabaseHas('hosting_plans', ['name' => $testCreateHostingPlan->name]);
 
-        $testDomain = 'test' . rand(1000, 9999) . '.demo.panelomega-unit.com';
+        $testDomain = 'test' . uniqid() . '.demo.panelomega-unit.com';
         $hostingSubscriptionService = new HostingSubscriptionService();
         $createResponse = $hostingSubscriptionService->create(
             $testDomain,
@@ -93,12 +93,12 @@ class HotlinkProtectionTest extends TestCase
     }
 
     public function testDeleteHotlinkProtection() {
-        $testCustomerUsername = 'test' . rand(1000, 9999);
+        $testCustomerUsername = 'test' . uniqid();
         $testCreateCustomer = new Customer();
         $testCreateCustomer->name = $testCustomerUsername;
         $testCreateCustomer->email = $testCustomerUsername . '@mail.com';
         $testCreateCustomer->username = $testCustomerUsername;
-        $testCreateCustomer->password = time() . rand(1000, 9999);
+        $testCreateCustomer->password = time() . uniqid();
         $testCreateCustomer->save();
         $this->assertDatabaseHas('customers', ['username' => $testCustomerUsername]);
 
@@ -110,7 +110,7 @@ class HotlinkProtectionTest extends TestCase
         $this->assertNotEmpty($testPhpVersion);
 
         $testCreateHostingPlan = new HostingPlan();
-        $testCreateHostingPlan->name = 'test' . rand(1000, 9999);
+        $testCreateHostingPlan->name = 'test' . uniqid();
         $testCreateHostingPlan->default_server_application_type = 'apache_php';
         $testCreateHostingPlan->default_server_application_settings = [
             'php_version' => $testPhpVersion,
@@ -119,7 +119,7 @@ class HotlinkProtectionTest extends TestCase
         $testCreateHostingPlan->save();
         $this->assertDatabaseHas('hosting_plans', ['name' => $testCreateHostingPlan->name]);
 
-        $testDomain = 'test' . rand(1000, 9999) . '.demo.panelomega-unit.com';
+        $testDomain = 'test' . uniqid() . '.demo.panelomega-unit.com';
         $hostingSubscriptionService = new HostingSubscriptionService();
         $createResponse = $hostingSubscriptionService->create(
             $testDomain,
@@ -164,13 +164,13 @@ class HotlinkProtectionTest extends TestCase
         $this->assertTrue(str_contains(trim($testSystemFileContent), trim($testHtaccessView)));
     }
 
-    public function testEnableHotlinkProtection() {
-        $testCustomerUsername = 'test' . rand(1000, 9999);
+    public function testUpdateHotlinkProtectionEnable() {
+        $testCustomerUsername = 'test' . uniqid();
         $testCreateCustomer = new Customer();
         $testCreateCustomer->name = $testCustomerUsername;
         $testCreateCustomer->email = $testCustomerUsername . '@mail.com';
         $testCreateCustomer->username = $testCustomerUsername;
-        $testCreateCustomer->password = time() . rand(1000, 9999);
+        $testCreateCustomer->password = time() . uniqid();
         $testCreateCustomer->save();
         $this->assertDatabaseHas('customers', ['username' => $testCustomerUsername]);
 
@@ -182,7 +182,7 @@ class HotlinkProtectionTest extends TestCase
         $this->assertNotEmpty($testPhpVersion);
 
         $testCreateHostingPlan = new HostingPlan();
-        $testCreateHostingPlan->name = 'test' . rand(1000, 9999);
+        $testCreateHostingPlan->name = 'test' . uniqid();
         $testCreateHostingPlan->default_server_application_type = 'apache_php';
         $testCreateHostingPlan->default_server_application_settings = [
             'php_version' => $testPhpVersion,
@@ -191,7 +191,7 @@ class HotlinkProtectionTest extends TestCase
         $testCreateHostingPlan->save();
         $this->assertDatabaseHas('hosting_plans', ['name' => $testCreateHostingPlan->name]);
 
-        $testDomain = 'test' . rand(1000, 9999) . '.demo.panelomega-unit.com';
+        $testDomain = 'test' . uniqid() . '.demo.panelomega-unit.com';
         $hostingSubscriptionService = new HostingSubscriptionService();
         $createResponse = $hostingSubscriptionService->create(
             $testDomain,
@@ -238,13 +238,13 @@ class HotlinkProtectionTest extends TestCase
         $this->assertTrue(str_contains($testSystemFileContent, $testHtaccessView));
     }
 
-    public function testDisableHotlinkProtection() {
-        $testCustomerUsername = 'test' . rand(1000, 9999);
+    public function testUpdateHotlinkProtectionDisable() {
+        $testCustomerUsername = 'test' . uniqid();
         $testCreateCustomer = new Customer();
         $testCreateCustomer->name = $testCustomerUsername;
         $testCreateCustomer->email = $testCustomerUsername . '@mail.com';
         $testCreateCustomer->username = $testCustomerUsername;
-        $testCreateCustomer->password = time() . rand(1000, 9999);
+        $testCreateCustomer->password = time() . uniqid();
         $testCreateCustomer->save();
         $this->assertDatabaseHas('customers', ['username' => $testCustomerUsername]);
 
@@ -256,7 +256,7 @@ class HotlinkProtectionTest extends TestCase
         $this->assertNotEmpty($testPhpVersion);
 
         $testCreateHostingPlan = new HostingPlan();
-        $testCreateHostingPlan->name = 'test' . rand(1000, 9999);
+        $testCreateHostingPlan->name = 'test' . uniqid();
         $testCreateHostingPlan->default_server_application_type = 'apache_php';
         $testCreateHostingPlan->default_server_application_settings = [
             'php_version' => $testPhpVersion,
@@ -265,7 +265,7 @@ class HotlinkProtectionTest extends TestCase
         $testCreateHostingPlan->save();
         $this->assertDatabaseHas('hosting_plans', ['name' => $testCreateHostingPlan->name]);
 
-        $testDomain = 'test' . rand(1000, 9999) . '.demo.panelomega-unit.com';
+        $testDomain = 'test' . uniqid() . '.demo.panelomega-unit.com';
         $hostingSubscriptionService = new HostingSubscriptionService();
         $createResponse = $hostingSubscriptionService->create(
             $testDomain,

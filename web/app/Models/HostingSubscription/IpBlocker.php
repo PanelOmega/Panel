@@ -19,6 +19,8 @@ class IpBlocker extends Model
         'ending_ip',
     ];
 
+    protected $table = 'hosting_subscription_ip_blockers';
+
     public static function boot()
     {
         parent::boot();

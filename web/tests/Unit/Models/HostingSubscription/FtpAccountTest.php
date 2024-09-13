@@ -24,12 +24,12 @@ class FtpAccountTest extends TestCase
     use DatabaseTransactions;
 
     public function testCreateFtpAccount() {
-        $testCustomerUsername = 'test' . rand(1000, 9999);
+        $testCustomerUsername = 'test' . uniqid();
         $testCreateCustomer = new Customer();
         $testCreateCustomer->name = $testCustomerUsername;
         $testCreateCustomer->email = $testCustomerUsername . '@mail.com';
         $testCreateCustomer->username = $testCustomerUsername;
-        $testCreateCustomer->password = time() . rand(1000, 9999);
+        $testCreateCustomer->password = time() . uniqid();
         $testCreateCustomer->save();
         $this->assertDatabaseHas('customers', ['username' => $testCustomerUsername]);
 
@@ -41,7 +41,7 @@ class FtpAccountTest extends TestCase
         $this->assertNotEmpty($testPhpVersion);
 
         $testCreateHostingPlan = new HostingPlan();
-        $testCreateHostingPlan->name = 'test' . rand(1000, 9999);
+        $testCreateHostingPlan->name = 'test' . uniqid();
         $testCreateHostingPlan->default_server_application_type = 'apache_php';
         $testCreateHostingPlan->default_server_application_settings = [
             'php_version' => $testPhpVersion,
@@ -50,7 +50,7 @@ class FtpAccountTest extends TestCase
         $testCreateHostingPlan->save();
         $this->assertDatabaseHas('hosting_plans', ['name' => $testCreateHostingPlan->name]);
 
-        $testDomain = 'test' . rand(1000, 9999) . '.demo.panelomega-unit.com';
+        $testDomain = 'test' . uniqid() . '.demo.panelomega-unit.com';
         $hostingSubscriptionService = new HostingSubscriptionService();
         $createResponse = $hostingSubscriptionService->create(
             $testDomain,
@@ -64,10 +64,10 @@ class FtpAccountTest extends TestCase
         $this->assertNotEmpty($testHostingSubscription);
         Session::put('hosting_subscription_id', $testHostingSubscription->id);
 
-        $testFtpUsername = 'test' . rand(1000, 9999);
+        $testFtpUsername = 'test' . uniqid();
         $testFtpUsername = Str::slug($testFtpUsername, '_');
-        $testFtpUsernamePrefix = 'testPrefix' . rand(1000, 9999);
-        $testFtpPassword = 'test' . rand(1000, 9999);
+        $testFtpUsernamePrefix = 'testPrefix' . uniqid();
+        $testFtpPassword = 'test' . uniqid();
 
         $testSystemUsername = $testHostingSubscription->system_username;
         $testBaseDir = "/home/{$testSystemUsername}/public_html";
@@ -103,9 +103,9 @@ class FtpAccountTest extends TestCase
         $this->assertEquals($testCreateFtpAccount->id, $testResult->id);
 
 
-        $testLinuxUsername = 'test' . rand(1000, 9999);
+        $testLinuxUsername = 'test' . uniqid();
         $testLinuxUsername = Str::slug($testLinuxUsername, '_');
-        $testLinuxPassword = 'test' . rand(1000, 9999);
+        $testLinuxPassword = 'test' . uniqid();
         $testLinuxUsernamePrefix = $testSystemUsername . '_';
         $testLinuxUserBaseDir = "/home/{$testSystemUsername}";
 
@@ -139,12 +139,12 @@ class FtpAccountTest extends TestCase
     }
 
     public function testDeleteFtpAccount() {
-        $testCustomerUsername = 'test' . rand(1000, 9999);
+        $testCustomerUsername = 'test' . uniqid();
         $testCreateCustomer = new Customer();
         $testCreateCustomer->name = $testCustomerUsername;
         $testCreateCustomer->email = $testCustomerUsername . '@mail.com';
         $testCreateCustomer->username = $testCustomerUsername;
-        $testCreateCustomer->password = time() . rand(1000, 9999);
+        $testCreateCustomer->password = time() . uniqid();
         $testCreateCustomer->save();
         $this->assertDatabaseHas('customers', ['username' => $testCustomerUsername]);
 
@@ -156,7 +156,7 @@ class FtpAccountTest extends TestCase
         $this->assertNotEmpty($testPhpVersion);
 
         $testCreateHostingPlan = new HostingPlan();
-        $testCreateHostingPlan->name = 'test' . rand(1000, 9999);
+        $testCreateHostingPlan->name = 'test' . uniqid();
         $testCreateHostingPlan->default_server_application_type = 'apache_php';
         $testCreateHostingPlan->default_server_application_settings = [
             'php_version' => $testPhpVersion,
@@ -165,7 +165,7 @@ class FtpAccountTest extends TestCase
         $testCreateHostingPlan->save();
         $this->assertDatabaseHas('hosting_plans', ['name' => $testCreateHostingPlan->name]);
 
-        $testDomain = 'test' . rand(1000, 9999) . '.demo.panelomega-unit.com';
+        $testDomain = 'test' . uniqid() . '.demo.panelomega-unit.com';
         $hostingSubscriptionService = new HostingSubscriptionService();
         $createResponse = $hostingSubscriptionService->create(
             $testDomain,
@@ -179,9 +179,9 @@ class FtpAccountTest extends TestCase
         $this->assertNotEmpty($testHostingSubscription);
         Session::put('hosting_subscription_id', $testHostingSubscription->id);
 
-        $testFtpUsername = 'test' . rand(1000, 9999);
-        $testFtpUsernamePrefix = 'testPrefix' . rand(1000, 9999);
-        $testFtpPassword = 'test' . rand(1000, 9999);
+        $testFtpUsername = 'test' . uniqid();
+        $testFtpUsernamePrefix = 'testPrefix' . uniqid();
+        $testFtpPassword = 'test' . uniqid();
 
         $testSystemUsername = $testHostingSubscription->system_username;
         $testBaseDir = "/home/{$testSystemUsername}/public_html";
@@ -222,12 +222,12 @@ class FtpAccountTest extends TestCase
     }
 
     public function testUpdateVsftpdUserlistCreate() {
-        $testCustomerUsername = 'test' . rand(1000, 9999);
+        $testCustomerUsername = 'test' . uniqid();
         $testCreateCustomer = new Customer();
         $testCreateCustomer->name = $testCustomerUsername;
         $testCreateCustomer->email = $testCustomerUsername . '@mail.com';
         $testCreateCustomer->username = $testCustomerUsername;
-        $testCreateCustomer->password = time() . rand(1000, 9999);
+        $testCreateCustomer->password = time() . uniqid();
         $testCreateCustomer->save();
         $this->assertDatabaseHas('customers', ['username' => $testCustomerUsername]);
 
@@ -239,7 +239,7 @@ class FtpAccountTest extends TestCase
         $this->assertNotEmpty($testPhpVersion);
 
         $testCreateHostingPlan = new HostingPlan();
-        $testCreateHostingPlan->name = 'test' . rand(1000, 9999);
+        $testCreateHostingPlan->name = 'test' . uniqid();
         $testCreateHostingPlan->default_server_application_type = 'apache_php';
         $testCreateHostingPlan->default_server_application_settings = [
             'php_version' => $testPhpVersion,
@@ -248,7 +248,7 @@ class FtpAccountTest extends TestCase
         $testCreateHostingPlan->save();
         $this->assertDatabaseHas('hosting_plans', ['name' => $testCreateHostingPlan->name]);
 
-        $testDomain = 'test' . rand(1000, 9999) . '.demo.panelomega-unit.com';
+        $testDomain = 'test' . uniqid() . '.demo.panelomega-unit.com';
         $hostingSubscriptionService = new HostingSubscriptionService();
         $createResponse = $hostingSubscriptionService->create(
             $testDomain,
@@ -262,9 +262,9 @@ class FtpAccountTest extends TestCase
         $this->assertNotEmpty($testHostingSubscription);
         Session::put('hosting_subscription_id', $testHostingSubscription->id);
 
-        $testFtpUsername = 'test' . rand(1000, 9999);
-        $testFtpUsernamePrefix = 'testPrefix' . rand(1000, 9999);
-        $testFtpPassword = 'test' . rand(1000, 9999);
+        $testFtpUsername = 'test' . uniqid();
+        $testFtpUsernamePrefix = 'testPrefix' . uniqid();
+        $testFtpPassword = 'test' . uniqid();
 
         $testSystemUsername = $testHostingSubscription->system_username;
         $testBaseDir = "/home/{$testSystemUsername}/public_html";
@@ -303,12 +303,12 @@ class FtpAccountTest extends TestCase
     }
 
     public function testUpdateVsftpdUserlistDelete() {
-        $testCustomerUsername = 'test' . rand(1000, 9999);
+        $testCustomerUsername = 'test' . uniqid();
         $testCreateCustomer = new Customer();
         $testCreateCustomer->name = $testCustomerUsername;
         $testCreateCustomer->email = $testCustomerUsername . '@mail.com';
         $testCreateCustomer->username = $testCustomerUsername;
-        $testCreateCustomer->password = time() . rand(1000, 9999);
+        $testCreateCustomer->password = time() . uniqid();
         $testCreateCustomer->save();
         $this->assertDatabaseHas('customers', ['username' => $testCustomerUsername]);
 
@@ -320,7 +320,7 @@ class FtpAccountTest extends TestCase
         $this->assertNotEmpty($testPhpVersion);
 
         $testCreateHostingPlan = new HostingPlan();
-        $testCreateHostingPlan->name = 'test' . rand(1000, 9999);
+        $testCreateHostingPlan->name = 'test' . uniqid();
         $testCreateHostingPlan->default_server_application_type = 'apache_php';
         $testCreateHostingPlan->default_server_application_settings = [
             'php_version' => $testPhpVersion,
@@ -329,7 +329,7 @@ class FtpAccountTest extends TestCase
         $testCreateHostingPlan->save();
         $this->assertDatabaseHas('hosting_plans', ['name' => $testCreateHostingPlan->name]);
 
-        $testDomain = 'test' . rand(1000, 9999) . '.demo.panelomega-unit.com';
+        $testDomain = 'test' . uniqid() . '.demo.panelomega-unit.com';
         $hostingSubscriptionService = new HostingSubscriptionService();
         $createResponse = $hostingSubscriptionService->create(
             $testDomain,
@@ -343,9 +343,9 @@ class FtpAccountTest extends TestCase
         $this->assertNotEmpty($testHostingSubscription);
         Session::put('hosting_subscription_id', $testHostingSubscription->id);
 
-        $testFtpUsername = 'test' . rand(1000, 9999);
-        $testFtpUsernamePrefix = 'testPrefix' . rand(1000, 9999);
-        $testFtpPassword = 'test' . rand(1000, 9999);
+        $testFtpUsername = 'test' . uniqid();
+        $testFtpUsernamePrefix = 'testPrefix' . uniqid();
+        $testFtpPassword = 'test' . uniqid();
 
         $testSystemUsername = $testHostingSubscription->system_username;
         $testBaseDir = "/home/{$testSystemUsername}/public_html";

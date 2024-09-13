@@ -6,7 +6,7 @@ use App\Jobs\ApacheBuild;
 use App\Models\Customer;
 use App\Models\Domain;
 use App\Models\HostingPlan;
-use App\Models\HostingSubscription;
+use App\Models\HostinngSubscription;
 use App\Server\SupportedApplicationTypes;
 use Tests\TestCase;
 

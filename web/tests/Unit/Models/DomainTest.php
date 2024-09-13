@@ -23,12 +23,12 @@ class DomainTest extends TestCase
     use DatabaseTransactions;
 
     public function testCreateDomain() {
-        $testCustomerUsername = 'test' . rand(1000, 9999);
+        $testCustomerUsername = 'test' . uniqid();
         $testCreateCustomer = new Customer();
         $testCreateCustomer->name = $testCustomerUsername;
         $testCreateCustomer->email = $testCustomerUsername . '@mail.com';
         $testCreateCustomer->username = $testCustomerUsername;
-        $testCreateCustomer->password = time() . rand(1000, 9999);
+        $testCreateCustomer->password = time() . uniqid();
         $testCreateCustomer->save();
         $this->assertDatabaseHas('customers', ['username' => $testCustomerUsername]);
 
@@ -38,7 +38,7 @@ class DomainTest extends TestCase
 
         $testPhpVersion = PHP::getInstalledPHPVersions()[0]['full'];
         $testCreateHostingPlan = new HostingPlan();
-        $testCreateHostingPlan->name = 'test' . rand(1000, 9999);
+        $testCreateHostingPlan->name = 'test' . uniqid();
         $testCreateHostingPlan->default_server_application_type = 'apache_php';
         $testCreateHostingPlan->default_server_application_settings = [
             'php_version' => $testPhpVersion,
@@ -47,7 +47,7 @@ class DomainTest extends TestCase
         $testCreateHostingPlan->save();
         $this->assertDatabaseHas('hosting_plans', ['name' => $testCreateHostingPlan->name]);
 
-        $testDomain = 'test' . rand(1000, 9999) . '.demo.panelomega-unit.com';
+        $testDomain = 'test' . uniqid() . '.demo.panelomega-unit.com';
         $hostingSubscriptionService = new HostingSubscriptionService();
         $createResponse = $hostingSubscriptionService->create(
             $testDomain,
@@ -78,12 +78,12 @@ class DomainTest extends TestCase
     }
 
     public function testUpdateDomain() {
-        $testCustomerUsername = 'test' . rand(1000, 9999);
+        $testCustomerUsername = 'test' . uniqid();
         $testCreateCustomer = new Customer();
         $testCreateCustomer->name = $testCustomerUsername;
         $testCreateCustomer->email = $testCustomerUsername . '@mail.com';
         $testCreateCustomer->username = $testCustomerUsername;
-        $testCreateCustomer->password = time() . rand(1000, 9999);
+        $testCreateCustomer->password = time() . uniqid();
         $testCreateCustomer->save();
         $this->assertDatabaseHas('customers', ['username' => $testCustomerUsername]);
 
@@ -93,7 +93,7 @@ class DomainTest extends TestCase
 
         $testPhpVersion = PHP::getInstalledPHPVersions()[0]['full'];
         $testCreateHostingPlan = new HostingPlan();
-        $testCreateHostingPlan->name = 'test' . rand(1000, 9999);
+        $testCreateHostingPlan->name = 'test' . uniqid();
         $testCreateHostingPlan->default_server_application_type = 'apache_php';
         $testCreateHostingPlan->default_server_application_settings = [
             'php_version' => $testPhpVersion,
@@ -102,7 +102,7 @@ class DomainTest extends TestCase
         $testCreateHostingPlan->save();
         $this->assertDatabaseHas('hosting_plans', ['name' => $testCreateHostingPlan->name]);
 
-        $testDomain = 'test' . rand(1000, 9999) . '.demo.panelomega-unit.com';
+        $testDomain = 'test' . uniqid() . '.demo.panelomega-unit.com';
         $hostingSubscriptionService = new HostingSubscriptionService();
         $createResponse = $hostingSubscriptionService->create(
             $testDomain,
@@ -126,7 +126,7 @@ class DomainTest extends TestCase
             'hosting_subscription_id' => $testHostingSubscription->id
         ]);
 
-        $testUpdateDomain = 'test' . rand(1000, 9999) . '.demo.panelomega-update.com';
+        $testUpdateDomain = 'test' . uniqid() . '.demo.panelomega-update.com';
         $testCreateDomain->update([
            'domain' => $testUpdateDomain
         ]);
@@ -140,12 +140,12 @@ class DomainTest extends TestCase
     }
 
     public function testDeleteDomain() {
-        $testCustomerUsername = 'test' . rand(1000, 9999);
+        $testCustomerUsername = 'test' . uniqid();
         $testCreateCustomer = new Customer();
         $testCreateCustomer->name = $testCustomerUsername;
         $testCreateCustomer->email = $testCustomerUsername . '@mail.com';
         $testCreateCustomer->username = $testCustomerUsername;
-        $testCreateCustomer->password = time() . rand(1000, 9999);
+        $testCreateCustomer->password = time() . uniqid();
         $testCreateCustomer->save();
         $this->assertDatabaseHas('customers', ['username' => $testCustomerUsername]);
 
@@ -155,7 +155,7 @@ class DomainTest extends TestCase
 
         $testPhpVersion = PHP::getInstalledPHPVersions()[0]['full'];
         $testCreateHostingPlan = new HostingPlan();
-        $testCreateHostingPlan->name = 'test' . rand(1000, 9999);
+        $testCreateHostingPlan->name = 'test' . uniqid();
         $testCreateHostingPlan->default_server_application_type = 'apache_php';
         $testCreateHostingPlan->default_server_application_settings = [
             'php_version' => $testPhpVersion,
@@ -164,7 +164,7 @@ class DomainTest extends TestCase
         $testCreateHostingPlan->save();
         $this->assertDatabaseHas('hosting_plans', ['name' => $testCreateHostingPlan->name]);
 
-        $testDomain = 'test' . rand(1000, 9999) . '.demo.panelomega-unit.com';
+        $testDomain = 'test' . uniqid() . '.demo.panelomega-unit.com';
         $hostingSubscriptionService = new HostingSubscriptionService();
         $createResponse = $hostingSubscriptionService->create(
             $testDomain,

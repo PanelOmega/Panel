@@ -12,9 +12,9 @@ class UserTest extends TestCase
     use DatabaseTransactions;
 
     public function testCreateUser() {
-        $testUsername = 'test' . rand(1000, 9999);
-        $testEmail = 'test' . rand(1000, 9999) . '@test.com';
-        $testPassword = 'test' . rand(1000, 9999);
+        $testUsername = 'test' . uniqid();
+        $testEmail = 'test' . uniqid() . '@test.com';
+        $testPassword = 'test' . uniqid();
 
         $testCreateUser = new User();
         $testCreateUser->name = $testUsername;
@@ -31,9 +31,9 @@ class UserTest extends TestCase
     }
 
     public function testUpdateUser() {
-        $testUsername = 'test' . rand(1000, 9999);
-        $testEmail = 'test' . rand(1000, 9999) . '@test.com';
-        $testPassword = 'test' . rand(1000, 9999);
+        $testUsername = 'test' . uniqid();
+        $testEmail = 'test' . uniqid() . '@test.com';
+        $testPassword = 'test' . uniqid();
 
         $testCreateUser = new User();
         $testCreateUser->name = $testUsername;
@@ -46,8 +46,8 @@ class UserTest extends TestCase
             'id' => $testCreateUser->id
         ]);
 
-        $testUpdateEmail = 'test' . rand(1000, 9999) . '@updated.com';
-        $testUpdatePassword = 'test' . rand(1000, 9999) . 'updated';
+        $testUpdateEmail = 'test' . uniqid() . '@updated.com';
+        $testUpdatePassword = 'test' . uniqid() . 'updated';
         $testCreateUser->update([
             'email' => $testUpdateEmail,
             'password' => $testUpdatePassword
@@ -58,9 +58,9 @@ class UserTest extends TestCase
     }
 
     public function testDeleteUser() {
-        $testUsername = 'test' . rand(1000, 9999);
-        $testEmail = 'test' . rand(1000, 9999) . '@test.com';
-        $testPassword = 'test' . rand(1000, 9999);
+        $testUsername = 'test' . uniqid();
+        $testEmail = 'test' . uniqid() . '@test.com';
+        $testPassword = 'test' . uniqid();
 
         $testCreateUser = new User();
         $testCreateUser->name = $testUsername;

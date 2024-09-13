@@ -19,12 +19,12 @@ class FtpConnectionTest extends TestCase
     use HasPHP;
 
     public function testSuccessfulLoginFtpConnection() {
-        $testCustomerUsername = 'test' . rand(1000, 9999);
+        $testCustomerUsername = 'test' . uniqid();
         $testCreateCustomer = new Customer();
         $testCreateCustomer->name = $testCustomerUsername;
         $testCreateCustomer->email = $testCustomerUsername . '@mail.com';
         $testCreateCustomer->username = $testCustomerUsername;
-        $testCreateCustomer->password = time() . rand(1000, 9999);
+        $testCreateCustomer->password = time() . uniqid();
         $testCreateCustomer->save();
         $this->assertDatabaseHas('customers', ['username' => $testCustomerUsername]);
 
@@ -36,7 +36,7 @@ class FtpConnectionTest extends TestCase
         $this->assertNotEmpty($testPhpVersion);
 
         $testCreateHostingPlan = new HostingPlan();
-        $testCreateHostingPlan->name = 'test' . rand(1000, 9999);
+        $testCreateHostingPlan->name = 'test' . uniqid();
         $testCreateHostingPlan->default_server_application_type = 'apache_php';
         $testCreateHostingPlan->default_server_application_settings = [
             'php_version' => $testPhpVersion,
@@ -45,7 +45,7 @@ class FtpConnectionTest extends TestCase
         $testCreateHostingPlan->save();
         $this->assertDatabaseHas('hosting_plans', ['name' => $testCreateHostingPlan->name]);
 
-        $testDomain = 'test' . rand(1000, 9999) . '.demo.panelomega-unit.com';
+        $testDomain = 'test' . uniqid() . '.demo.panelomega-unit.com';
         $hostingSubscriptionService = new HostingSubscriptionService();
         $createResponse = $hostingSubscriptionService->create(
             $testDomain,
@@ -61,7 +61,7 @@ class FtpConnectionTest extends TestCase
 
         $testFtpServer = 'test.panelomega-ftp.com';
         $ftpUsername = $testHostingSubscription->system_username;
-        $ftpPassword = 'test' . rand(1000, 9999);
+        $ftpPassword = 'test' . uniqid();
 
         $testFtpConnection = ftp_connect($testFtpServer);
         $this->assertTrue($testFtpConnection);
@@ -79,12 +79,12 @@ class FtpConnectionTest extends TestCase
     }
 
     public function testFailedLoginFtpConnection() {
-        $testCustomerUsername = 'test' . rand(1000, 9999);
+        $testCustomerUsername = 'test' . uniqid();
         $testCreateCustomer = new Customer();
         $testCreateCustomer->name = $testCustomerUsername;
         $testCreateCustomer->email = $testCustomerUsername . '@mail.com';
         $testCreateCustomer->username = $testCustomerUsername;
-        $testCreateCustomer->password = time() . rand(1000, 9999);
+        $testCreateCustomer->password = time() . uniqid();
         $testCreateCustomer->save();
         $this->assertDatabaseHas('customers', ['username' => $testCustomerUsername]);
 
@@ -96,7 +96,7 @@ class FtpConnectionTest extends TestCase
         $this->assertNotEmpty($testPhpVersion);
 
         $testCreateHostingPlan = new HostingPlan();
-        $testCreateHostingPlan->name = 'test' . rand(1000, 9999);
+        $testCreateHostingPlan->name = 'test' . uniqid();
         $testCreateHostingPlan->default_server_application_type = 'apache_php';
         $testCreateHostingPlan->default_server_application_settings = [
             'php_version' => $testPhpVersion,
@@ -105,7 +105,7 @@ class FtpConnectionTest extends TestCase
         $testCreateHostingPlan->save();
         $this->assertDatabaseHas('hosting_plans', ['name' => $testCreateHostingPlan->name]);
 
-        $testDomain = 'test' . rand(1000, 9999) . '.demo.panelomega-unit.com';
+        $testDomain = 'test' . uniqid() . '.demo.panelomega-unit.com';
         $hostingSubscriptionService = new HostingSubscriptionService();
         $createResponse = $hostingSubscriptionService->create(
             $testDomain,
@@ -120,8 +120,8 @@ class FtpConnectionTest extends TestCase
         Session::put('hosting_subscription_id', $testHostingSubscription->id);
 
         $testFtpServer = 'test.panelomega-ftp.com';
-        $ftpUsername = 'test' . rand(1000, 9999);
-        $ftpPassword = 'test' . rand(1000, 9999);
+        $ftpUsername = 'test' . uniqid();
+        $ftpPassword = 'test' . uniqid();
 
         $testFtpConnection = ftp_connect($testFtpServer);
         $this->assertTrue($testFtpConnection);
@@ -134,12 +134,12 @@ class FtpConnectionTest extends TestCase
     }
 
     public function testDisconnectFtpConnection() {
-        $testCustomerUsername = 'test' . rand(1000, 9999);
+        $testCustomerUsername = 'test' . uniqid();
         $testCreateCustomer = new Customer();
         $testCreateCustomer->name = $testCustomerUsername;
         $testCreateCustomer->email = $testCustomerUsername . '@mail.com';
         $testCreateCustomer->username = $testCustomerUsername;
-        $testCreateCustomer->password = time() . rand(1000, 9999);
+        $testCreateCustomer->password = time() . uniqid();
         $testCreateCustomer->save();
         $this->assertDatabaseHas('customers', ['username' => $testCustomerUsername]);
 
@@ -151,7 +151,7 @@ class FtpConnectionTest extends TestCase
         $this->assertNotEmpty($testPhpVersion);
 
         $testCreateHostingPlan = new HostingPlan();
-        $testCreateHostingPlan->name = 'test' . rand(1000, 9999);
+        $testCreateHostingPlan->name = 'test' . uniqid();
         $testCreateHostingPlan->default_server_application_type = 'apache_php';
         $testCreateHostingPlan->default_server_application_settings = [
             'php_version' => $testPhpVersion,
@@ -160,7 +160,7 @@ class FtpConnectionTest extends TestCase
         $testCreateHostingPlan->save();
         $this->assertDatabaseHas('hosting_plans', ['name' => $testCreateHostingPlan->name]);
 
-        $testDomain = 'test' . rand(1000, 9999) . '.demo.panelomega-unit.com';
+        $testDomain = 'test' . uniqid() . '.demo.panelomega-unit.com';
         $hostingSubscriptionService = new HostingSubscriptionService();
         $createResponse = $hostingSubscriptionService->create(
             $testDomain,
@@ -176,7 +176,7 @@ class FtpConnectionTest extends TestCase
 
         $testFtpServer = 'test.panelomega-ftp.com';
         $ftpUsername = $testHostingSubscription->system_username;
-        $ftpPassword = 'test' . rand(1000, 9999);
+        $ftpPassword = 'test' . uniqid();
 
         $testFtpConnection = ftp_connect($testFtpServer);
         $this->assertTrue($testFtpConnection);

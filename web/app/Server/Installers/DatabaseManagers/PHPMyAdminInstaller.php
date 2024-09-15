@@ -39,8 +39,8 @@ class PHPMyAdminInstaller
             $commands[] = 'dnf install phpmyadmin -y';
         }
 
-        // ln -s /usr/share/phpMyAdmin/ /var/www/html/phpmyadmin
-
+         $commands[] = 'yes | cp /usr/local/omega/web/app/Server/Installers/DatabaseManagers/SSO/omega-sso.php.dist /usr/share/phpMyAdmin/omega-sso.php';
+         $commands[] = 'mkdir -p /usr/local/omega/data/sessions';
 
         $shellFileContent = '';
         foreach ($commands as $command) {

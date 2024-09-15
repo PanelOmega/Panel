@@ -29,10 +29,10 @@ class IpBlocker extends Model
 
     public static function ipBlockerBoot()
     {
-        $hostingSubscription = Customer::getHostingSubscriptionSession();
-        $ipBlockerPath = "/home/{$hostingSubscription->system_username}/public_html/.htaccess";
+        $callback = function () {
+            $hostingSubscription = Customer::getHostingSubscriptionSession();
+            $ipBlockerPath = "/home/{$hostingSubscription->system_username}/public_html/.htaccess";
 
-        $callback = function () use ($hostingSubscription, $ipBlockerPath) {
             $htaccessBuild = new HtaccessBuildIpBlocker(false, $ipBlockerPath, $hostingSubscription->id);
             $htaccessBuild->handle();
         };
@@ -107,7 +107,6 @@ class IpBlocker extends Model
                 ];
             }
         }
-
         return self::filterIpBlockersArr($ipBlockerRecords);
     }
 

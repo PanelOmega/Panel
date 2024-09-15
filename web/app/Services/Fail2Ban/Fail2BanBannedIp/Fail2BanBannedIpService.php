@@ -14,23 +14,18 @@ class Fail2BanBannedIpService
             'database' => '/var/lib/fail2ban/fail2ban.sqlite3',
         ]);
 
-        $getJails = $connection->table('bips')->get();
         $latestBan = $connection->table('bips')
             ->orderBy('timeofban', 'desc')
             ->first();
 
-        $latestBan = json_decode(json_encode($latestBan), true);
-
-        $latestBannedIp = [
-            'ip' => $latestBan['ip'],
+        return $latestBan ? [
+            'ip' => $latestBan->ip,
             'status' => 'BANNED',
-            'service' => $latestBan['jail'],
-            'ban_count' => $latestBan['bancount'],
-            'ban_date' => Carbon::createFromTimestamp($latestBan['timeofban']),
-            'ban_time' => $latestBan['bantime'],
-        ];
-
-        return $latestBannedIp;
+            'service' => $latestBan->jail,
+            'ban_count' => $latestBan->bancount,
+            'ban_date' => Carbon::createFromTimestamp($latestBan->timeofban),
+            'ban_time' => $latestBan->bantime,
+        ] : [];
     }
 
     public static function unBanIP(string $ip, string $service): bool

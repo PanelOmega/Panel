@@ -23,12 +23,12 @@ class IpBlockerTest extends TestCase
 
     public function testPrepareIpBlockerRecordsSingleIpPartial()
     {
-        $testCustomerUsername = 'test' . rand(1000, 9999);
+        $testCustomerUsername = 'test' . uniqid();
         $testCreateCustomer = new Customer();
         $testCreateCustomer->name = $testCustomerUsername;
         $testCreateCustomer->email = $testCustomerUsername . '@mail.com';
         $testCreateCustomer->username = $testCustomerUsername;
-        $testCreateCustomer->password = time() . rand(1000, 9999);
+        $testCreateCustomer->password = time() . uniqid();
         $testCreateCustomer->save();
         $this->assertDatabaseHas('customers', ['username' => $testCustomerUsername]);
 
@@ -41,7 +41,7 @@ class IpBlockerTest extends TestCase
         $this->assertNotEmpty($testPhpVersion);
 
         $testCreateHostingPlan = new HostingPlan();
-        $testCreateHostingPlan->name = 'test' . rand(1000, 9999);
+        $testCreateHostingPlan->name = 'test' . uniqid();
         $testCreateHostingPlan->default_server_application_type = 'apache_php';
         $testCreateHostingPlan->default_server_application_settings = [
             'php_version' => $testPhpVersion,
@@ -50,7 +50,7 @@ class IpBlockerTest extends TestCase
         $testCreateHostingPlan->save();
         $this->assertDatabaseHas('hosting_plans', ['name' => $testCreateHostingPlan->name]);
 
-        $testDomain = 'test' . rand(1000, 9999) . '.demo.panelomega-unit.com';
+        $testDomain = 'test' . uniqid() . '.demo.panelomega-unit.com';
         $hostingSubscriptionService = new HostingSubscriptionService();
         $createResponse = $hostingSubscriptionService->create(
             $testDomain,
@@ -65,7 +65,7 @@ class IpBlockerTest extends TestCase
         Session::put('hosting_subscription_id', $testHostingSubscription->id);
 
         $record = ['blocked_ip' => '192.'];
-        $result = \App\Models\HostingSubscription\IpBlocker::prepareIpBlockerRecords($record, $testHostingSubscription->id);
+        $result = IpBlocker::prepareIpBlockerRecords($record, $testHostingSubscription->id);
 
         $this->assertArrayHasKey('hosting_subscription_id', $result[0]);
         $this->assertArrayHasKey('blocked_ip', $result[0]);
@@ -105,17 +105,17 @@ class IpBlockerTest extends TestCase
 
         $testSystemFileContent = file_get_contents($testIpBlockedPath);
         $this->assertNotEmpty($testSystemFileContent);
-        $this->assertNotFalse($this->assertStringContainsString($testHtAccessView, $testSystemFileContent, false));
+        $this->assertTrue(str_contains(trim($testSystemFileContent), trim($testHtAccessView)));
     }
 
     public function testPrepareIpBlockerRecordsSingleIp()
     {
-        $testCustomerUsername = 'test' . rand(1000, 9999);
+        $testCustomerUsername = 'test' . uniqid();
         $testCreateCustomer = new Customer();
         $testCreateCustomer->name = $testCustomerUsername;
         $testCreateCustomer->email = $testCustomerUsername . '@mail.com';
         $testCreateCustomer->username = $testCustomerUsername;
-        $testCreateCustomer->password = time() . rand(1000, 9999);
+        $testCreateCustomer->password = time() . uniqid();
         $testCreateCustomer->save();
         $this->assertDatabaseHas('customers', ['username' => $testCustomerUsername]);
 
@@ -128,7 +128,7 @@ class IpBlockerTest extends TestCase
         $this->assertNotEmpty($testPhpVersion);
 
         $testCreateHostingPlan = new HostingPlan();
-        $testCreateHostingPlan->name = 'test' . rand(1000, 9999);
+        $testCreateHostingPlan->name = 'test' . uniqid();
         $testCreateHostingPlan->default_server_application_type = 'apache_php';
         $testCreateHostingPlan->default_server_application_settings = [
             'php_version' => $testPhpVersion,
@@ -137,7 +137,7 @@ class IpBlockerTest extends TestCase
         $testCreateHostingPlan->save();
         $this->assertDatabaseHas('hosting_plans', ['name' => $testCreateHostingPlan->name]);
 
-        $testDomain = 'test' . rand(1000, 9999) . '.demo.panelomega-unit.com';
+        $testDomain = 'test' . uniqid() . '.demo.panelomega-unit.com';
         $hostingSubscriptionService = new HostingSubscriptionService();
         $createResponse = $hostingSubscriptionService->create(
             $testDomain,
@@ -152,7 +152,7 @@ class IpBlockerTest extends TestCase
         Session::put('hosting_subscription_id', $testHostingSubscription->id);
 
         $record = ['blocked_ip' => '192.168.0.1'];
-        $result = \App\Models\HostingSubscription\IpBlocker::prepareIpBlockerRecords($record, $testHostingSubscription->id);
+        $result = IpBlocker::prepareIpBlockerRecords($record, $testHostingSubscription->id);
         $this->assertArrayHasKey('hosting_subscription_id', $result[0]);
         $this->assertArrayHasKey('blocked_ip', $result[0]);
         $this->assertArrayHasKey('beginning_ip', $result[0]);
@@ -190,17 +190,17 @@ class IpBlockerTest extends TestCase
 
         $testSystemFileContent = file_get_contents($testIpBlockedPath);
         $this->assertNotEmpty($testSystemFileContent);
-        $this->assertNotFalse($this->assertStringContainsString($testHtAccessView, $testSystemFileContent, false));
+        $this->assertTrue(str_contains(trim($testSystemFileContent), trim($testHtAccessView)));
     }
 
     public function testPrepareIpBlockerRecordsIpRange()
     {
-        $testCustomerUsername = 'test' . rand(1000, 9999);
+        $testCustomerUsername = 'test' . uniqid();
         $testCreateCustomer = new Customer();
         $testCreateCustomer->name = $testCustomerUsername;
         $testCreateCustomer->email = $testCustomerUsername . '@mail.com';
         $testCreateCustomer->username = $testCustomerUsername;
-        $testCreateCustomer->password = time() . rand(1000, 9999);
+        $testCreateCustomer->password = time() . uniqid();
         $testCreateCustomer->save();
         $this->assertDatabaseHas('customers', ['username' => $testCustomerUsername]);
 
@@ -213,7 +213,7 @@ class IpBlockerTest extends TestCase
         $this->assertNotEmpty($testPhpVersion);
 
         $testCreateHostingPlan = new HostingPlan();
-        $testCreateHostingPlan->name = 'test' . rand(1000, 9999);
+        $testCreateHostingPlan->name = 'test' . uniqid();
         $testCreateHostingPlan->default_server_application_type = 'apache_php';
         $testCreateHostingPlan->default_server_application_settings = [
             'php_version' => $testPhpVersion,
@@ -222,7 +222,7 @@ class IpBlockerTest extends TestCase
         $testCreateHostingPlan->save();
         $this->assertDatabaseHas('hosting_plans', ['name' => $testCreateHostingPlan->name]);
 
-        $testDomain = 'test' . rand(1000, 9999) . '.demo.panelomega-unit.com';
+        $testDomain = 'test' . uniqid() . '.demo.panelomega-unit.com';
         $hostingSubscriptionService = new HostingSubscriptionService();
         $createResponse = $hostingSubscriptionService->create(
             $testDomain,
@@ -279,17 +279,17 @@ class IpBlockerTest extends TestCase
 
         $testSystemFileContent = file_get_contents($testIpBlockedPath);
         $this->assertNotEmpty($testSystemFileContent);
-        $this->assertNotFalse($this->assertStringContainsString($testHtAccessView, $testSystemFileContent, false));
+        $this->assertTrue(str_contains(trim($testSystemFileContent), trim($testHtAccessView)));
     }
 
     public function testPrepareIpBlockerRecordsIpCidrBlock()
     {
-        $testCustomerUsername = 'test' . rand(1000, 9999);
+        $testCustomerUsername = 'test' . uniqid();
         $testCreateCustomer = new Customer();
         $testCreateCustomer->name = $testCustomerUsername;
         $testCreateCustomer->email = $testCustomerUsername . '@mail.com';
         $testCreateCustomer->username = $testCustomerUsername;
-        $testCreateCustomer->password = time() . rand(1000, 9999);
+        $testCreateCustomer->password = time() . uniqid();
         $testCreateCustomer->save();
         $this->assertDatabaseHas('customers', ['username' => $testCustomerUsername]);
 
@@ -302,7 +302,7 @@ class IpBlockerTest extends TestCase
         $this->assertNotEmpty($testPhpVersion);
 
         $testCreateHostingPlan = new HostingPlan();
-        $testCreateHostingPlan->name = 'test' . rand(1000, 9999);
+        $testCreateHostingPlan->name = 'test' . uniqid();
         $testCreateHostingPlan->default_server_application_type = 'apache_php';
         $testCreateHostingPlan->default_server_application_settings = [
             'php_version' => $testPhpVersion,
@@ -311,7 +311,7 @@ class IpBlockerTest extends TestCase
         $testCreateHostingPlan->save();
         $this->assertDatabaseHas('hosting_plans', ['name' => $testCreateHostingPlan->name]);
 
-        $testDomain = 'test' . rand(1000, 9999) . '.demo.panelomega-unit.com';
+        $testDomain = 'test' . uniqid() . '.demo.panelomega-unit.com';
         $hostingSubscriptionService = new HostingSubscriptionService();
         $createResponse = $hostingSubscriptionService->create(
             $testDomain,
@@ -368,6 +368,6 @@ class IpBlockerTest extends TestCase
 
         $testSystemFileContent = file_get_contents($testIpBlockedPath);
         $this->assertNotEmpty($testSystemFileContent);
-        $this->assertNotFalse($this->assertStringContainsString($testHtAccessView, $testSystemFileContent, false));
+        $this->assertTrue(str_contains(trim($testSystemFileContent), trim($testHtAccessView)));
     }
 }

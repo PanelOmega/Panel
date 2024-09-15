@@ -70,7 +70,7 @@ class ErrorPageBrowse extends Model
         $errorPages = self::getErrorPages();
         $hostingSubscription = Customer::getHostingSubscriptionSession();
         $errorPagePath = "/home/{$hostingSubscription->system_username}/public_html";
-        $errorPageBuild = new HtaccessBuildErrorPage(false, $hostingSubscription);
+        $errorPageBuild = new HtaccessBuildErrorPage(false, $hostingSubscription, []);
         return array_map(function ($errorPage, $index) use ($errorPagePath, $errorPageBuild, $hostingSubscription) {
             return [
                 'id' => $index + 1,

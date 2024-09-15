@@ -31,7 +31,7 @@ class Fail2BanConfigBuild implements ShouldQueue
         $settings = setting('fail2ban');
         $pathToJailConfig = '/etc/fail2ban/jail.local';
         $whitelistedIps = $this->getAllWhitlistedIps();
-        $fail2BanConf = $this->getJailLocalConf($whitelistedIps, $settings['config']);
+        $fail2BanConf = $this->getJailLocalConf($whitelistedIps, $settings['config'] ?? '');
         file_put_contents($pathToJailConfig, $fail2BanConf);
         shell_exec('systemctl restart fail2ban');
         $this->firewalldBuild();

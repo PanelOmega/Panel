@@ -17,22 +17,24 @@ class HtaccessBuildDirectoryPrivacy implements ShouldQueue
     public $fixPermissions = false;
     public $directoryRealPath;
     public $hostingSubscriptionId;
+    public $directoryPrivacyModelData = [];
     public $startComment = '# Section managed by Panel Omega: Directory Privacy, do not edit';
     public $endComment = '# End section managed by Panel Omega: Directory Privacy';
 
-    public function __construct($fixPermissions = false, $directoryRealPath = null, $hostingSubscriptionId)
+    public function __construct($fixPermissions = false, $directoryRealPath, $hostingSubscriptionId, $directoryPrivacyModelData = [])
     {
         $this->fixPermissions = $fixPermissions;
         $this->directoryRealPath = $directoryRealPath;
         $this->hostingSubscriptionId = $hostingSubscriptionId;
+        $this->directoryPrivacyModelData = $directoryPrivacyModelData;
     }
 
-    public static function getDirectoryPrivacyData($directoryRealPath)
+    public static function getDirectoryPrivacyData($directoryFileRealPath)
     {
         $directoryPrivacyData = [];
 
-        if (file_exists($directoryRealPath . '/.htaccess')) {
-            $htaccessContent = file_get_contents($directoryRealPath . '/.htaccess');
+        if (file_exists($directoryFileRealPath)) {
+            $htaccessContent = file_get_contents($directoryFileRealPath);
             if (strpos($htaccessContent, 'AuthName') !== false) {
                 $directoryPrivacyData['protected'] = 'Yes';
                 preg_match('/AuthName\s+(\S+)/', $htaccessContent, $matches);
@@ -42,18 +44,19 @@ class HtaccessBuildDirectoryPrivacy implements ShouldQueue
         return $directoryPrivacyData;
     }
 
-    public function handle($model)
+    public function handle()
     {
         $hostingSubscription = HostingSubscription::where('id', $this->hostingSubscriptionId)->first();
         $htAccessFilePath = "{$this->directoryRealPath}/.htaccess";
         $htPasswdFilePath = "/home/{$hostingSubscription->system_username}/.htpasswd";
-        $label = $model->label ?? 'Directory Privacy';
-        $htAccessView = $this->getHtAccessFileConfig($label, $htPasswdFilePath, $model->protected);
+        $label = $this->directoryPrivacyModelData['label'] ?? 'Directory Privacy';
+        $protected = $this->directoryPrivacyModelData['protected'] ?? false;
+        $htAccessView = $this->getHtAccessFileConfig($label, $htPasswdFilePath, $protected);
         $this->updateSystemFile($htAccessFilePath, $htAccessView);
     }
 
 
-    public function getHtAccessFileConfig($label, $htPasswdFilePath, $protected)
+    public function getHtAccessFileConfig($label, $htPasswdFilePath, $protected = false)
     {
         $dPrivacyContent = [
             'authType' => 'AuthType Basic',
@@ -63,17 +66,10 @@ class HtaccessBuildDirectoryPrivacy implements ShouldQueue
             'requireUser' => 'Require valid-user'
         ];
 
-        $htaccessContent = view('server.samples.apache.php.directory-privacy-htaccess', [
+        $htaccessContent = view('server.samples.apache.htaccess.directory-privacy-htaccess', [
             'dPrivacyContent' => $dPrivacyContent
         ])->render();
 
-        $htaccessContent = preg_replace_callback(
-            '/(^\s*)(Rewrite.*|$)/m',
-            function ($matches) {
-                return str_repeat(' ', 4) . trim($matches[0]);
-            },
-            $htaccessContent
-        );
         return $htaccessContent;
     }
 }

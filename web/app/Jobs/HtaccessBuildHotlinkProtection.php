@@ -16,19 +16,19 @@ class HtaccessBuildHotlinkProtection implements ShouldQueue
 
     public $fixPermissions = false;
 
-    public $hostingSubscription;
+    public $hostingSubscriptionId;
     public $startComment = '# Section managed by Panel Omega: Hotlink Protection, do not edit';
     public $endComment = '# End section managed by Panel Omega: Hotlink Protection';
 
-    public function __construct($fixPermissions = false, $hostingSubscription)
+    public function __construct($fixPermissions = false, $hostingSubscriptionId)
     {
         $this->fixPermissions = $fixPermissions;
-        $this->hostingSubscription = $hostingSubscription;
+        $this->hostingSubscriptionId = $hostingSubscriptionId;
     }
 
     public function handle()
     {
-        $subscription = HostingSubscription::where('id', $this->hostingSubscription->id)->first();
+        $subscription = HostingSubscription::where('id', $this->hostingSubscriptionId)->first();
         $htAccessFilePath = '/public_html/.htaccess';
         $hotlinkData = $this->getHotlinkData($subscription->hotlinkProtection);
         $htAccessView = $this->getHtAccessFileConfig($hotlinkData);
@@ -85,17 +85,10 @@ class HtaccessBuildHotlinkProtection implements ShouldQueue
 
     public function getHtAccessFileConfig($hotlinkData)
     {
-        $htaccessContent = view('server.samples.apache.php.hotlink-protection-htaccess', [
+        $htaccessContent = view('server.samples.apache.htaccess.hotlink-protection-htaccess', [
             'hotlinkData' => $hotlinkData
         ])->render();
 
-        $htaccessContent = preg_replace_callback(
-            '/(^\s*)(Rewrite.*|$)/m',
-            function ($matches) {
-                return str_repeat(' ', 4) . trim($matches[0]);
-            },
-            $htaccessContent
-        );
         return $htaccessContent;
     }
 }

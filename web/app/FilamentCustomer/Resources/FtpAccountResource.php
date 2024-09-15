@@ -119,7 +119,7 @@ class FtpAccountResource extends Resource
                                 Radio::make('ftp_quota_type')
                                     ->options([
                                         'custom' => 'Custom',
-                                        'Unlimited' => 'Unlimited',
+                                        'unlimited' => 'Unlimited',
                                     ])
                                     ->default('Unlimited')
                                     ->live(),

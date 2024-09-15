@@ -64,17 +64,10 @@ class HtaccessBuildRedirects
 
     public function getHtAccessFileConfig(array $redirectsData)
     {
-        $htaccessContent = view('server.samples.apache.php.redirects-htaccess', [
+        $htaccessContent = view('server.samples.apache.htaccess.redirects-htaccess', [
             'redirectsData' => $redirectsData,
         ])->render();
 
-        $htaccessContent = preg_replace_callback(
-            '/(^\s*)(Rewrite.*|$)/m',
-            function ($matches) {
-                return str_repeat(' ', 4) . trim($matches[0]);
-            },
-            $htaccessContent
-        );
         return html_entity_decode($htaccessContent);
     }
 }

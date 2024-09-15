@@ -43,7 +43,7 @@ trait HasDirectoryTreeBuild
             }
         }
         $treeToFormat[] = isset($directoryTree['public_html']) ? $directoryTree['public_html'] : [];
-        $tree = self::formatTree($treeToFormat);
+        $tree = self::_formatTree($treeToFormat);
         return $tree;
     }
 
@@ -51,7 +51,7 @@ trait HasDirectoryTreeBuild
     {
         $formatted = [];
         foreach ($tree as $node) {
-            $children = !empty($node['children']) ? self::formatTree($node['children']) : [];
+            $children = !empty($node['children']) ? self::_formatTree($node['children']) : [];
             $formatted[] = [
                 'name' => $node['name'],
                 'value' => $node['value'],
@@ -60,6 +60,4 @@ trait HasDirectoryTreeBuild
         }
         return $formatted;
     }
-
-
 }

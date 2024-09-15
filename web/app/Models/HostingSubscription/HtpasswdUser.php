@@ -17,6 +17,8 @@ class HtpasswdUser extends Model
         'password'
     ];
 
+    protected $table = 'hosting_subscription_htpasswd_users';
+
     public static function boot()
     {
         parent::boot();
@@ -25,9 +27,7 @@ class HtpasswdUser extends Model
 
     public static function htpasswdUserBoot()
     {
-        $hostingSubscription = Customer::getHostingSubscriptionSession();
-        $directoryRealPath = "/home/{$hostingSubscription->system_username}/.htpasswd";
-        static::creating(function ($model) use ($hostingSubscription, $directoryRealPath) {
+        static::creating(function ($model) {
             $command = "htpasswd -nb $model->username $model->password";
             $result = shell_exec($command);
             if ($result) {
@@ -36,25 +36,32 @@ class HtpasswdUser extends Model
             }
         });
 
-        $startComment = '# Section managed by Panel Omega: Directory Privacy, do not edit';
-        $endComment = '# End section managed by Panel Omega: Directory Privacy';
-
-        $callback = function ($model = null) use ($hostingSubscription, $directoryRealPath, $startComment, $endComment) {
-            $directoryPrivacy = new HtpasswdBuild(false, $directoryRealPath, $hostingSubscription->id, $startComment, $endComment);
-            $directoryPrivacy->handle($model);
+        $callback = function ($model) {
+            $hostingSubscription = Customer::getHostingSubscriptionSession();
+            $directoryRealPath = "/home/{$hostingSubscription->system_username}/.htpasswd";
+            $htPasswdData = [
+                'username' => $model->username,
+                'password' => $model->password
+            ];
+            $directoryPrivacy = new HtpasswdBuild(false, $directoryRealPath, $htPasswdData);
+            $directoryPrivacy->handle();
         };
 
         static::created(function ($model) use ($callback) {
             $callback($model);
         });
 
-        static::deleting(function ($model) use ($hostingSubscription) {
+        static::deleting(function ($model) {
+            $hostingSubscription = Customer::getHostingSubscriptionSession();
             $command = "htpasswd -D /home/{$hostingSubscription->system_username}/.htpasswd {$model->username}";
             shell_exec($command);
         });
 
         static::deleted(function ($model) use ($callback) {
-            $callback();
+            $hostingSubscription = Customer::getHostingSubscriptionSession();
+            $directoryRealPath = "/home/{$hostingSubscription->system_username}/.htpasswd";
+            $directoryPrivacy = new HtpasswdBuild(false, $directoryRealPath);
+            $directoryPrivacy->handle();
         });
     }
 

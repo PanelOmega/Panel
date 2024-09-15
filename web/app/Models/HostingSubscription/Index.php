@@ -30,9 +30,9 @@ class Index extends Model
 
     public static function indexBoot()
     {
-        $hostingSubscription = Customer::getHostingSubscriptionSession();
 
-        $callback = function ($model) use ($hostingSubscription) {
+        $callback = function ($model) {
+            $hostingSubscription = Customer::getHostingSubscriptionSession();
             $htaccessBuild = new HtaccessBuildIndexes(false, $hostingSubscription);
             $htaccessBuild->handle($model);
         };

@@ -4,6 +4,7 @@ namespace App\Jobs;
 
 use App\Jobs\Traits\ErrorCodeDefaultContentTrait;
 use App\Jobs\Traits\HtaccessBuildTrait;
+use App\Models\HostingSubscription;
 use App\Models\HostingSubscription\ErrorPage;
 use Illuminate\Bus\Queueable;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -18,28 +19,33 @@ class HtaccessBuildErrorPage
     public $startComment = '# Section managed by Panel Omega: Error Pages, do not edit';
     public $endComment = '# End section managed by Panel Omega: Error Pages';
 
-    public $hostingSubscription;
+    public $hostingSubscriptionId;
+    public $errorPageData = [];
 
-    public function __construct($fixPermissions = false, $hostingSubscription)
+    public $errorPageContent;
+
+    public function __construct($fixPermissions = false, $hostingSubscriptionId, $errorPageData = [])
     {
         $this->fixPermissions = $fixPermissions;
-        $this->hostingSubscription = $hostingSubscription;
+        $this->hostingSubscriptionId = $hostingSubscriptionId;
+        $this->errorPageData = $errorPageData;
     }
 
-    public function handle($model)
+    public function handle()
     {
-        $this->addErrorPageToSystem($model);
-        $errorDocuments = $this->getAllErrorDocuments($this->hostingSubscription->id, $model->path);
+        $this->addErrorPageToSystem($this->errorPageData);
+        $errorPagePath = $this->errorPageData['path'];
+        $errorDocuments = $this->getAllErrorDocuments($this->hostingSubscriptionId, $errorPagePath);
         $htaccessView = $this->getHtaccessErrorCodesConfig($errorDocuments);
-        $htaccessSystemPath = $model->path . '/.htaccess';
+        $htaccessSystemPath = $errorPagePath . '/.htaccess';
         $this->updateSystemFile($htaccessSystemPath, $htaccessView);
     }
 
-    public function addErrorPageToSystem($model)
+    public function addErrorPageToSystem($errorPageData)
     {
-        $errorCode = $model->error_code;
-        $errorPagePath = "{$model->path}/{$errorCode}.shtml";
-        $errorPageContent = $this->trimContent($model->content);
+        $errorCode = $errorPageData['error_code'];
+        $errorPagePath = "{$errorPageData['path']}/{$errorCode}.shtml";
+        $errorPageContent = $this->trimContent($errorPageData['content']);
         file_put_contents($errorPagePath, $errorPageContent);
     }
 
@@ -64,18 +70,10 @@ class HtaccessBuildErrorPage
 
     public function getHtaccessErrorCodesConfig($errorDocuments)
     {
-        $htaccessErrorCodesContent = view('server.samples.apache.php.error-page-htaccess', [
+        $htaccessErrorCodesContent = view('server.samples.apache.htaccess.error-page-htaccess', [
             'errorDocuments' => $errorDocuments,
         ])->render();
 
-        $htaccessErrorCodesContent = preg_replace_callback(
-            '/^.*$/m',
-            function ($matches) {
-                return preg_replace('/\s+/', ' ', trim($matches[0]));
-            },
-            $htaccessErrorCodesContent
-        );
-        $htaccessErrorCodesContent = preg_replace('/^\s*[\r\n]/m', '', $htaccessErrorCodesContent);
         return $htaccessErrorCodesContent;
     }
 

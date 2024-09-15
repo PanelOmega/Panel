@@ -8,7 +8,6 @@ use Illuminate\Database\Eloquent\Model;
 
 class DirectoryPrivacy extends Model
 {
-
     protected $fillable = [
         'hosting_subscription_id',
         'directory',
@@ -19,6 +18,8 @@ class DirectoryPrivacy extends Model
         'path'
     ];
 
+    protected $table = 'hosting_subscription_directory_privacies';
+
     protected static function boot()
     {
         parent::boot();
@@ -27,8 +28,9 @@ class DirectoryPrivacy extends Model
 
     public static function directoryPrivacyBoot()
     {
-        $hostingSubscription = Customer::getHostingSubscriptionSession();
-        static::creating(function ($model) use ($hostingSubscription) {
+
+        static::creating(function ($model) {
+            $hostingSubscription = Customer::getHostingSubscriptionSession();
             $model->hosting_subscription_id = $hostingSubscription->id;
             HtpasswdUser::create([
                 'directory' => $model->directory,
@@ -36,10 +38,16 @@ class DirectoryPrivacy extends Model
                 'password' => $model->password,
             ]);
         });
-        $callback = function ($model) use ($hostingSubscription) {
+        $callback = function ($model) {
+            $hostingSubscription = Customer::getHostingSubscriptionSession();
             $directoryRealPath = "/home/{$hostingSubscription->system_username}/public_html/{$model->path}";
-            $directoryPrivacy = new HtaccessBuildDirectoryPrivacy(false, $directoryRealPath, $hostingSubscription->id);
-            $directoryPrivacy->handle($model);
+
+            $directoryPrivacyModelData = [
+                'protected' => $model->protected,
+                'label' => $model->label
+            ];
+            $directoryPrivacy = new HtaccessBuildDirectoryPrivacy(false, $directoryRealPath, $hostingSubscription->id, $directoryPrivacyModelData);
+            $directoryPrivacy->handle();
         };
 
         static::created(function ($model) use ($callback) {
@@ -55,8 +63,11 @@ class DirectoryPrivacy extends Model
             $htpasswdUser->delete();
         });
 
-        static::deleted(function ($model) use ($callback) {
-            $callback($model);
+        static::deleted(function ($model) {
+            $hostingSubscription = Customer::getHostingSubscriptionSession();
+            $directoryRealPath = "/home/{$hostingSubscription->system_username}/public_html/{$model->path}";
+            $directoryPrivacy = new HtaccessBuildDirectoryPrivacy(false, $directoryRealPath, $hostingSubscription->id, []);
+            $directoryPrivacy->handle();
         });
     }
 

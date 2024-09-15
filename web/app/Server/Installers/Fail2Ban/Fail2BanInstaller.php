@@ -53,7 +53,7 @@ class Fail2BanInstaller
 
         $commands[] = 'systemctl enable fail2ban';
         $commands[] = 'systemctl start fail2ban';
-        $commands[] = 'omega-shell omega:set-default-fail-2-ban-config';
+        $commands[] = 'omega-shell omega:fail2ban-config-build';
 
         $shellFileContent = '';
         foreach ($commands as $command) {

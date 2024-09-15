@@ -71,17 +71,10 @@ class HtaccessBuildIndexes implements ShouldQueue
 
     public function getHtAccessFileConfig($indexContent)
     {
-        $htaccessContent = view('server.samples.apache.php.indexes-htaccess', [
+        $htaccessContent = view('server.samples.apache.htaccess.indexes-htaccess', [
             'index' => $indexContent
         ])->render();
 
-        $htaccessContent = preg_replace_callback(
-            '/(^\s*)(Rewrite.*|$)/m',
-            function ($matches) {
-                return str_repeat(' ', 4) . trim($matches[0]);
-            },
-            $htaccessContent
-        );
         return $htaccessContent;
     }
 }

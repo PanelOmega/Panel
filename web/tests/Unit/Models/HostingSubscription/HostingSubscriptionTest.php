@@ -30,13 +30,13 @@ class HostingSubscriptionTest extends TestCase
         $this->installDocker();
         $this->installPHP();
 
-        $customerUsername = 'test' . rand(1000, 9999);
+        $customerUsername = 'test' . uniqid();
 
         $createCustomer = new Customer();
         $createCustomer->name = $customerUsername;
         $createCustomer->email = $customerUsername . '@mail.com';
         $createCustomer->username = $customerUsername;
-        $createCustomer->password = time() . rand(1000, 9999);
+        $createCustomer->password = time() . uniqid();
         $createCustomer->save();
         $this->assertDatabaseHas('customers', ['username' => $customerUsername]);
 
@@ -45,7 +45,7 @@ class HostingSubscriptionTest extends TestCase
         foreach ($getInstalledPHPVersions as $phpVersion) {
 
             $createHostingPlan = new HostingPlan();
-            $createHostingPlan->name = 'test' . rand(1000, 9999);
+            $createHostingPlan->name = 'test' . uniqid();
             $createHostingPlan->default_server_application_type = 'apache_php';
             $createHostingPlan->default_server_application_settings = [
                 'php_version' => $phpVersion['full'],
@@ -56,7 +56,7 @@ class HostingSubscriptionTest extends TestCase
 
             $hostingSubscriptionService = new HostingSubscriptionService();
             $createResponse = $hostingSubscriptionService->create(
-                'test' . rand(1000, 9999) . '.demo.panelomega-unit.com',
+                'test' . uniqid() . '.demo.panelomega-unit.com',
                 $createCustomer->id,
                 $createHostingPlan->id,
                 null,
@@ -106,13 +106,13 @@ class HostingSubscriptionTest extends TestCase
 //
 //    public function testHostingSubscriptionCreationMultiPhpVersions()
 //    {
-//        $customerUsername = 'test' . rand(1000, 9999);
+//        $customerUsername = 'test' . uniqid();
 //
 //        $createCustomer = new Customer();
 //        $createCustomer->name = $customerUsername;
 //        $createCustomer->email = $customerUsername . '@mail.com';
 //        $createCustomer->username = $customerUsername;
-//        $createCustomer->password = time() . rand(1000, 9999);
+//        $createCustomer->password = time() . uniqid();
 //        $createCustomer->save();
 //        $this->assertDatabaseHas('customers', ['username' => $customerUsername]);
 //
@@ -121,7 +121,7 @@ class HostingSubscriptionTest extends TestCase
 //        foreach ($supportedPHPVersions as $phpVersion => $phpVersionName) {
 //
 //            $createHostingPlan = new HostingPlan();
-//            $createHostingPlan->name = 'test' . rand(1000, 9999);
+//            $createHostingPlan->name = 'test' . uniqid();
 //            $createHostingPlan->default_server_application_type = 'apache_php';
 //            $createHostingPlan->default_server_application_settings = [
 //                'php_version' => $phpVersion,
@@ -132,7 +132,7 @@ class HostingSubscriptionTest extends TestCase
 //
 //            $hostingSubscription = new HostingSubscription();
 //            $hostingSubscription->customer_id = $createCustomer->id;
-//            $hostingSubscription->domain = 'test' . rand(1000, 9999) . '.demo.panelomega.com';
+//            $hostingSubscription->domain = 'test' . uniqid() . '.demo.panelomega.com';
 //            $hostingSubscription->hosting_plan_id = $createHostingPlan->id;
 //            $hostingSubscription->save();
 //            $this->assertDatabaseHas('hosting_subscriptions', ['domain' => $hostingSubscription->domain]);

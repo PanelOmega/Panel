@@ -2,6 +2,7 @@
 
 namespace App\Jobs;
 
+use App\Jobs\Traits\VsftpdConfigBuildTrait;
 use App\Models\HostingSubscription\FtpAccount;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -11,31 +12,21 @@ use Illuminate\Queue\SerializesModels;
 
 class UpdateVsftpdUserlist implements ShouldQueue
 {
-    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels, VsftpdConfigBuildTrait;
 
     public function handle(): void
     {
+        $ftpAccounts = FtpAccount::all();
+        $vsftpdFileView = $this->getVsftpdFileConfig($ftpAccounts);
+        $vsftpdFilePath = '/etc/vsftpd/user_list';
+        $this->updateSystemFile($vsftpdFilePath, $vsftpdFileView);
+    }
 
-        try {
+    public function getVsftpdFileConfig($ftpAccounts) {
+        $updateVsfpdUserlist = view('server.samples.vsftpd.vsftpd-userlist-conf', [
+            'ftpAccounts' => $ftpAccounts
+        ])->render();
 
-            $ftpAccounts = FtpAccount::all();
-
-            $updateVsfpdUserlist = view('server.samples.vsftpd.vsftpd-userlist-conf', [
-                'ftpAccounts' => $ftpAccounts
-            ])->render();
-
-            $updateVsfpdUserlist = preg_replace('/^\s+|\s+$/m', '', $updateVsfpdUserlist);
-
-            $save = file_put_contents('/etc/vsftpd/user_list', $updateVsfpdUserlist);
-            if (!$save) {
-                throw new \Exception("Failed to update vsftpd.userlist");
-            }
-
-//            echo "vsftpd.userlist updated successfully.";
-
-        } catch (\Exception $e) {
-//            echo "Failed to update vsftpd.userlist: " . $e->getMessage();
-
-        }
+        return $updateVsfpdUserlist;
     }
 }

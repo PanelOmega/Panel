@@ -39,17 +39,10 @@ class HtaccessBuildPHPVersions implements ShouldQueue
 
     public function getHtAccessFileConfig($phpVersion)
     {
-        $htaccessContent = view('server.samples.apache.php.php-versions-htaccess', [
+        $htaccessContent = view('server.samples.apache.htaccess.php-versions-htaccess', [
             'phpVersion' => $phpVersion
         ])->render();
 
-        $htaccessContent = preg_replace_callback(
-            '/(^\s*)(Rewrite.*|$)/m',
-            function ($matches) {
-                return str_repeat(' ', 4) . trim($matches[0]);
-            },
-            $htaccessContent
-        );
         return $htaccessContent;
     }
 }

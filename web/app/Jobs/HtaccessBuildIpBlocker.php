@@ -46,18 +46,10 @@ class HtaccessBuildIpBlocker
 
     public function getHtaccessIpBlockerConfig($blockedIps)
     {
-        $htaccessIpBlockerContent = view('server.samples.apache.php.ip-blockers-htaccess', [
+        $htaccessIpBlockerContent = view('server.samples.apache.htaccess.ip-blockers-htaccess', [
             'blockedIps' => $blockedIps,
         ])->render();
 
-        $htaccessIpBlockerContent = preg_replace_callback(
-            '/^.*$/m',
-            function ($matches) {
-                return preg_replace('/\s+/', ' ', trim($matches[0]));
-            },
-            $htaccessIpBlockerContent
-        );
-        $htaccessIpBlockerContent = preg_replace('/^\s*[\r\n]/m', '', $htaccessIpBlockerContent);
         return $htaccessIpBlockerContent;
     }
 }

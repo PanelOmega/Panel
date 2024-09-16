@@ -51,7 +51,7 @@ mv greeting.sh /etc/profile.d/omega-greeting.sh
 wget https://raw.githubusercontent.com/PanelOmega/Panel/$GIT_BRANCH/installers/almalinux-9.4/repos/omega.repo
 mv omega.repo /etc/yum.repos.d/omega.repo
 
-dnf install -y omega-php omega-nginx
+dnf install -y omega-php omega-nginx my-apache
 
 ## Install OMEGA PHP
 #wget https://github.com/PanelOmega/Dist/raw/main/compilators/almalinux/php/dist/omega-php-8.2-1.el9.x86_64.rpm

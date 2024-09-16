@@ -1,4 +1,13 @@
 #!/bin/bash
+
+mkdir -p /usr/local/omega/updates/temp
+rm -rf /usr/local/omega/updates/temp/panel-omega-latest.zip
+wget https://github.com/PanelOmega/WebCompiledVersions/raw/main/panel-omega-latest.zip -O /usr/local/omega/updates/temp/panel-omega-latest.zip
+
+# unzip with overwrite
+unzip -o /usr/local/omega/updates/temp/panel-omega-latest.zip -d /usr/local/omega/web
+
+
 #
 #rm -rf omega-nginx-1.25.5-1.el9.x86_64.rpm
 #rm -rf omega-php-8.2-1.el9.x86_64.rpm
@@ -6,20 +15,20 @@
 #wget https://github.com/PanelOmega/Dist/raw/main/compilators/almalinux/nginx/dist/omega-nginx-1.25.5-1.el9.x86_64.rpm
 #wget https://github.com/PanelOmega/Dist/raw/main/compilators/almalinux/php/dist/omega-php-8.2-1.el9.x86_64.rpm
 
-systemctl stop omega-php
-systemctl stop omega-nginx
-systemctl stop omega
-
-rm -rf /usr/local/omega/nginx/conf/nginx.conf
-cp /usr/local/omega/web/server/nginx/nginx.conf /usr/local/omega/nginx/conf/nginx.conf
+#systemctl stop omega-php
+#systemctl stop omega-nginx
+#systemctl stop omega
+#
+#rm -rf /usr/local/omega/nginx/conf/nginx.conf
+#cp /usr/local/omega/web/server/nginx/nginx.conf /usr/local/omega/nginx/conf/nginx.conf
 
 #dnf remove -y "omega-nginx*" "omega-php*"
 
 #dnf install -y omega-nginx-1.25.5-1.el9.x86_64.rpm
 #dnf install -y omega-php-8.2-1.el9.x86_64.rpm
-
-systemctl start omega
-systemctl status omega
+#
+#systemctl start omega
+#systemctl status omega
 #
 #sudo COMPOSER_ALLOW_SUPERUSER=1 omega-php composer.phar install
 #omega-php artisan migrate

@@ -5,7 +5,7 @@
 # OS: AlmaLinux                                                            #
 #=========================================================================#
 
-ServerRoot "/etc/httpd"
+ServerRoot "/etc/my-apache"
 
 Listen 80
 

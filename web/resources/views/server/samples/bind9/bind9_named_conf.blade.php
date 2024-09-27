@@ -9,9 +9,9 @@
 
 acl trusted {
 @if(isset($bind9Data['aclTrusted']))
-    @foreach($bind9Data['aclTrusted'] as $aclTrusted)
-        {{ $aclTrusted }};
-    @endforeach
+@foreach($bind9Data['aclTrusted'] as $aclTrusted)
+{{ $aclTrusted }};
+@endforeach
 @endif
 };
 
@@ -24,7 +24,7 @@ statistics-file "/var/named/data/named_stats.txt";
 memstatistics-file "/var/named/data/named_mem_stats.txt";
 secroots-file   "/var/named/data/named.secroots";
 recursing-file  "/var/named/data/named.recursing";
-allow-query @if(isset($bind9Data['allowQuery'])) {{ '{' . $bin9Data['allowQuery'] . '}' }} @else { localhost; } @endif;
+allow-query @if(isset($bind9Data['allowQuery'])) {{ '{' . $bin9Data['allowQuery'] . '}' }} @else { any; } @endif;
 
 @if(isset($bind9Data['forwarders']))
 forwarders {
@@ -60,16 +60,19 @@ include "/etc/crypto-policies/back-ends/bind.config";
 };
 
 {{--logging {--}}
-{{--    channel default_debug {--}}
-{{--        file "/var/named/data/named.run";--}}
-{{--        severity dynamic;--}}
-{{--    };--}}
+{{--channel default_log {--}}
+{{--file "/var/log/bind/default.log";--}}
+{{--print-time yes;--}}
+{{--print-category yes;--}}
+{{--print-severity yes;--}}
+{{--severity info;--}}
+{{--};--}}
+
+{{--category default { default_log; };--}}
 {{--};--}}
 
 include "/etc/named.rfc1912.zones";
 include "/etc/named.root.key";
-@if(isset($bind9Data['domains']))
-@foreach($bind9Data['domains'] as $domain)
-include "/etc/named.{{ $domain }}.zones";
-@endforeach
+@if(isset($bind9Data['dnsZones']))
+include "{{$bind9Data['dnsZones']}}";
 @endif

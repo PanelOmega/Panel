@@ -43,6 +43,7 @@ class PowerDnsInstaller
         $commands[] = 'systemctl enable pdns';
         $commands[] = 'systemctl start pdns';
         $commands[] = 'omega-shell omega:update-pdns-config';
+        $commands[] = 'usermod -aG named pdns';
 
         $shellFileContent = '';
         foreach($commands as $command) {
@@ -63,6 +64,8 @@ class PowerDnsInstaller
         }
         $command = "bash /tmp/power-dns-installer.sh >> {$this->logPath} 2>&1 &";
         shell_exec($command);
+
+
 
         return [
             'status' => 'Install job is running in the background.',

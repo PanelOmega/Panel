@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('hosting_subscription_zone_editor_dnssecs_tabl', function (Blueprint $table) {
+        Schema::create('hosting_subscription_zone_editor_dnssecs', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('hosting_subscription_id')->nullable();
             $table->string('domain')->nullable();
@@ -22,6 +22,7 @@ return new class extends Migration
             $table->string('algorithm')->nullable();
             $table->string('status')->nullable();
             $table->timestamps();
+
         });
     }
 
@@ -30,6 +31,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('hosting_subscription_zone_editor_dnssecs_tabl');
+        Schema::dropIfExists('hosting_subscription_zone_editor_dnssecs');
     }
 };

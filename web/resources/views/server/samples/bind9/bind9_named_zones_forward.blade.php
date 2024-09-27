@@ -11,50 +11,46 @@ $TTL {{ $bind9ForwardData['ttl'] }}
 
 @if(isset($bind9ForwardData['records']))
 
-        @php
-            $commentAdded = [
-                'A' => false,
-                'MX' => false,
-                'CNAME' => false
-            ];
-        @endphp
-
 @   IN  NS  ns1.{{$bind9ForwardData['domain']}}.
-
-@foreach($bind9ForwardData['records'] as $record)
-
-@if($record['type'] === 'A')
-                @if(!$commentAdded['A'])
+@   IN  NS  ns2.{{$bind9ForwardData['domain']}}.
 
 ; A records map domain names to IPv4 addresses
 
-                    @php $commentAdded['A'] = true @endphp
-                @endif
-
-@   IN  {{ $record['type'] }}   {{ $record['record'] }}
-
-            @elseif($record['type'] === 'CNAME')
-                @if(!$commentAdded['CNAME'])
-
-; CNAME records alias one domain name to another
-
-                    @php $commentAdded['CNAME'] = true @endphp
-                @endif
-
-{{$record['name']}}   IN  {{ $record['type'] }}   {{ $record['record'] }}.
-
+ns1.{{ $bind9ForwardData['domain']  }}. IN  A  {{$bind9ForwardData['nsIp']}}
+ns2.{{ $bind9ForwardData['domain']  }}. IN  A  {{$bind9ForwardData['nsIp']}}
+@foreach($bind9ForwardData['records'] as $record)
+@if($record['type'] === 'A')
+    @php $recordA[] = "{$record['domain']}.   IN  {$record['type']}   {$record['record']}"; @endphp
+@elseif($record['type'] === 'CNAME')
+    @php $cnameHeader = "; CNAME records alias one domain name to another"; @endphp
+    @php
+//        $record['name'] = rtrim($record['name'], '.');
+        $recordCNAME[] = "{$record['name']}    IN  {$record['type']}   {$record['domain']}.";
+    @endphp
 @elseif($record['type'] === 'MX')
-                @if(!$commentAdded['MX'])
+    @php $mxHeader = "; MX records define mail servers for the domain"; @endphp
+    @php $recordMX[] = "{$record['record']}.   IN  {$record['type']} {$record['priority']}     {$record['name']}"; @endphp
+@endif
+@endforeach
+@endif
+@endif
 
-; MX records define mail servers for the domain
+@if(isset($recordA))
+@foreach($recordA as $a)
+{{$a}}
+@endforeach
+@endif
 
-                    @php $commentAdded['MX'] = true @endphp
+@if(isset($cnameHeader))
+{{$cnameHeader}}
+@foreach($recordCNAME as $cname)
+{{$cname}}
+@endforeach
+@endif
 
-                @endif
-
-@   IN  {{ $record['type'] }} {{ $record['priority'] }}     ns1.{{ $record['domain'] }}
-
-            @endif
-        @endforeach
-    @endif
+@if(isset($mxHeader))
+{{$mxHeader}}
+@foreach($recordMX as $mx)
+{{$mx}}
+@endforeach
 @endif

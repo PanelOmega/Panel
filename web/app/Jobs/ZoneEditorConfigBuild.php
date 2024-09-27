@@ -20,10 +20,13 @@ class ZoneEditorConfigBuild implements ShouldQueue
 
     public $domain;
 
-    public function __construct($fixPermissions = false, $hostingSubscription, $domain) {
+    public $ip;
+
+    public function __construct($fixPermissions = false, $hostingSubscription, $domain, $ip = null) {
         $this->fixPermissions = $fixPermissions;
         $this->hostingSubscription = $hostingSubscription;
         $this->domain = $domain;
+//        $this->ip = '65.109.0.228';
     }
 
     public function handle() {
@@ -31,37 +34,29 @@ class ZoneEditorConfigBuild implements ShouldQueue
         $this->updateZoneFile();
         $recordsData = $this->getZonesData();
         $this->updateZoneForwardConfig($recordsData);
+        if($this->ip) {
+            $this->updateZoneReverseConfig($recordsData, $this->ip);
+        }
         $service = $this->checkService();
         shell_exec("systemctl restart {$service}");
     }
 
     public function udpateConfigs() {
         $confPath = '/etc/named.conf';
-        $ips = ZoneEditor::where('domain', $this->domain)
-            ->pluck('record');
+        $dnsZonesPath = '/etc/named.panelomega.zones';
 
-        $server = $this->getNs1();
-        $trustedIps = [];
-        $trustedIps[] = '127.0.0.1';
-        $trustedIps[] = $server;
-
-        foreach($ips as $trustedIp) {
-            if(filter_var($trustedIp, FILTER_VALIDATE_IP)) {
-                $trustedIps[] = $trustedIp;
-            }
-        }
-
-        $portV4Ips = implode('; ', $trustedIps);
+        $server = $this->getNsIp();
+        $trustedIps = $this->getDomainTrustedIps();
 
         $bind9ConfigData = [
             'aclTrusted' => $trustedIps,
-            'portV4Ips' => $portV4Ips . ';',
+//            'portV4Ips' => 'trusted;',
             'forwarders' => [
                 '8.8.8.8',
                 '8.8.4.4'
             ],
             'dnsValidation' => 'auto',
-            'domains' => [$this->domain]
+            'dnsZones' => $dnsZonesPath
         ];
 
         $bind9Config = view('server.samples.bind9.bind9_named_conf', [
@@ -73,15 +68,34 @@ class ZoneEditorConfigBuild implements ShouldQueue
     }
 
     public function updateZoneFile() {
-        $confPath = "/etc/named.{$this->domain}.zones";
-        $bind9ZonesData = [
-            [
-                'domain' => $this->domain,
-            ],
+
+        $domains = $this->getCurrentDomains();
+
+        $revIpData = [
+            $this->getNsIp(),
+            $this->ip
         ];
+        $revIps = $this->getRevIps($revIpData);
+
+        $confPath = "/etc/named.panelomega.zones";
+
+        $forwardZonesData = [];
+        foreach($domains as $domain) {
+            $forwardZonesData[] = [
+                'domain' => $domain
+            ];
+        }
+
+        $reverseZonesData = [];
+        foreach($revIps as $ip) {
+            $reverseZonesData[] = [
+                'ip' => $ip
+            ];
+        }
 
         $bind9Zones = view('server.samples.bind9.bind9_named_zones', [
-            'bind9Zones' => $bind9ZonesData
+            'forwardZones' => $forwardZonesData,
+//            'reverseZones' => $reverseZonesData
         ])->render();
         file_put_contents($confPath, $bind9Zones);
     }
@@ -93,9 +107,12 @@ class ZoneEditorConfigBuild implements ShouldQueue
         $retry = 1800;
         $expire = 1209600;
         $negativeCache = 86400;
-        $zones = ZoneEditor::where('hosting_subscription_id', $this->hostingSubscription->id)->get()->toArray();
+        $zones = ZoneEditor::where('hosting_subscription_id', $this->hostingSubscription->id)
+            ->where('domain', $this->domain)
+            ->get()
+            ->toArray();
 
-        $server = $this->getNs1();
+        $server = $this->getNsIp();
 
         return [
             'ttl' => $ttl,
@@ -105,7 +122,7 @@ class ZoneEditorConfigBuild implements ShouldQueue
             'retry' => $retry,
             'expire' => $expire,
             'negativeCache' => $negativeCache,
-            'ns1' => $server,
+            'nsIp' => $server,
             'records' => $zones
         ];
     }
@@ -119,22 +136,52 @@ class ZoneEditorConfigBuild implements ShouldQueue
 
         file_put_contents($confPath, $zoneForwardConfig);
 
-        if($this->checkService() === 'pdns') {
+//        if($this->checkService() === 'pdns') {
             $commands = [
                 "pdns_control bind-add-zone {$this->domain} {$confPath}",
-                "pdns_control bind-reload-now {$this->domain}",
+                "pdns_control reload"
             ];
-
             foreach($commands as $command) {
                 shell_exec($command);
             }
+//        }
+    }
+
+    public function updateZoneReverseConfig(array $recordsData, string $ip) {
+
+        $revIp = explode('.', $ip);
+        $revIp = array_reverse($revIp);
+        $revIp = implode('.', $revIp);
+
+        $confPath = "/etc/named.{$revIp}.rev";
+
+//        $ip = explode('.', $recordsData['nsIp']);
+//        $lastOct = end($ip);
+//        $recordsData['lastOct'] = $lastOct;
+
+        $recordsData['revIp'] = $revIp;
+
+        $zoneReverseConfig = view('server.samples.bind9.bind9_named_zones_reverse', [
+            'bind9ReverseData' => $recordsData
+        ])->render();
+
+        file_put_contents($confPath, $zoneReverseConfig);
+
+//        if($this->checkService() === 'pdns') {
+        $commands = [
+            "pdns_control bind-add-zone {$this->domain} {$confPath}",
+            'pdns_control reload'
+        ];
+        foreach ($commands as $command) {
+            shell_exec($command);
         }
+//        }
     }
 
     public function updateResolv() {
 
         $filePath = '/etc/resolv.conf';
-        $server = $this->getNs1();
+        $server = $this->getNsIp();
         $nameservers[] = $server;
 
         $command = "nmcli dev show | grep -E 'IP4.DNS|IP6.DNS' | awk '{print $2}'";
@@ -149,11 +196,55 @@ class ZoneEditorConfigBuild implements ShouldQueue
         file_put_contents($filePath, $resolved);
     }
 
-    public function getNs1() {
+    public function getCurrentDomains() {
+        $domainData = ZoneEditor::where('hosting_subscription_id', $this->hostingSubscription->id)
+            ->get();
+
+        $currentDomains = [];
+        foreach($domainData as $domain) {
+            $currentDomains[] = $domain->domain;
+        }
+
+        return array_unique($currentDomains);
+    }
+
+    public function getDomainTrustedIps() {
+        $domainData = ZoneEditor::where('hosting_subscription_id', $this->hostingSubscription->id)
+            ->get();
+
+        $server = $this->getNsIp();
+
+        $trustedIps = [];
+        $trustedIps[] = '127.0.0.1';
+        $trustedIps[] = $server;
+
+        foreach($domainData as $trustedIp) {
+            if(filter_var($trustedIp->record, FILTER_VALIDATE_IP)) {
+                $trustedIps[] = $trustedIp->record;
+            }
+        }
+
+        return empty($trustedIps) ? [] : array_unique($trustedIps);
+    }
+
+    public function getNsIp() {
         $command = 'hostname -I | awk \'{print $1}\'';
         $output = shell_exec($command);
         $server = trim($output);
         return $server;
+    }
+
+    public function getRevIps(array $ips) {
+
+        $revIps = [];
+
+        foreach($ips as $ip) {
+            $revIp = explode('.', $ip);
+            $revIp = array_reverse($revIp);
+            $revIps[] = implode('.', $revIp);
+        }
+
+        return $revIps;
     }
 
     public function checkService(): string {

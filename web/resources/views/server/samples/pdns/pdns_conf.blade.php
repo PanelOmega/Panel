@@ -368,7 +368,7 @@ bind-config=/etc/named.conf
 #################################
 # master	Act as a primary
 #
-# master=no
+master=@if(isset($pdnsData['isMaster'])){{$pdnsData['isMaster']}}@else yes @endif
 
 #################################
 # max-cache-entries	Maximum number of entries in the query cache

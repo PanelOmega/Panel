@@ -58,10 +58,9 @@ class ZoneEditorPage extends Page implements HasTable
 
     public function table(Table $table): Table
     {
-
         return $table
             ->query($this->query())
-            ->columns($this->getColumnsBaseOnState())
+            ->columns($this->getColumnsBasedOnState())
             ->actions($this->getTableActionsBasedOnState())
             ->headerActions($this->getHeaderActionsBasedOnState());
     }
@@ -69,17 +68,23 @@ class ZoneEditorPage extends Page implements HasTable
     public function query(): Builder
     {
         $hostingSubscription = Customer::getHostingSubscriptionSession();
-        if(!$this->dnssecEnabled && !$this->manageZonesEnabled) {
-            return Domain::query()
-                ->where('hosting_subscription_id', $hostingSubscription->id);
-        } else {
-            return ZoneEditor::query()
-                ->where('hosting_subscription_id', $hostingSubscription->id)
-                ->where('domain', $this->currentDomain);
+
+        $query = !$this->dnssecEnabled && !$this->manageZonesEnabled
+            ? Domain::query()
+            : ($this->dnssecEnabled
+                ? ZoneEditorDnssec::query()
+                : ZoneEditor::query());
+
+        $query->where('hosting_subscription_id', $hostingSubscription->id);
+
+        if ($this->dnssecEnabled || $this->manageZonesEnabled) {
+            $query->where('domain', $this->currentDomain);
         }
+
+        return $query;
     }
 
-    public function getColumnsBaseOnState(): array
+    public function getColumnsBasedOnState(): array
     {
         if ($this->dnssecEnabled) {
             return $this->getDnssecColumns();
@@ -170,7 +175,7 @@ class ZoneEditorPage extends Page implements HasTable
         return [
             Action::make('edit')
                 ->label('Edit')
-                ->icon('heroicon-o-plus')
+                ->icon('heroicon-o-pencil-square')
                 ->form([
                     TextInput::make('name')
                         ->label('Name')
@@ -217,7 +222,7 @@ class ZoneEditorPage extends Page implements HasTable
                         ->live()
                         ->required(),
 
-                    TextInput::make('record')
+                    TextInput::make('а_record')
                         ->label('Address')
                         ->placeholder('Ipv4 Address')
                         ->default(function($record) {
@@ -230,8 +235,9 @@ class ZoneEditorPage extends Page implements HasTable
                         ->rule('ipv4')
                         ->hidden(fn($get) => $get('type') !== 'A'),
 
-                    TextInput::make('record')
+                    TextInput::make('cname_record')
                         ->label('CNAME')
+                        ->placeholder('Fully qualified domain name')
                         ->default(function($record) {
                             return $record->type === 'CNAME' ? $record->record : null;
                         })
@@ -239,7 +245,6 @@ class ZoneEditorPage extends Page implements HasTable
                             $this->formData['record'] = $state;
                         })
                         ->required()
-                        ->placeholder('Fully qualified domain name')
                         ->rules([
                             'regex:/^(http:\/\/|https:\/\/)?(www\.)?([a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}$/'
                         ])
@@ -258,7 +263,7 @@ class ZoneEditorPage extends Page implements HasTable
                         ->rule('numeric', 'min:0')
                         ->hidden(fn($get) => $get('type') !== 'MX'),
 
-                    TextInput::make('record')
+                    TextInput::make('mx_record')
                         ->label('Destination Record')
                         ->placeholder('Fully qualified domain name')
                         ->default(function($record) {
@@ -275,14 +280,15 @@ class ZoneEditorPage extends Page implements HasTable
                         'name' => $this->formData['name'] ?? $record->name,
                         'type' => $this->formData['type'] ?? $record->type,
                         'priority' => $this->formData['priority'] ?? '',
-                        'record' => $this->formData['record']
+                        'record' => $this->formData['record'] ?? $record->type
                     ]);
 
                     Notification::make()
                         ->title('Record updated')
                         ->success()
                         ->send();
-                }),
+                })
+                ->modalWidth('sm'),
 
             Action::make('delete')
                 ->label('Delete')
@@ -613,7 +619,7 @@ If you want to create a customized key with a different algorithm, click the Cus
                         })
                 ])
                 ->action(function() {
-
+                    //
                 }),
 
             Action::make('go_back')
@@ -716,7 +722,6 @@ If you want to create a customized key with a different algorithm, click the Cus
                 ])
                 ->action(function () {
                     $type = $this->oldFormState['mountedTableActionsData'][0]['type'];
-
                     $zoneEditor = new ZoneEditor();
                     $zoneEditor->create([
                         'domain' => $this->formData['domain'],

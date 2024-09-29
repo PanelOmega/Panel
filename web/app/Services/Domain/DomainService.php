@@ -323,6 +323,7 @@ class DomainService
         // Fix file permissions
         shell_exec('chown -R ' . $webUser . ':' . $webUserGroup . ' ' . $domain->domain_root);
 
+        // Recursive permissions need to be based on the file type
         shell_exec('chmod 0711 ' . $domain->home_root);
         shell_exec('chmod 0711 ' . $domain->domain_root);
         shell_exec('chmod 775 ' . $domain->domain_public);

@@ -60,12 +60,12 @@ class Installer extends Page
     public function form(Form $form): Form
     {
 
-        if (empty($this->server_php_versions)) {
-            $this->server_php_versions = ['8.2'];
+        if (empty($this->serverPhpVersions)) {
+            $this->serverPhpVersions = ['8.2'];
         }
 
-        if (empty($this->server_php_modules)) {
-            $this->server_php_modules = array_keys(SupportedApplicationTypes::getPHPModules());
+        if (empty($this->serverPhpModules)) {
+            $this->serverPhpModules = array_keys(SupportedApplicationTypes::getPHPModules());
         }
 
         $step1 = [
@@ -136,7 +136,7 @@ class Installer extends Page
                                 ->columns(2),
 
                             // PHP Configuration
-                            CheckboxList::make('server_php_versions')
+                            CheckboxList::make('serverPhpVersions')
                                 ->hidden(function (Get $get) {
                                     return $get('server_application_type') !== 'apache_php';
                                 })
@@ -148,7 +148,7 @@ class Installer extends Page
                                 ->columns(5)
                                 ->required(),
 
-                            CheckboxList::make('server_php_modules')
+                            CheckboxList::make('serverPhpModules')
                                 ->hidden(function (Get $get) {
                                     return $get('server_application_type') !== 'apache_php';
                                 })
@@ -215,8 +215,8 @@ class Installer extends Page
 
                             if ($this->server_application_type == 'apache_php') {
                                 $phpInstaller = new PHPInstaller();
-                                $phpInstaller->setPHPVersions($this->server_php_versions);
-                                $phpInstaller->setPHPModules($this->server_php_modules);
+                                $phpInstaller->setPHPVersions($this->serverPhpVersions);
+                                $phpInstaller->setPHPModules($this->serverPhpModules);
                                 $phpInstaller->setLogFilePath(storage_path($this->installLogFilePath));
                                 $phpInstaller->run();
                             } else if ($this->server_application_type == 'apache_nodejs') {

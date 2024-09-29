@@ -1,2 +1,4 @@
 systemctl stop httpd
-dnf remove -y "httpd*"
+dnf remove -y my-apache
+
+

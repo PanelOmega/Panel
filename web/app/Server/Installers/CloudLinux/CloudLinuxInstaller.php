@@ -104,6 +104,16 @@ class CloudLinuxInstaller
         return $commands;
     }
 
+
+    public function installLSAPI()
+    {
+        $commands = [];
+        $commands[] = 'yum install liblsapi liblsapi-devel -y';
+        $commands[] = 'yum install mod_lsapi -y';
+        $commands[] = '/usr/bin/switch_mod_lsapi --setup';
+
+    }
+
     public static function isCloudLinuxInstalled(): array
     {
         if (is_file('/etc/redhat-release')) {

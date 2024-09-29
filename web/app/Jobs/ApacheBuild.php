@@ -93,11 +93,13 @@ class ApacheBuild implements ShouldQueue
         $apache2 = preg_replace('~(*ANY)\A\s*\R|\s*(?!\r\n)\s$~mu', '', $apache2);
 
         if ($os == OS::UBUNTU || $os == OS::DEBIAN) {
-            file_put_contents('/etc/apache2/apache2.conf', $apache2);
+            file_put_contents('/etc/my-apache/apache2.conf', $apache2);
             shell_exec('systemctl reload apache2');
         } if ($os == OS::CLOUD_LINUX || $os == OS::CENTOS || $os == OS::ALMA_LINUX) {
-            file_put_contents('/etc/httpd/conf/httpd.conf', $apache2);
+
+            file_put_contents('/etc/my-apache/conf/httpd.conf', $apache2);
             shell_exec('systemctl reload httpd');
+
         } else {
             throw new \Exception('Unsupported OS');
         }

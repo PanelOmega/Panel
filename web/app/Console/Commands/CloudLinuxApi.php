@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Models\Domain;
 use App\Models\HostingPlan;
 use App\Models\HostingSubscription;
 use App\Server\Helpers\LinuxUser;
@@ -104,23 +105,30 @@ class CloudLinuxApi extends Command
 
     public function domains($jsonOptions)
     {
-        echo '{
-  "data": {
-    "domain.com": {
-      "owner": "username",
-      "document_root": "/home/username/public_html/",
-      "is_main": true
-    },
-    "subdomain.domain.com": {
-      "owner": "username",
-      "document_root": "/home/username/public_html/subdomain/",
-      "is_main": false
-    }
-  },
-  "metadata": {
-    "result": "ok"
-  }
-}';
+        $data = [];
+
+        $findHostingSubscriptions = HostingSubscription::all();
+        if ($findHostingSubscriptions) {
+            foreach ($findHostingSubscriptions as $findHostingSubscription) {
+                $findDomains = Domain::where('hosting_subscription_id', $findHostingSubscription->id)->get();
+                if ($findDomains) {
+                    foreach ($findDomains as $findDomain) {
+                        $data[$findDomain->domain] = [
+                            'owner' => $findHostingSubscription->system_username,
+                            'document_root' => $findDomain->domain_public,
+                            'is_main' => $findDomain->is_main
+                        ];
+                    }
+                }
+            }
+        }
+
+        echo json_encode([
+            'data' => $data,
+            'metadata' => [
+                'result' => 'ok'
+            ]
+        ], JSON_PRETTY_PRINT);
     }
 
     public function resellers($jsonOptions)

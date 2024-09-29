@@ -1,0 +1,8 @@
+# Name:  PanelOmega AlmaLinux $releasever
+# URL: http://www.panelomega.com/
+[omega]
+name = PanelOmega AlmaLinux $releasever
+baseurl = https://license.panelomega.com/mirrorlist/almalinux/$releasever
+enabled = 1
+protect = 0
+gpgcheck = 0

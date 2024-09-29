@@ -4,6 +4,8 @@ namespace App\Models;
 
 use App\Actions\CreateLinuxWebUser;
 use App\Actions\GetLinuxUser;
+use App\Events\HostingSubscriptionIsDeleted;
+use App\Events\HostingSubscriptionIsDeleting;
 use App\Jobs\ApacheBuild;
 use App\Jobs\WebServerBuild;
 use App\Models\HostingSubscription\FtpAccount;
@@ -44,6 +46,8 @@ class HostingSubscription extends Model
                 return;
 //                throw new \Exception('System username is empty');
             }
+
+            HostingSubscriptionIsDeleting::dispatch($model);
 
             $getLinuxUserStatus = LinuxUser::getUser($model->system_username);
             if (empty($getLinuxUserStatus)) {
@@ -102,6 +106,8 @@ class HostingSubscription extends Model
 
             // Delete linux user
             LinuxUser::deleteUser($model->system_username);
+
+            HostingSubscriptionIsDeleted::dispatch($model);
 
             // This must be in background
             $wsb = new WebServerBuild();

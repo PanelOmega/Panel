@@ -99,6 +99,7 @@ class PHPInstaller
             $commands[] = 'dnf update -y';
             $commands[] = 'dnf install https://dl.fedoraproject.org/pub/epel/epel-release-latest-9.noarch.rpm -y';
             $commands[] = 'dnf install https://rpms.remirepo.net/enterprise/remi-release-9.rpm -y';
+            $commands[] = 'dnf install php -y';
             foreach ($this->phpVersions as $phpVersion) {
                 $phpVersionWithoutDot = str_replace('.', '', $phpVersion);
                 $commands[] = 'dnf module enable php:remi-' . $phpVersion . ' -y';

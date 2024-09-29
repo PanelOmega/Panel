@@ -42,7 +42,7 @@ class PHPInstaller extends Installer
                         ->schema([
 
                             // PHP Configuration
-                            CheckboxList::make('server_php_versions')
+                            CheckboxList::make('serverPhpVersions')
                                 ->default([
                                     '8.2'
                                 ])
@@ -51,7 +51,7 @@ class PHPInstaller extends Installer
                                 ->columns(5)
                                 ->required(),
 
-                            CheckboxList::make('server_php_modules')
+                            CheckboxList::make('serverPhpModules')
                                 ->label('PHP Modules')
                                 ->columns(5)
                                 ->options(SupportedApplicationTypes::getPHPModules()),

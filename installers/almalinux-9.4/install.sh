@@ -55,6 +55,9 @@ dnf install -y omega-php
 dnf install -y omega-nginx
 dnf install -y my-apache
 
+systemctl start httpd
+systemctl enable httpd
+
 OMEGA_PHP=/usr/local/omega/php/bin/php
 ln -s $OMEGA_PHP /usr/bin/omega-php
 HOSTNAME=$(hostname)

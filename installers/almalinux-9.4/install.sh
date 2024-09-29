@@ -81,12 +81,15 @@ rm -rf panel-omega-latest.zip
 chmod 711 /home
 chmod -R 750 /usr/local/omega
 
-
 ln -s /usr/local/omega/web/omega-shell.sh /usr/bin/omega-shell
 chmod +x /usr/local/omega/web/omega-shell.sh
 
 ln -s /usr/local/omega/web/omega-cli.sh /usr/bin/omega-cli
 chmod +x /usr/local/omega/web/omega-cli.sh
+
+mkdir -p /usr/local/omega/ssl
+cp /usr/local/omega/web/server/ssl/omega.crt /usr/local/omega/ssl/omega.crt
+cp /usr/local/omega/web/server/ssl/omega.key /usr/local/omega/ssl/omega.key
 GIT_BRANCH="stable"
 if [ -n "$1" ]; then
     GIT_BRANCH=$1
@@ -154,7 +157,9 @@ omega-php artisan omega:set-ini-settings APP_ENV "production"
 chmod -R o+w /usr/local/omega/web/storage/
 chmod -R o+w /usr/local/omega/web/bootstrap/cache/
 
+service omega start
+
 CURRENT_IP=$(hostname -I | awk '{print $1}')
 
 echo "PanelOmega downloaded successfully."
-echo "Please visit http://$CURRENT_IP:8443 to continue installation of the panel."
+echo "Please visit https://$CURRENT_IP:8443 to continue installation of the panel."

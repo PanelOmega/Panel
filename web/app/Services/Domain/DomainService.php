@@ -327,6 +327,10 @@ class DomainService
         shell_exec('chmod -R 0711 ' . $domain->domain_root);
         shell_exec('chmod -R 775 ' . $domain->domain_public);
 
+        shell_exec('chmod 750 ' . $domain->domain_public);
+        shell_exec('chmod 644 ' . $domain->domain_public.'/.htaccess');
+        shell_exec('chown ' . $webUser . ':nobody ' . $domain->domain_public);
+
         if (!is_dir($domain->domain_root . '/logs/apache2')) {
             shell_exec('mkdir -p ' . $domain->domain_root . '/logs/apache2');
         }

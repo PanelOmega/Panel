@@ -55,21 +55,5 @@ dnf install -y omega-php
 dnf install -y omega-nginx
 dnf install -y my-apache
 
-## Install OMEGA PHP
-#wget https://github.com/PanelOmega/Dist/raw/main/compilators/almalinux/php/dist/omega-php-8.2-1.el9.x86_64.rpm
-#dnf install -y omega-php-8.2-1.el9.x86_64.rpm
-
-#
-## Install OMEGA NGINX
-#wget https://github.com/PanelOmega/Dist/raw/main/compilators/almalinux/nginx/dist/omega-nginx-1.25.5-1.el9.x86_64.rpm
-#dnf install -y omega-nginx-1.25.5-1.el9.x86_64.rpm
-
 OMEGA_PHP=/usr/local/omega/php/bin/php
 ln -s $OMEGA_PHP /usr/bin/omega-php
-
-ln -s /usr/local/omega/web/omega-shell.sh /usr/bin/omega-shell
-chmod +x /usr/local/omega/web/omega-shell.sh
-
-
-ln -s /usr/local/omega/web/omega-cli.sh /usr/bin/omega-cli
-chmod +x /usr/local/omega/web/omega-cli.sh

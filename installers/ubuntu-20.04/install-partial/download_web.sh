@@ -9,3 +9,10 @@ rm -rf panel-omega-latest.zip
 
 chmod 711 /home
 chmod -R 750 /usr/local/omega
+
+
+ln -s /usr/local/omega/web/omega-shell.sh /usr/bin/omega-shell
+chmod +x /usr/local/omega/web/omega-shell.sh
+
+ln -s /usr/local/omega/web/omega-cli.sh /usr/bin/omega-cli
+chmod +x /usr/local/omega/web/omega-cli.sh

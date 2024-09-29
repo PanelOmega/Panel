@@ -60,12 +60,6 @@ service omega start
 
 OMEGA_PHP=/usr/local/omega/php/bin/php
 ln -s $OMEGA_PHP /usr/bin/omega-php
-
-ln -s /usr/local/omega/web/omega-shell.sh /usr/bin/omega-shell
-chmod +x /usr/local/omega/web/omega-shell.sh
-
-ln -s /usr/local/omega/web/omega-cli.sh /usr/bin/omega-cli
-chmod +x /usr/local/omega/web/omega-cli.sh
 HOSTNAME=$(hostname)
 IP_ADDRESS=$(hostname -I | cut -d " " -f 1)
 
@@ -89,6 +83,13 @@ rm -rf panel-omega-latest.zip
 
 chmod 711 /home
 chmod -R 750 /usr/local/omega
+
+
+ln -s /usr/local/omega/web/omega-shell.sh /usr/bin/omega-shell
+chmod +x /usr/local/omega/web/omega-shell.sh
+
+ln -s /usr/local/omega/web/omega-cli.sh /usr/bin/omega-cli
+chmod +x /usr/local/omega/web/omega-cli.sh
 GIT_BRANCH="stable"
 if [ -n "$1" ]; then
     GIT_BRANCH=$1

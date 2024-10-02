@@ -12,7 +12,7 @@ Route::get('/customer/phpMyAdmin/login', [\App\Http\Controllers\Customer\PHPMyAd
 
 Route::get('/customer/file-manager', function () {
     return view('customer.pages.file-manager');
-});
+})->name('file-manager.index');
 
 Route::get('/hosting-subscription/visit-local', function () {
 
@@ -41,7 +41,7 @@ Route::prefix('/file-manager')->controller(\App\Http\Controllers\FileManager\Fil
 
     Route::get('/initialize', 'initialize');
     Route::get('/tree', 'tree');
-    Route::get('/content', 'content');
+    Route::get('/content', 'content')->name('file-manager.content');
     Route::post('/upload', 'upload');
     Route::post('/create-file', 'createFile');
     Route::post('/update-file', 'updateFile');
@@ -56,5 +56,4 @@ Route::prefix('/file-manager')->controller(\App\Http\Controllers\FileManager\Fil
     Route::get('/stream', 'streamFile');
     Route::post('zip', 'zip');
     Route::post('unzip', 'unzip');
-
 });

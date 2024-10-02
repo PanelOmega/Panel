@@ -139,13 +139,13 @@ class HostingPlanResource extends Resource
                         Forms\Components\TextInput::make('disk_space')
                             ->numeric()
                             ->default('1000')
-                            ->suffix('GB')
+                            ->suffix('MB')
                             ->label('Disk Space'),
 
                         Forms\Components\TextInput::make('bandwidth')
                             ->numeric()
                             ->default('10000')
-                            ->suffix('GB')
+                            ->suffix('MB')
                             ->label('Bandwidth'),
 
                         Forms\Components\TextInput::make('databases')

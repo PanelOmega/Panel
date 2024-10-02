@@ -99,6 +99,17 @@ class Database extends Model
         });
     }
 
+    public function calculateDatabaseSize()
+    {
+        $universalDatabaseExecutor = new UniversalDatabaseExecutor(
+            OmegaConfig::get('MYSQL_HOST', '127.0.0.1'),
+            OmegaConfig::get('MYSQL_PORT', 3306),
+            OmegaConfig::get('MYSQL_ROOT_USERNAME'),
+            OmegaConfig::get('MYSQL_ROOT_PASSWORD'),
+        );
+
+        return $universalDatabaseExecutor->getDatabaseUsage($this->database_name_prefix . $this->database_name);
+    }
     public function hostingSubscription()
     {
         return $this->belongsTo(HostingSubscription::class);

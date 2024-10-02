@@ -8,6 +8,7 @@
 @import 'support';
 @import 'tables';
 @import 'widgets';
+@import 'diskUsagePage';
 
 body {
     font-family: 'Nunito Sans', sans-serif;

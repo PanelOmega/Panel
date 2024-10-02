@@ -230,7 +230,7 @@ class CustomerDashboard extends Page
                         [
                             'title' => 'Disk Usage',
                             'icon' => 'omega_customer-file-disk',
-                            'link' => '#'
+                            'link' => route('filament.customer.pages.disk-usage-page')
                         ],
 //                        [
 //                            'title'=>'Web Disk',

@@ -26,7 +26,7 @@ class ZoneEditorConfigBuild implements ShouldQueue
         $this->fixPermissions = $fixPermissions;
         $this->hostingSubscription = $hostingSubscription;
         $this->domain = $domain;
-//        $this->ip = '65.109.0.228';
+        $this->ip = $ip;
     }
 
     public function handle() {
@@ -34,7 +34,7 @@ class ZoneEditorConfigBuild implements ShouldQueue
         $this->updateZoneFile();
         $recordsData = $this->getZonesData();
         $this->updateZoneForwardConfig($recordsData);
-        if($this->ip) {
+        if($this->ip !== null) {
             $this->updateZoneReverseConfig($recordsData, $this->ip);
         }
         $service = $this->checkService();

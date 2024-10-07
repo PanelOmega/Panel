@@ -20,7 +20,7 @@ class   TrackDns extends Model
         'trace'
         ];
 
-    protected function getRows(): array {
+    public function getRows(): array {
         $host = Session::get('host');
         $tracerouteData =  self::getTraceroute($host);
         static::$hostData = $tracerouteData['host'];

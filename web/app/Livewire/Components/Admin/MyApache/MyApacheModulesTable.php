@@ -2,7 +2,7 @@
 
 namespace App\Livewire\Components\Admin\MyApache;
 
-use App\Models\MyApache\ApacheModule;
+use App\Models\MyApache\MyApachePackage;
 use Archilex\ToggleIconColumn\Columns\ToggleIconColumn;
 use Filament\Actions\Concerns\InteractsWithActions;
 use Filament\Actions\Contracts\HasActions;
@@ -26,7 +26,7 @@ class MyApacheModulesTable extends Component implements HasForms, HasTable
     public function table(Table $table): Table
     {
         return $table
-            ->query(ApacheModule::myApacheProfileIdQuery($this->myApacheProfileId, [
+            ->query(MyApachePackage::myApacheProfileIdQuery($this->myApacheProfileId, [
                 'mod_mpm_'
             ]))
             ->columns([

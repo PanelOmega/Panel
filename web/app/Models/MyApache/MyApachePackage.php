@@ -6,7 +6,7 @@ use App\Models\MyApacheProfile;
 use App\Server\Helpers\OS;
 use Illuminate\Database\Eloquent\Model;
 
-class ApacheModule extends Model
+class MyApachePackage extends Model
 {
     use \Sushi\Sushi;
 

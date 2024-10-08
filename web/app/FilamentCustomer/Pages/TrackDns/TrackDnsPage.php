@@ -146,7 +146,8 @@
                                     })
                                     ->default(function() {
                                         Session::put('host', $this->host);
-                                        $rows = TrackDns::getRows();
+                                        $track = new TrackDns();
+                                        $rows = $track->getRows();
                                         return implode("\n", array_map(function($row) {
                                             return "ID: {$row['id']}, Trace: {$row['trace']}";
                                         }, $rows));

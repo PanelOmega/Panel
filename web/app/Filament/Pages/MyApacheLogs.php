@@ -15,7 +15,7 @@ class MyApacheLogs extends Page
 
     protected static ?string $navigationGroup = 'My Apache';
 
-    public $logFile = '/var/log/httpd/error_log';
+    public $logFile = '/var/log/my-apache/error_log';
 
     #[Url]
     public $logName = 'error_log';
@@ -32,11 +32,11 @@ class MyApacheLogs extends Page
         $this->log = '';
 
         if ($logName == 'access_log') {
-            $this->logFile = '/var/log/httpd/access_log';
+            $this->logFile = '/var/log/my-apache/access_log';
         } else if ($logName == 'error_log') {
-            $this->logFile = '/var/log/httpd/error_log';
+            $this->logFile = '/var/log/my-apache/error_log';
         } else if ($logName == 'suexec_log') {
-            $this->logFile = '/var/log/httpd/suexec_log';
+            $this->logFile = '/var/log/my-apache/suexec_log';
         }
     }
 

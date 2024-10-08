@@ -9,28 +9,31 @@ use Filament\Actions\Contracts\HasActions;
 use Filament\Forms\Concerns\InteractsWithForms;
 use Filament\Forms\Contracts\HasForms;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Columns\ToggleColumn;
 use Illuminate\Contracts\View\View;
 use Livewire\Component;
 use Filament\Tables\Concerns\InteractsWithTable;
 use Filament\Tables\Contracts\HasTable;
 use Filament\Tables\Table;
 
-class ApacheModulesTable extends Component implements HasForms, HasTable
+class MyApacheModulesTable extends Component implements HasForms, HasTable
 {
     use InteractsWithTable;
     use InteractsWithForms;
 
+    public $myApacheProfileId;
+
     public function table(Table $table): Table
     {
         return $table
-            ->query(ApacheModule::query())
+            ->query(ApacheModule::myApacheProfileIdQuery($this->myApacheProfileId, [
+                'mod_mpm_'
+            ]))
             ->columns([
                 TextColumn::make('name')->searchable(),
                 TextColumn::make('description'),
-                TextColumn::make('source'),
-                ToggleIconColumn::make('is_enabled')
-                    ->onIcon('heroicon-s-check-circle')
-                    ->offIcon('heroicon-s-x-circle')
+                TextColumn::make('source')->badge(),
+                ToggleColumn::make('is_enabled')
             ])
             ->filters([
                 // ...

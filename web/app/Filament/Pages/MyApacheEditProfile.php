@@ -3,7 +3,7 @@
 namespace app\Filament\Pages;
 
 use App\Filament\Clusters\MyApache;
-use App\Livewire\Components\Admin\MyApache\ApacheModulesTable;
+use App\Livewire\Components\Admin\MyApache\MyApacheModulesTable;
 use Filament\Forms\Components\Livewire;
 use Filament\Forms\Components\Wizard;
 use Filament\Forms\Form;

@@ -21,4 +21,10 @@ class MyApacheProfile extends Model
         'vendor',
     ];
 
+    protected $casts = [
+        'packages' => 'array',
+        'tags' => 'array',
+        'config' => 'array',
+    ];
+
 }

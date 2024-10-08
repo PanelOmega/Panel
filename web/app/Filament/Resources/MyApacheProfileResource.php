@@ -4,7 +4,7 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\MyApacheProfileResource\Pages;
 use App\Filament\Resources\MyApacheProfileResource\RelationManagers;
-use App\Livewire\Components\Admin\MyApache\ApacheModulesTable;
+use App\Livewire\Components\Admin\MyApache\MyApacheModulesTable;
 use App\Models\MyApacheProfile;
 use Filament\Forms;
 use Filament\Forms\Components\Livewire;
@@ -13,8 +13,6 @@ use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class MyApacheProfileResource extends Resource
 {
@@ -35,9 +33,13 @@ class MyApacheProfileResource extends Resource
         return $form->schema([
             Wizard::make([
                 Wizard\Step::make('Apache MPM')
-                    ->schema([
-                        Livewire::make(ApacheModulesTable::class)
-                    ]),
+                    ->schema(function (MyApacheProfile $record) {
+                        return [
+                            Livewire::make(MyApacheModulesTable::class,[
+                                'myApacheProfileId' => $record->id,
+                            ]),
+                        ];
+                    }),
                 Wizard\Step::make('Apache Modules')
                     ->schema([
                         // ...

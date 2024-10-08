@@ -15,6 +15,8 @@ class MyApacheLogs extends Page
 
     protected static ?string $navigationGroup = 'My Apache';
 
+    protected static ?string $navigationLabel = 'Logs';
+
     public $logFile = '/var/log/my-apache/error_log';
 
     #[Url]
@@ -31,7 +33,7 @@ class MyApacheLogs extends Page
         $this->logName = $logName;
         $this->log = '';
 
-        if ($logName == 'access_log') { 
+        if ($logName == 'access_log') {
             $this->logFile = '/var/log/my-apache/access_log';
         } else if ($logName == 'error_log') {
             $this->logFile = '/var/log/my-apache/error_log';

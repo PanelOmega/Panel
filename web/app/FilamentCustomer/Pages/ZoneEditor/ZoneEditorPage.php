@@ -212,6 +212,7 @@ class ZoneEditorPage extends Page implements HasTable
                             'A' => 'A',
                             'CNAME' => 'CNAME',
                             'MX' => 'MX',
+                            'TXT' => 'TXT'
                         ])
                         ->default(function($record) {
                             return $record->type;
@@ -274,6 +275,19 @@ class ZoneEditorPage extends Page implements HasTable
                         })
                         ->required()
                         ->hidden(fn($get) => $get('type') !== 'MX'),
+
+                    TextInput::make('txt_record')
+                        ->label('TXT record')
+                        ->placeholder('v=DMARC1;p=quarantine rua=mailto:example@example.com')
+                        ->default(function($record) {
+                            return $record->type === 'TXT' ? $record->record: null;
+                        })
+                        ->afterStateUpdated(function($state) {
+                            $this->formData['record'] = $state;
+                        })
+                        ->required()
+//                        ->rules(['string|max:255'])
+                        ->hidden(fn($get) => $get('type') !== 'TXT'),
                 ])
                 ->action(function($record) {
                     $record->update([
@@ -461,6 +475,65 @@ class ZoneEditorPage extends Page implements HasTable
                         'name' => $this->formData['name'],
                         'type' => 'MX',
                         'priority' => $this->formData['priority'],
+                        'record' => $this->formData['record']
+                    ]);
+
+                    Notification::make()
+                        ->title('Record created')
+                        ->success()
+                        ->send();
+                }),
+
+            Action::make('txt_record')
+                ->label('TXT Record')
+                ->icon('heroicon-o-plus')
+                ->form([
+                    Section::make(function ($record) {
+                        return "Add a TXT Record for \"{$record->domain}\"";
+                    })
+                        ->schema([
+                            TextInput::make('name')
+                                ->label('Name')
+                                ->placeholder(function ($record) {
+                                    return "example.{$record->domain}";
+                                })
+                                ->live(false, 2000)
+                                ->required()
+                                ->afterStateUpdated(function($set, $state, $record) {
+                                    $this->formData = [
+                                        'domain' => $record->domain,
+                                        'name' => rtrim(preg_replace('/\.{2,}/', '.', $state), '.') . ".{$record->domain}.",
+                                    ];
+
+                                    if(!empty($state)) {
+                                        $set('name', $this->formData['name']);
+                                    }
+
+                                })
+                                ->rules([
+                                    function($record) {
+                                        Rule::unique('hosting_subscription_zone_editors')
+                                            ->where('hosting_subscription_id', $record->hosting_subscription_id)
+                                            ->where('domain', $record->domain);
+                                    }
+                                ]),
+
+                            TextInput::make('record')
+                                ->label('TXT Record')
+                                ->placeholder('v=DMARC1;p=quarantine rua=mailto:example@example.com')
+                                ->required()
+//                                ->rules(['string|max=255'])
+                                ->afterStateUpdated(function($state) {
+                                    $this->formData['record'] = $state;
+                                })
+                        ])
+                ])
+                ->action(function() {
+                    $zoneEditor = new ZoneEditor();
+                    $zoneEditor->create([
+                        'domain' => $this->formData['domain'],
+                        'name' => $this->formData['name'],
+                        'type' => 'TXT',
                         'record' => $this->formData['record']
                     ]);
 
@@ -671,6 +744,7 @@ If you want to create a customized key with a different algorithm, click the Cus
                             'A' => 'A',
                             'CNAME' => 'CNAME',
                             'MX' => 'MX',
+                            'TXT' => 'TXT'
                         ])
                         ->live()
                         ->required(),
@@ -718,6 +792,16 @@ If you want to create a customized key with a different algorithm, click the Cus
                             'regex:/^(http:\/\/|https:\/\/)?(www\.)?([a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}$/'
                         ])
                         ->hidden(fn($get) => $get('type') !== 'MX'),
+
+                    TextInput::make('txt_record')
+                        ->label('TXT record')
+                        ->placeholder('v=DMARC1;p=quarantine rua=mailto:example@example.com')
+                        ->afterStateUpdated(function($state) {
+                            $this->formData['record'] = $state;
+                        })
+                        ->required()
+//                        ->rules(['string|max:255'])
+                        ->hidden(fn($get) => $get('type') !== 'TXT'),
 
                 ])
                 ->action(function () {

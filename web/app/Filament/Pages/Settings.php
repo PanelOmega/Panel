@@ -33,6 +33,7 @@ class Settings extends Page
                     ],
                 ]
             ],
+
 //            'Assistance and Troubleshooting'=>[
 //                'title'=>'Assistance and Troubleshooting',
 //                'icon'=>'heroicon-o-lifebuoy',
@@ -74,6 +75,11 @@ class Settings extends Page
                         'icon'=>'heroicon-o-cog',
                         'url'=> route('filament.admin.pages.general-settings')
                     ],
+                    [
+                        'title'=>'Webhost manager',
+                        'icon'=>'heroicon-o-server',
+                        'url'=> route('filament.admin.pages.webhost-manager')
+                    ],
                 ]
             ],
             'Server Management'=>[
@@ -90,7 +96,7 @@ class Settings extends Page
                         'title'=>'PHP Installer',
                         'icon'=>'heroicon-o-cog',
                         'url'=> route('filament.admin.pages.php-installer')
-                    ]
+                    ],
 
 //                    [
 //                        'title'=>'Server Information',

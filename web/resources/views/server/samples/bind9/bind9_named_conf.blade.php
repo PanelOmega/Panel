@@ -7,14 +7,6 @@
 // See /usr/share/doc/bind*/sample/ for example named configuration files.
 //
 
-acl trusted {
-@if(isset($bind9Data['aclTrusted']))
-@foreach($bind9Data['aclTrusted'] as $aclTrusted)
-{{ $aclTrusted }};
-@endforeach
-@endif
-};
-
 options {
 listen-on port 53 @if(isset($bind9Data['portV4Ips'])) {{ '{ ' . $bind9Data['portV4Ips'] . ' }' }} @else { } @endif;
 listen-on-v6 port 53 @if(isset($bind9Data['portV6Ips'])) {{ '{ ' . $bind9Data['portV6Ips'] . ' }' }} @else { } @endif;
@@ -26,14 +18,6 @@ secroots-file   "/var/named/data/named.secroots";
 recursing-file  "/var/named/data/named.recursing";
 allow-query @if(isset($bind9Data['allowQuery'])) {{ '{' . $bin9Data['allowQuery'] . '}' }} @else { any; } @endif;
 
-@if(isset($bind9Data['forwarders']))
-forwarders {
-    @foreach($bind9Data['forwarders'] as $forwarder)
-        {{ $forwarder }};
-    @endforeach
-};
-@endif
-
 /*
 - If you are building an AUTHORITATIVE DNS server, do NOT enable recursion.
 - If you are building a RECURSIVE (caching) DNS server, you need to enable
@@ -44,9 +28,6 @@ cause your server to become part of large scale DNS amplification
 attacks. Implementing BCP38 within your network would greatly
 reduce such attack surface
 */
-recursion @if(isset($bind9Data['recursion'])) {{ $bind9Data['recursion']}} @else yes @endif;
-allow-recursion @if(isset($bind9Data['allowRecursion'])) {{ '{' . $bind9Data['allowRecursion'] . '}' }} @else { any; }@endif;
-
 dnssec-validation @if(isset($bind9Data['dnsValidation'])) {{ $bind9Data['dnsValidation'] }} @else auto @endif;
 
 managed-keys-directory "/var/named/dynamic";
@@ -59,20 +40,27 @@ session-keyfile "/run/named/session.key";
 include "/etc/crypto-policies/back-ends/bind.config";
 };
 
-{{--logging {--}}
-{{--channel default_log {--}}
-{{--file "/var/log/bind/default.log";--}}
-{{--print-time yes;--}}
-{{--print-category yes;--}}
-{{--print-severity yes;--}}
-{{--severity info;--}}
-{{--};--}}
+@if(isset($bind9Data['forwardZones']))
+    @foreach($bind9Data['forwardZones'] as $zone)
 
-{{--category default { default_log; };--}}
-{{--};--}}
+zone "{{ $zone['domain'] }}" {
+   type master;
+   file "/var/named/{{ $zone['domain'] }}.db";
+};
 
-include "/etc/named.rfc1912.zones";
-include "/etc/named.root.key";
-@if(isset($bind9Data['dnsZones']))
-include "{{$bind9Data['dnsZones']}}";
+    @endforeach
 @endif
+
+@if(isset($bind9Data['reverseZones']))
+    @foreach($bind9Data['reverseZones'] as $zone)
+
+zone "{{ $zone['ip'] }}.in-addr.arpa" IN {
+   type master;
+   file "/var/named/{{ $zone['ip'] }}.rev";
+;
+
+    @endforeach
+@endif
+
+include "/etc/named.root.key";
+include "/etc/named.rfc1912.zones";

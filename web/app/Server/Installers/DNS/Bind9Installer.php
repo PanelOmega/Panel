@@ -43,6 +43,10 @@ class Bind9Installer
 
         $commands[] = 'systemctl enable named';
         $commands[] = 'systemctl start named';
+        $commands[] = 'mkdir -p /var/log/named';
+        $commands[] = 'touch /var/log/named/default.log';
+        $commands[] = 'touch /var/log/named/default.log';
+        $commands[] = 'chmod 662 /var/log/named/default.log';
         $commands[] = 'omega-shell omega:update-bind9-config';
 
         $shellFileContent = '';
@@ -57,7 +61,6 @@ class Bind9Installer
         $shellFileContent .= 'rm -f /tmp/bind-9-installer.sh';
 
         file_put_contents('/tmp/bind-9-installer.sh',  $shellFileContent);
-//dd(file_get_contents('/tmp/bind-9-installer.sh'));
         if(!is_dir(dirname($this->logPath))) {
             $command = 'mkdir -p '. dirname($this->logPath);
             shell_exec($command);

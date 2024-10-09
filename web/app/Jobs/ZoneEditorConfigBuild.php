@@ -10,7 +10,6 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 
-
 class ZoneEditorConfigBuild implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
@@ -22,16 +21,17 @@ class ZoneEditorConfigBuild implements ShouldQueue
 
     public $ip;
 
-    public function __construct($fixPermissions = false, $hostingSubscription, $domain, $ip = null) {
+    public function __construct($fixPermissions = false, $hostingSubscription, $domain, $ip = null)
+    {
         $this->fixPermissions = $fixPermissions;
         $this->hostingSubscription = $hostingSubscription;
         $this->domain = $domain;
         $this->ip = $ip;
     }
 
-    public function handle() {
+    public function handle()
+    {
         $this->udpateConfigs();
-        $this->updateZoneFile();
         $recordsData = $this->getZonesData();
         $this->updateZoneForwardConfig($recordsData);
         if($this->ip !== null) {
@@ -41,12 +41,14 @@ class ZoneEditorConfigBuild implements ShouldQueue
         shell_exec("systemctl restart {$service}");
     }
 
-    public function udpateConfigs() {
+    public function udpateConfigs()
+    {
         $confPath = '/etc/named.conf';
-        $dnsZonesPath = '/etc/named.panelomega.zones';
 
         $server = $this->getNsIp();
         $trustedIps = $this->getDomainTrustedIps();
+
+        $zonesData = $this->getZones();
 
         $bind9ConfigData = [
             'aclTrusted' => $trustedIps,
@@ -56,7 +58,8 @@ class ZoneEditorConfigBuild implements ShouldQueue
                 '8.8.4.4'
             ],
             'dnsValidation' => 'auto',
-            'dnsZones' => $dnsZonesPath
+            'forwardZones' => $zonesData['forwardData'],
+            'reverseZones' => $zonesData['reverseData'],
         ];
 
         $bind9Config = view('server.samples.bind9.bind9_named_conf', [
@@ -67,8 +70,8 @@ class ZoneEditorConfigBuild implements ShouldQueue
         $this->updateResolv($server);
     }
 
-    public function updateZoneFile() {
-
+    public function getZones()
+    {
         $domains = $this->getCurrentDomains();
 
         $revIpData = [
@@ -76,8 +79,6 @@ class ZoneEditorConfigBuild implements ShouldQueue
             $this->ip
         ];
         $revIps = $this->getRevIps($revIpData);
-
-        $confPath = "/etc/named.panelomega.zones";
 
         $forwardZonesData = [];
         foreach($domains as $domain) {
@@ -87,20 +88,20 @@ class ZoneEditorConfigBuild implements ShouldQueue
         }
 
         $reverseZonesData = [];
-        foreach($revIps as $ip) {
-            $reverseZonesData[] = [
-                'ip' => $ip
-            ];
-        }
+//        foreach($revIps as $ip) {
+//            $reverseZonesData[] = [
+//                'ip' => $ip
+//            ];
+//        }
 
-        $bind9Zones = view('server.samples.bind9.bind9_named_zones', [
-            'forwardZones' => $forwardZonesData,
-//            'reverseZones' => $reverseZonesData
-        ])->render();
-        file_put_contents($confPath, $bind9Zones);
+        return [
+            'forwardData' => $forwardZonesData,
+            'reverseData' => $reverseZonesData
+        ];
     }
 
-    public function getZonesData() {
+    public function getZonesData()
+    {
         $ttl = 14400;
         $serial = now()->format('Ymd') . '01';
         $refresh = 30800;
@@ -112,11 +113,20 @@ class ZoneEditorConfigBuild implements ShouldQueue
             ->get()
             ->toArray();
 
+        $nsParts = explode('.', setting('general.ns1'));
+        array_shift($nsParts);
+        $adminNs = implode('.', $nsParts);
+
         $server = $this->getNsIp();
 
         return [
             'ttl' => $ttl,
             'domain' => $this->domain,
+            'ns1_name' => setting('general.ns1') ?? null,
+            'ns2_name' => setting('general.ns2') ?? null,
+            'ns3_name' => setting('general.ns3') ?? null,
+            'ns4_name' => setting('general.ns4') ?? null,
+            'admin_ns' => "admin.{$adminNs}",
             'serial' => $serial,
             'refresh' => $refresh,
             'retry' => $retry,
@@ -127,8 +137,9 @@ class ZoneEditorConfigBuild implements ShouldQueue
         ];
     }
 
-    public function updateZoneForwardConfig(array $recordsData) {
-        $confPath = "/etc/named.{$this->domain}.db";
+    public function updateZoneForwardConfig(array $recordsData)
+    {
+        $confPath = "/var/named/{$this->domain}.db";
 
         $zoneForwardConfig = view('server.samples.bind9.bind9_named_zones_forward', [
             'bind9ForwardData' => $recordsData
@@ -147,13 +158,13 @@ class ZoneEditorConfigBuild implements ShouldQueue
 //        }
     }
 
-    public function updateZoneReverseConfig(array $recordsData, string $ip) {
-
+    public function updateZoneReverseConfig(array $recordsData, string $ip)
+    {
         $revIp = explode('.', $ip);
         $revIp = array_reverse($revIp);
         $revIp = implode('.', $revIp);
 
-        $confPath = "/etc/named.{$revIp}.rev";
+        $confPath = "/var/named/{$revIp}.rev";
 
 //        $ip = explode('.', $recordsData['nsIp']);
 //        $lastOct = end($ip);
@@ -178,8 +189,8 @@ class ZoneEditorConfigBuild implements ShouldQueue
 //        }
     }
 
-    public function updateResolv() {
-
+    public function updateResolv()
+    {
         $filePath = '/etc/resolv.conf';
         $server = $this->getNsIp();
         $nameservers[] = $server;
@@ -196,7 +207,8 @@ class ZoneEditorConfigBuild implements ShouldQueue
         file_put_contents($filePath, $resolved);
     }
 
-    public function getCurrentDomains() {
+    public function getCurrentDomains()
+    {
         $domainData = ZoneEditor::where('hosting_subscription_id', $this->hostingSubscription->id)
             ->get();
 
@@ -208,7 +220,8 @@ class ZoneEditorConfigBuild implements ShouldQueue
         return array_unique($currentDomains);
     }
 
-    public function getDomainTrustedIps() {
+    public function getDomainTrustedIps()
+    {
         $domainData = ZoneEditor::where('hosting_subscription_id', $this->hostingSubscription->id)
             ->get();
 
@@ -227,14 +240,16 @@ class ZoneEditorConfigBuild implements ShouldQueue
         return empty($trustedIps) ? [] : array_unique($trustedIps);
     }
 
-    public function getNsIp() {
+    public function getNsIp()
+    {
         $command = 'hostname -I | awk \'{print $1}\'';
         $output = shell_exec($command);
         $server = trim($output);
         return $server;
     }
 
-    public function getRevIps(array $ips) {
+    public function getRevIps(array $ips)
+    {
 
         $revIps = [];
 
@@ -247,7 +262,8 @@ class ZoneEditorConfigBuild implements ShouldQueue
         return $revIps;
     }
 
-    public function checkService(): string {
+    public function checkService(): string
+    {
         return (strpos(shell_exec('systemctl is-active named'), 'active') !== false) ? 'named' :
             ((strpos(shell_exec('systemctl is-active pdns'), 'active') !== false) ? 'pdns' : 'none');
     }

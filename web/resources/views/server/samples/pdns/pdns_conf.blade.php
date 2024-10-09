@@ -318,8 +318,7 @@ bind-config=/etc/named.conf
 #################################
 # log-dns-queries	If PDNS should log all incoming DNS queries
 #
-# log-dns-queries=no
-
+log-dns-queries=yes
 #################################
 # log-timestamp	Print timestamps in log lines
 #

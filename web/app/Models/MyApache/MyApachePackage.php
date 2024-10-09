@@ -26,12 +26,10 @@ class MyApachePackage extends Model
     ];
 
     public static $myApacheProfileId;
-    public static $onlyContains = [];
 
-    public static function myApacheProfileIdQuery($myApacheProfileId, $onlyContains = [])
+    public static function myApacheProfileIdQuery($myApacheProfileId)
     {
         static::$myApacheProfileId = $myApacheProfileId;
-        static::$onlyContains = $onlyContains;
         return static::query();
     }
 
@@ -77,13 +75,6 @@ class MyApachePackage extends Model
                 }
             }
 
-            if (!empty(static::$onlyContains)) {
-                foreach (static::$onlyContains as $contains) {
-                    if (!str_contains($file, $contains)) {
-                        continue 2;
-                    }
-                }
-            }
 
             $modules[] = [
                 'id' => count($modules) + 1,

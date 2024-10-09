@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Components\Admin\MyApache;
 
+use App\Models\MyApache\MyApacheMPMPackage;
 use App\Models\MyApache\MyApachePackage;
 use Archilex\ToggleIconColumn\Columns\ToggleIconColumn;
 use Filament\Actions\Concerns\InteractsWithActions;
@@ -20,15 +21,19 @@ class MyApacheModulesTable extends Component implements HasForms, HasTable
 {
     use InteractsWithTable;
     use InteractsWithForms;
-
     public $myApacheProfileId;
+
+    public static function getModel()
+    {
+        return MyApachePackage::class;
+    }
 
     public function table(Table $table): Table
     {
+        $model = static::getModel();
+
         return $table
-            ->query(MyApachePackage::myApacheProfileIdQuery($this->myApacheProfileId, [
-                'mod_mpm_'
-            ]))
+            ->query((new $model)::myApacheProfileIdQuery($this->myApacheProfileId))
             ->columns([
                 TextColumn::make('name')->searchable(),
                 TextColumn::make('description'),

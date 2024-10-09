@@ -5,6 +5,7 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\MyApacheProfileResource\Pages;
 use App\Filament\Resources\MyApacheProfileResource\RelationManagers;
 use App\Livewire\Components\Admin\MyApache\MyApacheModulesTable;
+use App\Livewire\Components\Admin\MyApache\MyApacheMPMModulesTable;
 use App\Models\MyApacheProfile;
 use Filament\Forms;
 use Filament\Forms\Components\Livewire;
@@ -35,23 +36,43 @@ class MyApacheProfileResource extends Resource
                 Wizard\Step::make('Apache MPM')
                     ->schema(function (MyApacheProfile $record) {
                         return [
-                            Livewire::make(MyApacheModulesTable::class,[
-                                'myApacheProfileId' => $record->id,
+                            Forms\Components\View::make('livewire.render-livewire-component')
+                                ->viewData([
+                                'component' => MyApacheMPMModulesTable::class,
+                                'args' => [
+                                    'myApacheProfileId' => $record->id
+                                ]
                             ]),
                         ];
                     }),
                 Wizard\Step::make('Apache Modules')
-                    ->schema([
-                        // ...
-                    ]),
+                    ->schema(function (MyApacheProfile $record) {
+                        return [
+                            Forms\Components\View::make('livewire.render-livewire-component')
+                                ->viewData([
+                                    'component' => MyApacheModulesTable::class,
+                                    'args' => [
+                                        'myApacheProfileId' => $record->id
+                                    ] 
+                                ]),
+                        ];
+                    }),
                 Wizard\Step::make('PHP Versions')
-                    ->schema([
-                        // ...
-                    ]),
+                    ->schema(function (MyApacheProfile $record) {
+                        return [
+                            Livewire::make(MyApacheModulesTable::class,[
+                                'myApacheProfileId' => $record->id
+                            ]),
+                        ];
+                    }),
                 Wizard\Step::make('PHP Extensions')
-                    ->schema([
-                        // ...
-                    ]),
+                    ->schema(function (MyApacheProfile $record) {
+                        return [
+                            Livewire::make(MyApacheModulesTable::class,[
+                                'myApacheProfileId' => $record->id
+                            ]),
+                        ];
+                    }),
                 //                Wizard\Step::make('Additional Packages')
                 //                    ->schema([
                 //                        // ...
@@ -60,7 +81,8 @@ class MyApacheProfileResource extends Resource
                     ->schema([
                         // ...
                     ]),
-            ])->columnSpanFull()
+            ])
+                ->columnSpanFull()
         ]);
     }
 

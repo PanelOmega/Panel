@@ -1,15 +1,17 @@
 <?php
 
 namespace App\Console\Commands;
+
 use Illuminate\Console\Command;
-class UpdatePdnsConfig extends Command
+
+class UpdatePdnsServiceConfig extends Command
 {
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'omega:update-pdns-config';
+    protected $signature = 'omega:update-pdns-service';
 
     /**
      * The console command description.
@@ -23,20 +25,21 @@ class UpdatePdnsConfig extends Command
      */
     public function handle()
     {
-        $pdnsConf = view('server.samples.pdns.pdns_conf', [])->render();
 
-        $command = "
-            if [ ! -d '/etc/pdns/' ]; then
-                mkdir -p /etc/pdns/
-            fi
-        ";
-        $result = shell_exec($command);
+        $configPath = '/lib/systemd/system/pdns.service';
 
-        if ($result !== null) {
-            $this->info('Unable to create pdns directory!');
-        }
+        $pdnsData = [
+            'afterTarget' => 'network-online.target time-sync.target',
+            'userId' => 'named',
+            'groupId' => 'named'
+        ];
 
-        $save = file_put_contents('/etc/pdns/pdns.conf', $pdnsConf);
+        $pdns = view('server.samples.pdns.pdns_lib_service', [
+            'pdnsData' => $pdnsData
+        ])->render();
+
+
+        $save = file_put_contents($configPath, $pdns);
 
         if ($save) {
             $this->info('The default pdns configuration is set.');
@@ -44,6 +47,7 @@ class UpdatePdnsConfig extends Command
             $this->info('The default pdns configuration is not set.');
         }
 
-        shell_exec('sudo systemctl restart pdns');
+//        shell_exec('systemctl restart pdns');
     }
+
 }

@@ -45,9 +45,18 @@ class Bind9Installer
         $commands[] = 'systemctl start named';
         $commands[] = 'mkdir -p /var/log/named';
         $commands[] = 'touch /var/log/named/default.log';
-        $commands[] = 'touch /var/log/named/default.log';
         $commands[] = 'chmod 662 /var/log/named/default.log';
         $commands[] = 'omega-shell omega:update-bind9-config';
+        $commands[] = 'omega-shell omega:set-default-bind9-zone-files';
+        $commands[] = 'chown named:named /etc/named.conf';
+
+        $isFirewalldEnabled = shell_exec('systemctl is-enabled firewalld');
+
+        if($isFirewalldEnabled === 'enabled') {
+            $commands[] = 'systemctl restart firewalld';
+            $commands[] = 'firewall-cmd --add-service=dns --zone=public --permanent';
+            $commands[] = 'firewall-cmd --reload';
+        }
 
         $shellFileContent = '';
         foreach ($commands as $command) {

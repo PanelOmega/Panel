@@ -7,7 +7,7 @@ use App\Models\Traits\ZoneEditorDnssecTrait;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class ZoneEditorDnssec extends Model
+class   ZoneEditorDnssec extends Model
 {
     use HasFactory, ZoneEditorDnssecTrait;
 

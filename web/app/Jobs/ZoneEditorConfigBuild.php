@@ -21,7 +21,7 @@ class ZoneEditorConfigBuild implements ShouldQueue
 
     public $ip;
 
-    public function __construct($fixPermissions = false, $hostingSubscription, $domain, $ip = null)
+    public function __construct($fixPermissions = false, $hostingSubscription = null, $domain = null, $ip = null)
     {
         $this->fixPermissions = $fixPermissions;
         $this->hostingSubscription = $hostingSubscription;
@@ -31,21 +31,25 @@ class ZoneEditorConfigBuild implements ShouldQueue
 
     public function handle()
     {
-        $this->udpateConfigs();
+        $service = $this->checkService();
+        $this->udpateConfigs($service);
         $recordsData = $this->getZonesData();
         $this->updateZoneForwardConfig($recordsData);
         if($this->ip !== null) {
             $this->updateZoneReverseConfig($recordsData, $this->ip);
         }
-        $service = $this->checkService();
-        shell_exec("systemctl restart {$service}");
+
+        $service !== 'none' ? shell_exec("systemctl restart {$service}") : null;
     }
 
-    public function udpateConfigs()
+    public function udpateConfigs(string $service)
     {
         $confPath = '/etc/named.conf';
 
         $server = $this->getNsIp();
+
+        $allowQParts = explode('.', $server);
+        $allowQueryIp = implode('.', array_slice($allowQParts, 0, 3));
         $trustedIps = $this->getDomainTrustedIps();
 
         $zonesData = $this->getZones();
@@ -53,11 +57,13 @@ class ZoneEditorConfigBuild implements ShouldQueue
         $bind9ConfigData = [
             'aclTrusted' => $trustedIps,
 //            'portV4Ips' => 'trusted;',
+            'allowQuery' => "localhost; {$allowQueryIp}.0/24;",
             'forwarders' => [
                 '8.8.8.8',
                 '8.8.4.4'
             ],
             'dnsValidation' => 'auto',
+//            'service' => $service,
             'forwardZones' => $zonesData['forwardData'],
             'reverseZones' => $zonesData['reverseData'],
         ];
@@ -67,7 +73,8 @@ class ZoneEditorConfigBuild implements ShouldQueue
         ])->render();
 
         file_put_contents($confPath, $bind9Config);
-        $this->updateResolv($server);
+//        $service === 'pdns' ? $this->addZonesToPdns() : null;
+        $this->updateResolv();
     }
 
     public function getZones()
@@ -122,11 +129,13 @@ class ZoneEditorConfigBuild implements ShouldQueue
         return [
             'ttl' => $ttl,
             'domain' => $this->domain,
-            'ns1_name' => setting('general.ns1') ?? null,
-            'ns2_name' => setting('general.ns2') ?? null,
-            'ns3_name' => setting('general.ns3') ?? null,
-            'ns4_name' => setting('general.ns4') ?? null,
-            'admin_ns' => "admin.{$adminNs}",
+            'nsNames' => [
+                setting('general.ns1') ?? null,
+                setting('general.ns2') ?? null,
+                setting('general.ns3') ?? null,
+                setting('general.ns4') ?? null,
+            ],
+            'admin_ns' => "root.{$adminNs}",
             'serial' => $serial,
             'refresh' => $refresh,
             'retry' => $retry,
@@ -146,16 +155,6 @@ class ZoneEditorConfigBuild implements ShouldQueue
         ])->render();
 
         file_put_contents($confPath, $zoneForwardConfig);
-
-//        if($this->checkService() === 'pdns') {
-            $commands = [
-                "pdns_control bind-add-zone {$this->domain} {$confPath}",
-                "pdns_control reload"
-            ];
-            foreach($commands as $command) {
-                shell_exec($command);
-            }
-//        }
     }
 
     public function updateZoneReverseConfig(array $recordsData, string $ip)
@@ -178,15 +177,15 @@ class ZoneEditorConfigBuild implements ShouldQueue
 
         file_put_contents($confPath, $zoneReverseConfig);
 
-//        if($this->checkService() === 'pdns') {
-        $commands = [
-            "pdns_control bind-add-zone {$this->domain} {$confPath}",
-            'pdns_control reload'
-        ];
-        foreach ($commands as $command) {
-            shell_exec($command);
+        if($this->checkService() === 'pdns') {
+            $commands = [
+                "pdns_control bind-add-zone {$this->domain} {$confPath}",
+                'pdns_control reload'
+            ];
+            foreach ($commands as $command) {
+                shell_exec($command);
+            }
         }
-//        }
     }
 
     public function updateResolv()
@@ -209,12 +208,11 @@ class ZoneEditorConfigBuild implements ShouldQueue
 
     public function getCurrentDomains()
     {
-        $domainData = ZoneEditor::where('hosting_subscription_id', $this->hostingSubscription->id)
-            ->get();
 
+        $domainData = ZoneEditor::pluck('domain')->unique();
         $currentDomains = [];
         foreach($domainData as $domain) {
-            $currentDomains[] = $domain->domain;
+            $currentDomains[] = $domain;
         }
 
         return array_unique($currentDomains);
@@ -264,7 +262,24 @@ class ZoneEditorConfigBuild implements ShouldQueue
 
     public function checkService(): string
     {
-        return (strpos(shell_exec('systemctl is-active named'), 'active') !== false) ? 'named' :
-            ((strpos(shell_exec('systemctl is-active pdns'), 'active') !== false) ? 'pdns' : 'none');
+//        return  (setting('server_config.nameserver_select_pdns') !== false) ? 'pdns' :
+//            ((setting('server_config.nameserver_select_bind') !== false) ? 'named' : 'none');
+
+        return 'named';
     }
+
+//    public function addZonesToPdns(): void
+//    {
+//        $commands = [];
+//        $domainData = $this->getCurrentDomains();
+//
+//        foreach ($domainData as $domain) {
+//            $commands[] = "pdns_control bind-add-zone {$domain} /var/named/{$domain}.db";
+//        }
+//        $commands[] = 'pdns_control reload';
+//
+//        foreach ($commands as $command) {
+//            shell_exec($command);
+//        }
+//    }
 }

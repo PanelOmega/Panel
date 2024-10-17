@@ -1,7 +1,7 @@
 @if(isset($bind9ForwardData))
 
 $TTL {{ $bind9ForwardData['ttl'] }}
-@              IN           SOA         {{ $bind9ForwardData['ns1_name'] }}.    {{ $bind9ForwardData['admin_ns'] }}. (
+@              IN           SOA         {{ $bind9ForwardData['nsNames'][0] }}.    {{ $bind9ForwardData['admin_ns'] }}. (
                                         {{ $bind9ForwardData['serial'] }}           ; Serial number
                                         {{ $bind9ForwardData['refresh'] }}          ; Refresh
                                         {{ $bind9ForwardData['retry'] }}            ; Retry
@@ -10,21 +10,27 @@ $TTL {{ $bind9ForwardData['ttl'] }}
 
 @if(isset($bind9ForwardData['records']))
 
-@if(isset($bind9ForwardData['ns1_name']))
-@   IN  NS  {{$bind9ForwardData['ns1_name']}}.
-@endif
-@if(isset($bind9ForwardData['ns2_name']))
-@   IN  NS  {{$bind9ForwardData['ns2_name']}}.
-@endif
-@if(isset($bind9ForwardData['ns3_name']))
-@   IN  NS  {{$bind9ForwardData['ns3_name']}}.
-@endif
-@if(isset($bind9ForwardData['ns4_name']))
-@   IN  NS  {{$bind9ForwardData['ns4_name']}}.
+@if(isset($bind9ForwardData['nsNames']))
+    @foreach($bind9ForwardData['nsNames'] as $nsName)
+        @if(!empty($nsName))
+
+@   IN  NS  {{$nsName}}.
+
+        @endif
+    @endforeach
+
+    @foreach($bind9ForwardData['nsNames'] as $nsName)
+        @if(!empty($nsName))
+
+{{$nsName}}.    IN  A   {{$bind9ForwardData['nsIp']}}
+
+        @endif
+    @endforeach
+
 @endif
 
-{{$bind9ForwardData['domain']}}.    IN  A   {{$bind9ForwardData['nsIp']}}
 www     {{$bind9ForwardData['ttl']}}    IN  CNAME   {{$bind9ForwardData['domain']}}.
+@    IN  A   {{$bind9ForwardData['nsIp']}}
 
 @foreach($bind9ForwardData['records'] as $record)
 @if($record['type'] === 'A')

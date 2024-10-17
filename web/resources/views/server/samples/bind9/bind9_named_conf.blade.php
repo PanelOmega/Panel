@@ -8,37 +8,124 @@
 //
 
 options {
-listen-on port 53 @if(isset($bind9Data['portV4Ips'])) {{ '{ ' . $bind9Data['portV4Ips'] . ' }' }} @else { } @endif;
-listen-on-v6 port 53 @if(isset($bind9Data['portV6Ips'])) {{ '{ ' . $bind9Data['portV6Ips'] . ' }' }} @else { } @endif;
-directory       "/var/named";
-dump-file       "/var/named/data/cache_dump.db";
-statistics-file "/var/named/data/named_stats.txt";
-memstatistics-file "/var/named/data/named_mem_stats.txt";
-secroots-file   "/var/named/data/named.secroots";
-recursing-file  "/var/named/data/named.recursing";
-allow-query @if(isset($bind9Data['allowQuery'])) {{ '{' . $bin9Data['allowQuery'] . '}' }} @else { any; } @endif;
-
-/*
-- If you are building an AUTHORITATIVE DNS server, do NOT enable recursion.
-- If you are building a RECURSIVE (caching) DNS server, you need to enable
-recursion.
-- If your recursive DNS server has a public IP address, you MUST enable access
-control to limit queries to your legitimate users. Failing to do so will
-cause your server to become part of large scale DNS amplification
-attacks. Implementing BCP38 within your network would greatly
-reduce such attack surface
+/* make named use port 53 for the source of all queries, to allow
+* firewalls to block all ports except 53:
 */
-dnssec-validation @if(isset($bind9Data['dnsValidation'])) {{ $bind9Data['dnsValidation'] }} @else auto @endif;
 
-managed-keys-directory "/var/named/dynamic";
-geoip-directory "/usr/share/GeoIP";
+// query-source    port 53;
 
-pid-file "/run/named/named.pid";
-session-keyfile "/run/named/session.key";
+recursion no;
 
-/* https://fedoraproject.org/wiki/Changes/CryptoPolicy */
-include "/etc/crypto-policies/back-ends/bind.config";
+/* We no longer enable this by default as the dns posion exploit
+has forced many providers to open up their firewalls a bit */
+
+// Put files that named is allowed to write in the data/ directory:
+directory                "/var/named"; // the default
+pid-file                 "/var/run/named/named.pid";
+dump-file                "data/cache_dump.db";
+statistics-file          "data/named_stats.txt";
+/* memstatistics-file     "data/named_mem_stats.txt"; */
+allow-transfer    { "none"; };
+
 };
+
+{{--logging {--}}
+{{--category notify { zone_transfer_log; };--}}
+{{--category xfer-in { zone_transfer_log; };--}}
+{{--category xfer-out { zone_transfer_log; };--}}
+{{--channel zone_transfer_log {--}}
+{{--file "/var/named/log/default.log" versions 10 size 50m;--}}
+{{--print-time yes;--}}
+{{--print-category yes;--}}
+{{--print-severity yes;--}}
+{{--severity info;--}}
+{{--};--}}
+{{--};--}}
+
+{{--@if(isset($bind9Data['service']) && $bind9Data['service'] === 'named')--}}
+view "localhost_resolver" {
+/* This view sets up named to be a localhost resolver ( caching only nameserver ).
+* If all you want is a caching-only nameserver, then you need only define this view:
+*/
+match-clients         { 127.0.0.0/24; };
+match-destinations    { localhost; };
+recursion yes;
+
+zone "." IN {
+type hint;
+file "/var/named/named.ca";
+};
+
+/* these are zones that contain definitions for all the localhost
+* names and addresses, as recommended in RFC1912 - these names should
+* ONLY be served to localhost clients:
+*/
+include "/var/named/named.rfc1912.zones";
+};
+
+view "internal" {
+/* This view will contain zones you want to serve only to "internal" clients
+that connect via your directly attached LAN interfaces - "localnets" .
+*/
+match-clients        { localnets; };
+match-destinations    { localnets; };
+recursion yes;
+
+zone "." IN {
+type hint;
+file "/var/named/named.ca";
+};
+
+// include "/var/named/named.rfc1912.zones";
+// you should not serve your rfc1912 names to non-localhost clients.
+
+// These are your "authoritative" internal zones, and would probably
+// also be included in the "localhost_resolver" view above :
+
+@if(isset($bind9Data['forwardZones']))
+    @foreach($bind9Data['forwardZones'] as $zone)
+
+zone "{{ $zone['domain'] }}" {
+   type master;
+   file "/var/named/{{ $zone['domain'] }}.db";
+};
+
+    @endforeach
+@endif
+
+@if(isset($bind9Data['reverseZones']))
+    @foreach($bind9Data['reverseZones'] as $zone)
+
+zone "{{ $zone['ip'] }}.in-addr.arpa" IN {
+    type master;
+    file "/var/named/{{ $zone['ip'] }}.rev";
+};
+
+    @endforeach
+@endif
+
+};
+
+view    "external" {
+/* This view will contain zones you want to serve only to "external" clients
+* that have addresses that are not on your directly attached LAN interface subnets:
+*/
+recursion no;
+
+// you'd probably want to deny recursion to external clients, so you don't
+// end up providing free DNS service to all takers
+
+// all views must contain the root hints zone:
+
+zone "." IN {
+type hint;
+file "/var/named/named.ca";
+};
+
+// These are your "authoritative" external zones, and would probably
+// contain entries for just your web and mail servers:
+
+// BEGIN external zone entries
 
 @if(isset($bind9Data['forwardZones']))
     @foreach($bind9Data['forwardZones'] as $zone)
@@ -57,10 +144,35 @@ zone "{{ $zone['domain'] }}" {
 zone "{{ $zone['ip'] }}.in-addr.arpa" IN {
    type master;
    file "/var/named/{{ $zone['ip'] }}.rev";
-;
+};
 
     @endforeach
 @endif
 
-include "/etc/named.root.key";
-include "/etc/named.rfc1912.zones";
+};
+
+{{--@else--}}
+{{--    @if(isset($bind9Data['forwardZones']))--}}
+{{--        @foreach($bind9Data['forwardZones'] as $zone)--}}
+
+{{--zone "{{ $zone['domain'] }}" {--}}
+{{--    type master;--}}
+{{--    file "/var/named/{{ $zone['domain'] }}.db";--}}
+{{--};--}}
+
+{{--        @endforeach--}}
+{{--    @endif--}}
+
+{{--    @if(isset($bind9Data['reverseZones']))--}}
+{{--        @foreach($bind9Data['reverseZones'] as $zone)--}}
+
+{{--zone "{{ $zone['ip'] }}.in-addr.arpa" IN {--}}
+{{--    type master;--}}
+{{--    file "/var/named/{{ $zone['ip'] }}.rev";--}}
+{{--};--}}
+
+{{--        @endforeach--}}
+{{--    @endif--}}
+{{--@endif--}}
+{{--include "/etc/named.root.key";--}}
+{{--include "/etc/named.rfc1912.zones";--}}

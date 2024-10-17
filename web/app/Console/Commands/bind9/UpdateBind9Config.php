@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Console\Commands;
+namespace App\Console\Commands\bind9;
 use Illuminate\Console\Command;
 class UpdateBind9Config extends Command
 {

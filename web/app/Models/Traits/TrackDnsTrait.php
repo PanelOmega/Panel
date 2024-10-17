@@ -8,22 +8,27 @@ trait TrackDnsTrait
     {
         $result = [];
         if(!empty($host)) {
-            $records = dns_get_record($host, DNS_A | DNS_AAAA | DNS_MX);
 
-            if (count($records) > 0) {
-                foreach ($records as $recordVal) {
-                    switch ($recordVal['type']) {
-                        case 'A':
-                            $result[] = "{$recordVal['host']} has address {$recordVal['ip']}";
-                            break;
-                        case 'AAAA':
-                            $result[] = "{$recordVal['host']} has address {$recordVal['ipv6']}";
-                            break;
-                        case 'MX':
-                            $result[] = "{$recordVal['host']} mail is handled by {$recordVal['pri']} {$recordVal['target']}.";
-                            break;
+            try {
+                $records = dns_get_record($host, DNS_A | DNS_AAAA | DNS_MX);
+
+                if (count($records) > 0) {
+                    foreach ($records as $recordVal) {
+                        switch ($recordVal['type']) {
+                            case 'A':
+                                $result[] = "{$recordVal['host']} has address {$recordVal['ip']}";
+                                break;
+                            case 'AAAA':
+                                $result[] = "{$recordVal['host']} has address {$recordVal['ipv6']}";
+                                break;
+                            case 'MX':
+                                $result[] = "{$recordVal['host']} mail is handled by {$recordVal['pri']} {$recordVal['target']}.";
+                                break;
+                        }
                     }
                 }
+            } catch (\Exception $e) {
+                return ["An error occurred : " . $e->getMessage()];
             }
         }
         return $result;
@@ -31,34 +36,43 @@ trait TrackDnsTrait
 
     public static function getDomainZoneInformation(string $host)
     {
-        $records = dns_get_record($host, DNS_ALL);
         $result = [];
 
-        if (count($records) > 0) {
-            foreach ($records as $dataVal) {
-                switch ($dataVal['type']) {
-                    case 'A':
-                        $result[] = "{$dataVal['host']}.\t{$dataVal['ttl']} {$dataVal['class']}\t{$dataVal['type']}\t{$dataVal['ip']}";
-                        break;
-                    case 'AAAA':
-                        $result[] = "{$dataVal['host']}.\t{$dataVal['ttl']} {$dataVal['class']}\t{$dataVal['type']}\t{$dataVal['ipv6']}";
-                        break;
-                    case 'NS':
-                        $result[] = "{$dataVal['host']}.\t{$dataVal['ttl']} {$dataVal['class']}\t{$dataVal['type']}\t{$dataVal['target']}";
-                        break;
-                    case 'SOA':
-                        $result[] = "{$dataVal['host']}.\t{$dataVal['ttl']} {$dataVal['class']}\t{$dataVal['type']}\t{$dataVal['mname']}\t{$dataVal['rname']}\t{$dataVal['serial']}\t{$dataVal['refresh']}\t{$dataVal['retry']}\t{$dataVal['expire']}\t{$dataVal['minimum-ttl']}";
-                        break;
-                    case 'MX':
-                        $result[] = "{$dataVal['host']}.\t{$dataVal['ttl']} {$dataVal['class']}\t{$dataVal['type']}\t{$dataVal['pri']}\t{$dataVal['target']}";
-                        break;
-                    case 'TXT':
-                        $result[] = "{$dataVal['host']}.\t{$dataVal['ttl']} {$dataVal['class']}\t{$dataVal['type']}\t{$dataVal['txt']}";
-                        break;
-                    case 'CAA':
-                        $result[] = "{$dataVal['host']}.\t{$dataVal['ttl']} {$dataVal['class']}\t{$dataVal['type']}\t{$dataVal['flags']}\t{$dataVal['tag']}\t{$dataVal['value']}";
-                        break;
+        if(!empty($host)) {
+
+            try {
+
+                $records = dns_get_record($host, DNS_ALL);
+
+                if (count($records) > 0) {
+                    foreach ($records as $dataVal) {
+                        switch ($dataVal['type']) {
+                            case 'A':
+                                $result[] = "{$dataVal['host']}.\t{$dataVal['ttl']} {$dataVal['class']}\t{$dataVal['type']}\t{$dataVal['ip']}";
+                                break;
+                            case 'AAAA':
+                                $result[] = "{$dataVal['host']}.\t{$dataVal['ttl']} {$dataVal['class']}\t{$dataVal['type']}\t{$dataVal['ipv6']}";
+                                break;
+                            case 'NS':
+                                $result[] = "{$dataVal['host']}.\t{$dataVal['ttl']} {$dataVal['class']}\t{$dataVal['type']}\t{$dataVal['target']}";
+                                break;
+                            case 'SOA':
+                                $result[] = "{$dataVal['host']}.\t{$dataVal['ttl']} {$dataVal['class']}\t{$dataVal['type']}\t{$dataVal['mname']}\t{$dataVal['rname']}\t{$dataVal['serial']}\t{$dataVal['refresh']}\t{$dataVal['retry']}\t{$dataVal['expire']}\t{$dataVal['minimum-ttl']}";
+                                break;
+                            case 'MX':
+                                $result[] = "{$dataVal['host']}.\t{$dataVal['ttl']} {$dataVal['class']}\t{$dataVal['type']}\t{$dataVal['pri']}\t{$dataVal['target']}";
+                                break;
+                            case 'TXT':
+                                $result[] = "{$dataVal['host']}.\t{$dataVal['ttl']} {$dataVal['class']}\t{$dataVal['type']}\t{$dataVal['txt']}";
+                                break;
+                            case 'CAA':
+                                $result[] = "{$dataVal['host']}.\t{$dataVal['ttl']} {$dataVal['class']}\t{$dataVal['type']}\t{$dataVal['flags']}\t{$dataVal['tag']}\t{$dataVal['value']}";
+                                break;
+                        }
+                    }
                 }
+            } catch (\Exception $e) {
+                return ["An error occurred : " . $e->getMessage()];
             }
         }
         return $result;

@@ -43,6 +43,26 @@ class RunRepair extends Command
 
 //        $this->fixApacheErrors();
 
+
+        $this->fixPermissions();
+
+    }
+
+    public function fixPermissions()
+    {
+        shell_exec('chmod 711 /usr/local/omega');
+        shell_exec('chown root:wheel /usr/local/omega');
+
+        $suexecLog = '/etc/my-apache/logs/suexec_log';
+        if (!is_file($suexecLog)) {
+            shell_exec('touch ' . $suexecLog);
+        }
+        shell_exec('chown root:nobody ' . $suexecLog);
+        shell_exec('chmod 644 ' . $suexecLog);
+
+        $suexecFile = '/usr/sbin/suexec';
+        shell_exec('chown root:nobody ' . $suexecFile);
+        shell_exec('chmod 6750 ' . $suexecFile);
     }
 
 //    public function fixApacheErrors()

@@ -25,12 +25,14 @@ class PHP
 
         $getCloudLinuxPHPVersions = static::_getCloudLinuxPHP();
         if (!empty($getCloudLinuxPHPVersions)) {
-            $phpVersions = array_merge($phpVersions, $getCloudLinuxPHPVersions);
+            return $getCloudLinuxPHPVersions;
+//            $phpVersions = array_merge($phpVersions, $getCloudLinuxPHPVersions);
         }
 
         $getRemiPHPVersions = static::_getRemiPHP();
         if (!empty($getRemiPHPVersions)) {
-            $phpVersions = array_merge($phpVersions, $getRemiPHPVersions);
+            return $getRemiPHPVersions;
+//            $phpVersions = array_merge($phpVersions, $getRemiPHPVersions);
         }
 
         return $phpVersions;
@@ -38,7 +40,7 @@ class PHP
 
     private static function _getCloudLinuxPHP()
     {
-        return Cache::remember('getCoudLinuxPHP', 600, function () {
+//        return Cache::remember('getCoudLinuxPHPx', 600, function () {
 
             $phpVersions = [];
             $isCloudLinuxInstalled = CloudLinuxInstaller::isCloudLinuxInstalled();
@@ -66,7 +68,7 @@ class PHP
                             'shortWithoutDot' => $shortWithoutDot,
                             'full' => $version['full'],
                             'path' => $checkCopiedFile,
-                            'friendlyName' => 'PHP ' . $version['short'],
+                            'friendlyName' => 'PHP ' . $version['short'] . ' (CloudLinux)',
                             'vendor' => 'CloudLinux',
                             'action' => $fileType . ' /cgi-sys/cl-php' . $shortWithoutDot,
                             'fileType' => $fileType,
@@ -77,7 +79,7 @@ class PHP
                 }
             }
             return $phpVersions;
-        });
+//        });
     }
     private static function _getRemiPHP()
     {

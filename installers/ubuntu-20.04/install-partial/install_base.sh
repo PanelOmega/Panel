@@ -56,13 +56,5 @@ dpkg -i omega-php-8.2.0-ubuntu-20.04.deb
 wget https://github.com/PanelOmega/Dist/raw/main/compilators/debian/nginx/dist/omega-nginx-1.24.0-ubuntu-20.04.deb
 dpkg -i omega-nginx-1.24.0-ubuntu-20.04.deb
 
-service omega start
-
 OMEGA_PHP=/usr/local/omega/php/bin/php
 ln -s $OMEGA_PHP /usr/bin/omega-php
-
-ln -s /usr/local/omega/web/omega-shell.sh /usr/bin/omega-shell
-chmod +x /usr/local/omega/web/omega-shell.sh
-
-ln -s /usr/local/omega/web/omega-cli.sh /usr/bin/omega-cli
-chmod +x /usr/local/omega/web/omega-cli.sh

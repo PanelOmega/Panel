@@ -1,31 +1,52 @@
 <?php
 
-namespace App\Console\Commands\bind9;
+namespace App\Console\Commands;
+use App\Jobs\ZoneEditorConfigBuild;
+use App\Models\Customer;
+use App\Models\HostingSubscription\ZoneEditor;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Auth;
 
-class SetupDefaultZones extends Command
+class UpdateBind9Config extends Command
 {
+
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'omega:set-default-bind9-zone-files';
+    protected $signature = 'omega:update-bind9';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Sets up the default zones in /var/named';
+    protected $description = 'Updates Bind9 configuration';
 
     /**
      * Execute the console command.
      */
     public function handle()
     {
+        $customer = Customer::first();
+        Auth::guard('customer')->login($customer);
+        $hostingSubscription = Customer::getHostingSubscriptionSession();
+        $zoneBuilder = new ZoneEditorConfigBuild(false, $hostingSubscription);
+        $zoneBuilder->handle();
 
+        $this->info('The bind9 configuration has been set!');
+
+        $this->setDefaultZones();
+
+        $this->info('The default bind9 zones were configured successfully!');
+        shell_exec('sudo systemctl restart named');
+    }
+
+    public function setDefaultZones()
+    {
         $path = '/var/named';
+
         $named = view('server.samples.bind9.default-zones.named_zero', [])
             ->render();
 
@@ -133,10 +154,5 @@ class SetupDefaultZones extends Command
 
         shell_exec("chown named:named {$path}/localdomain.zone");
         shell_exec("chmod 644 {$path}/localdomain.zone");
-
-        $this->info('The default bind9 zones are configured.');
-
-        shell_exec('sudo systemctl restart named');
     }
-
 }

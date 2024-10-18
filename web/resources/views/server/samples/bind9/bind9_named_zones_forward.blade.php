@@ -36,23 +36,23 @@ www     {{$bind9ForwardData['ttl']}}    IN  CNAME   {{$bind9ForwardData['domain'
 @if($record['type'] === 'A')
     @php
         $aHeader = "; A records map domain names to IPv4 addresses";
-        $recordA[] = "{$record['domain']}.   IN  {$record['type']}   {$record['record']}";
+        $recordA[] = "{$record['domain']}.  {$record['ttl']}   IN  {$record['type']}   {$record['record']}";
     @endphp
 @elseif($record['type'] === 'CNAME')
     @php
         $cnameHeader = "; CNAME records alias one domain name to another";
-        $recordCNAME[] = "{$record['name']}    IN  {$record['type']}   {$record['domain']}.";
+        $recordCNAME[] = "{$record['name']}     {$record['ttl']}    IN  {$record['type']}   {$record['domain']}.";
     @endphp
 @elseif($record['type'] === 'MX')
     @php
         $mxHeader = "; MX records define mail servers for the domain";
-        $recordMX[] = "{$record['record']}.   IN  {$record['type']} {$record['priority']}     {$record['name']}";
+        $recordMX[] = "{$record['record']}.     {$record['ttl']}   IN  {$record['type']} {$record['priority']}     {$record['name']}.";
     @endphp
 @endif
 @if($record['type'] === 'TXT')
     @php
         $txtHeader = "; TXT records are used to store text-based information related to the domain";
-        $recordTXT[] = "{$record['domain']}.   IN  {$record['type']}   {$record['record']}";
+        $recordTXT[] = "{$record['domain']}.    {$record['ttl']}   IN  {$record['type']}   {$record['record']}";
     @endphp
 @endif
 @endforeach

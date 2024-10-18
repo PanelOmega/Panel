@@ -38,12 +38,11 @@ class ZoneEditor extends Model
 
         static::creating(function ($model) use ($hostingSubscription) {
             $model->hosting_subscription_id = $hostingSubscription->id;
-            $model->ttl = '14400';
         });
 
         $callback = function($model) use ($hostingSubscription) {
 
-            $zoneEditorBuild = new ZoneEditorConfigBuild(false, $hostingSubscription, $model->domain);
+            $zoneEditorBuild = new ZoneEditorConfigBuild(false, $hostingSubscription);
             $zoneEditorBuild->handle();
         };
         static::created(function($model) use ($callback) {

@@ -16,7 +16,6 @@ class NameserverSelectionHelper
             case 'pdns':
                 $commands = [
                     'systemctl stop named',
-//                    'omega-shell omega:update-bind9-config',
                     'systemctl restart pdns',
                     "systemctl is-active pdns && echo 'PowerDNS configured and active!' || echo 'There was an issue activating PowerDNS!'"
                 ];

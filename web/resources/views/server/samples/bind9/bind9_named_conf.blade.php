@@ -29,18 +29,18 @@ allow-transfer    { "none"; };
 
 };
 
-{{--logging {--}}
-{{--category notify { zone_transfer_log; };--}}
-{{--category xfer-in { zone_transfer_log; };--}}
-{{--category xfer-out { zone_transfer_log; };--}}
-{{--channel zone_transfer_log {--}}
-{{--file "/var/named/log/default.log" versions 10 size 50m;--}}
-{{--print-time yes;--}}
-{{--print-category yes;--}}
-{{--print-severity yes;--}}
-{{--severity info;--}}
-{{--};--}}
-{{--};--}}
+logging {
+category notify { zone_transfer_log; };
+category xfer-in { zone_transfer_log; };
+category xfer-out { zone_transfer_log; };
+channel zone_transfer_log {
+file "/var/named/log/default.log" versions 10 size 50m;
+print-time yes;
+print-category yes;
+print-severity yes;
+severity info;
+};
+};
 
 {{--@if(isset($bind9Data['service']) && $bind9Data['service'] === 'named')--}}
 view "localhost_resolver" {

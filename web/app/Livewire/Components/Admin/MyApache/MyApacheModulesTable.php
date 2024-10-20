@@ -40,6 +40,10 @@ class MyApacheModulesTable extends Component implements HasForms, HasTable
                 TextColumn::make('source')->badge(),
                 ToggleColumn::make('is_enabled')
             ])
+            ->paginationPageOptions([
+                1,
+                5,
+            ])
             ->filters([
                 // ...
             ])

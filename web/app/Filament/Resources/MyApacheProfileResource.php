@@ -2,11 +2,13 @@
 
 namespace App\Filament\Resources;
 
+use app\Filament\Pages\MyApacheEditProfile;
 use App\Filament\Resources\MyApacheProfileResource\Pages;
 use App\Filament\Resources\MyApacheProfileResource\RelationManagers;
 use App\Livewire\Components\Admin\MyApache\MyApacheModulesTable;
 use App\Livewire\Components\Admin\MyApache\MyApacheMPMModulesTable;
 use App\Models\MyApacheProfile;
+use Filament\Actions\EditAction;
 use Filament\Forms;
 use Filament\Forms\Components\Livewire;
 use Filament\Forms\Components\Wizard;
@@ -29,63 +31,6 @@ class MyApacheProfileResource extends Resource
         return 'Profile';
     }
 
-    public static function form(Form $form): Form
-    {
-        return $form->schema([
-            Wizard::make([
-                Wizard\Step::make('Apache MPM')
-                    ->schema(function (MyApacheProfile $record) {
-                        return [
-                            Forms\Components\View::make('livewire.render-livewire-component')
-                                ->viewData([
-                                'component' => MyApacheMPMModulesTable::class,
-                                'args' => [
-                                    'myApacheProfileId' => $record->id
-                                ]
-                            ]),
-                        ];
-                    }),
-                Wizard\Step::make('Apache Modules')
-                    ->schema(function (MyApacheProfile $record) {
-                        return [
-                            Forms\Components\View::make('livewire.render-livewire-component')
-                                ->viewData([
-                                    'component' => MyApacheModulesTable::class,
-                                    'args' => [
-                                        'myApacheProfileId' => $record->id
-                                    ] 
-                                ]),
-                        ];
-                    }),
-                Wizard\Step::make('PHP Versions')
-                    ->schema(function (MyApacheProfile $record) {
-                        return [
-                            Livewire::make(MyApacheModulesTable::class,[
-                                'myApacheProfileId' => $record->id
-                            ]),
-                        ];
-                    }),
-                Wizard\Step::make('PHP Extensions')
-                    ->schema(function (MyApacheProfile $record) {
-                        return [
-                            Livewire::make(MyApacheModulesTable::class,[
-                                'myApacheProfileId' => $record->id
-                            ]),
-                        ];
-                    }),
-                //                Wizard\Step::make('Additional Packages')
-                //                    ->schema([
-                //                        // ...
-                //                    ]),
-                Wizard\Step::make('Review')
-                    ->schema([
-                        // ...
-                    ]),
-            ])
-                ->columnSpanFull()
-        ]);
-    }
-
     public static function table(Table $table): Table
     {
         return $table
@@ -95,6 +40,7 @@ class MyApacheProfileResource extends Resource
                     ->sortable(),
                 Tables\Columns\TextColumn::make('packages')
                     ->searchable()
+                    ->limit(30)
                     ->sortable(),
                 Tables\Columns\TextColumn::make('tags')
                     ->searchable()
@@ -110,7 +56,14 @@ class MyApacheProfileResource extends Resource
                 //
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
+//                Tables\Actions\Action::make('edit')
+//                    ->icon('heroicon-o-pencil')
+//                    ->url(function (MyApacheProfile $record) {
+//                        return route('filament.admin.pages.my-apache-edit-profile',[
+//                            'record' => $record->id
+//                        ]);
+//                }),
+            Tables\Actions\EditAction::make(),
                 Tables\Actions\DeleteAction::make()
                     ->hidden(function (MyApacheProfile $record) {
                         if ($record->is_custom == 1) {
@@ -137,8 +90,7 @@ class MyApacheProfileResource extends Resource
     {
         return [
             'index' => Pages\ListMyApacheProfiles::route('/'),
-//            'create' => Pages\CreateMyApacheProfile::route('/create'),
-            'edit' => Pages\EditMyApacheProfile::route('/{record}/edit'),
+            'edit' => MyApacheEditProfile::route('/{record}/edit'),
         ];
     }
 }

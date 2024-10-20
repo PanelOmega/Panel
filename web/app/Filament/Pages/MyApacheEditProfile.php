@@ -5,8 +5,10 @@ namespace App\Filament\Pages;
 use App\Filament\Clusters\MyApache;
 use App\Filament\Resources\MyApacheProfileResource;
 use App\Livewire\Components\Admin\MyApache\MyApacheModulesTable;
+use App\Livewire\Components\Admin\MyApache\MyApacheMPMModulesTable;
 use App\Models\MyApacheProfile;
 use Filament\Forms\Components\Livewire;
+use Filament\Forms\Components\View;
 use Filament\Forms\Components\Wizard;
 use Filament\Forms\Form;
 use Filament\Resources\Pages\Page;
@@ -43,25 +45,25 @@ class MyApacheEditProfile extends Page
                 Wizard\Step::make('Apache MPM')
                     ->schema(function () {
                         return [
-//                            Forms\Components\View::make('livewire.render-livewire-component')
-//                                ->viewData([
-//                                'component' => MyApacheMPMModulesTable::class,
-//                                'args' => [
+                            View::make('livewire.render-livewire-component')
+                                ->viewData([
+                                'component' => MyApacheMPMModulesTable::class,
+                                'args' => [
 //                                    'myApacheProfileId' => $record->id
-//                                ]
-//                            ]),
+                                ]
+                            ]),
                         ];
                     }),
                 Wizard\Step::make('Apache Modules')
                     ->schema(function () {
                         return [
-//                            Forms\Components\View::make('livewire.render-livewire-component')
-//                                ->viewData([
-//                                    'component' => MyApacheModulesTable::class,
-//                                    'args' => [
+                            View::make('livewire.render-livewire-component')
+                                ->viewData([
+                                    'component' => MyApacheModulesTable::class,
+                                    'args' => [
 //                                        'myApacheProfileId' => $record->id
-//                                    ]
-//                                ]),
+                                    ]
+                                ]),
                         ];
                     }),
                 Wizard\Step::make('PHP Versions')

@@ -1,3 +1,3 @@
 <div>
-    @livewire($component, $args, md5(serialize($args)))
+    @livewire($component)
 </div>

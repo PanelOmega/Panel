@@ -12,6 +12,9 @@ use Filament\Forms\Contracts\HasForms;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Columns\ToggleColumn;
 use Illuminate\Contracts\View\View;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Pagination\CursorPaginator;
+use Illuminate\Pagination\Paginator;
 use Livewire\Component;
 use Filament\Tables\Concerns\InteractsWithTable;
 use Filament\Tables\Contracts\HasTable;
@@ -22,6 +25,7 @@ class MyApacheModulesTable extends Component implements HasForms, HasTable
     use InteractsWithTable;
     use InteractsWithForms;
     public $myApacheProfileId;
+    public static $isSearchable = true;
 
     public static function getModel()
     {
@@ -31,8 +35,10 @@ class MyApacheModulesTable extends Component implements HasForms, HasTable
     public function table(Table $table): Table
     {
         $model = static::getModel();
+        $isSearchable = static::$isSearchable ?? true;
 
         return $table
+            ->searchable($isSearchable)
             ->query((new $model)::myApacheProfileIdQuery($this->myApacheProfileId))
             ->columns([
                 TextColumn::make('name')->searchable(),
@@ -40,10 +46,11 @@ class MyApacheModulesTable extends Component implements HasForms, HasTable
                 TextColumn::make('source')->badge(),
                 ToggleColumn::make('is_enabled')
             ])
-            ->paginationPageOptions([
-                1,
-                5,
-            ])
+//            ->queryStringIdentifier('ApacheModules')
+//            ->paginationPageOptions([
+//                1,
+//                5,
+//            ])
             ->filters([
                 // ...
             ])

@@ -370,4 +370,87 @@ class IpBlockerTest extends TestCase
         $this->assertNotEmpty($testSystemFileContent);
         $this->assertTrue(str_contains(trim($testSystemFileContent), trim($testHtAccessView)));
     }
+
+    public function testDeleteIpBlocker() {
+        $testCustomerUsername = 'test' . uniqid();
+        $testCreateCustomer = new Customer();
+        $testCreateCustomer->name = $testCustomerUsername;
+        $testCreateCustomer->email = $testCustomerUsername . '@mail.com';
+        $testCreateCustomer->username = $testCustomerUsername;
+        $testCreateCustomer->password = time() . uniqid();
+        $testCreateCustomer->save();
+        $this->assertDatabaseHas('customers', ['username' => $testCustomerUsername]);
+
+        Auth::guard('customer')->login($testCreateCustomer);
+
+        $this->installDocker();
+        $this->installPHP();
+
+        $testPhpVersion = PHP::getInstalledPHPVersions()[0]['full'];
+        $this->assertNotEmpty($testPhpVersion);
+
+        $testCreateHostingPlan = new HostingPlan();
+        $testCreateHostingPlan->name = 'test' . uniqid();
+        $testCreateHostingPlan->default_server_application_type = 'apache_php';
+        $testCreateHostingPlan->default_server_application_settings = [
+            'php_version' => $testPhpVersion,
+            'enable_php_fpm' => true,
+        ];
+        $testCreateHostingPlan->save();
+        $this->assertDatabaseHas('hosting_plans', ['name' => $testCreateHostingPlan->name]);
+
+        $testDomain = 'test' . uniqid() . '.demo.panelomega-unit.com';
+        $hostingSubscriptionService = new HostingSubscriptionService();
+        $createResponse = $hostingSubscriptionService->create(
+            $testDomain,
+            $testCreateCustomer->id,
+            $testCreateHostingPlan->id,
+            null,
+            null
+        );
+        $this->assertTrue($createResponse['success']);
+        $testHostingSubscription = $createResponse['hostingSubscription'];
+        $this->assertNotEmpty($testHostingSubscription);
+        Session::put('hosting_subscription_id', $testHostingSubscription->id);
+
+        $record = ['blocked_ip' => '192.'];
+        $result = IpBlocker::prepareIpBlockerRecords($record, $testHostingSubscription->id);
+
+        $this->assertArrayHasKey('hosting_subscription_id', $result[0]);
+        $this->assertArrayHasKey('blocked_ip', $result[0]);
+        $this->assertArrayHasKey('beginning_ip', $result[0]);
+        $this->assertArrayHasKey('ending_ip', $result[0]);
+        $this->assertEquals($result[0]['hosting_subscription_id'], $testHostingSubscription->id);
+        $this->assertEquals($result[0]['blocked_ip'], $record['blocked_ip'] . '0.0.0/8');
+        $this->assertEquals($result[0]['beginning_ip'], $record['blocked_ip'] . '0.0.0');
+        $this->assertEquals($result[0]['ending_ip'], $record['blocked_ip'] . '255.255.255');
+
+        $testCreateIpBlockerRecord = new IpBlocker();
+        $testCreateIpBlockerRecord->hosting_subscription_id = $testHostingSubscription->id;
+        $testCreateIpBlockerRecord->blocked_ip = $result[0]['blocked_ip'];
+        $testCreateIpBlockerRecord->beginning_ip = $result[0]['beginning_ip'];
+        $testCreateIpBlockerRecord->ending_ip = $result[0]['ending_ip'];
+        $testCreateIpBlockerRecord->save();
+
+        $this->assertIsObject($testCreateIpBlockerRecord);
+
+        $testCreateIpBlockerRecord->delete();
+        $this->assertDatabaseMissing('hosting_subscription_ip_blockers', [
+            'id' => $testCreateIpBlockerRecord->id,
+            'hosting_subscription_id' => $testHostingSubscription->id,
+        ]);
+
+        $testSystemUsername = $testHostingSubscription->system_username;
+        $testIpBlockedPath = "/home/{$testSystemUsername}/public_html/.htaccess";
+        $this->assertTrue(file_exists($testIpBlockedPath));
+
+        $testHtAccessBuild = new HtaccessBuildIpBlocker(false, $testIpBlockedPath, $testHostingSubscription->id);
+
+        $testBlockedIps = $testHtAccessBuild->getAllBlockedIps();
+        $this->assertEmpty($testBlockedIps);
+        $testHtAccessView = $testHtAccessBuild->getHtaccessIpBlockerConfig($testBlockedIps);
+        $this->assertEmpty($testHtAccessView);
+        $testSystemFileContent = file_get_contents($testIpBlockedPath);
+        $this->assertEmpty($testSystemFileContent);
+    }
 }

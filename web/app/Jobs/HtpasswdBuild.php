@@ -8,39 +8,41 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use League\Csv\Exception;
 
 class HtpasswdBuild implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels, HtaccessBuildTrait;
 
     public $fixPermissions = false;
-    public $directoryRealPath;
+    public $hostingSubscription;
     public $htPasswdData = [];
 
     public $startComment = '# Section managed by Panel Omega: Directory Privacy, do not edit';
     public $endComment = '# End section managed by Panel Omega: Directory Privacy';
 
-    public function __construct($fixPermissions = false, $directoryRealPath, $htPasswdData = [])
+    public function __construct($fixPermissions = false, $hostingSubscription, $htPasswdData = [])
     {
         $this->fixPermissions = $fixPermissions;
-        $this->directoryRealPath = $directoryRealPath;
+        $this->hostingSubscription = $hostingSubscription;
         $this->htPasswdData = $htPasswdData;
     }
 
     public function handle()
     {
-
-        $htPasswdRecords = $this->getHtPasswdRecords($this->htPasswdData);
+        $directoryRealPath = "/home/{$this->hostingSubscription->system_username}/.htpasswd";
+        $htPasswdRecords = $this->getHtPasswdRecords($this->htPasswdData, $directoryRealPath);
         $htPasswdView = $this->getHtPasswdFileConfig($htPasswdRecords);
-        $this->updateSystemFile($this->directoryRealPath, $htPasswdView);
+        $this->updateSystemFile($directoryRealPath, $htPasswdView);
+        $this->setHtpasswdFilePermissions($directoryRealPath);
     }
 
-    public function getHtPasswdRecords($htPasswdData) {
+    public function getHtPasswdRecords($htPasswdData, $directoryRealPath) {
         $htPasswdRecords = [];
 
-        if (file_exists($this->directoryRealPath)) {
+        if (file_exists($directoryRealPath)) {
             $pattern = '/^(?!\s*#).+$/';
-            $lines = file($this->directoryRealPath, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+            $lines = file($directoryRealPath, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
 
             foreach ($lines as $line) {
                 if (preg_match($pattern, $line)) {
@@ -63,5 +65,24 @@ class HtpasswdBuild implements ShouldQueue
         ])->render();
 
         return $htpasswdContent;
+    }
+
+    public function setHtpasswdFilePermissions($directoryRealPath) {
+        if(!file_exists($directoryRealPath)) {
+            throw new \Exception('Htpasswd file not found at: ' . $directoryRealPath);
+        }
+
+        $ownerCommand = "ls -ld {$directoryRealPath} | awk '{print $3}'";
+        $groupCommand = "ls -ld {$directoryRealPath} | awk '{print $4}'";
+        $currentOwner = shell_exec($ownerCommand);
+        $currentGroup = shell_exec($groupCommand);
+
+        $user = $this->hostingSubscription->system_username;
+        $group = 'nobody';
+
+        if(trim($currentOwner) !== $user && trim($currentGroup) !== $group) {
+            $command = "chown {$user}:{$group} {$directoryRealPath}";
+            shell_exec($command);
+        }
     }
 }

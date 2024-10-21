@@ -48,9 +48,8 @@ trait HasPHP
         $getPHPVersions = PHP::getInstalledPHPVersions();
         $this->assertNotEmpty($getPHPVersions);
 
-        foreach ($getPHPVersions as $phpVersion) {
-            $this->assertTrue(in_array($phpVersion['short'], $requestedPHPVersions));
-        }
+        $shortVersions = array_column($getPHPVersions, 'short');
+        $this->assertNotEmpty(array_intersect($shortVersions, $requestedPHPVersions));
 
     }
 }

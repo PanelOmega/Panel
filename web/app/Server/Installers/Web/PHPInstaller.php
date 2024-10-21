@@ -117,6 +117,7 @@ class PHPInstaller
         $shellFileContent .= 'echo "DONE!"' . PHP_EOL;
         $shellFileContent .= 'rm -f /tmp/php-installer.sh';
 
+        //shell_exec('sudo chmod 755 /tmp');
         file_put_contents('/tmp/php-installer.sh', $shellFileContent);
         shell_exec('bash /tmp/php-installer.sh >> ' . $this->logFilePath . ' &');
 

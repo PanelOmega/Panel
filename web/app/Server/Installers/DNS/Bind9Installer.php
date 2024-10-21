@@ -3,6 +3,7 @@
 namespace App\Server\Installers\DNS;
 
 use App\Server\Helpers\OS;
+
 class Bind9Installer
 {
     public string $logPath = '/var/log/omega/bind-9-installer.log';
@@ -12,12 +13,13 @@ class Bind9Installer
         $this->logPath = $path;
     }
 
-    public static function isBind9Installed() {
+    public static function isBind9Installed()
+    {
         $os = OS::getDistro();
 
-        if($os === OS::DEBIAN || $os === OS::UBUNTU) {
+        if ($os === OS::DEBIAN || $os === OS::UBUNTU) {
             $command = 'apt list installed | grep bind';
-        } elseif($os === OS::CLOUD_LINUX || $os === OS::CENTOS || $os === OS::ALMA_LINUX) {
+        } elseif ($os === OS::CLOUD_LINUX || $os === OS::CENTOS || $os === OS::ALMA_LINUX) {
             $command = 'yum list installed | grep bind';
         }
 
@@ -29,7 +31,8 @@ class Bind9Installer
         ];
     }
 
-    public function run() {
+    public function run()
+    {
         $os = OS::getDistro();
         $commands = [];
 
@@ -45,13 +48,14 @@ class Bind9Installer
         $commands[] = 'systemctl start named';
         $commands[] = 'mkdir -p /var/log/named';
         $commands[] = 'touch /var/log/named/default.log';
-        $commands[] = 'chmod 662 /var/log/named/default.log';
+        $commands[] = 'chown named:named /var/log/named/default.log';
+        $commands[] = 'chmod 644 /var/log/named/default.log';
         $commands[] = 'omega-shell omega:update-bind9';
         $commands[] = 'chown named:named /etc/named.conf';
 
         $isFirewalldEnabled = shell_exec('systemctl is-enabled firewalld');
 
-        if($isFirewalldEnabled !== 'enabled') {
+        if ($isFirewalldEnabled !== 'enabled') {
             $commands[] = 'systemctl enable firewalld';
             $commands[] = 'systemctl start firewalld';
         }
@@ -71,9 +75,9 @@ class Bind9Installer
         $shellFileContent .= 'echo "DONE!"' . PHP_EOL;
         $shellFileContent .= 'rm -f /tmp/bind-9-installer.sh';
 
-        file_put_contents('/tmp/bind-9-installer.sh',  $shellFileContent);
-        if(!is_dir(dirname($this->logPath))) {
-            $command = 'mkdir -p '. dirname($this->logPath);
+        file_put_contents('/tmp/bind-9-installer.sh', $shellFileContent);
+        if (!is_dir(dirname($this->logPath))) {
+            $command = 'mkdir -p ' . dirname($this->logPath);
             shell_exec($command);
         }
 

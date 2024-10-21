@@ -70,7 +70,6 @@ class ZoneEditorPage extends Page implements HasTable
     public function query(): Builder
     {
         $hostingSubscription = Customer::getHostingSubscriptionSession();
-
         $query = !$this->dnssecEnabled && !$this->manageZonesEnabled
             ? Domain::query()
             : ($this->dnssecEnabled
@@ -292,7 +291,7 @@ class ZoneEditorPage extends Page implements HasTable
                                 ->afterStateUpdated(function ($state) {
                                     $this->formData['ttl'] = $state;
                                 })
-                                ->default(function($record) {
+                                ->default(function ($record) {
                                     return $record->ttl;
                                 })
 

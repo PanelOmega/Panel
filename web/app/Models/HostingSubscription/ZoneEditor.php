@@ -4,11 +4,9 @@ namespace App\Models\HostingSubscription;
 
 use App\Jobs\ZoneEditorConfigBuild;
 use App\Models\Customer;
-use App\Models\Domain;
 use App\Models\Traits\ZoneEditorTrait;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\Session;
 
 class ZoneEditor extends Model
 {
@@ -40,18 +38,18 @@ class ZoneEditor extends Model
             $model->hosting_subscription_id = $hostingSubscription->id;
         });
 
-        $callback = function($model) use ($hostingSubscription) {
+        $callback = function ($model) use ($hostingSubscription) {
 
             $zoneEditorBuild = new ZoneEditorConfigBuild(false, $hostingSubscription);
             $zoneEditorBuild->handle();
         };
-        static::created(function($model) use ($callback) {
+        static::created(function ($model) use ($callback) {
             $callback($model);
         });
-        static::updated(function($model) use ($callback) {
+        static::updated(function ($model) use ($callback) {
             $callback($model);
         });
-        static::deleted(function($model) use ($callback) {
+        static::deleted(function ($model) use ($callback) {
             $callback($model);
         });
     }

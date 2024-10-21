@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Console\Commands;
+
 use App\Jobs\ZoneEditorConfigBuild;
 use App\Models\Customer;
 use App\Models\HostingSubscription\ZoneEditor;
@@ -29,18 +30,22 @@ class UpdateBind9Config extends Command
      */
     public function handle()
     {
-        $customer = Customer::first();
-        Auth::guard('customer')->login($customer);
-        $hostingSubscription = Customer::getHostingSubscriptionSession();
-        $zoneBuilder = new ZoneEditorConfigBuild(false, $hostingSubscription);
-        $zoneBuilder->handle();
+        try {
+            $customer = Customer::first();
+            Auth::guard('customer')->login($customer);
+            $zoneBuilder = new ZoneEditorConfigBuild();
+            $zoneBuilder->handle();
 
-        $this->info('The bind9 configuration has been set!');
+            $this->info('The bind9 configuration has been set!');
 
-        $this->setDefaultZones();
+            $this->setDefaultZones();
 
-        $this->info('The default bind9 zones were configured successfully!');
-        shell_exec('sudo systemctl restart named');
+            $this->info('The default bind9 zones were configured successfully!');
+            shell_exec('sudo systemctl restart named');
+
+        } catch (\Exception $e) {
+            $this->info($e->getMessage());
+        }
     }
 
     public function setDefaultZones()
@@ -50,7 +55,7 @@ class UpdateBind9Config extends Command
         $named = view('server.samples.bind9.default-zones.named_zero', [])
             ->render();
 
-        if(!file_put_contents($path . '/named.zero', $named)){
+        if (!file_put_contents($path . '/named.zero', $named)) {
             throw new \Exception('Unable to write file \'' . $path . '/named.zero\'');
         }
 
@@ -61,7 +66,7 @@ class UpdateBind9Config extends Command
         $named = view('server.samples.bind9.default-zones.named_rfc1912_zones', [])
             ->render();
 
-        if(!file_put_contents($path . '/named.rfc1912.zones', $named)) {
+        if (!file_put_contents($path . '/named.rfc1912.zones', $named)) {
             throw new \Exception('Unable to write file \'' . $path . '/named.rfc1912.zones\'');
         }
 
@@ -72,7 +77,7 @@ class UpdateBind9Config extends Command
         $named = view('server.samples.bind9.default-zones.named_loopback', [])
             ->render();
 
-        if(!file_put_contents($path . '/named.loopback', $named)) {
+        if (!file_put_contents($path . '/named.loopback', $named)) {
             throw new \Exception('Unable to write file \'' . $path . '/named.loopback\'');
         }
 
@@ -83,7 +88,7 @@ class UpdateBind9Config extends Command
         $named = view('server.samples.bind9.default-zones.named_localhost', [])
             ->render();
 
-        if(!file_put_contents($path . '/named.localhost', $named)) {
+        if (!file_put_contents($path . '/named.localhost', $named)) {
             throw new \Exception('Unable to write file \'' . $path . '/named.localhost\'');
         }
 
@@ -94,7 +99,7 @@ class UpdateBind9Config extends Command
         $named = view('server.samples.bind9.default-zones.named_local', [])
             ->render();
 
-        if(!file_put_contents($path . '/named.local', $named)) {
+        if (!file_put_contents($path . '/named.local', $named)) {
             throw new \Exception('Unable to write file \'' . $path . '/named.local\'');
         }
 
@@ -105,7 +110,7 @@ class UpdateBind9Config extends Command
         $named = view('server.samples.bind9.default-zones.named_ip6_local', [])
             ->render();
 
-        if(!file_put_contents($path . '/named.ip6.local', $named)) {
+        if (!file_put_contents($path . '/named.ip6.local', $named)) {
             throw new \Exception('Unable to write file \'' . $path . '/named.ip6.local\'');
         }
 
@@ -116,7 +121,7 @@ class UpdateBind9Config extends Command
         $named = view('server.samples.bind9.default-zones.named_ca', [])
             ->render();
 
-        if(!file_put_contents($path . '/named.ca', $named)) {
+        if (!file_put_contents($path . '/named.ca', $named)) {
             throw new \Exception('Unable to write file \'' . $path . '/named.ca\'');
         }
 
@@ -127,7 +132,7 @@ class UpdateBind9Config extends Command
         $named = view('server.samples.bind9.default-zones.named_broadcast', [])
             ->render();
 
-        if(!file_put_contents($path . '/named.broadcast', $named)) {
+        if (!file_put_contents($path . '/named.broadcast', $named)) {
             throw new \Exception('Unable to write file \'' . $path . '/named.broadcast\'');
         }
 
@@ -138,7 +143,7 @@ class UpdateBind9Config extends Command
         $named = view('server.samples.bind9.default-zones.localhost_zone', [])
             ->render();
 
-        if(!file_put_contents($path . '/localhost.zone', $named)) {
+        if (!file_put_contents($path . '/localhost.zone', $named)) {
             throw new \Exception('Unable to write file \'' . $path . '/localhost.zone\'');
         }
 
@@ -148,7 +153,7 @@ class UpdateBind9Config extends Command
         $named = view('server.samples.bind9.default-zones.localdomain_zone', [])
             ->render();
 
-        if(!file_put_contents($path . '/localdomain.zone', $named)) {
+        if (!file_put_contents($path . '/localdomain.zone', $named)) {
             throw new \Exception('Unable to write file \'' . $path . '/localdomain.zone\'');
         }
 

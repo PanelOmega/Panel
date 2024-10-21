@@ -3,6 +3,7 @@
 namespace App\Jobs;
 
 namespace App\Jobs;
+
 use App\Models\HostingSubscription\ZoneEditor;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -13,6 +14,7 @@ use Illuminate\Queue\SerializesModels;
 class ZoneEditorConfigBuild implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+
     public $fixPermissions = false;
 
     public $hostingSubscription;
@@ -36,7 +38,7 @@ class ZoneEditorConfigBuild implements ShouldQueue
         foreach ($currentDomains as $domain) {
             $recordsData = $this->getZonesData($domain);
             $this->updateZoneForwardConfig($recordsData, $domain);
-            if($this->ip !== null) {
+            if ($this->ip !== null) {
                 $this->updateZoneReverseConfig($recordsData, $this->ip, $domain);
             }
         }
@@ -51,12 +53,12 @@ class ZoneEditorConfigBuild implements ShouldQueue
 
         $allowQParts = explode('.', $server);
         $allowQueryIp = implode('.', array_slice($allowQParts, 0, 3));
-        $trustedIps = $this->getDomainTrustedIps() ?? '';
+//        $trustedIps = $this->getDomainTrustedIps() ?? '';
 
         $zonesData = $this->getZones($currentDomains);
 
         $bind9ConfigData = [
-            'aclTrusted' => $trustedIps,
+//            'aclTrusted' => $trustedIps,
 //            'portV4Ips' => 'trusted;',
             'allowQuery' => "localhost; {$allowQueryIp}.0/24;",
             'forwarders' => [
@@ -87,7 +89,7 @@ class ZoneEditorConfigBuild implements ShouldQueue
         ];
 
         $forwardZonesData = [];
-        foreach($currentDomains as $domain) {
+        foreach ($currentDomains as $domain) {
             $forwardZonesData[] = [
                 'domain' => $domain
             ];
@@ -212,32 +214,32 @@ class ZoneEditorConfigBuild implements ShouldQueue
 
         $domainData = ZoneEditor::pluck('domain')->unique();
         $currentDomains = [];
-        foreach($domainData as $domain) {
+        foreach ($domainData as $domain) {
             $currentDomains[] = $domain;
         }
 
         return array_unique($currentDomains);
     }
 
-    public function getDomainTrustedIps()
-    {
-        $domainData = ZoneEditor::where('hosting_subscription_id', $this->hostingSubscription->id)
-            ->get();
-
-        $server = $this->getNsIp();
-
-        $trustedIps = [];
-        $trustedIps[] = '127.0.0.1';
-        $trustedIps[] = $server;
-
-        foreach($domainData as $trustedIp) {
-            if(filter_var($trustedIp->record, FILTER_VALIDATE_IP)) {
-                $trustedIps[] = $trustedIp->record;
-            }
-        }
-
-        return empty($trustedIps) ? [] : array_unique($trustedIps);
-    }
+//    public function getDomainTrustedIps()
+//    {
+//        $domainData = ZoneEditor::where('hosting_subscription_id', $this->hostingSubscription->id)
+//            ->get();
+//
+//        $server = $this->getNsIp();
+//
+//        $trustedIps = [];
+//        $trustedIps[] = '127.0.0.1';
+//        $trustedIps[] = $server;
+//
+//        foreach ($domainData as $trustedIp) {
+//            if (filter_var($trustedIp->record, FILTER_VALIDATE_IP)) {
+//                $trustedIps[] = $trustedIp->record;
+//            }
+//        }
+//
+//        return empty($trustedIps) ? [] : array_unique($trustedIps);
+//    }
 
     public function getNsIp()
     {
@@ -252,7 +254,7 @@ class ZoneEditorConfigBuild implements ShouldQueue
 
         $revIps = [];
 
-        foreach($ips as $ip) {
+        foreach ($ips as $ip) {
             $revIp = explode('.', $ip);
             $revIp = array_reverse($revIp);
             $revIps[] = implode('.', $revIp);

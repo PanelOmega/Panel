@@ -39,6 +39,12 @@ class Installer extends Page
     public $installLogFilePath = 'logs/installer.log';
     public $installLog = 'Loading...';
 
+    public function mount()
+    {
+        $this->firstNameserver = setting('general.ns1');
+        $this->secondNameserver = setting('general.ns2');
+    }
+
     public function form(Form $form): Form
     {
 
@@ -102,20 +108,19 @@ class Installer extends Page
 
                             TextInput::make('firstNameserver')
                                 ->label('Nameserver 1')
-                                ->afterStateUpdated(function () {
-                                    setting('general.ns1', $this->firstNameserver);
-                                })
                                 ->required(),
 
                             TextInput::make('secondNameserver')
                                 ->label('Nameserver 2')
-                                ->afterStateUpdated(function () {
-                                    setting('general.ns2', $this->secondNameserver);
-                                })
                                 ->required(),
 
 
                         ])->afterValidation(function () {
+
+                            setting([
+                                'general.ns1' => $this->firstNameserver,
+                                'general.ns2' => $this->secondNameserver,
+                            ]);
 
                             $this->installLog = 'Prepare installation...';
 

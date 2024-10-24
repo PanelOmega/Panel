@@ -1,6 +1,6 @@
 <div>
     <div>
-        <div id="js-install-log" wire:poll="installLog" class="text-left text-sm font-medium text-gray-950 dark:text-primary-500 h-[20rem] overflow-x-hidden overflow-y-scroll">
+        <div id="js-install-log" wire:poll="pullLog" class="text-left text-sm font-medium text-gray-950 dark:text-primary-500 h-[20rem] overflow-x-hidden overflow-y-scroll">
             {!! $this->installLog !!}
         </div>
     </div>

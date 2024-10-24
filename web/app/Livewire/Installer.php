@@ -191,7 +191,7 @@ class Installer extends Page
                             $installLogFile = storage_path($this->installLogFilePath);
 
                             shell_exec("bash /tmp/panel-omega-installer.sh >> {$installLogFile} 2>&1 &");
-                            
+
 
                         }),
 
@@ -227,7 +227,7 @@ class Installer extends Page
 
     }
 
-    public function installLog()
+    public function pullLog()
     {
         if (is_file(storage_path($this->installLogFilePath))) {
             $this->installLog = file_get_contents(storage_path($this->installLogFilePath));

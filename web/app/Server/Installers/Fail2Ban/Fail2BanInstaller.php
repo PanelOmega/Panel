@@ -38,7 +38,7 @@ class Fail2BanInstaller
         ];
     }
 
-    public function run()
+    public function commands()
     {
         $os = OS::getDistro();
         $commands = [];
@@ -46,7 +46,9 @@ class Fail2BanInstaller
         if ($os == OS::DEBIAN || $os == OS::UBUNTU) {
             $commands[] = 'apt update -y';
             $commands[] = 'apt install fail2ban -y';
-        } elseif ($os == OS::CLOUD_LINUX || $os == OS::CENTOS || $os == OS::ALMA_LINUX) {
+        } elseif ($os == OS::CLOUD_LINUX || $os == OS::CENTOS
+            || $os == OS::ALMA_LINUX
+        ) {
             $commands[] = 'yum update -y';
             $commands[] = 'yum install fail2ban -y';
         }
@@ -54,6 +56,13 @@ class Fail2BanInstaller
         $commands[] = 'systemctl enable fail2ban';
         $commands[] = 'systemctl start fail2ban';
         $commands[] = 'omega-shell omega:fail2ban-config-build';
+
+        return $commands;
+    }
+
+    public function run() {
+
+        $commands = $this->commands();
 
         $shellFileContent = '';
         foreach ($commands as $command) {

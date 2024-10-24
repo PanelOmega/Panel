@@ -37,7 +37,7 @@ class FtpServerInstaller
         ];
     }
 
-    public function run()
+    public function commands()
     {
         $os = OS::getDistro();
         $commands = [];
@@ -46,7 +46,9 @@ class FtpServerInstaller
         if ($os == OS::DEBIAN || $os == OS::UBUNTU) {
             $commands[] = 'sudo apt-get update -y';
             $commands[] = 'sudo apt-get install vsftpd -y';
-        } elseif ($os == OS::CLOUD_LINUX || $os == OS::CENTOS || $os == OS::ALMA_LINUX) {
+        } elseif ($os == OS::CLOUD_LINUX || $os == OS::CENTOS
+            || $os == OS::ALMA_LINUX
+        ) {
             $commands[] = 'sudo yum update -y';
             $commands[] = 'sudo yum install vsftpd -y';
         }
@@ -54,6 +56,13 @@ class FtpServerInstaller
         $commands[] = 'sudo systemctl enable vsftpd';
         $commands[] = 'sudo systemctl start vsftpd';
         $commands[] = 'omega-shell omega:update-vsftpd-config';
+
+        return $commands;
+    }
+
+    public function run()
+    {
+        $commands = $this->commands();
 
         $shellFileContent = '';
         foreach ($commands as $command) {

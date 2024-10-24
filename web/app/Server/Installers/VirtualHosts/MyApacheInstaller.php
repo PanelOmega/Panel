@@ -34,14 +34,12 @@ class MyApacheInstaller
         ];
     }
 
-    public function run()
+    public function commands()
     {
-
         $os = OS::getDistro();
 
         $commands = [];
         $commands[] = 'echo "Starting MyApache Installation..."';
-
 
         if ($os == OS::DEBIAN || $os == OS::UBUNTU) {
 
@@ -73,14 +71,22 @@ class MyApacheInstaller
             // $commands[] = 'ufw allow in "Apache Full"';
             $commands[] = 'systemctl restart apache2';
 
-        } else if ($os == OS::CLOUD_LINUX || $os == OS::ALMA_LINUX) {
-            $commands[] = 'yum install -y epel-release';
-            $commands[] = 'yum install -y my-apache';
+        } else {
+            if ($os == OS::CLOUD_LINUX || $os == OS::ALMA_LINUX) {
+                $commands[] = 'yum install -y epel-release';
+                $commands[] = 'yum install -y my-apache';
 
-            $commands[] = 'systemctl enable httpd';
-            $commands[] = 'systemctl start httpd';
+                $commands[] = 'systemctl enable httpd';
+                $commands[] = 'systemctl start httpd';
 
+            }
         }
+        return $commands;
+    }
+
+    public function run() {
+
+        $commands = $this->commands();
 
         $shellFileContent = '';
         foreach ($commands as $command) {

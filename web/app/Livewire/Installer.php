@@ -2,7 +2,6 @@
 
 namespace App\Livewire;
 
-
 use App\Filament\Enums\ServerApplicationType;
 use App\Models\Admin;
 use App\Server\SupportedApplicationTypes;
@@ -19,7 +18,6 @@ use JaOcero\RadioDeck\Forms\Components\RadioDeck;
 
 class Installer extends Page
 {
-
    protected static string $layout = 'filament-panels::components.layout.base';
 
     protected static string $view = 'livewire.installer';
@@ -149,6 +147,11 @@ class Installer extends Page
                     BLADE)))
 
             ]);
+    }
+
+    public function install()
+    {
+        dd(33);
     }
 
     public function installLog()

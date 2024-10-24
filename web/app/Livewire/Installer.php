@@ -52,23 +52,27 @@ class Installer extends Page
         $step1 = [
             TextInput::make('name')
                 ->label('Name')
-                ->required(),
+                ->required()
+                ->helperText('Enter your full name.'),
 
             TextInput::make('email')
                 ->label('Email')
                 ->required()
-                ->email(),
+                ->email()
+                ->helperText('Enter a valid email address.'),
 
             TextInput::make('password')
                 ->label('Password')
                 ->required()
-                ->password(),
+                ->password()
+                ->helperText('Choose a strong password.'),
 
             TextInput::make('password_confirmation')
                 ->label('Confirm Password')
                 ->same('password')
                 ->required()
-                ->password(),
+                ->password()
+                ->helperText('Re-enter your password for confirmation.'),
         ];
 
         $startOnStep = 1;
@@ -108,11 +112,13 @@ class Installer extends Page
 
                             TextInput::make('firstNameserver')
                                 ->label('Nameserver 1')
-                                ->required(),
+                                ->required()
+                                ->helperText('Enter the primary nameserver.'),
 
                             TextInput::make('secondNameserver')
                                 ->label('Nameserver 2')
-                                ->required(),
+                                ->required()
+                                ->helperText('Enter the secondary nameserver.'),
 
 
                         ])->afterValidation(function () {

@@ -52,5 +52,4 @@ class UpdateVsftpdConfig extends Command
         shell_exec('sudo systemctl restart vsftpd');
 
     }
-
 }

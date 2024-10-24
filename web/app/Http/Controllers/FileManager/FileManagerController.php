@@ -222,4 +222,13 @@ class FileManagerController extends Controller
         );
     }
 
+//    public function sendToDir(Request $request): JsonResponse {
+//        $disk = $request->input('disk') ?? 'public';
+//        $folder = $request->input('path');
+//
+//        return response()->json([
+//            'redirect_url' => route('file-manager.index')
+//        ]);
+//    }
+
 }

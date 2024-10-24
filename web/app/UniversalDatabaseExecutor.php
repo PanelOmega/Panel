@@ -2,8 +2,10 @@
 
 namespace App;
 
+use App\Models\Database;
 use Doctrine\DBAL\DriverManager;
 use Doctrine\DBAL\Query;
+use function Termwind\render;
 
 class UniversalDatabaseExecutor
 {
@@ -146,6 +148,30 @@ class UniversalDatabaseExecutor
                 'success' => true,
                 'message' => 'User deleted successfully'
             ];
+
+        } catch (\Exception $e) {
+            return [
+                'error' => true,
+                'message' => $e->getMessage()
+            ];
+        }
+    }
+
+    public function getDatabaseUsage(string $name)
+    {
+        try {
+            $connection = $this->_getDatabaseConnection();
+
+            $resultSet = $connection->executeStatement(
+                'SELECT table_schema,
+                        SUM(data_length + index_length) / (1024 * 1024) AS "Database Size in MB"
+                     FROM information_schema.TABLES
+                     WHERE table_schema = ?
+                     GROUP BY table_schema;',
+                    [$name]
+                );
+
+            return $resultSet;
 
         } catch (\Exception $e) {
             return [

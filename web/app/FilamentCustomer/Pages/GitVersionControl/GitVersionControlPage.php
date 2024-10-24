@@ -380,7 +380,8 @@ class GitVersionControlPage extends Page implements HasTable
                                                         ->icon('heroicon-o-arrow-top-right-on-square')
                                                         ->url(function () {
                                                             return route('filament.customer.resources.git-ssh-keys.index');
-                                                        }),
+                                                        })
+                                                        ->openUrlInNewTab(),
                                             ]),
                                         ]),
 

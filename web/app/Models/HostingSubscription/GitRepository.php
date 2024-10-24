@@ -73,12 +73,6 @@ class GitRepository extends Model
             $hostingSubscription = Customer::getHostingSubscriptionSession();
             $domainId = Domain::where('hosting_subscription_id', $hostingSubscription->id)->pluck('id')->first();
             $model->domain_id = $domainId;
-
-            if (!GitSshKey::where('hosting_subscription_id', $hostingSubscription->id)->exists()) {
-                GitSshKey::create([
-                    'hosting_subscription_id' => $hostingSubscription->id,
-                ]);
-            }
         });
 
         static::created(function ($model) {

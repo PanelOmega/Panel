@@ -2,19 +2,19 @@
 
 namespace Tests\Unit\Traits;
 
-use App\Server\Installers\VirtualHosts\ApacheInstaller;
+use App\Server\Installers\VirtualHosts\MyApacheInstaller;
 use App\Server\Installers\Virtualization\DockerInstaller;
 
 trait HasDocker
 {
     public function installDocker()
     {
-        $checkApache2IsInstalled = ApacheInstaller::isApacheInstalled();
+        $checkApache2IsInstalled = MyApacheInstaller::isApacheInstalled();
 
         if ($checkApache2IsInstalled['status'] === 'error') {
 
             // Install apache2
-            $install = new ApacheInstaller();
+            $install = new MyApacheInstaller();
             $installStatus = $install->run();
 
             $this->assertArrayHasKey('status', $installStatus);

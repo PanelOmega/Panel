@@ -4,10 +4,10 @@ namespace App\Server\Installers\VirtualHosts;
 
 use App\Server\Helpers\OS;
 
-class ApacheInstaller
+class MyApacheInstaller
 {
 
-    public string $logPath = '/var/log/omega/apache-installer.log';
+    public string $logPath = '/var/log/omega/my-apache-installer.log';
 
 
     public static function isApacheInstalled(): array
@@ -40,7 +40,7 @@ class ApacheInstaller
         $os = OS::getDistro();
 
         $commands = [];
-        $commands[] = 'echo "Starting Apache Installation..."';
+        $commands[] = 'echo "Starting MyApache Installation..."';
 
 
         if ($os == OS::DEBIAN || $os == OS::UBUNTU) {
@@ -75,11 +75,7 @@ class ApacheInstaller
 
         } else if ($os == OS::CLOUD_LINUX || $os == OS::ALMA_LINUX) {
             $commands[] = 'yum install -y epel-release';
-            $commands[] = 'yum install -y httpd';
-
-            $commands[] = 'yum install -y mod_fcgid';
-            $commands[] = 'yum install -y mod_ssl';
-            $commands[] = 'yum install -y mod_suphp';
+            $commands[] = 'yum install -y my-apache';
 
             $commands[] = 'systemctl enable httpd';
             $commands[] = 'systemctl start httpd';
@@ -90,21 +86,21 @@ class ApacheInstaller
         foreach ($commands as $command) {
             $shellFileContent .= $command . PHP_EOL;
         }
-        $shellFileContent .= 'echo "Apache2 is installed successfully!"' . PHP_EOL;
+        $shellFileContent .= 'echo "MyApache is installed successfully!"' . PHP_EOL;
         $shellFileContent .= 'echo "DONE!"' . PHP_EOL;
-        $shellFileContent .= 'rm -f /tmp/apache-installer.sh';
+        $shellFileContent .= 'rm -f /tmp/my-apache-installer.sh';
 
-        file_put_contents('/tmp/apache-installer.sh', $shellFileContent);
+        file_put_contents('/tmp/my-apache-installer.sh', $shellFileContent);
 
         if (! is_dir(dirname($this->logPath))) {
             shell_exec('mkdir -p '.dirname($this->logPath));
         }
 
-        shell_exec('bash /tmp/apache-installer.sh >> ' . $this->logPath . ' &');
+        shell_exec('bash /tmp/my-apache-installer.sh >> ' . $this->logPath . ' &');
 
         return [
             'status' => 'Install job is running in the background.',
-            'message' => 'Apache2 is being installed in the background. Please check the log file for more details.',
+            'message' => 'MyApache is being installed in the background. Please check the log file for more details.',
             'logPath' => $this->logPath,
         ];
     }

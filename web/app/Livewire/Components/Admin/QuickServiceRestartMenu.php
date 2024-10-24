@@ -54,6 +54,6 @@ class QuickServiceRestartMenu extends Component implements HasForms, HasActions
 
     public function render(): View
     {
-        return view('filament.components.quick-service-restart-menu');
+        return view('filament.admin.components.quick-service-restart-menu');
     }
 }

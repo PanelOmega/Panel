@@ -65,6 +65,8 @@ omega-php artisan omega:set-ini-settings APP_ENV "production"
 chmod -R o+w /usr/local/omega/web/storage/
 chmod -R o+w /usr/local/omega/web/bootstrap/cache/
 
+omega-cli run-repair
+
 service omega start
 
 CURRENT_IP=$(hostname -I | awk '{print $1}')

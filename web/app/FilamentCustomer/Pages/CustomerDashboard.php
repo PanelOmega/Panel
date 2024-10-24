@@ -346,7 +346,7 @@ class CustomerDashboard extends Page
                         [
                             'title' => 'Visitors',
                             'icon' => 'omega_customer-metrics-visitors',
-                            'link' => '#'
+                            'link' => route('filament.customer.pages.visitors-page')
                         ],
 //                        [
 //                            'title'=>'Site Quality Monitoring',

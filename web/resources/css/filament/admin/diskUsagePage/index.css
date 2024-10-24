@@ -1,0 +1,7 @@
+.disk-usage-bar {
+    @apply h-4 w-1/2 bg-gray-100 dark:bg-gray-800 rounded-full shadow-inner overflow-hidden
+}
+
+.disk-usage-bar-value {
+    @apply flex h-full items-center justify-center bg-primary-600 dark:bg-primary-500 rounded-r-full shadow-inner text-xs font-bold text-white;
+}

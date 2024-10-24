@@ -230,7 +230,7 @@ class CustomerDashboard extends Page
                         [
                             'title' => 'Disk Usage',
                             'icon' => 'omega_customer-file-disk',
-                            'link' => '#'
+                            'link' => route('filament.customer.pages.disk-usage-page')
                         ],
 //                        [
 //                            'title'=>'Web Disk',
@@ -260,7 +260,7 @@ class CustomerDashboard extends Page
                         [
                             'title' => 'Git Version Control',
                             'icon' => 'omega_customer-file-git',
-                            'link' => '#'
+                            'link' => route('filament.customer.pages.git-version-control-page')
                         ],
 //                        [
 //                            'title'=>'File and Directory Restoration',

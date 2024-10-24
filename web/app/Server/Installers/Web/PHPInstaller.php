@@ -6,7 +6,14 @@ use App\Server\Helpers\OS;
 
 class PHPInstaller
 {
-    public $phpVersions = [];
+    public $phpVersions = [
+        '5.6',
+        '7.4',
+        '8.0',
+        '8.1',
+        '8.2',
+        '8.3',
+    ];
     public $phpModules = [];
     public $logFilePath = '/var/log/omega/php-installer.log';
 
@@ -96,17 +103,16 @@ class PHPInstaller
 
         }
         if ($os == OS::ALMA_LINUX || $os == OS::CLOUD_LINUX) {
+
             $commands[] = 'dnf update -y';
-            $commands[]
-                = 'dnf install https://dl.fedoraproject.org/pub/epel/epel-release-latest-9.noarch.rpm -y';
-            $commands[]
-                = 'dnf install https://rpms.remirepo.net/enterprise/remi-release-9.rpm -y';
+            $commands[] = 'dnf install https://dl.fedoraproject.org/pub/epel/epel-release-latest-9.noarch.rpm -y';
+            $commands[] = 'dnf install https://rpms.remirepo.net/enterprise/remi-release-9.rpm -y';
             $commands[] = 'dnf install php -y';
+
             foreach ($this->phpVersions as $phpVersion) {
                 $phpVersionWithoutDot = str_replace('.', '', $phpVersion);
                 $commands[] = 'dnf module enable php:remi-'.$phpVersion.' -y';
-                $commands[] = 'dnf install php'.$phpVersionWithoutDot.' php'
-                    .$phpVersionWithoutDot.'-php-fpm -y';
+                $commands[] = 'dnf install php'.$phpVersionWithoutDot.' php' .$phpVersionWithoutDot.'-php-fpm -y';
             }
         }
 

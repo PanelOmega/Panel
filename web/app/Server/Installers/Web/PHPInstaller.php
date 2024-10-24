@@ -25,9 +25,8 @@ class PHPInstaller
         $this->logFilePath = $path;
     }
 
-    public function run()
+    public function commands()
     {
-
         $os = OS::getDistro();
 
         $commands = [];
@@ -49,27 +48,28 @@ class PHPInstaller
             ];
             if (!empty($this->phpVersions)) {
                 foreach ($this->phpVersions as $phpVersion) {
-                    $dependenciesList[] = 'libapache2-mod-php' . $phpVersion;
+                    $dependenciesList[] = 'libapache2-mod-php'.$phpVersion;
                 }
                 if (!empty($this->phpModules)) {
                     foreach ($this->phpVersions as $phpVersion) {
-                        $dependenciesList[] = 'php' . $phpVersion;
-                        $dependenciesList[] = 'php' . $phpVersion . '-cgi';
-                        $dependenciesList[] = 'php' . $phpVersion . '-{' . implode(',', $this->phpModules) . '}';
+                        $dependenciesList[] = 'php'.$phpVersion;
+                        $dependenciesList[] = 'php'.$phpVersion.'-cgi';
+                        $dependenciesList[] = 'php'.$phpVersion.'-{'
+                            .implode(',', $this->phpModules).'}';
                     }
                 }
             }
 
 
             $dependencies = implode(' ', $dependenciesList);
-            $commands[] = 'apt-get install -yq ' . $dependencies;
+            $commands[] = 'apt-get install -yq '.$dependencies;
 
             $lastItem = end($this->phpVersions);
             foreach ($this->phpVersions as $phpVersion) {
                 if ($phpVersion == $lastItem) {
-                    $commands[] = 'a2enmod php' . $phpVersion;
+                    $commands[] = 'a2enmod php'.$phpVersion;
                 } else {
-                    $commands[] = 'a2dismod php' . $phpVersion;
+                    $commands[] = 'a2dismod php'.$phpVersion;
                 }
             }
 
@@ -97,17 +97,27 @@ class PHPInstaller
         }
         if ($os == OS::ALMA_LINUX || $os == OS::CLOUD_LINUX) {
             $commands[] = 'dnf update -y';
-            $commands[] = 'dnf install https://dl.fedoraproject.org/pub/epel/epel-release-latest-9.noarch.rpm -y';
-            $commands[] = 'dnf install https://rpms.remirepo.net/enterprise/remi-release-9.rpm -y';
+            $commands[]
+                = 'dnf install https://dl.fedoraproject.org/pub/epel/epel-release-latest-9.noarch.rpm -y';
+            $commands[]
+                = 'dnf install https://rpms.remirepo.net/enterprise/remi-release-9.rpm -y';
             $commands[] = 'dnf install php -y';
             foreach ($this->phpVersions as $phpVersion) {
                 $phpVersionWithoutDot = str_replace('.', '', $phpVersion);
-                $commands[] = 'dnf module enable php:remi-' . $phpVersion . ' -y';
-                $commands[] = 'dnf install php' . $phpVersionWithoutDot . ' php' . $phpVersionWithoutDot . '-php-fpm -y';
+                $commands[] = 'dnf module enable php:remi-'.$phpVersion.' -y';
+                $commands[] = 'dnf install php'.$phpVersionWithoutDot.' php'
+                    .$phpVersionWithoutDot.'-php-fpm -y';
             }
         }
 
         $commands[] = 'omega-shell cache:clear';
+
+        return $commands;
+    }
+
+    public function run() {
+
+        $commands = $this->commands();
 
         $shellFileContent = '';
         foreach ($commands as $command) {

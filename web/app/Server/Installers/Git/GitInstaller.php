@@ -38,7 +38,7 @@ class GitInstaller
         ];
     }
 
-    public function run()
+    public function commands()
     {
         $os = OS::getDistro();
         $commands = [];
@@ -46,18 +46,27 @@ class GitInstaller
         if ($os == OS::DEBIAN || $os == OS::UBUNTU) {
             $commands[] = 'apt update -y';
             $commands[] = 'apt install git -y';
-        } elseif ($os == OS::CLOUD_LINUX || $os == OS::CENTOS || $os == OS::ALMA_LINUX) {
+        } elseif ($os == OS::CLOUD_LINUX || $os == OS::CENTOS
+            || $os == OS::ALMA_LINUX
+        ) {
             $commands[] = 'yum update -y';
             $commands[] = 'yum install git -y';
         }
 
-        if(!is_dir('/root/.config/git')) {
+        if (!is_dir('/root/.config/git')) {
             $commands[] = 'mkdir -p /root/.config/git';
         }
 
-        if(!file_exists('/root/.config/git/ignore')) {
+        if (!file_exists('/root/.config/git/ignore')) {
             $commands[] = 'touch /root/.config/git/ignore';
         }
+
+        return $commands;
+    }
+
+    public function run()
+    {
+        $commands = $this->commands();
 
         $shellFileContent = '';
         foreach ($commands as $command) {

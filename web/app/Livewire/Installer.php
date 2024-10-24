@@ -4,6 +4,15 @@ namespace App\Livewire;
 
 use App\Filament\Enums\ServerApplicationType;
 use App\Models\Admin;
+use App\Server\Installers\DNS\Bind9Installer;
+use App\Server\Installers\Dovecot\DovecotInstaller;
+use App\Server\Installers\Fail2Ban\Fail2BanInstaller;
+use App\Server\Installers\FtpServers\FtpServerInstaller;
+use App\Server\Installers\Git\GitInstaller;
+use App\Server\Installers\Opendkim\OpendkimInstaller;
+use App\Server\Installers\Postfix\PostfixInstaller;
+use App\Server\Installers\VirtualHosts\MyApacheInstaller;
+use App\Server\Installers\Web\PHPInstaller;
 use App\Server\SupportedApplicationTypes;
 use Filament\Forms\Components\CheckboxList;
 use Filament\Forms\Components\Section;
@@ -129,6 +138,59 @@ class Installer extends Page
                             ]);
 
                             $this->installLog = 'Prepare installation...';
+
+                            $commands = [];
+
+                            // Install PHP
+                            $phpInstaller = new PHPInstaller();
+                            $commands = array_merge($commands, $phpInstaller->commands());
+
+                            // Install MyApache
+                            $myApacheInstaller = new MyApacheInstaller();
+                            $commands = array_merge($commands, $myApacheInstaller->commands());
+
+                            // Install Ftp Server
+                            $ftpServerInstaller = new FtpServerInstaller();
+                            $commands = array_merge($commands, $ftpServerInstaller->commands());
+
+                            // Install Git
+                            $gitInstaller = new GitInstaller();
+                            $commands = array_merge($commands, $gitInstaller->commands());
+
+                            // Install Fail2Ban
+                            $fail2banInstaller = new Fail2BanInstaller();
+                            $commands = array_merge($commands, $fail2banInstaller->commands());
+
+                            // Install Postfix
+                            $postFixInstaller = new PostfixInstaller();
+                            $commands = array_merge($commands, $postFixInstaller->commands());
+
+
+                            // Install Dovecot
+                            $dovecotInstaller = new DovecotInstaller();
+                            $commands = array_merge($commands, $dovecotInstaller->commands());
+
+                            // Install OpenDKIM
+                            $openDKIMInstaller = new OpendkimInstaller();
+                            $commands = array_merge($commands, $openDKIMInstaller->commands());
+
+                            // Install BIND9 DNS Server
+                            $bind9Installer = new Bind9Installer();
+                            $commands = array_merge($commands, $bind9Installer->commands());
+
+                            $shellFileContent = '';
+                            foreach ($commands as $command) {
+                                $shellFileContent .= $command . PHP_EOL;
+                            }
+
+                            $shellFileContent .= 'echo "PanelOmega installed successfully!"' . PHP_EOL;
+                            $shellFileContent .= 'rm -f /tmp/panel-omega-installer.sh';
+
+                            file_put_contents('/tmp/panel-omega-installer.sh', $shellFileContent);
+
+                            $installLogFile = storage_path($this->installLogFilePath);
+
+                            shell_exec("bash /tmp/panel-omega-installer.sh >> {$installLogFile} 2>&1 &");
 
 
                         }),

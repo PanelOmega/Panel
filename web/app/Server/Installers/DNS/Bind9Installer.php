@@ -31,7 +31,7 @@ class Bind9Installer
         ];
     }
 
-    public function run()
+    public function commands()
     {
         $os = OS::getDistro();
         $commands = [];
@@ -39,7 +39,9 @@ class Bind9Installer
         if ($os == OS::DEBIAN || $os == OS::UBUNTU) {
             $commands[] = 'apt update -y';
             $commands[] = 'apt-get install bind9 bind9utils bind9-doc -y';
-        } elseif ($os == OS::CLOUD_LINUX || $os == OS::CENTOS || $os == OS::ALMA_LINUX) {
+        } elseif ($os == OS::CLOUD_LINUX || $os == OS::CENTOS
+            || $os == OS::ALMA_LINUX
+        ) {
             $commands[] = 'yum update -y';
             $commands[] = 'yum install bind bind-utils -y';
         }
@@ -63,6 +65,14 @@ class Bind9Installer
         $commands[] = 'firewall-cmd --add-service=dns --zone=public --permanent';
         $commands[] = 'firewall-cmd --zone=public --add-port=53/tcp --permanent';
         $commands[] = 'firewall-cmd --reload';
+
+        return $commands;
+
+    }
+
+    public function run() {
+
+        $commands = $this->commands();
 
         $shellFileContent = '';
         foreach ($commands as $command) {

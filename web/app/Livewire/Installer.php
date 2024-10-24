@@ -213,18 +213,18 @@ class Installer extends Page
                             type="submit"
                             size="sm"
                             color="primary"
-                            wire:click="install"
+                            wire:click="finish"
                         >
-                            Start Installation
+                            Finish
                         </x-filament::button>
                     BLADE)))
 
             ]);
     }
 
-    public function install()
+    public function finish()
     {
-
+        return redirect('/admin');
     }
 
     public function pullLog()

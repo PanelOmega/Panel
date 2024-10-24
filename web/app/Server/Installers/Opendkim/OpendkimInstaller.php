@@ -31,7 +31,7 @@ class OpendkimInstaller
         ];
     }
 
-    public function run()
+    public function commands()
     {
         $os = OS::getDistro();
         $commands = [];
@@ -41,13 +41,23 @@ class OpendkimInstaller
         if ($os == OS::DEBIAN || $os == OS::UBUNTU) {
             $commands[] = 'apt update -y';
             $commands[] = 'apt-get install opendkim opendkim-tools -y';
-        } elseif ($os == OS::CLOUD_LINUX || $os == OS::CENTOS || $os == OS::ALMA_LINUX) {
+        } elseif ($os == OS::CLOUD_LINUX || $os == OS::CENTOS
+            || $os == OS::ALMA_LINUX
+        ) {
             $commands[] = 'yum update -y';
             $commands[] = 'yum install opendkim opendkim-tools -y';
         }
 
         $commands[] = 'systemctl enable opendkim';
         $commands[] = 'systemctl start opendkim';
+
+        return $commands;
+
+    }
+
+    public function run() {
+
+        $commands = $this->commands();
 
         $shellFileContent = '';
         foreach ($commands as $command) {

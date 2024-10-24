@@ -102,7 +102,7 @@ class DirectoryPrivacyPage extends Page implements HasTable
                                     TextInput::make('username')
                                         ->label('Username')
                                         ->rules([
-                                            \Illuminate\Validation\Rule::unique('directory_privacies', 'username')
+                                            \Illuminate\Validation\Rule::unique('hosting_subscription_directory_privacies', 'username')
                                                 ->where(function ($query) {
                                                     $directory = request()->input('directory');
 

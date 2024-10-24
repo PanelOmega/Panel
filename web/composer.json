@@ -10,6 +10,7 @@
     "license": "MIT",
     "require": {
         "php": "^8.2",
+        "archilex/filament-toggle-icon-column": "^3.1",
         "calebporzio/sushi": "^2.5",
         "codewithdennis/filament-simple-alert": "^3.0",
         "epifrin/rector-custom-rules": "^0.5.1",

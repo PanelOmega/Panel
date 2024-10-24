@@ -38,12 +38,11 @@ class HtpasswdUser extends Model
 
         $callback = function ($model) {
             $hostingSubscription = Customer::getHostingSubscriptionSession();
-            $directoryRealPath = "/home/{$hostingSubscription->system_username}/.htpasswd";
             $htPasswdData = [
                 'username' => $model->username,
                 'password' => $model->password
             ];
-            $directoryPrivacy = new HtpasswdBuild(false, $directoryRealPath, $htPasswdData);
+            $directoryPrivacy = new HtpasswdBuild(false, $hostingSubscription, $htPasswdData);
             $directoryPrivacy->handle();
         };
 
@@ -59,8 +58,7 @@ class HtpasswdUser extends Model
 
         static::deleted(function ($model) use ($callback) {
             $hostingSubscription = Customer::getHostingSubscriptionSession();
-            $directoryRealPath = "/home/{$hostingSubscription->system_username}/.htpasswd";
-            $directoryPrivacy = new HtpasswdBuild(false, $directoryRealPath);
+            $directoryPrivacy = new HtpasswdBuild(false, $hostingSubscription);
             $directoryPrivacy->handle();
         });
     }

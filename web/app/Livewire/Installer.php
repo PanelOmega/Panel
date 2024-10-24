@@ -2,9 +2,17 @@
 
 namespace App\Livewire;
 
-
 use App\Filament\Enums\ServerApplicationType;
 use App\Models\Admin;
+use App\Server\Installers\DNS\Bind9Installer;
+use App\Server\Installers\Dovecot\DovecotInstaller;
+use App\Server\Installers\Fail2Ban\Fail2BanInstaller;
+use App\Server\Installers\FtpServers\FtpServerInstaller;
+use App\Server\Installers\Git\GitInstaller;
+use App\Server\Installers\Opendkim\OpendkimInstaller;
+use App\Server\Installers\Postfix\PostfixInstaller;
+use App\Server\Installers\VirtualHosts\MyApacheInstaller;
+use App\Server\Installers\Web\PHPInstaller;
 use App\Server\SupportedApplicationTypes;
 use Filament\Forms\Components\CheckboxList;
 use Filament\Forms\Components\Section;
@@ -19,7 +27,6 @@ use JaOcero\RadioDeck\Forms\Components\RadioDeck;
 
 class Installer extends Page
 {
-
    protected static string $layout = 'filament-panels::components.layout.base';
 
     protected static string $view = 'livewire.installer';
@@ -31,63 +38,50 @@ class Installer extends Page
     public $email;
 
     public $password;
-
     public $passwordConfirmation;
+
+    public $firstNameserver;
+    public $secondNameserver;
 
     public $livewire = true;
 
     public $installLogFilePath = 'logs/installer.log';
     public $installLog = 'Loading...';
 
-    public $serverApplicationType = 'apache_php';
-    public $serverPhpModules = [];
-    public $serverPhpVersions = [];
-
-    public $serverNodejsVersions = [
-        '20'
-    ];
-
-    public $serverPythonVersions = [
-        '3.10'
-    ];
-
-    public $serverRubyVersions = [
-        '3.4'
-    ];
-
-    public $enableEmailServer = true;
+    public function mount()
+    {
+        $this->firstNameserver = setting('general.ns1');
+        $this->secondNameserver = setting('general.ns2');
+    }
 
     public function form(Form $form): Form
     {
 
-        if (empty($this->serverPhpVersions)) {
-            $this->serverPhpVersions = ['8.2'];
-        }
-
-        if (empty($this->serverPhpModules)) {
-            $this->serverPhpModules = array_keys(SupportedApplicationTypes::getPHPModules());
-        }
 
         $step1 = [
             TextInput::make('name')
                 ->label('Name')
-                ->required(),
+                ->required()
+                ->helperText('Enter your full name.'),
 
             TextInput::make('email')
                 ->label('Email')
                 ->required()
-                ->email(),
+                ->email()
+                ->helperText('Enter a valid email address.'),
 
             TextInput::make('password')
                 ->label('Password')
                 ->required()
-                ->password(),
+                ->password()
+                ->helperText('Choose a strong password.'),
 
             TextInput::make('password_confirmation')
                 ->label('Confirm Password')
                 ->same('password')
                 ->required()
-                ->password(),
+                ->password()
+                ->helperText('Re-enter your password for confirmation.'),
         ];
 
         $startOnStep = 1;
@@ -122,139 +116,84 @@ class Installer extends Page
                         }),
 
                     Wizard\Step::make('Step 2')
-                        ->description('Configure your hosting server')
+                        ->description('Configure your nameservers')
                         ->schema([
 
-                            RadioDeck::make('server_application_type')
-                                ->live()
-                                ->default('apache_php')
-                                ->options(ServerApplicationType::class)
-                                ->icons(ServerApplicationType::class)
-                                ->descriptions(ServerApplicationType::class)
+                            TextInput::make('firstNameserver')
+                                ->label('Nameserver 1')
                                 ->required()
-                                ->color('primary')
-                                ->columns(2),
+                                ->helperText('Enter the primary nameserver.'),
 
-                            // PHP Configuration
-                            CheckboxList::make('serverPhpVersions')
-                                ->hidden(function (Get $get) {
-                                    return $get('server_application_type') !== 'apache_php';
-                                })
-                                ->default([
-                                    '8.2'
-                                ])
-                                ->label('PHP Version')
-                                ->options(SupportedApplicationTypes::getPHPVersions())
-                                ->columns(5)
-                                ->required(),
+                            TextInput::make('secondNameserver')
+                                ->label('Nameserver 2')
+                                ->required()
+                                ->helperText('Enter the secondary nameserver.'),
 
-                            CheckboxList::make('serverPhpModules')
-                                ->hidden(function (Get $get) {
-                                    return $get('server_application_type') !== 'apache_php';
-                                })
-                                ->label('PHP Modules')
-                                ->columns(5)
-                                ->options(SupportedApplicationTypes::getPHPModules()),
-                            // End of PHP Configuration
-
-                            // Node.js Configuration
-                            CheckboxList::make('server_nodejs_versions')
-                                ->hidden(function (Get $get) {
-                                    return $get('server_application_type') !== 'apache_nodejs';
-                                })
-                                ->label('Node.js Version')
-                                ->default([
-                                    '14'
-                                ])
-                                ->options(SupportedApplicationTypes::getNodeJsVersions())
-                                ->columns(6)
-                                ->required(),
-
-                            // End of Node.js Configuration
-
-                            // Python Configuration
-
-                            CheckboxList::make('server_python_versions')
-                                ->hidden(function (Get $get) {
-                                    return $get('server_application_type') !== 'apache_python';
-                                })
-                                ->label('Python Version')
-                                ->default([
-                                    '3.10'
-                                ])
-                                ->options(SupportedApplicationTypes::getPythonVersions())
-                                ->columns(6)
-                                ->required(),
-
-                            // End of Python Configuration
-
-                            // Ruby Configuration
-
-                            CheckboxList::make('server_ruby_versions')
-                                ->hidden(function (Get $get) {
-                                    return $get('server_application_type') !== 'apache_ruby';
-                                })
-                                ->label('Ruby Version')
-                                ->default([
-                                    '3.4'
-                                ])
-                                ->options(SupportedApplicationTypes::getRubyVersions())
-                                ->columns(6)
-                                ->required(),
-
-                            // End of Ruby Configuration
 
                         ])->afterValidation(function () {
 
+                            setting([
+                                'general.ns1' => $this->firstNameserver,
+                                'general.ns2' => $this->secondNameserver,
+                            ]);
+
                             $this->installLog = 'Prepare installation...';
-                            if (is_file(storage_path('server-app-configuration.json'))) {
-                                unlink(storage_path('server-app-configuration.json'));
+
+                            $commands = [];
+
+                            // Install PHP
+                            $phpInstaller = new PHPInstaller();
+                            $commands = array_merge($commands, $phpInstaller->commands());
+
+                            // Install MyApache
+                            $myApacheInstaller = new MyApacheInstaller();
+                            $commands = array_merge($commands, $myApacheInstaller->commands());
+
+                            // Install Ftp Server
+                            $ftpServerInstaller = new FtpServerInstaller();
+                            $commands = array_merge($commands, $ftpServerInstaller->commands());
+
+                            // Install Git
+                            $gitInstaller = new GitInstaller();
+                            $commands = array_merge($commands, $gitInstaller->commands());
+
+                            // Install Fail2Ban
+                            $fail2banInstaller = new Fail2BanInstaller();
+                            $commands = array_merge($commands, $fail2banInstaller->commands());
+
+                            // Install Postfix
+                            $postFixInstaller = new PostfixInstaller();
+                            $commands = array_merge($commands, $postFixInstaller->commands());
+
+
+                            // Install Dovecot
+                            $dovecotInstaller = new DovecotInstaller();
+                            $commands = array_merge($commands, $dovecotInstaller->commands());
+
+                            // Install OpenDKIM
+                            $openDKIMInstaller = new OpendkimInstaller();
+                            $commands = array_merge($commands, $openDKIMInstaller->commands());
+
+                            // Install BIND9 DNS Server
+                            $bind9Installer = new Bind9Installer();
+                            $commands = array_merge($commands, $bind9Installer->commands());
+
+                            $shellFileContent = '';
+                            foreach ($commands as $command) {
+                                $shellFileContent .= $command . PHP_EOL;
                             }
 
-                            // file_put_contents(storage_path('server-app-configuration.json'), json_encode($serverAppConfiguration));
+                            $shellFileContent .= 'echo "PanelOmega installed successfully!"' . PHP_EOL;
+                            $shellFileContent .= 'rm -f /tmp/panel-omega-installer.sh';
 
-                            if ($this->server_application_type == 'apache_php') {
-                                $phpInstaller = new PHPInstaller();
-                                $phpInstaller->setPHPVersions($this->serverPhpVersions);
-                                $phpInstaller->setPHPModules($this->serverPhpModules);
-                                $phpInstaller->setLogFilePath(storage_path($this->installLogFilePath));
-                                $phpInstaller->run();
-                            } else if ($this->server_application_type == 'apache_nodejs') {
-                                $nodeJsInstaller = new NodeJsInstaller();
-                                $nodeJsInstaller->setNodeJsVersions($this->server_nodejs_versions);
-                                $nodeJsInstaller->setLogFilePath(storage_path($this->installLogFilePath));
-                                $nodeJsInstaller->run();
-                            }elseif ($this->server_application_type == 'apache_python') {
-                                $pythonInstaller = new PythonInstaller();
-                                $pythonInstaller->setPythonVersions($this->server_python_versions);
-                                $pythonInstaller->setLogFilePath(storage_path($this->installLogFilePath));
-                                $pythonInstaller->run();
-                            }elseif ($this->server_application_type == 'apache_ruby') {
-                                $rubyInstaller = new RubyInstaller();
-                                $rubyInstaller->setRubyVersions($this->server_ruby_versions);
-                                $rubyInstaller->setLogFilePath(storage_path($this->installLogFilePath));
-                                $rubyInstaller->run();
-                            }
+                            file_put_contents('/tmp/panel-omega-installer.sh', $shellFileContent);
+
+                            $installLogFile = storage_path($this->installLogFilePath);
+
+                            shell_exec("bash /tmp/panel-omega-installer.sh >> {$installLogFile} 2>&1 &");
+
 
                         }),
-
-//                    Wizard\Step::make('Step 3')
-//                        ->description('Configure your email server')
-//                        ->schema([
-//
-//                            Toggle::make('enable_email_server')
-//                                ->label('Enable Email Server')
-//                                ->default(true),
-//
-//
-//                        ])->afterValidation(function () {
-//
-//                            $dovecotInstaller = new DovecotInstaller();
-//                            $dovecotInstaller->setLogFilePath(storage_path($this->installLogFilePath));
-//                            $dovecotInstaller->install();
-//
-//                        //    dd(storage_path($this->installLogFilePath));
-//                        }),
 
                     Wizard\Step::make('Step 3')
                         ->description('Finish installation')
@@ -274,16 +213,21 @@ class Installer extends Page
                             type="submit"
                             size="sm"
                             color="primary"
-                            wire:click="install"
+                            wire:click="finish"
                         >
-                            Submit
+                            Finish
                         </x-filament::button>
                     BLADE)))
 
             ]);
     }
 
-    public function installLog()
+    public function finish()
+    {
+        return redirect('/admin');
+    }
+
+    public function pullLog()
     {
         if (is_file(storage_path($this->installLogFilePath))) {
             $this->installLog = file_get_contents(storage_path($this->installLogFilePath));

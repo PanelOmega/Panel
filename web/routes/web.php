@@ -57,3 +57,16 @@ Route::prefix('/file-manager')->controller(\App\Http\Controllers\FileManager\Fil
     Route::post('zip', 'zip');
     Route::post('unzip', 'unzip');
 });
+
+
+
+//
+//if (!file_exists(storage_path('installed'))) {
+//    Route::get('/', \App\Livewire\Installer::class);
+//} else {
+//    Route::get('/', function () {
+//        return redirect('/admin');
+//    });
+//}
+
+Route::get('/installer', \App\Livewire\Installer::class);

@@ -31,42 +31,19 @@ class Installer extends Page
     public $email;
 
     public $password;
-
     public $passwordConfirmation;
+
+    public $firstNameserver;
+    public $secondNameserver;
 
     public $livewire = true;
 
     public $installLogFilePath = 'logs/installer.log';
     public $installLog = 'Loading...';
 
-    public $serverApplicationType = 'apache_php';
-    public $serverPhpModules = [];
-    public $serverPhpVersions = [];
-
-    public $serverNodejsVersions = [
-        '20'
-    ];
-
-    public $serverPythonVersions = [
-        '3.10'
-    ];
-
-    public $serverRubyVersions = [
-        '3.4'
-    ];
-
-    public $enableEmailServer = true;
-
     public function form(Form $form): Form
     {
 
-        if (empty($this->serverPhpVersions)) {
-            $this->serverPhpVersions = ['8.2'];
-        }
-
-        if (empty($this->serverPhpModules)) {
-            $this->serverPhpModules = array_keys(SupportedApplicationTypes::getPHPModules());
-        }
 
         $step1 = [
             TextInput::make('name')
@@ -122,139 +99,30 @@ class Installer extends Page
                         }),
 
                     Wizard\Step::make('Step 2')
-                        ->description('Configure your hosting server')
+                        ->description('Configure your nameservers')
                         ->schema([
 
-                            RadioDeck::make('server_application_type')
-                                ->live()
-                                ->default('apache_php')
-                                ->options(ServerApplicationType::class)
-                                ->icons(ServerApplicationType::class)
-                                ->descriptions(ServerApplicationType::class)
-                                ->required()
-                                ->color('primary')
-                                ->columns(2),
-
-                            // PHP Configuration
-                            CheckboxList::make('serverPhpVersions')
-                                ->hidden(function (Get $get) {
-                                    return $get('server_application_type') !== 'apache_php';
+                            TextInput::make('firstNameserver')
+                                ->label('Nameserver 1')
+                                ->afterStateUpdated(function () {
+                                    setting('general.ns1', $this->firstNameserver);
                                 })
-                                ->default([
-                                    '8.2'
-                                ])
-                                ->label('PHP Version')
-                                ->options(SupportedApplicationTypes::getPHPVersions())
-                                ->columns(5)
                                 ->required(),
 
-                            CheckboxList::make('serverPhpModules')
-                                ->hidden(function (Get $get) {
-                                    return $get('server_application_type') !== 'apache_php';
+                            TextInput::make('secondNameserver')
+                                ->label('Nameserver 2')
+                                ->afterStateUpdated(function () {
+                                    setting('general.ns2', $this->secondNameserver);
                                 })
-                                ->label('PHP Modules')
-                                ->columns(5)
-                                ->options(SupportedApplicationTypes::getPHPModules()),
-                            // End of PHP Configuration
-
-                            // Node.js Configuration
-                            CheckboxList::make('server_nodejs_versions')
-                                ->hidden(function (Get $get) {
-                                    return $get('server_application_type') !== 'apache_nodejs';
-                                })
-                                ->label('Node.js Version')
-                                ->default([
-                                    '14'
-                                ])
-                                ->options(SupportedApplicationTypes::getNodeJsVersions())
-                                ->columns(6)
                                 ->required(),
 
-                            // End of Node.js Configuration
-
-                            // Python Configuration
-
-                            CheckboxList::make('server_python_versions')
-                                ->hidden(function (Get $get) {
-                                    return $get('server_application_type') !== 'apache_python';
-                                })
-                                ->label('Python Version')
-                                ->default([
-                                    '3.10'
-                                ])
-                                ->options(SupportedApplicationTypes::getPythonVersions())
-                                ->columns(6)
-                                ->required(),
-
-                            // End of Python Configuration
-
-                            // Ruby Configuration
-
-                            CheckboxList::make('server_ruby_versions')
-                                ->hidden(function (Get $get) {
-                                    return $get('server_application_type') !== 'apache_ruby';
-                                })
-                                ->label('Ruby Version')
-                                ->default([
-                                    '3.4'
-                                ])
-                                ->options(SupportedApplicationTypes::getRubyVersions())
-                                ->columns(6)
-                                ->required(),
-
-                            // End of Ruby Configuration
 
                         ])->afterValidation(function () {
 
                             $this->installLog = 'Prepare installation...';
-                            if (is_file(storage_path('server-app-configuration.json'))) {
-                                unlink(storage_path('server-app-configuration.json'));
-                            }
 
-                            // file_put_contents(storage_path('server-app-configuration.json'), json_encode($serverAppConfiguration));
-
-                            if ($this->server_application_type == 'apache_php') {
-                                $phpInstaller = new PHPInstaller();
-                                $phpInstaller->setPHPVersions($this->serverPhpVersions);
-                                $phpInstaller->setPHPModules($this->serverPhpModules);
-                                $phpInstaller->setLogFilePath(storage_path($this->installLogFilePath));
-                                $phpInstaller->run();
-                            } else if ($this->server_application_type == 'apache_nodejs') {
-                                $nodeJsInstaller = new NodeJsInstaller();
-                                $nodeJsInstaller->setNodeJsVersions($this->server_nodejs_versions);
-                                $nodeJsInstaller->setLogFilePath(storage_path($this->installLogFilePath));
-                                $nodeJsInstaller->run();
-                            }elseif ($this->server_application_type == 'apache_python') {
-                                $pythonInstaller = new PythonInstaller();
-                                $pythonInstaller->setPythonVersions($this->server_python_versions);
-                                $pythonInstaller->setLogFilePath(storage_path($this->installLogFilePath));
-                                $pythonInstaller->run();
-                            }elseif ($this->server_application_type == 'apache_ruby') {
-                                $rubyInstaller = new RubyInstaller();
-                                $rubyInstaller->setRubyVersions($this->server_ruby_versions);
-                                $rubyInstaller->setLogFilePath(storage_path($this->installLogFilePath));
-                                $rubyInstaller->run();
-                            }
 
                         }),
-
-//                    Wizard\Step::make('Step 3')
-//                        ->description('Configure your email server')
-//                        ->schema([
-//
-//                            Toggle::make('enable_email_server')
-//                                ->label('Enable Email Server')
-//                                ->default(true),
-//
-//
-//                        ])->afterValidation(function () {
-//
-//                            $dovecotInstaller = new DovecotInstaller();
-//                            $dovecotInstaller->setLogFilePath(storage_path($this->installLogFilePath));
-//                            $dovecotInstaller->install();
-//
-//                        //    dd(storage_path($this->installLogFilePath));
-//                        }),
 
                     Wizard\Step::make('Step 3')
                         ->description('Finish installation')
@@ -276,7 +144,7 @@ class Installer extends Page
                             color="primary"
                             wire:click="install"
                         >
-                            Submit
+                            Start Installation
                         </x-filament::button>
                     BLADE)))
 

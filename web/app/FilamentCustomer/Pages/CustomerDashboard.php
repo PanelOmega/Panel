@@ -260,7 +260,7 @@ class CustomerDashboard extends Page
                         [
                             'title' => 'Git Version Control',
                             'icon' => 'omega_customer-file-git',
-                            'link' => '#'
+                            'link' => route('filament.customer.pages.git-version-control-page')
                         ],
 //                        [
 //                            'title'=>'File and Directory Restoration',

@@ -47,6 +47,18 @@ LogLevel debug
     CustomLog "logs/access_log" combined
 </IfModule>
 
+<IfModule log_config_module>
+    LogFormat "%v %h %l %u %t \"%r\" %>s %b \"%{Referer}i\" \"%{User-Agent}i\"" visitors
+    LogFormat "%h %l %u %t \"%r\" %>s %b" common
+
+    <IfModule logio_module>
+        # You need to enable mod_logio.c to use %I and %O
+        LogFormat "%v %h %l %u %t \"%r\" %>s %b \"%{Referer}i\" \"%{User-Agent}i\" %I %O" combinedio
+    </IfModule>
+
+    CustomLog "logs/visitors_log" visitors
+</IfModule>
+
 
 <IfModule mime_module>
 
